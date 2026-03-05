@@ -1,0 +1,34 @@
+# Sample Nginx Configuration for EC2 Reverse Proxy
+# Place this in /etc/nginx/sites-available/crm-app
+
+server {
+    listen 80;
+    server_name yourdomain.com; # Replace with your domain
+
+    # Redirect all HTTP traffic to HTTPS
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name yourdomain.com; # Replace with your domain
+
+    # SSL Certificate Paths (If using Certbot/Let's Encrypt)
+    # ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    # ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000; # Flask app port
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Static files handling (performance optimization)
+    location /static/ {
+        alias /path/to/your/app/static/;
+    }
+}

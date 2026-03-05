@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Details - {{ upload.filename }}{% endblock %}
+
+{% block content %}
+<div class="col-12 page-reveal">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-black text-primary mb-1">UPLOAD DETAILS</h1>
+            <p class="text-muted">Viewing data records from file: <strong>{{ upload.filename }}</strong></p>
+        </div>
+        <a href="{{ url_for('excel_upload') }}" class="btn btn-light rounded-pill px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to Uploads
+        </a>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="luxury-card p-4 border-0 shadow-sm bg-white">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <div class="avatar-circle-sm bg-primary-subtle text-primary">
+                            <i class="fas fa-list-ol"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Total Records</h6>
+                        <h4 class="fw-bold mb-0">{{ upload.records_processed }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="luxury-card p-4 border-0 shadow-sm bg-white">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <div class="avatar-circle-sm bg-success-subtle text-success">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Matched Records</h6>
+                        <h4 class="fw-bold mb-0">{{ upload.records_matched }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="luxury-card p-4 border-0 shadow-sm bg-white">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <div class="avatar-circle-sm bg-info-subtle text-info">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Upload Date</h6>
+                        <h4 class="fw-bold mb-0" style="font-size: 1.1rem;">{{ upload.created_at.strftime('%d-%b-%Y
+                            %I:%M %p') }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="luxury-card border-0 shadow-sm overflow-hidden mb-5">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="excelDataTable">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3 border-0 small fw-bold text-uppercase text-muted">ID</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Receipt Number</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Weight (kg)</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Amount (Paid)</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Extra Info</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Match Status</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="border-top-0">
+                    {% for item in data %}
+                    <tr>
+                        <td class="ps-4 py-3 text-muted">#{{ item.id }}</td>
+                        <td class="py-3 fw-bold">{{ item.receipt_number }}</td>
+                        <td class="py-3">{{ "%.2f"|format(item.weight) if item.weight is not none else '-' }}</td>
+                        <td class="py-3">₹{{ "%.2f"|format(item.amount) if item.amount is not none else '-' }}</td>
+                        <td class="py-3 small text-muted">{{ item.additional_info or '-' }}</td>
+                        <td class="py-3">
+                            {% if item.matched %}
+                            <span
+                                class="badge rounded-pill bg-success-subtle text-success border border-success border-opacity-25 px-3">
+                                <i class="fas fa-check-circle me-1"></i>Matched
+                            </span>
+                            {% else %}
+                            <span
+                                class="badge rounded-pill bg-warning-subtle text-warning border border-warning border-opacity-25 px-3">
+                                <i class="fas fa-clock me-1"></i>Unmatched
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 text-center">
+                            {% if not item.matched %}
+                            <button class="btn btn-sm btn-outline-primary rounded-pill px-3 btn-manual-match"
+                                data-receipt="{{ item.receipt_number }}" data-id="{{ item.id }}">
+                                Match Now
+                            </button>
+                            {% else %}
+                            <span class="text-muted small"><i class="fas fa-lock me-1"></i>Synced</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-inbox fs-1 d-block mb-3 opacity-25"></i>
+                                No data records found for this upload.
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.btn-manual-match').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const receiptNumber = this.getAttribute('data-receipt');
+                const dataId = this.getAttribute('data-id');
+                alert('Manual matching for ' + receiptNumber + ' can be triggered from the Order details page or bulk reconciliation tool.');
+            });
+        });
+    });
+</script>
+{% endblock %}

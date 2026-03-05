@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Print All Labels - {{ order.receipt_number }}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Arial', sans-serif;
+            background: #f0f0f0;
+            padding: 10mm;
+        }
+
+        /* ===== LABEL ===== */
+        .label {
+            width: 148mm;
+            background: #fafafa;
+            border: 2px dashed #aaa;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0 auto 12mm auto;
+            page-break-inside: avoid;
+        }
+
+        /* ===== HEADER ===== */
+        .slip-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4mm 6mm;
+            border-bottom: 2px solid #1a2e5a;
+            background: #fafafa;
+        }
+
+        /* CSS-only FYF Logo */
+        .css-logo {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .css-logo-icon {
+            width: 11mm;
+            height: 11mm;
+            border: 2.5px solid #1a2e5a;
+            border-radius: 3px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5px;
+            padding: 2px 3px;
+            flex-shrink: 0;
+        }
+
+        .css-logo-icon span {
+            display: block;
+            height: 1.8px;
+            background: #1a2e5a;
+            border-radius: 1px;
+            width: 100%;
+        }
+
+        .css-logo-icon span:first-child {
+            width: 55%;
+            align-self: flex-start;
+        }
+
+        .css-logo-icon span:last-child {
+            width: 70%;
+            align-self: flex-start;
+        }
+
+        .css-logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+        }
+
+        .css-logo-text .brand-name {
+            font-size: 20px;
+            font-weight: 900;
+            color: #1a2e5a;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+
+        .css-logo-text .brand-sub {
+            font-size: 6.5px;
+            font-weight: 700;
+            color: #1a2e5a;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 1px;
+        }
+
+        .css-logo-text .brand-tag {
+            font-size: 5.5px;
+            font-weight: 500;
+            color: #555;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .brand-tag::before,
+        .brand-tag::after {
+            content: '';
+            flex: 1;
+            height: 0.5px;
+            background: #999;
+            display: block;
+            min-width: 4px;
+        }
+
+        .slip-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: #1a2e5a;
+            letter-spacing: 1.5px;
+        }
+
+        .slip-title span {
+            color: #e05b10;
+        }
+
+        /* ===== TRACKING ===== */
+        .tracking-bar {
+            background: #fff;
+            border-bottom: 1.5px solid #1a2e5a;
+            padding: 4mm 6mm;
+            text-align: center;
+        }
+
+        .track-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #555;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1mm;
+        }
+
+        .track-number {
+            font-size: 18px;
+            font-weight: 900;
+            color: #1a2e5a;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ===== BODY ===== */
+        .label-body {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+
+        .left-col {
+            flex: 1;
+            border-right: 1.5px dashed #aaa;
+            padding: 4mm 5mm;
+        }
+
+        .to-block {
+            margin-bottom: 4mm;
+            padding-bottom: 4mm;
+            border-bottom: 1.5px dashed #bbb;
+        }
+
+        .block-header {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            font-weight: 800;
+            color: #1a2e5a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2mm;
+            border-bottom: 2px solid #1a2e5a;
+            padding-bottom: 1mm;
+        }
+
+        .block-header .sub {
+            font-size: 8px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .block-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #111;
+            margin-bottom: 1.5mm;
+            margin-top: 1mm;
+        }
+
+        .block-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+            font-size: 10px;
+            color: #333;
+            margin-bottom: 1mm;
+            line-height: 1.45;
+        }
+
+        .block-row .icon {
+            font-size: 11px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .right-col {
+            width: 42mm;
+            padding: 4mm;
+            display: flex;
+            flex-direction: column;
+            gap: 3.5mm;
+        }
+
+        .info-card {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            color: #1a2e5a;
+        }
+
+        .card-label {
+            font-size: 8px;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-value {
+            font-size: 13px;
+            font-weight: 800;
+            color: #1a2e5a;
+            line-height: 1.2;
+        }
+
+        .right-divider {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 0;
+        }
+
+        .box-counter {
+            background: #f5ead0;
+            border: 2px solid #c8a84b;
+            border-radius: 6px;
+            padding: 2.5mm 3mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 900;
+            color: #7a5300;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        /* ===== HANDLING TAGS ===== */
+        .tags-section {
+            padding: 2mm 5mm;
+            background: #fff8e7;
+            border-top: 1.5px dashed #e0b030;
+        }
+
+        .tags-header {
+            font-size: 8px;
+            font-weight: 700;
+            color: #8a6300;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5mm;
+        }
+
+        .tags-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2mm;
+        }
+
+        .tag-item {
+            background: #1a2e5a;
+            color: #ffd700;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 1mm 2.5mm;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+
+        .tag-item.urgent {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        /* ===== FOOTER ===== */
+        .slip-footer {
+            background: #fff;
+            border-top: 1px solid #ddd;
+            padding: 2mm 5mm;
+            text-align: center;
+            font-size: 7px;
+            color: #777;
+        }
+
+        /* ===== CONTROLS ===== */
+        .no-print {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .no-print button {
+            padding: 10px 30px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-print {
+            background: #1a2e5a;
+            color: #fff;
+        }
+
+        .btn-close {
+            background: #6b7280;
+            color: #fff;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .no-print {
+                display: none;
+            }
+
+            .label {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="no-print">
+        <button class="btn-print" onclick="window.print()">🖨️ Print All {{ order.number_of_boxes }} Labels</button>
+        <button class="btn-close" onclick="window.close()">✕ Close</button>
+    </div>
+
+    {% for label in labels %}
+    <div class="label">
+
+        <!-- Header -->
+        <div class="slip-header">
+            <!-- Pure CSS FYF Logo -->
+            <div class="css-logo">
+                <div class="css-logo-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="css-logo-text">
+                    <div class="brand-name">FYF</div>
+                    <div class="brand-sub">Fill Your Forms</div>
+                    <div class="brand-tag">Fulfill Your Dreams</div>
+                </div>
+            </div>
+            <div class="slip-title"><span>COURIER</span> ADDRESS SLIP</div>
+        </div>
+
+        <!-- Tracking Number -->
+        <div class="tracking-bar">
+            <div class="track-label">Tracking No.</div>
+            <div class="track-number">{{ order.receipt_number }}</div>
+        </div>
+
+        <!-- Body -->
+        <div class="label-body">
+
+            <!-- LEFT -->
+            <div class="left-col">
+
+                <!-- TO -->
+                <div class="to-block">
+                    <div class="block-header">
+                        <span>👤</span>
+                        <span>TO:</span>
+                        <span class="sub">(Consignee)</span>
+                    </div>
+                    <div class="block-name">{{ order.receiver_name }}</div>
+                    <div class="block-row">
+                        <span class="icon">📞</span>
+                        <span>{{ order.receiver_phone }}</span>
+                    </div>
+                    {% if order.receiver_address %}
+                    <div class="block-row">
+                        <span class="icon">📍</span>
+                        <span>{{ order.receiver_address }}</span>
+                    </div>
+                    {% endif %}
+                    {% if order.receiver_city or order.receiver_state or order.receiver_pincode %}
+                    <div class="block-row" style="padding-left:17px;">
+                        {{ order.receiver_city or '' }}{% if order.receiver_state %}, {{ order.receiver_state }}{% endif
+                        %}{% if order.receiver_pincode %} - {{ order.receiver_pincode }}{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- FROM -->
+                <div class="from-block">
+                    <div class="block-header">
+                        <span>🚚</span>
+                        <span>FROM:</span>
+                        <span class="sub">(Consigner)</span>
+                    </div>
+                    <div class="block-name">{{ order.customer_name }}</div>
+                    <div class="block-row">
+                        <span class="icon">📞</span>
+                        <span>{{ order.customer_phone }}</span>
+                    </div>
+                    {% if order.customer_address %}
+                    <div class="block-row">
+                        <span class="icon">📍</span>
+                        <span>{{ order.customer_address }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- RIGHT -->
+            <div class="right-col">
+
+                <div class="info-card">
+                    <div class="card-icon">🚛</div>
+                    <div>
+                        <div class="card-label">Mode</div>
+                        <div class="card-value">{{ order.receipt_mode|replace('_',' ')|title if order.receipt_mode else
+                            'Standard' }}</div>
+                    </div>
+                </div>
+
+                <hr class="right-divider">
+
+                <div class="info-card">
+                    <div class="card-icon">⚖️</div>
+                    <div>
+                        <div class="card-label">Weight</div>
+                        <div class="card-value">{{ "%.1f"|format(order.weight or 0) }} KG</div>
+                    </div>
+                </div>
+
+                <hr class="right-divider">
+
+                <div class="info-card">
+                    <div class="card-icon">📅</div>
+                    <div>
+                        <div class="card-label">Date</div>
+                        <div class="card-value">{{ order.created_at.strftime('%d/%m/%Y') }}</div>
+                    </div>
+                </div>
+
+                <hr class="right-divider">
+
+                <div class="box-counter">
+                    📦 BOX {{ label.box_number }} OF {{ label.total_boxes }}
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Handling Tags -->
+        {% if order.handling_tags %}
+        <div class="tags-section">
+            <div class="tags-header">⚠️ Special Handling Instructions</div>
+            <div class="tags-grid">
+                {% for tag in order.handling_tags.split(',') if tag.strip() %}
+                <div class="tag-item {% if 'FRAGILE' in tag.upper() or 'URGENT' in tag.upper() %}urgent{% endif %}">
+                    {{ tag.strip() }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <div class="slip-footer">
+            Track your shipment: {{ request.url_root }}tracking?receipt={{ order.receipt_number }}
+        </div>
+
+    </div>
+    {% endfor %}
+
+</body>
+
+</html>

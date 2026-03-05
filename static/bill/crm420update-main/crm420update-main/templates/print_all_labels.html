@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Print All Labels - {{ order.receipt_number }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10mm;
+        }
+        .label {
+            width: 100mm;
+            border: 2px solid #000;
+            padding: 5mm;
+            margin-bottom: 10mm;
+            page-break-inside: avoid;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 3mm;
+            margin-bottom: 3mm;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        .receipt-number {
+            font-size: 14px;
+            font-weight: bold;
+            background: #000;
+            color: #fff;
+            padding: 2mm;
+            text-align: center;
+            margin: 3mm 0;
+        }
+        .section {
+            margin-bottom: 3mm;
+        }
+        .section-title {
+            font-size: 10px;
+            font-weight: bold;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .section-content {
+            font-size: 12px;
+            padding: 2mm 0;
+        }
+        .section-content strong {
+            font-size: 14px;
+        }
+        .qr-code {
+            text-align: center;
+            margin: 3mm 0;
+        }
+        .qr-code img {
+            width: 25mm;
+            height: 25mm;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin: 1mm 0;
+        }
+        .box-info {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            border: 2px solid #000;
+            padding: 3mm;
+            margin: 3mm 0;
+            background: #f0f0f0;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+            .label {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="margin-bottom: 20px; text-align: center;">
+        <button onclick="window.print()" style="padding: 10px 30px; font-size: 16px;">
+            Print All {{ order.number_of_boxes }} Labels
+        </button>
+        <button onclick="window.close()" style="padding: 10px 30px; font-size: 16px;">
+            Close
+        </button>
+    </div>
+
+    {% for label in labels %}
+    <div class="label">
+        <div class="header">
+            <div class="logo">🚚 CRM DELIVERY</div>
+            <div style="font-size: 10px;">Fast & Reliable Courier Service</div>
+        </div>
+
+        <div class="receipt-number">
+            {{ order.receipt_number }}
+        </div>
+
+        <div class="section">
+            <div class="section-title">From:</div>
+            <div class="section-content">
+                <strong>{{ order.customer_name }}</strong><br>
+                {{ order.customer_phone }}<br>
+                {{ order.customer_address or '' }}
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">To:</div>
+            <div class="section-content">
+                <strong>{{ order.receiver_name }}</strong><br>
+                {{ order.receiver_phone }}<br>
+                {{ order.receiver_address or '' }}<br>
+                {{ order.receiver_city or '' }}{% if order.receiver_state %}, {{ order.receiver_state }}{% endif %} {{ order.receiver_pincode or '' }}
+            </div>
+        </div>
+
+        <div class="qr-code">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+            <div style="font-size: 8px;">Scan to Track</div>
+        </div>
+
+        <div class="info-row">
+            <span>Mode: {{ order.receipt_mode|replace('_', ' ')|title if order.receipt_mode else 'N/A' }}</span>
+            <span>Weight: {{ order.weight or 0 }} kg</span>
+        </div>
+
+        <div class="box-info">
+            Box {{ label.box_number }} of {{ label.total_boxes }}
+        </div>
+
+        <div style="font-size: 8px; text-align: center; color: #666;">
+            Created: {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}
+        </div>
+    </div>
+    {% endfor %}
+</body>
+</html>

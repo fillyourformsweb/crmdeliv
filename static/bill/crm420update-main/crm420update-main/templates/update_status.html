@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Update Status - {{ order.receipt_number }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-light rounded-circle shadow-sm me-3"
+                style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h6 class="text-uppercase text-muted fw-bold mb-0 small">Update Shipment</h6>
+                <h3 class="fw-black mb-0">Order #{{ order.receipt_number }}</h3>
+            </div>
+        </div>
+
+        <div class="card luxury-card border-0 shadow-lg">
+            <div class="card-body p-5">
+                <form action="{{ url_for('update_order_status', id=order.id) }}" method="POST">
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-uppercase small text-muted">Current Status</label>
+                        <div class="d-flex align-items-center">
+                            <span
+                                class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2">
+                                {{ order.status|replace('_', ' ')|title }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-uppercase small text-muted">New Status</label>
+                        <div class="select-wrapper position-relative">
+                            <select name="status" class="form-select luxury-input form-select-lg fw-bold" required>
+                                <option value="" disabled selected>Select Status Update...</option>
+                                {% for value, label in valid_transitions.items() %}
+                                <option value="{{ value }}" {% if order.status==value %}selected{% endif %}>{{ label }}
+                                </option>
+                                {% endfor %}
+                                {% if not valid_transitions and current_user.role != 'admin' %}
+                                <option value="" disabled>No further updates available (Terminal Status)</option>
+                                {% endif %}
+                                {% if current_user.role == 'admin' %}
+                                <optgroup label="Admin Override">
+                                    <option value="pending">Reset to Pending</option>
+                                    <option value="in_transit">Force In Transit</option>
+                                    <option value="delivered">Force Delivered</option>
+                                    <option value="cancelled">Force Cancelled</option>
+                                </optgroup>
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i>Choose the most accurate
+                            status for the current situation.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-uppercase small text-muted">Current Location</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i
+                                    class="fas fa-map-marker-alt text-muted"></i></span>
+                            <input type="text" name="location" class="form-control luxury-input border-start-0"
+                                placeholder="e.g. Mumbai Hub, Local Sort Facility" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label fw-bold text-uppercase small text-muted">Message to Customer</label>
+                        <textarea name="description" class="form-control luxury-input" rows="4"
+                            placeholder="Write a clear message that will be shown to the customer tracking this order..."
+                            required></textarea>
+                        <div class="form-text mt-1">This message will be visible on the customer tracking page.</div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold py-3 luxury-btn">
+                            <i class="fas fa-paper-plane me-2"></i>Send Update & Notify
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+Flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-JWT-Extended
+Flask-WTF
+Werkzeug
+pandas
+openpyxl
+Pillow
+python-barcode
+qrcode
+WTForms
+email-validator
+gunicorn
+python-dotenv
+google-generativeai
+pymupdf

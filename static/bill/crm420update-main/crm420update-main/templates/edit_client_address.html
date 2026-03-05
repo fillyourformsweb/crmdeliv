@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Address - {{ address.address_label }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-map-marker-alt me-2"></i>Edit Saved Address: {{ address.address_label }}</h2>
+    </div>
+</div>
+
+<div class="card luxury-card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Address Label (e.g., Warehouse, Branch Office)</label>
+                <input type="text" name="address_label" class="form-control" value="{{ address.address_label }}"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Full Address *</label>
+                <textarea name="address" class="form-control" rows="3" required>{{ address.address }}</textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">City</label>
+                    <input type="text" name="city" class="form-control" value="{{ address.city or '' }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">State</label>
+                    <input type="text" name="state" class="form-control" value="{{ address.state or '' }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Pincode</label>
+                    <input type="text" name="pincode" class="form-control" value="{{ address.pincode or '' }}">
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i>Update Address
+                </button>
+                <a href="{{ url_for('client_details', id=address.client_id) }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

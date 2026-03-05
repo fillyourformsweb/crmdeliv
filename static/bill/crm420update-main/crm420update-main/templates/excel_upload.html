@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Excel Upload - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-file-excel"></i> Excel Upload</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-upload"></i> Upload Excel File
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Select Excel File (.xlsx, .xls)</label>
+                        <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> Upload & Process
+                    </button>
+                </form>
+                <hr>
+                <h6>Expected Columns:</h6>
+                <ul class="small">
+                    <li><strong>receipt_number</strong> - Receipt number to match</li>
+                    <li><strong>weight</strong> - Weight in kg</li>
+                    <li><strong>amount</strong> - Amount in currency</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-history"></i> Recent Uploads
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Processed</th>
+                            <th>Matched</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for upload in uploads %}
+                        <tr>
+                            <td>{{ upload.filename }}</td>
+                            <td>{{ upload.records_processed }}</td>
+                            <td>{{ upload.records_matched }}</td>
+                            <td>{{ upload.created_at.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                <a href="{{ url_for('view_excel_data', upload_id=upload.id) }}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No uploads yet</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

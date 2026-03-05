@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+
+{% block title %}Client Orders - {{ client.name }} - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="page-content-wrapper w-100">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{{ url_for('client_due_report') }}" class="btn btn-light rounded-pill px-4 mb-2">
+                <i class="fas fa-arrow-left me-2"></i>Back to Client Due Report
+            </a>
+            <h2 class="fw-black text-primary mb-1">
+                <i class="fas fa-building me-2"></i>{{ client.name }}
+            </h2>
+            <p class="text-muted mb-0">
+                {{ client.company_name or 'Personal' }} •
+                <i class="fas fa-phone me-1"></i>{{ client.phone }}
+                {% if client.email %} • <i class="fas fa-envelope me-1"></i>{{ client.email }}{% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card luxury-card border-0 shadow-sm mb-4">
+        <div class="card-header bg-transparent border-0 px-4 pt-4">
+            <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-filter me-2 text-primary opacity-50"></i>Filter Orders
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-uppercase text-muted">From Date</label>
+                    <input type="date" class="form-control luxury-input" id="filterFrom" onchange="loadOrders()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-uppercase text-muted">To Date</label>
+                    <input type="date" class="form-control luxury-input" id="filterTo" onchange="loadOrders()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Payment Status</label>
+                    <select class="form-select luxury-input" id="filterPaymentStatus" onchange="loadOrders()">
+                        <option value="all">All Status</option>
+                        <option value="unpaid">Unpaid</option>
+                        <option value="partial">Partial</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card luxury-card border-0 bg-info text-white p-3">
+                <div class="small fw-bold text-uppercase opacity-75">Total Orders</div>
+                <h3 class="fw-black mb-0 mt-1" id="totalOrders">0</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card luxury-card border-0 bg-success text-white p-3">
+                <div class="small fw-bold text-uppercase opacity-75">Total Amount</div>
+                <h3 class="fw-black mb-0 mt-1" id="totalAmount">₹0</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card luxury-card border-0 bg-warning text-white p-3">
+                <div class="small fw-bold text-uppercase opacity-75">Received</div>
+                <h3 class="fw-black mb-0 mt-1" id="receivedAmount">₹0</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card luxury-card border-0 bg-danger text-white p-3">
+                <div class="small fw-bold text-uppercase opacity-75">Outstanding Due</div>
+                <h3 class="fw-black mb-0 mt-1" id="dueAmount">₹0</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="card luxury-card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small mb-2">
+                        <i class="fas fa-info-circle me-1"></i>Select bill type and date range, then click "Print
+                        Consolidated Bill"
+                    </div>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="billType" id="billTypeNonGST" value="no" checked>
+                        <label class="btn btn-outline-primary" for="billTypeNonGST">Non-GST Bill</label>
+
+                        <input type="radio" class="btn-check" name="billType" id="billTypeGST" value="yes">
+                        <label class="btn btn-outline-primary" for="billTypeGST">GST Bill</label>
+                    </div>
+                </div>
+                <button class="btn btn-primary px-4" onclick="printConsolidatedBill()">
+                    <i class="fas fa-print me-2"></i>Print Consolidated Bill
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card luxury-card border-0 shadow-sm mb-5">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="ordersTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted">Date</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Receipt No.</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Receiver</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Destination</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Weight (kg)</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Amount</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Received</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Due</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Status</th>
+                            <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="10" class="text-center py-5">
+                                <div class="spinner-border text-primary"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content luxury-card border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white border-0 py-3">
+                <h5 class="modal-title fw-bold"><i class="fas fa-rupee-sign me-2"></i>Record Payment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-primary border-0 shadow-sm mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-file-invoice-dollar fs-3"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="small opacity-75">Order Being Paid:</div>
+                            <div class="fw-bold" id="modalReceiptNo">---</div>
+                            <div class="small fw-bold text-primary mt-1" id="modalOrderAmount">---</div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="paymentForm">
+                    <input type="hidden" id="modalOrderId">
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-2">How much did you receive?
+                            <span class="text-danger">*</span></label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light border-end-0">₹</span>
+                            <input type="number" id="receivedAmountInput"
+                                class="form-control luxury-input border-start-0" step="0.01" required>
+                        </div>
+                        <div class="form-text mt-2" id="modalDueText">Enter the amount received from the client.</div>
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-2">Which payment method did
+                            you receive? <span class="text-danger">*</span></label>
+                        <select id="paymentModeInput" class="form-select luxury-input form-select-lg" required>
+                            <option value="">-- Select Payment Method --</option>
+                            <option value="cash">💵 Cash</option>
+                            <option value="upi">📱 UPI / Digital Payment</option>
+                            <option value="card">💳 Card (Debit/Credit)</option>
+                            <option value="bank_transfer">🏦 Bank Transfer</option>
+                            <option value="cheque">📝 Cheque</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary rounded-pill px-5" onclick="submitPayment()">
+                    <i class="fas fa-save me-2"></i>Save Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const clientId = {{ client.id }};
+
+    function loadOrders() {
+        const filters = {
+            start_date: document.getElementById('filterFrom').value,
+            end_date: document.getElementById('filterTo').value,
+            payment_status: document.getElementById('filterPaymentStatus').value
+        };
+
+        const tbody = document.querySelector('#ordersTable tbody');
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+
+        fetch(`/api/client/${clientId}/orders?` + new URLSearchParams(filters))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateSummary(data.summary);
+                    updateOrdersTable(data.orders);
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="10" class="text-center py-5 text-danger">Error: ' + data.error + '</td></tr>';
+                }
+            })
+            .catch(error => {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center py-5 text-danger">Error: ' + error + '</td></tr>';
+            });
+    }
+
+    function updateSummary(summary) {
+        document.getElementById('totalOrders').textContent = summary.total_orders;
+        document.getElementById('totalAmount').textContent = '₹' + summary.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+        document.getElementById('receivedAmount').textContent = '₹' + summary.received_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+        document.getElementById('dueAmount').textContent = '₹' + summary.due_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    }
+
+    function updateOrdersTable(orders) {
+        const tbody = document.querySelector('#ordersTable tbody');
+        if (!orders.length) {
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center py-5 text-muted">No orders found for the selected filters.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = orders.map(o => `
+            <tr>
+                <td class="px-4 small fw-bold text-muted">${o.created_at}</td>
+                <td><code class="text-primary fw-bold">${o.receipt_number}</code></td>
+                <td>
+                    <div class="fw-bold text-dark small">${o.receiver_name || 'N/A'}</div>
+                </td>
+                <td class="small">${o.receiver_city || ''}, ${o.receiver_state || ''}</td>
+                <td class="small">${o.weight.toFixed(2)}</td>
+                <td class="fw-bold small">₹${o.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                <td class="text-success fw-bold small">₹${o.received_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                <td class="${o.due_amount > 0 ? 'text-danger' : 'text-success'} fw-black small">₹${o.due_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                <td>
+                    <span class="badge bg-${o.payment_status == 'paid' ? 'success' : o.payment_status == 'partial' ? 'warning' : 'danger'}-subtle text-${o.payment_status == 'paid' ? 'success' : o.payment_status == 'partial' ? 'warning' : 'danger'} rounded-pill px-2 small">
+                        ${o.payment_status}
+                    </span>
+                </td>
+                <td class="px-4">
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick='showPaymentModal(${JSON.stringify(o).replace(/'/g, "&apos;")})'>
+                        <i class="fas fa-rupee-sign me-1"></i>Receive
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    const pModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+
+    function showPaymentModal(order) {
+        document.getElementById('modalOrderId').value = order.id;
+        document.getElementById('modalReceiptNo').textContent = order.receipt_number;
+        document.getElementById('modalOrderAmount').textContent = 'Total Amount: ₹' + order.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+        document.getElementById('receivedAmountInput').value = order.due_amount;
+        document.getElementById('modalDueText').innerHTML = `Currently outstanding: <strong class="text-danger">₹${order.due_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>`;
+
+        // Reset and show
+        document.getElementById('paymentModeInput').value = '';
+        pModal.show();
+    }
+
+    function submitPayment() {
+        const orderId = document.getElementById('modalOrderId').value;
+        const receivedAmount = parseFloat(document.getElementById('receivedAmountInput').value);
+        const paymentMode = document.getElementById('paymentModeInput').value;
+
+        if (!receivedAmount || isNaN(receivedAmount)) {
+            alert('Please enter a valid amount.');
+            return;
+        }
+
+        if (!paymentMode) {
+            alert('Please select a payment method.');
+            return;
+        }
+
+        const submitBtn = document.querySelector('#paymentModal .btn-primary');
+        const originalHtml = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+
+        fetch('/api/order/payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                order_id: orderId,
+                received_amount: receivedAmount,
+                payment_mode: paymentMode
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    pModal.hide();
+                    loadOrders(); // Reload the whole list to update summary cards and table
+                } else {
+                    alert('Error: ' + data.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHtml;
+                }
+            })
+            .catch(err => {
+                alert('Something went wrong. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHtml;
+            });
+    }
+
+    function printConsolidatedBill() {
+        const startDate = document.getElementById('filterFrom').value;
+        const endDate = document.getElementById('filterTo').value;
+        const isGST = document.querySelector('input[name="billType"]:checked').value;
+
+        let url = `/client/${clientId}/print-consolidated-bill`;
+        const params = new URLSearchParams();
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        params.append('gst', isGST);  // Add GST parameter
+
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+
+        window.open(url, '_blank');
+    }
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', () => loadOrders());
+</script>
+{% endblock %}

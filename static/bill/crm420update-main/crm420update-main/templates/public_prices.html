@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Shipping Price List - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="col-12 page-reveal">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-black text-primary mb-1">SHIPPING PRICING MASTER</h1>
+            <p class="text-muted">Direct state-wise shipping charges across all weight categories</p>
+        </div>
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <a href="{{ url_for('default_prices') }}" class="luxury-btn btn btn-primary px-4 shadow-sm">
+            <i class="fas fa-edit me-2"></i>Manage Rates
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="luxury-card mb-4 border-0 shadow-sm">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <div class="input-group luxury-input-group">
+                        <span class="input-group-text bg-transparent border-0"><i
+                                class="fas fa-search text-muted"></i></span>
+                        <input type="text" id="stateSearch" class="form-control border-0 shadow-none"
+                            placeholder="Search destination state (e.g. Maharashtra, Delhi...)" onkeyup="filterTable()">
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="badge bg-light text-muted border px-3 py-2 rounded-pill">
+                        <i class="fas fa-database me-2"></i>{{ prices|length }} States Defined
+                    </span>
+                    <span class="badge bg-light text-muted border px-3 py-2 rounded-pill ms-2">
+                        <i class="fas fa-clock me-2"></i>Rates Active Today
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unified Rate Matrix -->
+    <div class="luxury-card border-0 shadow-sm overflow-hidden mb-5">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="pricingTable">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3 border-0 small fw-bold text-uppercase text-muted">Destination State</th>
+                        {% for label, key in weight_categories %}
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">{{ label }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="border-top-0">
+                    {% for price in prices %}
+                    <tr>
+                        <td class="ps-4 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle-sm bg-primary-subtle text-primary me-3">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-dark">{{ price.state }}</h6>
+                                    <span class="small text-muted text-uppercase" style="font-size: 10px;">Standard
+                                        Zone</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_100gm) }}</td>
+                        <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_250gm) }}</td>
+                        <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_500gm) }}</td>
+                        <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_750gm) }}</td>
+                        <td class="text-center fw-bold text-primary">₹{{ "%.2f"|format(price.price_1kg) }}</td>
+                        <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_2kg) }}</td>
+                        <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_3kg) }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-inbox fs-1 d-block mb-3 opacity-25"></i>
+                                No pricing data available yet.
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="luxury-card h-100 p-4 border-0 shadow-sm">
+                <i class="fas fa-weight fs-3 text-primary mb-3"></i>
+                <h5 class="fw-bold">Weight Tiers</h5>
+                <p class="small text-muted mb-0">Our weight tiers are optimized for maximum savings. For weights above
+                    3kg, please contact our relationship manager for bulk booking rates.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="luxury-card h-100 p-4 border-0 shadow-sm">
+                <i class="fas fa-check-double fs-3 text-success mb-3"></i>
+                <h5 class="fw-bold">Tax Inclusive</h5>
+                <p class="small text-muted mb-0">The prices shown in the matrix are inclusive of all fuel surcharges and
+                    standard GST, ensuring no surprise hidden costs for your shipments.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="luxury-card h-100 p-4 border-0 shadow-sm">
+                <i class="fas fa-shield-alt fs-3 text-info mb-3"></i>
+                <h5 class="fw-bold">Insurance Coverage</h5>
+                <p class="small text-muted mb-0">Standard liability coverage is included. Optional high-value insurance
+                    is available for luxury items and fragile equipment at 2% premium.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterTable() {
+        const input = document.getElementById("stateSearch");
+        const filter = input.value.toUpperCase();
+        const table = document.getElementById("pricingTable");
+        const tr = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+            const td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                const txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    .avatar-circle-sm {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    .luxury-input-group {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 5px 15px;
+        border: 1px solid #eee;
+    }
+
+    #pricingTable thead th {
+        background: #fdfdfd;
+        letter-spacing: 0.5px;
+    }
+
+    #pricingTable tbody tr:hover {
+        background-color: #fbfbfb;
+    }
+</style>
+{% endblock %}

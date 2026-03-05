@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+
+{% block title %}New Client Order - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-primary fw-bold mb-1">Corporate Dispatch</h5>
+        <h1 class="display-5 fw-black text-dark mb-2">New Client Order</h1>
+        <p class="text-muted fs-5 mb-0">Select a corporate partner and enter shipment details.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('orders') }}" class="luxury-btn btn btn-light border px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+</div>
+
+<form method="POST" id="orderForm" class="page-reveal">
+    <!-- Receipt Mode Selection (TOP) -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card luxury-card border-0 shadow-sm">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between flex-wrap gap-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-circle-sm bg-primary-subtle text-primary">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">Tracking Mode</h5>
+                            <p class="small text-muted mb-0">Choose how to generate the tracking number</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-4">
+                        <div class="d-flex gap-3">
+                            <div class="form-check custom-radio flex-shrink-0">
+                                <input class="form-check-input" type="radio" name="receipt_type" id="typeStandard"
+                                    value="standard" checked>
+                                <label class="form-check-label fw-bold" for="typeStandard">Automatic</label>
+                            </div>
+                            <div class="form-check custom-radio flex-shrink-0">
+                                <input class="form-check-input" type="radio" name="receipt_type" id="typeManual"
+                                    value="manual">
+                                <label class="form-check-label fw-bold" for="typeManual">Manual Entry</label>
+                            </div>
+                        </div>
+
+                        <div id="receiptFields" style="min-width: 250px;">
+                            <input type="text" name="receipt_number" id="receiptNumberInput"
+                                class="form-control luxury-input" required placeholder="Generating..."
+                                style="height: 45px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <!-- Client Selection & Receiver Section -->
+            <div class="card luxury-card border-0 shadow-sm mb-4">
+                <div
+                    class="card-header bg-transparent border-0 px-4 pt-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="fas fa-building me-2 text-primary opacity-50"></i>Client Selection
+                    </h5>
+                    <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
+                        onclick="document.getElementById('aiScannerFile').click()">
+                        <i class="fas fa-magic me-1"></i> AI Scan Document
+                    </button>
+                    <input type="file" id="aiScannerFile" style="display: none;" accept="image/*,.pdf"
+                        onchange="handleAIScan(this)">
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Select Corporate Partner
+                            *</label>
+                        <select name="client_id" id="clientSelect" class="form-select luxury-input" required>
+                            <option value="">Choose a Client...</option>
+                            {% for client in clients %}
+                            <option value="{{ client.id }}" data-name="{{ client.name }}"
+                                data-phone="{{ client.phone }}" data-email="{{ client.email or '' }}"
+                                data-address="{{ client.address or '' }}"
+                                data-pattern="{{ client.billing_pattern_id or '' }}"
+                                data-receivers='{{ client.receivers|map(attribute="id")|list|tojson }}'
+                                data-receiver-details='{{ client.receivers|each_to_dict|tojson }}'
+                                data-addresses='{{ client.addresses|each_to_dict|tojson }}'>
+                                {{ client.name }} {% if client.company_name %}({{ client.company_name }}){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="clientInfo" class="luxury-card bg-light border-0 p-3 mb-0" style="display: none;">
+                        <div class="row g-3">
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Select Sender
+                                    Address</label>
+                                <select id="senderAddressSelect" name="sender_address_id"
+                                    class="form-select form-select-sm luxury-input">
+                                    <option value="">Primary Address</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Contact
+                                    Person</div>
+                                <div class="fw-bold text-dark" id="clientName"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Phone
+                                </div>
+                                <div class="fw-bold text-dark" id="clientPhone"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Email
+                                </div>
+                                <div class="fw-bold text-dark text-truncate" id="clientEmail"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card luxury-card border-0 shadow-sm mb-4">
+                <div
+                    class="card-header bg-transparent border-0 px-4 pt-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="fas fa-map-marker-alt me-2 text-success opacity-50"></i>Receiver Information
+                    </h5>
+                    <div id="receiverSelectWrapper" style="display: none; width: 250px;">
+                        <select id="receiverSelect" class="form-select form-select-sm luxury-input">
+                            <option value="">Select Saved Receiver...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Receiver Name *</label>
+                            <input type="text" name="receiver_name" class="form-control luxury-input"
+                                placeholder="Full Name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Receiver Number *</label>
+                            <input type="text" name="receiver_phone" class="form-control luxury-input"
+                                placeholder="+1..." required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Delivery Address *</label>
+                            <textarea name="receiver_address" class="form-control luxury-input" rows="2"
+                                placeholder="Full delivery address..." required></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">City</label>
+                            <input type="text" name="receiver_city" class="form-control luxury-input"
+                                placeholder="City">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">State</label>
+                            <select name="receiver_state" id="receiver_state" class="form-select luxury-input">
+                                <option value="">Select State</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Pincode</label>
+                            <input type="text" name="receiver_pincode" class="form-control luxury-input"
+                                placeholder="Code" pattern="[0-9]{6}" minlength="6" maxlength="6" inputmode="numeric">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <!-- Package & Billing Section -->
+            <div class="card luxury-card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Shipping Mode *</label>
+                        <select name="receipt_mode" class="form-select luxury-input" required>
+                            <option value="">Select Shipping Mode</option>
+                            <option value="standard">Standard Delivery</option>
+                            <option value="prime">Prime Express</option>
+                            <option value="parcel">Parcel Service</option>
+                            <option value="state_express">State Express</option>
+                            <option value="road_express">Road Express</option>
+                        </select>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Weight (kg)</label>
+                            <div class="input-group">
+                                <input type="number" name="weight" id="weight" class="form-control luxury-input"
+                                    step="0.01" min="0" placeholder="0.00">
+                                <span class="input-group-text bg-light border-0">KG</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Qty (Boxes)</label>
+                            <input type="number" name="number_of_boxes" class="form-control luxury-input" value="1"
+                                min="1">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Insured/Declared Value
+                            (Optional)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0">₹</span>
+                            <input type="number" name="insured_amount" id="insured_amount"
+                                class="form-control luxury-input" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        <small class="text-muted">Declare item value for insurance coverage</small>
+                    </div>
+                    <!-- Billing Pattern Removed -->
+                </div>
+            </div>
+
+            <!-- Pricing Summary -->
+            <div class="card luxury-card border-0 shadow-sm mb-4 bg-primary text-white overflow-hidden">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4 opacity-75"><i class="fas fa-calculator me-2"></i>Estimated Charges</h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="opacity-75">Base Rate</span>
+                        <span id="baseAmount" class="fw-bold">₹0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="opacity-75">Weight Surcharge</span>
+                        <span id="weightCharges" class="fw-bold">₹0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="opacity-75">Insurance Charge</span>
+                        <span id="insuranceCharge" class="fw-bold">₹0.00</span>
+                    </div>
+                    <div
+                        class="border-top border-white border-opacity-25 pt-3 d-flex justify-content-between align-items-end">
+                        <div>
+                            <div class="small opacity-75 text-uppercase fw-bold">Grand Total</div>
+                            <h2 class="mb-0 fw-black" id="totalAmount">₹0.00</h2>
+                        </div>
+                        <i class="fas fa-file-invoice-dollar fs-1 opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card luxury-card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="form-check mb-4 custom-checkbox">
+                        <input type="checkbox" name="create_customer_link" class="form-check-input" id="createLink">
+                        <label class="form-check-label fw-bold text-dark" for="createLink">
+                            Enable Customer Self-Onboarding
+                        </label>
+                        <p class="small text-muted mb-0">Sends a secure link for the customer to fill additional KYC
+                            details.</p>
+                    </div>
+                    <button type="submit" class="luxury-btn btn btn-primary w-100 py-3 fw-bold fs-5 shadow-lg mb-3">
+                        <i class="fas fa-check-circle me-2"></i>Confirm Corporate Order
+                    </button>
+                    <a href="{{ url_for('orders') }}"
+                        class="btn btn-link w-100 text-muted text-decoration-none fw-bold">Discard Order</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const clientSelect = document.getElementById('clientSelect');
+    const receiverSelect = document.getElementById('receiverSelect');
+    const senderAddressSelect = document.getElementById('senderAddressSelect');
+    const receiverSelectWrapper = document.getElementById('receiverSelectWrapper');
+    const clientInfo = document.getElementById('clientInfo');
+    const stateSelect = document.getElementById('receiver_state');
+    const weightInput = document.getElementById('weight');
+    const baseAmountEl = document.getElementById('baseAmount');
+    const weightChargesEl = document.getElementById('weightCharges');
+    const insuranceChargeEl = document.getElementById('insuranceCharge');
+    const insuredAmountInput = document.getElementById('insured_amount');
+    const totalAmountEl = document.getElementById('totalAmount');
+
+    // Populate state dropdown from API (same as walk-in order)
+    fetch('/api/states')
+        .then(res => res.json())
+        .then(states => {
+            if (stateSelect) {
+                states.forEach(state => {
+                    const option = document.createElement('option');
+                    option.value = state;
+                    option.textContent = state;
+                    stateSelect.appendChild(option);
+                });
+            }
+        });
+
+    clientSelect.addEventListener('change', function () {
+        const option = this.options[this.selectedIndex];
+        if (this.value) {
+            clientInfo.style.display = 'block';
+            document.getElementById('clientName').textContent = option.dataset.name;
+            document.getElementById('clientPhone').textContent = option.dataset.phone;
+            document.getElementById('clientEmail').textContent = option.dataset.email || 'N/A';
+
+            // Populate Receivers
+            receiverSelect.innerHTML = '<option value="">Select Saved Receiver (or enter new)...</option>';
+            const receivers = JSON.parse(option.dataset.receiverDetails || '[]');
+            if (receivers.length > 0) {
+                receiverSelectWrapper.style.display = 'block';
+                receivers.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r.id;
+                    opt.textContent = r.name + (r.company_name ? ` (${r.company_name})` : '');
+                    opt.dataset.detail = JSON.stringify(r);
+                    receiverSelect.appendChild(opt);
+                });
+            } else {
+                receiverSelectWrapper.style.display = 'none';
+            }
+
+            // Populate Sender Addresses
+            senderAddressSelect.innerHTML = '<option value="">Primary Address</option>';
+            const addresses = JSON.parse(option.dataset.addresses || '[]');
+            addresses.forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a.id;
+                opt.textContent = a.address_label;
+                opt.dataset.detail = JSON.stringify(a);
+                senderAddressSelect.appendChild(opt);
+            });
+
+        } else {
+            clientInfo.style.display = 'none';
+            receiverSelectWrapper.style.display = 'none';
+        }
+        calculateAmount();
+    });
+
+    receiverSelect.addEventListener('change', function () {
+        if (!this.value) return;
+        const opt = this.options[this.selectedIndex];
+        const r = JSON.parse(opt.dataset.detail);
+
+        document.querySelector('input[name="receiver_name"]').value = r.name;
+        document.querySelector('input[name="receiver_phone"]').value = r.phone;
+        document.querySelector('textarea[name="receiver_address"]').value = r.address;
+        document.querySelector('input[name="receiver_city"]').value = r.city || '';
+        document.querySelector('input[name="receiver_pincode"]').value = r.pincode || '';
+
+        // Set state dropdown
+        if (stateSelect && r.state) {
+            const options = Array.from(stateSelect.options);
+            const matched = options.find(o =>
+                o.value.toLowerCase() === r.state.toLowerCase() ||
+                o.value.toLowerCase().includes(r.state.toLowerCase()) ||
+                r.state.toLowerCase().includes(o.value.toLowerCase())
+            );
+            if (matched) stateSelect.value = matched.value;
+        }
+
+        calculateAmount();
+    });
+
+    // Receipt Type Toggle
+    const typeManual = document.getElementById('typeManual');
+    const typeStandard = document.getElementById('typeStandard');
+    const receiptInput = document.getElementById('receiptNumberInput');
+
+    function updateReceiptField() {
+        if (typeStandard.checked) {
+            receiptInput.placeholder = "Generating...";
+            receiptInput.readOnly = true;
+            fetch('/api/receipt/next')
+                .then(res => res.json())
+                .then(data => {
+                    receiptInput.value = data.receipt_number;
+                });
+        } else {
+            receiptInput.value = "";
+            receiptInput.placeholder = "Enter Manual Tracking Number";
+            receiptInput.readOnly = false;
+            receiptInput.focus();
+        }
+    }
+
+    [typeManual, typeStandard].forEach(radio => {
+        radio.addEventListener('change', updateReceiptField);
+    });
+
+    // Link Shipping Mode to Receipt Generation
+    const shippingModeSelect = document.querySelector('select[name="receipt_mode"]');
+    if (shippingModeSelect) {
+        shippingModeSelect.addEventListener('change', function () {
+            if (this.value && this.value !== 'standard') {
+                if (typeManual) { typeManual.checked = true; updateReceiptField(); }
+            } else if (this.value === 'standard') {
+                if (typeStandard) { typeStandard.checked = true; updateReceiptField(); }
+            }
+        });
+    }
+
+    // AI Scanner Handling
+    async function handleAIScan(input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('document', file);
+        const scanBtn = input.previousElementSibling;
+        const originalBtnContent = scanBtn.innerHTML;
+        scanBtn.disabled = true;
+        scanBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Extracting...';
+        try {
+            const response = await fetch('/api/scan-document', { method: 'POST', body: formData });
+            const data = await response.json();
+            if (data.error) { alert(data.error); return; }
+            if (data.to_name) document.querySelector('input[name="receiver_name"]').value = data.to_name;
+            if (data.to_phone) document.querySelector('input[name="receiver_phone"]').value = data.to_phone;
+            if (data.to_address) document.querySelector('textarea[name="receiver_address"]').value = data.to_address;
+            if (data.to_city) document.querySelector('input[name="receiver_city"]').value = data.to_city;
+            if (data.to_state && stateSelect) {
+                const options = Array.from(stateSelect.options);
+                const matchedOption = options.find(opt =>
+                    opt.value.toLowerCase().includes(data.to_state.toLowerCase()) ||
+                    data.to_state.toLowerCase().includes(opt.value.toLowerCase())
+                );
+                if (matchedOption) stateSelect.value = matchedOption.value;
+            }
+            if (data.to_pincode) document.querySelector('input[name="receiver_pincode"]').value = data.to_pincode;
+            if (typeof calculateAmount === 'function') calculateAmount();
+        } catch (error) {
+            console.error('Scan failed:', error);
+            alert('AI Extraction failed. Please try again or fill manually.');
+        } finally {
+            scanBtn.disabled = false;
+            scanBtn.innerHTML = originalBtnContent;
+            input.value = '';
+        }
+    }
+
+    // Auto-calculate estimated charges based on state + weight
+    function calculateAmount() {
+        const weight = parseFloat(weightInput ? weightInput.value : 0) || 0;
+        const state = stateSelect ? stateSelect.value.trim() : '';
+        const clientId = clientSelect ? clientSelect.value : '';
+        const insuredAmount = parseFloat(insuredAmountInput ? insuredAmountInput.value : 0) || 0;
+
+        if (!state && !insuredAmount) {
+            if (baseAmountEl) baseAmountEl.textContent = '₹0.00';
+            if (weightChargesEl) weightChargesEl.textContent = '₹0.00';
+            if (insuranceChargeEl) insuranceChargeEl.textContent = '₹0.00';
+            if (totalAmountEl) totalAmountEl.textContent = '₹0.00';
+            return;
+        }
+
+        if (weight > 0 || insuredAmount > 0) {
+            fetch('/api/calculate-amount', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ weight: weight, client_id: clientId, state: state, insured_amount: insuredAmount })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) return;
+                    if (baseAmountEl) baseAmountEl.textContent = '₹' + (data.base_amount || 0).toFixed(2);
+                    if (weightChargesEl) weightChargesEl.textContent = '₹' + (data.weight_charges || 0).toFixed(2);
+                    if (insuranceChargeEl) insuranceChargeEl.textContent = '₹' + (data.insurance_charge || 0).toFixed(2);
+                    if (totalAmountEl) totalAmountEl.textContent = '₹' + (data.total_amount || 0).toFixed(2);
+                })
+                .catch(err => console.error('Error calculating amount:', err));
+        }
+    }
+
+    if (weightInput) weightInput.addEventListener('input', calculateAmount);
+    if (stateSelect) stateSelect.addEventListener('change', calculateAmount);
+    if (insuredAmountInput) insuredAmountInput.addEventListener('input', calculateAmount);
+
+    // Initial load
+    updateReceiptField();
+</script>
+{% endblock %}

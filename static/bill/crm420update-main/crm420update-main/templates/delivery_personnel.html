@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Delivery Personnel - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-primary fw-bold mb-1">Human Resources</h5>
+        <h1 class="display-5 fw-black text-dark mb-2">Dispatcher Network</h1>
+        <p class="text-muted fs-5 mb-0">Manage your delivery personnel and their branch assignments.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('add_staff') }}" class="luxury-btn btn btn-primary px-4">
+            <i class="fas fa-plus-circle me-2"></i>Register Dispatcher
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 page-reveal">
+    {% for person in personnel %}
+    <div class="col-md-4">
+        <div class="card luxury-card border-0 shadow-sm h-100 overflow-hidden">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="flex-shrink-0">
+                        <div class="stat-icon-circle-box bg-blue-light shadow-sm" style="width: 60px; height: 60px;">
+                            <i class="fas fa-motorcycle fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="ms-3">
+                        <h5 class="fw-black mb-0 text-dark">{{ person.username }}</h5>
+                        <div class="small text-muted fw-bold text-uppercase">{{ person.role.title() }}</div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="small text-muted fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Contact Info</div>
+                    <div class="fw-bold"><i class="fas fa-phone-alt me-2 text-primary opacity-50"></i>{{ person.phone or 'No Phone' }}</div>
+                    <div class="fw-bold"><i class="fas fa-envelope me-2 text-primary opacity-50"></i>{{ person.email }}</div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="small text-muted fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Assignment</div>
+                    <div class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                        <i class="fas fa-building me-1 text-primary"></i>
+                        {{ person.branch.name if person.branch else 'Unassigned' }}
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="luxury-badge bg-{{ 'success' if person.is_active else 'danger' }}-subtle text-{{ 'success' if person.is_active else 'danger' }} border border-{{ 'success' if person.is_active else 'danger' }}-subtle">
+                        {{ 'Active Duty' if person.is_active else 'Off Duty' }}
+                    </span>
+                    <a href="{{ url_for('edit_staff', id=person.id) }}" class="btn btn-sm btn-light rounded-circle shadow-sm">
+                        <i class="fas fa-edit text-warning"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="card luxury-card border-0 shadow-sm bg-light-subtle text-center py-5">
+            <i class="fas fa-users-slash fs-1 text-muted opacity-25 mb-3"></i>
+            <h5 class="text-muted">No dispatchers registered.</h5>
+            <p class="small text-muted">Register your first delivery person to start assigning orders.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Profile - {{ customer.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-primary fw-bold mb-1">Customer Insight</h5>
+        <h1 class="display-5 fw-black text-dark mb-2">{{ customer.name }}</h1>
+        <p class="text-muted fs-5 mb-0">Detailed history and engagement metrics for this individual customer.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('customers') }}" class="luxury-btn btn btn-light border px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to Directory
+        </a>
+    </div>
+</div>
+
+<!-- Stats Overview -->
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="card luxury-card border-0 bg-primary text-white p-4">
+            <div class="small fw-bold text-uppercase opacity-75">Total Revenue</div>
+            <h2 class="fw-black mb-0 mt-1">₹{{ "%.2f"|format(customer.total_spent) }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card luxury-card border-0 bg-dark text-white p-4">
+            <div class="small fw-bold text-uppercase opacity-75">Order Frequency</div>
+            <h2 class="fw-black mb-0 mt-1">{{ customer.total_orders }} Orders</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card luxury-card border-0 bg-info text-white p-4">
+            <div class="small fw-bold text-uppercase opacity-75">Avg Order Value</div>
+            <h2 class="fw-black mb-0 mt-1">₹{{ "%.2f"|format(customer.avg_order) }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card luxury-card border-0 bg-light p-4">
+            <div class="small fw-bold text-uppercase text-muted">Member Since</div>
+            <h2 class="fw-black mb-0 mt-1 text-dark">{{ orders[-1].created_at.strftime('%b %Y') if orders else 'N/A' }}
+            </h2>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Contact Details -->
+    <div class="col-lg-4">
+        <div class="card luxury-card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent border-0 px-4 pt-4">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-id-card me-2 text-primary opacity-50"></i>Contact
+                    Profile</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <label class="small fw-bold text-uppercase text-muted d-block mb-1">Phone Number</label>
+                    <div class="fs-5 fw-bold text-dark">{{ customer.phone }}</div>
+                </div>
+                <div class="mb-4">
+                    <label class="small fw-bold text-uppercase text-muted d-block mb-1">Email Address</label>
+                    <div class="fs-5 fw-bold text-dark">{{ customer.email }}</div>
+                </div>
+                <div class="mb-0">
+                    <label class="small fw-bold text-uppercase text-muted d-block mb-1">Primary Address</label>
+                    <div class="text-dark">{{ customer.address }}</div>
+                </div>
+            </div>
+            <div class="card-footer bg-light border-0 p-4">
+                <a href="{{ url_for('walkin_order', name=customer.name, phone=customer.phone, email=customer.email, address=customer.address) }}"
+                    class="btn btn-primary w-100 fw-bold py-2">
+                    <i class="fas fa-plus me-2"></i>Create New Order
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order History -->
+    <div class="col-lg-8">
+        <div class="card luxury-card border-0 shadow-sm h-100">
+            <div
+                class="card-header bg-transparent border-0 px-4 pt-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-history me-2 text-success opacity-50"></i>Order
+                    History</h5>
+                <span class="badge bg-light text-muted fw-bold">{{ orders|length }} Records</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Date</th>
+                                <th>Receipt No</th>
+                                <th>Receiver</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark small">{{ order.created_at.strftime('%d %b, %Y') }}
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">{{
+                                        order.created_at.strftime('%H:%M %p') }}</div>
+                                </td>
+                                <td><code class="text-primary fw-bold">{{ order.receipt_number }}</code></td>
+                                <td>
+                                    <div class="fw-bold text-dark small">{{ order.receiver_name }}</div>
+                                    <div class="text-muted small">{{ order.receiver_city }}</div>
+                                </td>
+                                <td class="fw-black text-dark">₹{{ "%.2f"|format(order.total_amount or 0) }}</td>
+                                <td>
+                                    {% if order.status == 'delivered' %}
+                                    <span
+                                        class="badge rounded-pill bg-success-subtle text-success px-3">Delivered</span>
+                                    {% elif order.status == 'in_transit' %}
+                                    <span class="badge rounded-pill bg-primary-subtle text-primary px-3">In
+                                        Transit</span>
+                                    {% else %}
+                                    <span class="badge rounded-pill bg-warning-subtle text-warning px-3">{{
+                                        order.status|title }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a href="{{ url_for('order_details', id=order.id) }}"
+                                        class="btn btn-sm btn-light rounded-circle shadow-sm">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

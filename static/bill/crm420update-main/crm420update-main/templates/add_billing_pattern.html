@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Add Billing Pattern - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-plus"></i> Add Billing Pattern</h2>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Pattern Name *</label>
+                    <input type="text" name="name" class="form-control" required 
+                           placeholder="e.g., Pattern 10 - Standard">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Pattern Type *</label>
+                    <select name="pattern_type" class="form-select" required>
+                        <option value="">Select Type</option>
+                        <option value="10">Pattern 10</option>
+                        <option value="15">Pattern 15</option>
+                        <option value="30">Pattern 30</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Base Rate (₹) *</label>
+                    <input type="number" name="base_rate" class="form-control" step="0.01" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Rate per kg (₹) *</label>
+                    <input type="number" name="rate_per_kg" class="form-control" step="0.01" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Additional Charges (₹)</label>
+                    <input type="number" name="additional_charges" class="form-control" step="0.01" value="0">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Min Weight (kg)</label>
+                    <input type="number" name="min_weight" class="form-control" step="0.01" value="0.5">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Max Weight (kg)</label>
+                    <input type="number" name="max_weight" class="form-control" step="0.01" 
+                           placeholder="Leave empty for unlimited">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Discount (%)</label>
+                    <input type="number" name="discount_percentage" class="form-control" step="0.01" value="0">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Pattern
+                </button>
+                <a href="{{ url_for('billing_patterns') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

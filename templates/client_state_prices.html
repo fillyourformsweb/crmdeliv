@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Client Pricing - {{ client.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-primary fw-bold mb-1">Corporate Pricing Matrix</h5>
+        <h1 class="display-5 fw-black text-dark mb-2">{{ client.name }}</h1>
+        <p class="text-muted fs-5 mb-0">Customized rate definitions for specific logistics zones.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+            <a href="{{ url_for('clients') }}" class="btn btn-light border-0 px-4">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+            <a href="{{ url_for('set_client_prices', client_id=client.id) }}" class="btn btn-primary px-4">
+                <i class="fas fa-plus-circle me-2"></i>Add Custom Rate
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Client Intelligence Card -->
+<div class="card luxury-card border-0 shadow-sm mb-5 bg-primary text-white overflow-hidden">
+    <div class="card-body p-4 position-relative">
+        <i class="fas fa-building position-absolute top-0 end-0 m-4 fs-1 opacity-10"></i>
+        <div class="row align-items-center">
+            <div class="col-md-3 border-end border-white border-opacity-10">
+                <div class="small fw-bold text-uppercase opacity-75">Corporate ID</div>
+                <div class="fs-4 fw-black">#{{ client.id }}</div>
+            </div>
+            <div class="col-md-3 border-end border-white border-opacity-10 ps-md-4">
+                <div class="small fw-bold text-uppercase opacity-75">Home State</div>
+                <div class="fs-4 fw-black">{{ client.home_state or 'Not Set' }}</div>
+            </div>
+            <div class="col-md-3 border-end border-white border-opacity-10 ps-md-4">
+                <div class="small fw-bold text-uppercase opacity-75">Custom Zones</div>
+                <div class="fs-4 fw-black">{{ client_state_prices|length }} Active</div>
+            </div>
+            <div class="col-md-3 ps-md-4">
+                <div class="small fw-bold text-uppercase opacity-75">Primary Contact</div>
+                <div class="fs-5 fw-bold">{{ client.phone }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 page-reveal">
+    <!-- Active Custom Rates -->
+    <div class="col-lg-12 mb-4">
+        <h5 class="fw-black text-dark mb-4 px-1">Active Custom Zone Rates</h5>
+        <div class="row g-4">
+            {% if not client_state_prices %}
+            <div class="col-12">
+                <div class="card luxury-card border-0 shadow-sm bg-light-subtle text-center py-5">
+                    <i class="fas fa-tags fs-1 text-muted opacity-25 mb-3"></i>
+                    <h5 class="text-muted">No custom rates defined for this client.</h5>
+                    <p class="small text-muted">Standard state prices will be applied automatically.</p>
+                </div>
+            </div>
+            {% endif %}
+            {% for price in client_state_prices %}
+            <div class="col-md-4">
+                <div class="card luxury-card border-0 shadow-sm h-100 overflow-hidden">
+                    <div
+                        class="card-header bg-primary bg-opacity-10 border-0 p-3 d-flex justify-content-between align-items-center">
+                        <span class="fw-black text-primary">{{ price.state }}</span>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light rounded-circle shadow-sm" type="button"
+                                data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 p-2">
+                                <li><a class="dropdown-item rounded-3"
+                                        href="{{ url_for('set_client_prices', client_id=client.id, state=price.state) }}"><i
+                                            class="fas fa-edit me-2 text-primary"></i>Modify</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="POST"
+                                        action="{{ url_for('delete_client_price', client_id=client.id, price_id=price.id) }}"
+                                        onsubmit="return confirm('Remove custom pricing for {{ price.state }}?')">
+                                        <button type="submit" class="dropdown-item rounded-3 text-danger"><i
+                                                class="fas fa-trash me-2"></i>Delete</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <div class="p-2 bg-light rounded-3 text-center"><small
+                                        class="text-muted d-block">100g</small><span class="fw-black">₹{{
+                                        price.price_100gm }}</span></div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-2 bg-light rounded-3 text-center"><small
+                                        class="text-muted d-block">250g</small><span class="fw-black">₹{{
+                                        price.price_250gm }}</span></div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-2 bg-light rounded-3 text-center"><small
+                                        class="text-muted d-block">500g</small><span class="fw-black">₹{{
+                                        price.price_500gm }}</span></div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-2 bg-light rounded-3 text-center"><small
+                                        class="text-muted d-block">750g</small><span class="fw-black">₹{{
+                                        price.price_750gm }}</span></div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-2 bg-light rounded-3 text-center"><small
+                                        class="text-muted d-block">1kg</small><span class="fw-bold">₹{{ price.price_1kg
+                                        }}</span></div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-2 bg-light rounded-3 text-center"><small
+                                        class="text-muted d-block">2kg</small><span class="fw-bold">₹{{ price.price_2kg
+                                        }}</span></div>
+                            </div>
+                            <div class="col-12">
+                                <div class="p-2 bg-primary bg-opacity-10 rounded-3 text-center"><small
+                                        class="text-muted d-block">3kg Bulk</small><span
+                                        class="fw-black text-primary">₹{{ price.price_3kg }}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Master Comparison Matrix -->
+    <div class="col-lg-12 mt-5">
+        <h5 class="fw-black text-dark mb-4 px-1">Global Rate Comparison Matrix</h5>
+        <div class="card luxury-card border-0 shadow-sm overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="px-3 py-3 border-0 small fw-bold text-uppercase text-muted">Destination</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Status</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">100g</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">250g</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">500g</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">750g</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">1kg</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">2kg</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">3kg</th>
+                            <th class="px-3 py-3 border-0 small fw-bold text-uppercase text-muted text-end">Yield Impact
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in all_states %}
+                        <tr class="{% if s.has_custom_price %}bg-primary bg-opacity-10{% endif %}">
+                            <td class="px-3 fw-black text-dark">{{ s.state }}</td>
+                            <td>
+                                {% if s.has_custom_price %}
+                                <span class="badge bg-primary rounded-pill px-2"
+                                    style="font-size: 0.65rem;">Custom</span>
+                                {% else %}
+                                <span class="badge bg-light text-muted rounded-pill px-2"
+                                    style="font-size: 0.65rem;">Standard</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center fw-bold small">₹{{ s.custom_price_100gm if s.has_custom_price else
+                                s.price_100gm }}</td>
+                            <td class="text-center fw-bold small">₹{{ s.custom_price_250gm if s.has_custom_price else
+                                s.price_250gm }}</td>
+                            <td class="text-center fw-bold small">₹{{ s.custom_price_500gm if s.has_custom_price else
+                                s.price_500gm }}</td>
+                            <td class="text-center fw-bold small">₹{{ s.custom_price_750gm if s.has_custom_price else
+                                s.price_750gm }}</td>
+                            <td class="text-center fw-bold small">₹{{ s.custom_price_1kg if s.has_custom_price else
+                                s.price_1kg }}</td>
+                            <td class="text-center fw-bold small">₹{{ s.custom_price_2kg if s.has_custom_price else
+                                s.price_2kg }}</td>
+                            <td class="text-center fw-bold small">₹{{ s.custom_price_3kg if s.has_custom_price else
+                                s.price_3kg }}</td>
+                            <td class="px-3 text-end">
+                                {% if s.has_custom_price %}
+                                {% set diff = s.custom_price_1kg - s.price_1kg %}
+                                <span
+                                    class="small fw-black {% if diff > 0 %}text-success{% elif diff < 0 %}text-danger{% else %}text-muted{% endif %}">
+                                    {{ "%+0.2f"|format(diff) }}
+                                </span>
+                                {% else %}<span class="text-muted small">-</span>{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

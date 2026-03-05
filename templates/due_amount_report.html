@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Due Amount Report - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-primary fw-bold mb-1">Financial Intelligence</h5>
+        <h1 class="display-5 fw-black text-dark mb-2">Due Amount Report</h1>
+        <p class="text-muted fs-5 mb-0">Monitor and manage outstanding payments across your delivery network.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+            <button class="btn btn-primary px-4" onclick="printReport()">
+                <i class="fas fa-print me-2"></i>Print
+            </button>
+            <button class="btn btn-success px-4" onclick="exportToExcel()">
+                <i class="fas fa-file-excel me-2"></i>Export
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="card luxury-card border-0 shadow-sm mb-5">
+    <div class="card-header bg-transparent border-0 px-4 pt-4">
+        <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-filter me-2 text-primary opacity-50"></i>Filter Analytics
+        </h5>
+    </div>
+    <div class="card-body p-4">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-uppercase text-muted">Customer Type</label>
+                <select class="form-select luxury-input" id="filterType" onchange="loadDueAmounts()">
+                    <option value="all">All Types</option>
+                    <option value="walking">Walking Customers</option>
+                    <option value="client">Registered Clients</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-uppercase text-muted">Due Status</label>
+                <select class="form-select luxury-input" id="filterStatus" onchange="loadDueAmounts()">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending Only</option>
+                    <option value="partial">Partial Only</option>
+                    <option value="overdue">Overdue Only</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-uppercase text-muted">From Date</label>
+                <input type="date" class="form-control luxury-input" id="filterFrom" onchange="loadDueAmounts()">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-uppercase text-muted">To Date</label>
+                <input type="date" class="form-control luxury-input" id="filterTo" onchange="loadDueAmounts()">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-4 mb-5" id="summaryCards">
+    <!-- Populated by JS -->
+</div>
+
+<!-- Main Table -->
+<div class="card luxury-card border-0 shadow-sm mb-5">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="dueAmountsTable">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted">Date</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Customer</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Type</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Order No.</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Calculated</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Due Amount</th>
+                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Status</th>
+                        <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card luxury-card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent border-0 px-4 pt-4">
+                <h5 class="fw-bold mb-0 text-dark">Categorical Breakdown</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle">
+                        <tbody id="typeSummary"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card luxury-card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent border-0 px-4 pt-4">
+                <h5 class="fw-bold mb-0 text-dark">High-Value Receivables</h5>
+            </div>
+            <div class="card-body p-4" id="topDueAmounts"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
+    function printReport() {
+        window.print();
+    }
+
+    function exportToExcel() {
+        const filters = {
+            type: document.getElementById('filterType').value,
+            status: document.getElementById('filterStatus').value,
+            from: document.getElementById('filterFrom').value,
+            to: document.getElementById('filterTo').value
+        };
+        const params = new URLSearchParams(filters).toString();
+        window.location.href = `/api/due_amounts/export?${params}`;
+    }
+
+    function loadDueAmounts(page = 1) {
+        currentPage = page;
+        const filters = {
+            type: document.getElementById('filterType').value,
+            status: document.getElementById('filterStatus').value,
+            from: document.getElementById('filterFrom').value,
+            to: document.getElementById('filterTo').value,
+            page: page,
+            limit: itemsPerPage
+        };
+
+        document.querySelector('#dueAmountsTable tbody').innerHTML = '<tr><td colspan="8" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+
+        fetch('/api/due_amounts?' + new URLSearchParams(filters))
+            .then(response => response.json())
+            .then(data => {
+                updateSummaryCards(data.summary);
+                updateDueAmountsTable(data.due_amounts);
+                updateTypeSummary(data.type_summary);
+                updateTopDueAmounts(data.top_due);
+            });
+    }
+
+    function updateSummaryCards(s) {
+        const html = `
+            <div class="col-md-3">
+                <div class="card luxury-card border-0 bg-primary text-white p-4">
+                    <div class="small fw-bold text-uppercase opacity-75">Total Outstanding</div>
+                    <h2 class="fw-black mb-0 mt-1">₹${s.total_due.toLocaleString()}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card luxury-card border-0 bg-dark text-white p-4">
+                    <div class="small fw-bold text-uppercase opacity-75">Overdue Accounts</div>
+                    <h2 class="fw-black mb-0 mt-1">₹${s.overdue_due.toLocaleString()}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card luxury-card border-0 bg-info text-white p-4">
+                    <div class="small fw-bold text-uppercase opacity-75">Client Debt</div>
+                    <h2 class="fw-black mb-0 mt-1">₹${s.client_due.toLocaleString()}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card luxury-card border-0 bg-light p-4">
+                    <div class="small fw-bold text-uppercase text-muted">Walking Due</div>
+                    <h2 class="fw-black mb-0 mt-1 text-dark">₹${s.walking_due.toLocaleString()}</h2>
+                </div>
+            </div>
+        `;
+        document.getElementById('summaryCards').innerHTML = html;
+    }
+
+    function updateDueAmountsTable(items) {
+        const tbody = document.querySelector('#dueAmountsTable tbody');
+        if (!items.length) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-muted">No outstanding dues found.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = items.map(o => `
+            <tr>
+                <td class="px-4 fw-bold text-muted small">${o.order_date}</td>
+                <td><div class="fw-bold text-dark">${o.customer_name}</div><div class="small text-muted">${o.phone}</div></td>
+                <td><span class="badge bg-light text-dark rounded-pill">${o.customer_type}</span></td>
+                <td><code class="text-primary fw-bold">${o.order_number}</code></td>
+                <td class="fw-bold">₹${o.calculated_amount.toLocaleString()}</td>
+                <td class="text-danger fw-black">₹${o.due_amount.toLocaleString()}</td>
+                <td><span class="badge bg-warning-subtle text-warning rounded-pill px-3">${o.payment_status}</span></td>
+                <td class="px-4 text-end">
+                    <button class="btn btn-sm btn-success rounded-pill px-3" onclick="markAsPaid(${o.id})">Receive Payment</button>
+                    <a href="/order/${o.id}" class="btn btn-sm btn-light rounded-circle ms-1"><i class="fas fa-eye"></i></a>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function updateTypeSummary(summary) {
+        document.getElementById('typeSummary').innerHTML = summary.map(i => `
+            <tr>
+                <td class="fw-bold text-dark">${i.customer_type === 'walking' ? 'Walking' : 'Corporate'}</td>
+                <td class="text-end fw-black text-primary">₹${i.total_due.toLocaleString()}</td>
+                <td class="text-end"><span class="badge bg-light text-muted">${i.order_count} Orders</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function updateTopDueAmounts(top) {
+        document.getElementById('topDueAmounts').innerHTML = top.map(i => `
+            <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded-4">
+                <div>
+                    <div class="fw-black text-dark">${i.customer_name}</div>
+                    <div class="small text-muted">${i.order_number}</div>
+                </div>
+                <div class="text-end">
+                    <div class="fw-black text-danger">₹${i.due_amount.toLocaleString()}</div>
+                    <div class="small fw-bold text-warning">${i.due_days} Days Overdue</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function markAsPaid(id) {
+        if (confirm('Confirm payment reception for this order?')) {
+            fetch(`/api/mark_paid/${id}`, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => data.success && loadDueAmounts(currentPage));
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => loadDueAmounts());
+</script>
+{% endblock %}

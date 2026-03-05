@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Branches - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="page-content-wrapper w-100">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-black text-primary mb-1">
+                <i class="fas fa-network-wired me-2"></i>Branch Network
+            </h2>
+            <p class="text-muted mb-0">Manage physical locations and distribution hubs</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('add_branch') }}" class="luxury-btn btn btn-primary">
+                <i class="fas fa-plus-circle me-1"></i> New Location
+            </a>
+        </div>
+    </div>
+
+    <div class="luxury-card">
+        <div class="table-responsive">
+            <table class="table luxury-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Branch Info</th>
+                        <th>Network Code</th>
+                        <th>Contact Details</th>
+                        <th>Operating Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for branch in branches %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                </div>
+                                <div class="fw-bold text-dark">{{ branch.name }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-primary border fw-mono px-3 py-2" style="font-family: 'Courier New', Courier, monospace;">
+                                {{ branch.code }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="small text-muted"><i class="fas fa-phone me-1"></i>{{ branch.phone or 'N/A' }}</div>
+                            <div class="small text-muted"><i class="fas fa-envelope me-1"></i>{{ branch.email or 'N/A' }}</div>
+                        </td>
+                        <td>
+                            <span class="luxury-badge bg-{{ 'success' if branch.is_active else 'danger' }}-subtle text-{{ 'success' if branch.is_active else 'danger' }} border border-{{ 'success' if branch.is_active else 'danger' }}-subtle">
+                                {{ 'Operational' if branch.is_active else 'Closed' }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{{ url_for('edit_branch', id=branch.id) }}" class="btn btn-light btn-sm rounded-circle border p-2" title="Modify Hub">
+                                    <i class="fas fa-edit text-warning"></i>
+                                </a>
+                                <a href="{{ url_for('delete_branch', id=branch.id) }}" class="btn btn-light btn-sm rounded-circle border p-2"
+                                   onclick="return confirm('Archive this hub?')" title="Remove Hub">
+                                    <i class="fas fa-trash text-danger"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="fas fa-warehouse fa-3x text-muted opacity-25"></i>
+                            </div>
+                            <h5 class="text-muted fw-normal">No distribution hubs configured</h5>
+                            <a href="{{ url_for('add_branch') }}" class="btn btn-link">Establish first branch</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

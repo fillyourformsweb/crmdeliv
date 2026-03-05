@@ -1,0 +1,65 @@
+<!-- Chat Widget -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+
+<!-- Chat Button -->
+<button class="chat-button" id="chatButton" onclick="toggleChat()">
+    💬
+    <span class="unread-badge" id="chatUnreadBadge" style="display: none;">0</span>
+</button>
+
+<!-- Chat Window -->
+<div class="chat-window" id="chatWindow">
+    <!-- Chat Header -->
+    <div class="chat-header">
+        <h3>Team Chat</h3>
+        <div class="chat-header-actions">
+            <button class="chat-header-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                <span id="fullscreenIcon">⛶</span>
+            </button>
+            <button class="chat-header-btn" onclick="toggleChat()" title="Close">
+                ✕
+            </button>
+        </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-messages" id="chatMessages">
+        <div class="chat-empty">
+            <div class="chat-empty-icon">💬</div>
+            <p class="chat-empty-text">No messages yet. Start the conversation!</p>
+        </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="chat-input">
+        <form id="chatForm" onsubmit="sendMessage(event)">
+            <div class="chat-input-wrapper">
+                <div class="chat-input-field">
+                    <div class="chat-file-preview" id="chatFilePreview">
+                        <span class="chat-file-preview-name" id="chatFileName"></span>
+                        <button type="button" class="chat-file-preview-remove" onclick="removeFile()">×</button>
+                    </div>
+                    <textarea id="chatMessageInput" placeholder="Type a message..." rows="1"
+                        onkeydown="handleKeyPress(event)"></textarea>
+                </div>
+                <div class="chat-input-actions">
+                    <label for="chatFileInput" class="chat-input-btn chat-file-btn" title="Attach file">
+                        📎
+                    </label>
+                    <input type="file" id="chatFileInput" accept="image/*,.pdf,.doc,.docx,.txt" style="display: none;"
+                        onchange="handleFileSelect(event)">
+                    <button type="submit" class="chat-input-btn chat-send-btn" id="chatSendBtn">
+                        ➤
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Session data for JavaScript initialization -->
+<div id="chat-session-data" data-user-id="{{ session.get('user_id', 0) | tojson }}"
+    data-user-name="{{ session.get('username', 'Guest') | tojson }}"
+    data-user-role="{{ session.get('role', 'staff') | tojson }}" style="display: none;"></div>
+
+<script src="{{ url_for('static', filename='js/chat.js') }}?v=1.0.2"></script>

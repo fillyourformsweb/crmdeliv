@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Receipt Settings - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-receipt"></i> Receipt Number Settings</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-cog"></i> Configure Receipt Number
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Base Number (Start) *</label>
+                            <input type="text" name="base_number" class="form-control"
+                                value="{{ setting.base_number if setting else '100371900086' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">End Number (Optional)</label>
+                            <input type="text" name="range_end" class="form-control"
+                                value="{{ setting.range_end if setting and setting.range_end else '' }}">
+                        </div>
+                        <small class="text-muted mt-1">If End Number is provided, the sequence is added numerically.
+                            Otherwise, it's concatenated with 6-digit padding.</small>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prefix</label>
+                            <input type="text" name="prefix" class="form-control"
+                                value="{{ setting.prefix if setting else '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Suffix</label>
+                            <input type="text" name="suffix" class="form-control"
+                                value="{{ setting.suffix if setting else '' }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Current Sequence</label>
+                        <input type="number" name="current_sequence" class="form-control"
+                            value="{{ setting.current_sequence if setting else 0 }}" readonly>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input type="checkbox" name="reset_sequence" class="form-check-input" id="resetSeq">
+                        <label class="form-check-label" for="resetSeq">
+                            Reset/Update sequence number
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Receipt Number Format
+            </div>
+            <div class="card-body">
+                <p><strong>Current Format:</strong></p>
+                <div class="alert alert-info">
+                    <code>
+                        {% if setting and setting.range_end %}
+                            {{ setting.prefix or '' }}{{ setting.base_number }} - {{ setting.range_end }}{{ setting.suffix or '' }}
+                        {% else %}
+                            {{ setting.prefix or '' }}{{ setting.base_number }}XXXXXX{{ setting.suffix or '' }}
+                        {% endif %}
+                    </code>
+                </div>
+                <p class="small text-muted">
+                    {% if setting and setting.range_end %}
+                    Numerical addition mode: Next = Start + Sequence
+                    {% else %}
+                    XXXXXX = Sequential number (6 digits, zero-padded)
+                    {% endif %}
+                </p>
+                <hr>
+                <p><strong>Example Receipt Numbers:</strong></p>
+                <ul>
+                    <li>{{ setting.prefix if setting and setting.prefix else '' }}{{ setting.base_number if setting else
+                        '100371900086' }}000001{{ setting.suffix if setting and setting.suffix else '' }}</li>
+                    <li>{{ setting.prefix if setting and setting.prefix else '' }}{{ setting.base_number if setting else
+                        '100371900086' }}000002{{ setting.suffix if setting and setting.suffix else '' }}</li>
+                    <li>{{ setting.prefix if setting and setting.prefix else '' }}{{ setting.base_number if setting else
+                        '100371900086' }}000003{{ setting.suffix if setting and setting.suffix else '' }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}Detailed Reports - Logistics Intelligence{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .report-card {
+        transition: all 0.3s ease;
+    }
+    .report-card:hover {
+        transform: translateY(-5px);
+    }
+    .nav-tabs-luxury {
+        border-bottom: 2px solid #f0f2f5;
+        gap: 1.5rem;
+    }
+    .nav-tabs-luxury .nav-link {
+        border: none;
+        padding: 1rem 0;
+        color: #64748b;
+        font-weight: 600;
+        position: relative;
+    }
+    .nav-tabs-luxury .nav-link.active {
+        color: #0d6efd;
+        background: transparent;
+    }
+    .nav-tabs-luxury .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="col-12 page-reveal">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-black text-primary mb-1">ANALYTICS SUITE</h1>
+            <p class="text-muted">Enterprise-grade logistics and financial reporting</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-luxury px-4 rounded-pill" onclick="generateReport()">
+                <i class="fas fa-file-pdf me-2"></i>Generate PDF
+            </button>
+            <button class="btn btn-primary px-4 rounded-pill" onclick="exportReport()">
+                <i class="fas fa-download me-2"></i>Export Dataset
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter Suite -->
+    <div class="luxury-card mb-4">
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Timeframe</label>
+                    <select class="form-select luxury-input" id="reportType">
+                        <option value="daily">Daily View</option>
+                        <option value="weekly" selected>Weekly Pulse</option>
+                        <option value="monthly">Monthly Audit</option>
+                        <option value="yearly">Yearly Strategy</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-uppercase text-muted">From</label>
+                    <input type="date" class="form-control luxury-input" id="fromDate">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-uppercase text-muted">To</label>
+                    <input type="date" class="form-control luxury-input" id="toDate">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Origin State</label>
+                    <select class="form-select luxury-input" id="stateFilter">
+                        <option value="all">Global (All)</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Client Tier</label>
+                    <select class="form-select luxury-input" id="customerType">
+                        <option value="all">All Tiers</option>
+                        <option value="walking">Individuals</option>
+                        <option value="client">Corporate</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100 rounded-pill py-2 fw-bold" onclick="applyFilters()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabbed Intelligence -->
+    <ul class="nav nav-tabs nav-tabs-luxury mb-4" id="reportTabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#overview">Performance Overview</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#sales">Revenue Analytics</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#clients">Client Engagement</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#performance">Operational Efficiency</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="reportContent">
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active" id="overview">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="luxury-card report-card h-100">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="mb-0 fw-bold">Revenue Trajectory</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="overviewChart" style="max-height: 400px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="luxury-card mb-4 border-0">
+                        <div class="card-body p-0" id="keyMetrics">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                    <div class="luxury-card report-card">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="mb-0 fw-bold text-primary">Regional Dominance</h5>
+                        </div>
+                        <div class="card-body pt-0">
+                            <canvas id="topStatesChart" style="height: 250px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="luxury-card report-card overflow-hidden">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="mb-0 fw-bold">Executive Transaction Record</h5>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" id="recentTransactions">
+                                <thead class="bg-light">
+                                    <tr class="small fw-bold text-muted text-uppercase">
+                                        <th class="ps-4">Timestamp</th>
+                                        <th>Logistics ID</th>
+                                        <th>Client Name</th>
+                                        <th>Entity Type</th>
+                                        <th>Yield (INR)</th>
+                                        <th>Audit Status</th>
+                                        <th class="pe-4">Lifecycle</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Analytics Tab -->
+        <div class="tab-pane fade" id="sales">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="luxury-card report-card">
+                        <div class="card-header bg-white border-0 py-3 text-center">
+                            <h5 class="mb-0 fw-bold">Daily Revenue Volatility</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesByDayChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="luxury-card report-card">
+                        <div class="card-header bg-white border-0 py-3 text-center">
+                            <h5 class="mb-0 fw-bold">Yield by Weight Bracket</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesByWeightChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- More tabs can be implemented similarly... -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let overviewChart, topStatesChart, salesByDayChart, salesByWeightChart;
+    
+    function applyFilters() {
+        const filters = {
+            reportType: document.getElementById('reportType').value,
+            fromDate: document.getElementById('fromDate').value,
+            toDate: document.getElementById('toDate').value,
+            customerType: document.getElementById('customerType').value,
+            state: document.getElementById('stateFilter').value
+        };
+        loadReportData(filters);
+    }
+
+    function loadReportData(filters = {}) {
+        fetch('/api/reports/overview?' + new URLSearchParams(filters))
+            .then(res => res.json())
+            .then(data => updateOverview(data));
+        
+        fetch('/api/reports/sales?' + new URLSearchParams(filters))
+            .then(res => res.json())
+            .then(data => updateSalesReport(data));
+    }
+
+    function updateOverview(data) {
+        document.getElementById('keyMetrics').innerHTML = `
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="p-3 bg-primary text-white rounded-4 shadow-sm h-100">
+                        <h2 class="fw-black mb-0">${data.total_orders}</h2>
+                        <div class="small opacity-75 fw-bold text-uppercase">Shipments</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 bg-dark text-white rounded-4 shadow-sm h-100">
+                        <h2 class="fw-black mb-0">₹${data.total_revenue.toLocaleString()}</h2>
+                        <div class="small opacity-75 fw-bold text-uppercase">Revenue</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        if (overviewChart) overviewChart.destroy();
+        overviewChart = new Chart(document.getElementById('overviewChart'), {
+            type: 'line',
+            data: {
+                labels: data.revenue_trend.labels,
+                datasets: [{
+                    label: 'Yield Trend',
+                    data: data.revenue_trend.values,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.05)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
+            }
+        });
+
+        // Recent Transactions
+        const tbody = document.querySelector('#recentTransactions tbody');
+        tbody.innerHTML = data.recent_transactions.map(t => `
+            <tr>
+                <td class="ps-4 small text-muted">${t.date}</td>
+                <td class="fw-bold text-primary">#${t.order_number}</td>
+                <td class="fw-bold text-dark">${t.customer_name}</td>
+                <td><span class="badge bg-light text-muted border px-2">${t.customer_type.toUpperCase()}</span></td>
+                <td class="fw-black text-dark">₹${t.amount.toLocaleString()}</td>
+                <td><span class="badge ${t.payment_status === 'Paid' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'} px-3">${t.payment_status}</span></td>
+                <td class="pe-4"><span class="badge bg-primary px-3 rounded-pill">${t.status}</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function updateSalesReport(data) {
+        if (salesByDayChart) salesByDayChart.destroy();
+        salesByDayChart = new Chart(document.getElementById('salesByDayChart'), {
+            type: 'bar',
+            data: {
+                labels: data.sales_by_day.labels,
+                datasets: [{ data: data.sales_by_day.values, backgroundColor: '#0d6efd', borderRadius: 10 }]
+            },
+            options: { plugins: { legend: { display: false } } }
+        });
+
+        if (salesByWeightChart) salesByWeightChart.destroy();
+        salesByWeightChart = new Chart(document.getElementById('salesByWeightChart'), {
+            type: 'doughnut',
+            data: {
+                labels: data.sales_by_weight.labels,
+                datasets: [{ data: data.sales_by_weight.values, backgroundColor: ['#0d6efd', '#1e293b', '#64748b', '#94a3b8', '#cbd5e1'] }]
+            },
+            options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        applyFilters();
+        fetch('/api/states').then(res => res.json()).then(states => {
+            const select = document.getElementById('stateFilter');
+            states.forEach(s => select.innerHTML += `<option value="${s}">${s}</option>`);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,2596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fill Your Forms - Your Digital Form Solution</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-600: #475569;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #8b5cf6 100%);
+            --gradient-secondary: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            padding: 20px 0;
+        }
+
+        .main-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: var(--shadow-xl);
+            min-height: 100vh;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        /* Enhanced Header */
+        .main-header {
+            background: white;
+            padding: 20px 40px;
+            position: relative;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s;
+        }
+
+        .logo-container:hover {
+            transform: translateY(-2px);
+        }
+
+        .logo {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .site-title h1 {
+            font-size: 36px;
+            margin: 0;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .site-title .tagline {
+            font-size: 16px;
+            color: var(--gray-600);
+            margin: 5px 0 0 0;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--gray-200);
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Enhanced Category Navigation */
+        .category-nav {
+            background: white;
+            border-top: 3px solid var(--primary);
+            border-bottom: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .category-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .category-menu li {
+            position: relative;
+        }
+
+        .category-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 30px;
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-right: 1px solid var(--gray-200);
+            font-size: 16px;
+            position: relative;
+            background: white;
+        }
+
+        .category-menu li:last-child a {
+            border-right: none;
+        }
+
+        .category-menu a:hover {
+            background: linear-gradient(to right, #f0f9ff, #e0f2fe);
+            color: var(--primary);
+        }
+
+        .category-menu a:hover i {
+            transform: scale(1.2);
+            transition: transform 0.3s;
+        }
+
+        /* Main Content */
+        .content-wrapper {
+            padding: 40px;
+        }
+
+        /* Modern Banner Section */
+        .banner-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .sidebar-slider,
+        .main-banner {
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s;
+            position: relative;
+        }
+
+        .sidebar-slider:hover,
+        .main-banner:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .sidebar-slider {
+            height: 350px;
+            background: var(--gradient-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-slider::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            animation: shine 3s infinite;
+        }
+
+        .main-banner {
+            height: 350px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 36px;
+            font-weight: 800;
+            text-align: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-banner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            opacity: 0.3;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
+        }
+
+        /* Enhanced Notification Sections */
+        .top-notification-sections {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .notification-section-image-style {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .notification-section-image-style::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .notification-section-image-style:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .section-header-image-style {
+            background: white;
+            color: var(--dark);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .section-header-image-style h3 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .section-header-image-style h3 i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .notification-count-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .notification-list-image-style {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--gray-100);
+        }
+
+        .notification-list-image-style::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notification-list-image-style::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 10px;
+        }
+
+        .notification-list-image-style::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .notification-item-image-style {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-200);
+            transition: all 0.3s;
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            background: white;
+        }
+
+        .notification-item-image-style:hover {
+            background: var(--gray-100);
+            transform: translateX(4px);
+            border-color: var(--primary-light);
+        }
+
+        .notification-item-image-style:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .notification-item-image-style a {
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 15px;
+            line-height: 1.5;
+            display: block;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .notification-item-image-style a:hover {
+            color: var(--primary);
+        }
+
+        .hashtag {
+            color: var(--primary);
+            font-weight: 700;
+            margin-left: 8px;
+            opacity: 0.8;
+        }
+
+        .view-more-link {
+            display: block;
+            text-align: center;
+            padding: 16px;
+            background: linear-gradient(to right, #f8fafc, #f1f5f9);
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            border-top: 1px solid var(--gray-200);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .view-more-link:hover {
+            background: linear-gradient(to right, var(--primary-light), var(--primary));
+            color: white;
+        }
+
+        .view-more-link i {
+            transition: transform 0.3s;
+        }
+
+        .view-more-link:hover i {
+            transform: translateX(4px);
+        }
+
+        /* Enhanced Certificates Section */
+        .extended-certificates-section {
+            padding: 60px 40px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: var(--radius-lg);
+            margin: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .extended-certificates-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .section-title h2 i {
+            color: var(--primary);
+            font-size: 36px;
+        }
+
+        .section-title p {
+            color: var(--gray-600);
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .certificate-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .certificate-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: translateY(-100%);
+            transition: transform 0.4s;
+        }
+
+        .certificate-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+
+        .certificate-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .certificate-icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 24px;
+            transition: transform 0.3s;
+        }
+
+        .certificate-card:hover .certificate-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .certificate-card h3 {
+            margin: 16px 0;
+            color: var(--dark);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .certificate-card p {
+            color: var(--gray-600);
+            font-size: 15px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .certificate-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 14px 32px;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .certificate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .certificate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .certificate-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Enhanced Services Section */
+        .services {
+            padding: 80px 40px;
+            background: white;
+            border-radius: var(--radius-lg);
+            margin: 60px 0;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 50px 30px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: translateY(-100%);
+            transition: transform 0.4s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-15px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+
+        .service-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .service-icon {
+            font-size: 56px;
+            color: var(--primary);
+            margin-bottom: 30px;
+            transition: transform 0.3s;
+        }
+
+        .service-card:hover .service-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .service-card h3 {
+            font-size: 26px;
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-weight: 800;
+        }
+
+        .service-card p {
+            color: var(--gray-600);
+            line-height: 1.7;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-blue {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-blue:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Enhanced Stats Section */
+        .stats {
+            padding: 80px 40px;
+            background: linear-gradient(135deg, var(--dark) 0%, #0f172a 100%);
+            border-radius: var(--radius-lg);
+            margin: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 50px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            transition: all 0.4s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-light);
+        }
+
+        .stat-number {
+            font-size: 64px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 15px;
+            font-family: 'Inter', sans-serif;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-text {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+
+        /* Enhanced Testimonials */
+        .testimonials {
+            padding: 80px 40px;
+            background: white;
+            border-radius: var(--radius-lg);
+            margin: 60px 0;
+        }
+
+        .testimonial-slider {
+            max-width: 900px;
+            margin: 60px auto 0;
+            position: relative;
+        }
+
+        .testimonial-item {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 60px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            border: 2px solid var(--gray-100);
+            transition: all 0.4s;
+            position: relative;
+        }
+
+        .testimonial-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+
+        .testimonial-item::before {
+            content: '"';
+            position: absolute;
+            top: 30px;
+            left: 40px;
+            font-size: 120px;
+            color: var(--primary-light);
+            opacity: 0.2;
+            font-family: serif;
+        }
+
+        .stars {
+            margin-bottom: 30px;
+        }
+
+        .stars i {
+            color: #fbbf24;
+            font-size: 28px;
+            margin: 0 2px;
+        }
+
+        .testimonial-text {
+            font-size: 20px;
+            line-height: 1.8;
+            color: var(--dark);
+            margin-bottom: 40px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .author-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .author-info h4 {
+            margin: 0 0 8px 0;
+            color: var(--dark);
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .author-info p {
+            margin: 0;
+            color: var(--gray-600);
+            font-size: 16px;
+        }
+
+        /* Enhanced FAQ Section */
+        .faq {
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: var(--radius-lg);
+            margin: 60px 0;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .faq-item {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+            border: 2px solid transparent;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .faq-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+
+        .faq-item h3 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .faq-item h3 i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .faq-item p {
+            color: var(--gray-600);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        /* Enhanced Social Media Section */
+        .social-media-section {
+            margin: 80px 0;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .social-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s;
+            border: 2px solid transparent;
+        }
+
+        .social-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+
+        .social-header {
+            padding: 25px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+        }
+
+        .social-header.facebook {
+            background: linear-gradient(135deg, #1877f2 0%, #0d5cb6 100%);
+        }
+
+        .social-header.instagram {
+            background: linear-gradient(45deg, #833AB4, #C13584, #E1306C, #FD1D1D, #F56040, #FCAF45);
+        }
+
+        .social-header.twitter {
+            background: linear-gradient(135deg, #1DA1F2 0%, #0d8bd9 100%);
+        }
+
+        .social-header.youtube {
+            background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%);
+        }
+
+        .social-header h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .social-posts {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--gray-100);
+        }
+
+        .social-post {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-100);
+            transition: all 0.3s;
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+        }
+
+        .social-post:hover {
+            background: var(--gray-100);
+            transform: translateX(4px);
+        }
+
+        .post-content {
+            color: var(--dark);
+            font-size: 15px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .post-engagement {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .post-engagement span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s;
+        }
+
+        .social-post:hover .post-engagement span {
+            color: var(--primary);
+        }
+
+        /* Enhanced YouTube Section */
+        .youtube-section {
+            margin: 80px 0;
+        }
+
+        .youtube-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .youtube-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .youtube-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+
+        .video-thumbnail {
+            height: 200px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-thumbnail::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.3) 0%, rgba(255, 0, 0, 0.1) 100%);
+        }
+
+        .play-button {
+            background: rgba(255, 0, 0, 0.9);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.4);
+        }
+
+        .youtube-card:hover .play-button {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(255, 0, 0, 0.6);
+        }
+
+        .video-duration {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .video-info {
+            padding: 25px;
+        }
+
+        .video-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-size: 17px;
+            line-height: 1.5;
+        }
+
+        .video-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .video-stats span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Enhanced Footer */
+        .main-footer {
+            background: linear-gradient(135deg, var(--dark) 0%, #0f172a 100%);
+            color: white;
+            padding: 80px 40px 40px;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-section h4 {
+            color: white;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 15px;
+        }
+
+        .footer-section a {
+            color: var(--gray-300);
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+        }
+
+        .footer-section a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .footer-section a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .social-icons a {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .social-icons a:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray-300);
+            font-size: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--gray-300);
+            text-decoration: none;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .footer-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Enhanced Chat Bot */
+        .chat-bot-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .chat-bot-button {
+            background: var(--gradient-primary);
+            color: white;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: var(--shadow-xl);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-bot-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+            transform: translateX(-100%);
+        }
+
+        .chat-bot-button:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.6);
+        }
+
+        .chat-bot-button:hover::before {
+            animation: shine 1s;
+        }
+
+        .chat-bot-button.pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(37, 99, 235, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+            }
+        }
+
+        .chat-bot-window {
+            position: absolute;
+            bottom: 90px;
+            right: 0;
+            width: 380px;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            display: none;
+            overflow: hidden;
+            border: 2px solid var(--primary-light);
+        }
+
+        .chat-bot-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .chat-bot-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent);
+        }
+
+        .chat-bot-header h4 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-bot-body {
+            height: 450px;
+            padding: 25px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--gray-100);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chat-message {
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            max-width: 85%;
+            animation: fadeIn 0.3s ease-out;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bot-message {
+            background: var(--gray-100);
+            color: var(--dark);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .user-message {
+            background: var(--gradient-primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 25px;
+            border-top: 1px solid var(--gray-200);
+            gap: 15px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            transition: all 0.3s;
+            background: var(--gray-100);
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .chat-input button {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-input button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+
+            .top-notification-sections,
+            .certificates-grid,
+            .services-grid,
+            .stats-grid,
+            .faq-grid,
+            .social-grid,
+            .youtube-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-header {
+                padding: 20px;
+            }
+
+            .header-top {
+                flex-direction: column;
+                gap: 25px;
+                text-align: center;
+            }
+
+            .logo-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .site-title h1 {
+                font-size: 32px;
+            }
+
+            .banner-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .category-menu {
+                flex-direction: column;
+                padding: 10px 0;
+            }
+
+            .category-menu a {
+                justify-content: center;
+                border-right: none;
+                border-bottom: 1px solid var(--gray-200);
+                padding: 18px;
+            }
+
+            .content-wrapper {
+                padding: 30px 20px;
+            }
+
+            .top-notification-sections,
+            .certificates-grid,
+            .services-grid,
+            .stats-grid,
+            .faq-grid,
+            .social-grid,
+            .youtube-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .chat-bot-window {
+                width: calc(100vw - 40px);
+                right: -20px;
+            }
+
+            .section-title h2 {
+                font-size: 36px;
+            }
+
+            .stat-number {
+                font-size: 52px;
+            }
+
+            .testimonial-item {
+                padding: 40px 25px;
+            }
+
+            .services,
+            .stats,
+            .testimonials,
+            .faq,
+            .extended-certificates-section {
+                padding: 60px 25px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .social-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-bot-button {
+                width: 65px;
+                height: 65px;
+                font-size: 26px;
+            }
+        }
+
+        /* Utility Classes */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-left: 10px;
+            vertical-align: middle;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .badge-new {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-hot {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .badge-update {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation moved to bottom -->
+
+    <!-- Main Header -->
+    <header class="main-header">
+        <div class="header-top">
+            <div class="logo-container">
+                <img src="https://jobseeker.fillyourforms.com/wp-content/uploads/2025/02/FillYourForm-LOGO.png"
+                    alt="Fill Your Forms" class="logo">
+                <div class="site-title">
+                    <h1>Fill Your Forms</h1>
+                    <p class="tagline">Your Digital Form Solution & Career Success Partner</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="#" class="action-btn">
+                    <i class="fas fa-language"></i>
+                    Select Language
+                </a>
+                <a href="#" class="action-btn">
+                    <i class="fas fa-tools"></i>
+                    Tools
+                </a>
+                <a href="#" class="action-btn">
+                    <i class="fas fa-print"></i>
+                    Print Services
+                </a>
+                <a href="#" class="action-btn">
+                    <i class="fas fa-shipping-fast"></i>
+                    Book Courier
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Navigation -->
+    <nav class="category-nav">
+        <ul class="category-menu" id="categoryMenu">
+            <li><a href="#"><i class="fas fa-graduation-cap"></i> Admission</a></li>
+            <li><a href="#"><i class="fas fa-ticket-alt"></i> Admit Card</a></li>
+            <li><a href="#"><i class="fas fa-briefcase"></i> Latest Job <span class="badge badge-hot">HOT</span></a>
+            </li>
+            <li><a href="#"><i class="fas fa-file-export"></i> Result</a></li>
+            <li><a href="#"><i class="fas fa-file-certificate"></i> Scholarship</a></li>
+            <li><a href="#"><i class="fas fa-book"></i> Syllabus</a></li>
+            <li><a href="#"><i class="fas fa-key"></i> Answer Key <span class="badge badge-new">NEW</span></a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <!-- Banner Section -->
+        <div class="banner-section">
+            <div class="sidebar-slider fade-in">
+                <div>Latest Updates & Alerts</div>
+            </div>
+            <div class="main-banner fade-in">
+                <div>Fill Your Forms - Your Career Success Partner</div>
+            </div>
+        </div>
+
+        <!-- TOP NOTIFICATION SECTIONS (Image Style) -->
+        <div class="top-notification-sections">
+            <!-- Result Section -->
+            <div class="notification-section-image-style fade-in">
+                <div class="section-header-image-style">
+                    <h3><i class="fas fa-file-export"></i> Latest Results</h3>
+                    <span class="notification-count-badge">12 New</span>
+                </div>
+                <div class="notification-list-image-style">
+                    <div class="notification-item-image-style">
+                        <a href="#">SSC CGL 2024 Final Result Declared <span class="hashtag">#SSC</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">UPSC Civil Services 2024 Result <span class="badge badge-hot">HOT</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">IBPS PO XII Result Released <span class="hashtag">#Banking</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">Railway Group D Result 2024 <span class="hashtag">#Railway</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">CTET December 2024 Result <span class="hashtag">#Teaching</span></a>
+                    </div>
+                </div>
+                <a href="#" class="view-more-link">
+                    View All Results <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Jobs Section -->
+            <div class="notification-section-image-style fade-in">
+                <div class="section-header-image-style">
+                    <h3><i class="fas fa-briefcase"></i> Government Jobs</h3>
+                    <span class="notification-count-badge">8 New</span>
+                </div>
+                <div class="notification-list-image-style">
+                    <div class="notification-item-image-style">
+                        <a href="#">SBI PO 2025 Recruitment: 2000+ Posts <span class="badge badge-new">NEW</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">IBPS Clerk Notification 2025 <span class="hashtag">#Banking</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">SSC CHSL 2025 Apply Online <span class="hashtag">#SSC</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">Railway NTPC 2025 Recruitment <span class="hashtag">#Railway</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">UP Police Constable 2025 <span class="hashtag">#Police</span></a>
+                    </div>
+                </div>
+                <a href="#" class="view-more-link">
+                    View All Jobs <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Admit Cards -->
+            <div class="notification-section-image-style fade-in">
+                <div class="section-header-image-style">
+                    <h3><i class="fas fa-ticket-alt"></i> Admit Cards</h3>
+                    <span class="notification-count-badge">5 New</span>
+                </div>
+                <div class="notification-list-image-style">
+                    <div class="notification-item-image-style">
+                        <a href="#">UPSC Civil Services 2025 Admit Card <span
+                                class="badge badge-update">UPDATE</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">SSC CGL 2025 Tier 1 Admit Card <span class="hashtag">#SSC</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">IBPS RRB PO 2025 Admit Card <span class="hashtag">#Banking</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">CTET 2025 Admit Card Download <span class="hashtag">#Teaching</span></a>
+                    </div>
+                    <div class="notification-item-image-style">
+                        <a href="#">Railway Group D 2025 Admit Card <span class="hashtag">#Railway</span></a>
+                    </div>
+                </div>
+                <a href="#" class="view-more-link">
+                    View All Admit Cards <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Services Section -->
+        <section class="services">
+            <div class="section-title">
+                <h2><i class="fas fa-concierge-bell"></i> Our Premium Services</h2>
+                <p>We provide comprehensive form filling services with expert accuracy and compliance. Let us handle
+                    your documentation while you focus on your goals.</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card fade-in">
+                    <div class="service-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <h3>Government Forms</h3>
+                    <p>Tax forms, visa applications, license renewals, and all government documentation handled with
+                        precision and 24/7 support.</p>
+                    <a href="#contact" class="btn btn-blue">
+                        <i class="fas fa-rocket"></i> Get Started
+                    </a>
+                </div>
+
+                <div class="service-card fade-in">
+                    <div class="service-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3>Business Documentation</h3>
+                    <p>Complete business solutions including company registration, compliance forms, legal
+                        documentation, and license applications.</p>
+                    <a href="#contact" class="btn btn-blue">
+                        <i class="fas fa-rocket"></i> Get Started
+                    </a>
+                </div>
+
+                <div class="service-card fade-in">
+                    <div class="service-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Educational Applications</h3>
+                    <p>University applications, scholarship forms, student visa processing, and all educational
+                        paperwork with expert guidance.</p>
+                    <a href="#contact" class="btn btn-blue">
+                        <i class="fas fa-rocket"></i> Get Started
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="section-title" style="color: white;">
+                <h2><i class="fas fa-chart-line"></i> Our Impact in Numbers</h2>
+                <p style="color: rgba(255,255,255,0.9);">Trusted by thousands for accurate and timely form filling
+                    services across India.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item fade-in">
+                    <div class="stat-number" data-count="5000">0</div>
+                    <div class="stat-text">Forms Completed</div>
+                </div>
+
+                <div class="stat-item fade-in">
+                    <div class="stat-number" data-count="98">0</div>
+                    <div class="stat-text">Success Rate</div>
+                </div>
+
+                <div class="stat-item fade-in">
+                    <div class="stat-number" data-count="24">0</div>
+                    <div class="stat-text">Hour Turnaround</div>
+                </div>
+
+                <div class="stat-item fade-in">
+                    <div class="stat-number" data-count="100">0</div>
+                    <div class="stat-text">Satisfied Clients</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Extended Certificates Section -->
+        <div class="extended-certificates-section fade-in">
+            <div class="section-title">
+                <h2><i class="fas fa-file-certificate"></i> Apply for Certificates Online</h2>
+                <p>Get your certificates processed quickly and efficiently with our online application system. Verified
+                    and government-approved.</p>
+            </div>
+            <div class="certificates-grid">
+                <div class="certificate-card">
+                    <div class="certificate-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <h3>Income Certificate</h3>
+                    <p>Complete online application with document verification</p>
+                    <a href="#" class="certificate-btn">
+                        <i class="fas fa-arrow-right"></i> Apply Now
+                    </a>
+                </div>
+                <div class="certificate-card">
+                    <div class="certificate-icon"><i class="fas fa-users"></i></div>
+                    <h3>Caste Certificate</h3>
+                    <p>Quick processing with government approval</p>
+                    <a href="#" class="certificate-btn">
+                        <i class="fas fa-arrow-right"></i> Apply Now
+                    </a>
+                </div>
+                <div class="certificate-card">
+                    <div class="certificate-icon"><i class="fas fa-id-card"></i></div>
+                    <h3>Domicile Certificate</h3>
+                    <p>Residential proof certificate application</p>
+                    <a href="#" class="certificate-btn">
+                        <i class="fas fa-arrow-right"></i> Apply Now
+                    </a>
+                </div>
+                <div class="certificate-card">
+                    <div class="certificate-icon"><i class="fas fa-wheelchair"></i></div>
+                    <h3>PwD Certificate</h3>
+                    <p>Person with Disability certificate</p>
+                    <a href="#" class="certificate-btn">
+                        <i class="fas fa-arrow-right"></i> Apply Now
+                    </a>
+                </div>
+                <div class="certificate-card">
+                    <div class="certificate-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h3>Degree Certificate</h3>
+                    <p>Educational degree verification & processing</p>
+                    <a href="#" class="certificate-btn">
+                        <i class="fas fa-arrow-right"></i> Apply Now
+                    </a>
+                </div>
+                <div class="certificate-card">
+                    <div class="certificate-icon"><i class="fas fa-file-contract"></i></div>
+                    <h3>Provisional Certificate</h3>
+                    <p>Temporary degree certificate application</p>
+                    <a href="#" class="certificate-btn">
+                        <i class="fas fa-arrow-right"></i> Apply Now
+                    </a>
+                </div>
+                <div class="certificate-card">
+                    <div class="certificate-icon"><i class="fas fa-plane-departure"></i></div>
+                    <h3>Migration Certificate</h3>
+                    <p>University transfer certificate processing</p>
+                    <a href="#" class="certificate-btn">
+                        <i class="fas fa-arrow-right"></i> Apply Now
+                    </a>
+                </div>
+                <div class="certificate-card">
+                    <div class="certificate-icon"><i class="fas fa-user-check"></i></div>
+                    <h3>Character Certificate</h3>
+                    <p>Good conduct certificate application</p>
+                    <a href="#" class="certificate-btn">
+                        <i class="fas fa-arrow-right"></i> Apply Now
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testimonials -->
+        <section class="testimonials">
+            <div class="section-title">
+                <h2><i class="fas fa-comment-dots"></i> What Our Clients Say</h2>
+                <p>Join thousands of satisfied customers who trust us with their important documentation needs.</p>
+            </div>
+
+            <div class="testimonial-slider">
+                <div class="testimonial-item fade-in">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Fill Your Forms transformed my business license application process.
+                        What used to take weeks now takes days. Their attention to detail is exceptional and their
+                        customer support team is always available!"</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="John Anderson"
+                            class="author-img">
+                        <div class="author-info">
+                            <h4>John Anderson</h4>
+                            <p>Small Business Owner</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq">
+            <div class="section-title">
+                <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+                <p>Find answers to common questions about our form filling services and processes.</p>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item fade-in">
+                    <h3><i class="fas fa-clock"></i> How long does form processing take?</h3>
+                    <p>Most standard forms are completed within 24 hours. Complex applications may take 2-3 business
+                        days depending on specific requirements and document verification.</p>
+                </div>
+
+                <div class="faq-item fade-in">
+                    <h3><i class="fas fa-info-circle"></i> What documents do I need to provide?</h3>
+                    <p>We provide a customized checklist of required documents specific to your form type during our
+                        initial consultation. This ensures a smooth and efficient process.</p>
+                </div>
+
+                <div class="faq-item fade-in">
+                    <h3><i class="fas fa-shield-alt"></i> Is my personal information secure?</h3>
+                    <p>Absolutely. We use enterprise-grade 256-bit encryption and follow strict data protection
+                        protocols compliant with Indian data privacy laws to ensure complete confidentiality.</p>
+                </div>
+
+                <div class="faq-item fade-in">
+                    <h3><i class="fas fa-sync-alt"></i> Do you offer revisions if needed?</h3>
+                    <p>Yes! We offer unlimited free revisions within 7 days of form submission to ensure 100% accuracy
+                        and complete satisfaction with our services.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Media Section -->
+        <div class="social-media-section">
+            <div class="section-title">
+                <h2><i class="fas fa-hashtag"></i> Stay Connected With Us</h2>
+                <p>Follow us on social media for latest updates, tips, and important notifications about government
+                    exams and certificates.</p>
+            </div>
+
+            <div class="social-grid">
+                <div class="social-card fade-in">
+                    <div class="social-header facebook">
+                        <i class="fab fa-facebook-f"></i>
+                        <h4>Facebook Updates</h4>
+                    </div>
+                    <div class="social-posts">
+                        <div class="social-post">
+                            <div class="post-content">SSC CGL 2025 notification expected next week. Stay tuned for
+                                updates!</div>
+                            <div class="post-meta">
+                                <span>2 hours ago</span>
+                                <div class="post-engagement">
+                                    <span><i class="fas fa-thumbs-up"></i> 245</span>
+                                    <span><i class="fas fa-share"></i> 12</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="social-post">
+                            <div class="post-content">Income Certificate application process simplified - Step by step
+                                guide</div>
+                            <div class="post-meta">
+                                <span>1 day ago</span>
+                                <div class="post-engagement">
+                                    <span><i class="fas fa-thumbs-up"></i> 189</span>
+                                    <span><i class="fas fa-share"></i> 8</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-card fade-in">
+                    <div class="social-header twitter">
+                        <i class="fab fa-twitter"></i>
+                        <h4>Latest Tweets</h4>
+                    </div>
+                    <div class="social-posts">
+                        <div class="social-post">
+                            <div class="post-content">IBPS PO 2025 notification released! Check eligibility and apply
+                                now. #IBPS #BankingJobs</div>
+                            <div class="post-meta">
+                                <span>3 hours ago</span>
+                                <div class="post-engagement">
+                                    <span><i class="fas fa-retweet"></i> 45</span>
+                                    <span><i class="fas fa-heart"></i> 89</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="social-post">
+                            <div class="post-content">Domicile certificate now 100% online. No office visits required!
+                                #DigitalIndia</div>
+                            <div class="post-meta">
+                                <span>1 day ago</span>
+                                <div class="post-engagement">
+                                    <span><i class="fas fa-retweet"></i> 32</span>
+                                    <span><i class="fas fa-heart"></i> 67</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-card fade-in">
+                    <div class="social-header instagram">
+                        <i class="fab fa-instagram"></i>
+                        <h4>Instagram Updates</h4>
+                    </div>
+                    <div class="social-posts">
+                        <div class="social-post">
+                            <div class="post-content">Visual guide to complete your scholarship application form
+                                correctly</div>
+                            <div class="post-meta">
+                                <span>5 hours ago</span>
+                                <div class="post-engagement">
+                                    <span><i class="fas fa-heart"></i> 312</span>
+                                    <span><i class="fas fa-comment"></i> 24</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="social-post">
+                            <div class="post-content">Common mistakes to avoid in government job applications</div>
+                            <div class="post-meta">
+                                <span>2 days ago</span>
+                                <div class="post-engagement">
+                                    <span><i class="fas fa-heart"></i> 278</span>
+                                    <span><i class="fas fa-comment"></i> 18</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-card fade-in">
+                    <div class="social-header youtube">
+                        <i class="fab fa-youtube"></i>
+                        <h4>YouTube Videos</h4>
+                    </div>
+                    <div class="social-posts">
+                        <div class="social-post">
+                            <div class="post-content">Complete guide to fill UPSC application form 2025</div>
+                            <div class="post-meta">
+                                <span>1 day ago</span>
+                                <div class="post-engagement">
+                                    <span><i class="fas fa-eye"></i> 12K</span>
+                                    <span><i class="fas fa-thumbs-up"></i> 450</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="social-post">
+                            <div class="post-content">Income certificate online application - Full process</div>
+                            <div class="post-meta">
+                                <span>3 days ago</span>
+                                <div class="post-engagement">
+                                    <span><i class="fas fa-eye"></i> 8.5K</span>
+                                    <span><i class="fas fa-thumbs-up"></i> 320</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- YouTube Section -->
+        <div class="youtube-section">
+            <div class="section-title">
+                <h2><i class="fab fa-youtube"></i> Latest Tutorial Videos</h2>
+                <p>Watch our step-by-step tutorial videos to learn how to fill forms correctly and avoid common
+                    mistakes.</p>
+            </div>
+
+            <div class="youtube-grid">
+                <div class="youtube-card fade-in">
+                    <div class="video-thumbnail">
+                        <div class="play-button">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="video-duration">15:30</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">UPSC 2025 Application Form Filling Guide | Step by Step Process</div>
+                        <div class="video-stats">
+                            <span><i class="fas fa-eye"></i> 124K views</span>
+                            <span><i class="far fa-calendar"></i> 3 days ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="youtube-card fade-in">
+                    <div class="video-thumbnail">
+                        <div class="play-button">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="video-duration">22:15</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">SSC CGL 2025 Math Preparation | Important Topics & Tricks</div>
+                        <div class="video-stats">
+                            <span><i class="fas fa-eye"></i> 89K views</span>
+                            <span><i class="far fa-calendar"></i> 1 week ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="youtube-card fade-in">
+                    <div class="video-thumbnail">
+                        <div class="play-button">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="video-duration">18:45</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">How to Apply for Domicile Certificate Online | Complete Process</div>
+                        <div class="video-stats">
+                            <span><i class="fas fa-eye"></i> 156K views</span>
+                            <span><i class="far fa-calendar"></i> 2 weeks ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Fill Your Forms</h4>
+                <p style="color: var(--gray-300); margin-top: 20px; line-height: 1.6;">Your trusted partner for all form
+                    filling needs. Simplifying documentation since 2020.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#"><i class="fas fa-user-friends"></i> About Us</a></li>
+                    <li><a href="#"><i class="fas fa-blog"></i> Blog</a></li>
+                    <li><a href="#"><i class="fas fa-headset"></i> Support</a></li>
+                    <li><a href="#"><i class="fas fa-file-certificate"></i> Income Certificate</a></li>
+                    <li><a href="#"><i class="fas fa-id-card"></i> Domicile Certificate</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Our Services</h4>
+                <ul>
+                    <li><a href="#"><i class="fas fa-print"></i> Print Services</a></li>
+                    <li><a href="#"><i class="fas fa-shipping-fast"></i> Courier Booking</a></li>
+                    <li><a href="#"><i class="fas fa-file-alt"></i> Form Filling</a></li>
+                    <li><a href="#"><i class="fas fa-check-circle"></i> Document Verification</a></li>
+                    <li><a href="#"><i class="fas fa-language"></i> Language Translation</a></li>
+                    <li><a href="#"><i class="fas fa-tools"></i> Tools</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Information</h4>
+                <ul>
+                    <li><a href="#"><i class="fas fa-map-marker-alt"></i> Fill Your Forms HQ, New Delhi</a></li>
+                    <li><a href="tel:+919876543210"><i class="fas fa-phone"></i> +91-9876543210</a></li>
+                    <li><a href="mailto:support@fillyourforms.com"><i class="fas fa-envelope"></i>
+                            support@fillyourforms.com</a></li>
+                    <li><a href="#"><i class="fas fa-clock"></i> Mon-Sat: 9:00 AM - 7:00 PM</a></li>
+                    <li><a href="#"><i class="fas fa-headset"></i> 24/7 Support Available</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Fill Your Forms. All rights reserved. | Designed for job seekers and professionals across
+                India</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Disclaimer</a>
+                <a href="#">About Us</a>
+                <a href="#">Contact Us</a>
+                <a href="#">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Enhanced Chat Bot -->
+    <div class="chat-bot-container">
+        <div class="chat-bot-window" id="chatBotWindow">
+            <div class="chat-bot-header">
+                <h4><i class="fas fa-robot"></i> FYF Assistant</h4>
+                <button id="closeChat"
+                    style="background: none; border: none; color: white; cursor: pointer; font-size: 20px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chat-bot-body" id="chatBody">
+                <div class="chat-message bot-message">
+                    <p>Hello! 👋 I'm your FYF assistant. How can I help you today?</p>
+                </div>
+                <div class="chat-message bot-message">
+                    <p>You can ask me about:</p>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li>📋 Form filling procedures</li>
+                        <li>📄 Certificate applications</li>
+                        <li>💼 Job notifications</li>
+                        <li>📝 Document requirements</li>
+                        <li>⏱️ Processing times</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Type your message here...">
+                <button id="sendMessage">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+            </div>
+        </div>
+        <div class="chat-bot-button pulse" id="chatBotButton">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize animations
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+            });
+
+            // Animate stats counter
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const target = parseInt(stat.getAttribute('data-count'));
+                const increment = target / 50;
+                let current = 0;
+
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        stat.textContent = Math.ceil(current);
+                        setTimeout(updateCounter, 50);
+                    } else {
+                        stat.textContent = target + (target === 98 ? '%' : target === 100 ? '%' : '+');
+                    }
+                };
+
+                // Start counter when element is in viewport
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            setTimeout(updateCounter, 500);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                });
+
+                observer.observe(stat);
+            });
+
+            // Notification item click
+            const notificationItems = document.querySelectorAll('.notification-item-image-style a');
+            notificationItems.forEach(item => {
+                item.addEventListener('click', function (e) {
+                    if (!this.getAttribute('href') || this.getAttribute('href') === '#') {
+                        e.preventDefault();
+                        const notificationText = this.textContent;
+                        showToast(`Opening: ${notificationText}`, 'info');
+                    }
+                });
+            });
+
+            // View more buttons
+            const viewMoreButtons = document.querySelectorAll('.view-more-link');
+            viewMoreButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const sectionTitle = this.closest('.notification-section-image-style')
+                        .querySelector('.section-header-image-style h3').textContent;
+                    showToast(`Loading all items from ${sectionTitle}`, 'success');
+                });
+            });
+
+            // Certificate buttons
+            const certificateButtons = document.querySelectorAll('.certificate-btn');
+            certificateButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const certificateType = this.closest('.certificate-card').querySelector('h3').textContent;
+                    showToast(`Starting application for ${certificateType}`, 'success');
+                });
+            });
+
+            // Service cards interaction
+            const serviceCards = document.querySelectorAll('.service-card');
+            serviceCards.forEach(card => {
+                card.addEventListener('click', function (e) {
+                    if (!e.target.closest('a')) {
+                        const serviceTitle = this.querySelector('h3').textContent;
+                        showToast(`Learn more about ${serviceTitle}`, 'info');
+                    }
+                });
+            });
+
+            // Social media posts interaction
+            const socialPosts = document.querySelectorAll('.social-post');
+            socialPosts.forEach(post => {
+                post.addEventListener('click', function () {
+                    const platform = this.closest('.social-card').querySelector('.social-header h4').textContent;
+                    const content = this.querySelector('.post-content').textContent;
+                    showToast(`Opening ${platform} post`, 'info');
+                });
+            });
+
+            // YouTube video cards interaction
+            const youtubeCards = document.querySelectorAll('.youtube-card');
+            youtubeCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    const title = this.querySelector('.video-title').textContent;
+                    showToast(`Playing: ${title}`, 'info');
+                });
+            });
+
+            // FAQ items interaction
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    this.style.transform = 'translateY(-8px)';
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(-5px)';
+                    }, 300);
+                });
+            });
+
+            // Chat Bot Functionality
+            const chatBotButton = document.getElementById('chatBotButton');
+            const chatBotWindow = document.getElementById('chatBotWindow');
+            const closeChat = document.getElementById('closeChat');
+            const chatBody = document.getElementById('chatBody');
+            const chatInput = document.getElementById('chatInput');
+            const sendMessage = document.getElementById('sendMessage');
+
+            // Toggle chat window
+            chatBotButton.addEventListener('click', function () {
+                const isVisible = chatBotWindow.style.display === 'block';
+                chatBotWindow.style.display = isVisible ? 'none' : 'block';
+                if (!isVisible) {
+                    chatInput.focus();
+                    chatBotButton.classList.remove('pulse');
+                }
+            });
+
+            // Close chat window
+            closeChat.addEventListener('click', function () {
+                chatBotWindow.style.display = 'none';
+            });
+
+            // Send message
+            function sendChatMessage() {
+                const message = chatInput.value.trim();
+                if (message) {
+                    // Add user message
+                    const userMessage = document.createElement('div');
+                    userMessage.className = 'chat-message user-message';
+                    userMessage.innerHTML = `<p>${message}</p>`;
+                    chatBody.appendChild(userMessage);
+
+                    // Clear input
+                    chatInput.value = '';
+
+                    // Scroll to bottom
+                    chatBody.scrollTop = chatBody.scrollHeight;
+
+                    // Simulate bot response after delay
+                    setTimeout(() => {
+                        const responses = [
+                            `I understand you're asking about "${message}". Let me check our database for the most accurate information.`,
+                            `For ${message}, you'll need to visit our forms section and submit the required documents. I can guide you through the process step by step.`,
+                            `I can help with that! Please check our ${message} section for detailed information. Would you like me to send you the link?`,
+                            `Thank you for your query about ${message}. Our system shows that this usually takes 24-48 hours to process. One of our representatives will assist you shortly.`,
+                            `You can find comprehensive information about ${message} in our resources section. I'll send you the detailed guide right away.`
+                        ];
+
+                        const botResponse = responses[Math.floor(Math.random() * responses.length)];
+
+                        const botMessage = document.createElement('div');
+                        botMessage.className = 'chat-message bot-message';
+                        botMessage.innerHTML = `<p>${botResponse}</p>`;
+                        chatBody.appendChild(botMessage);
+
+                        // Scroll to bottom
+                        chatBody.scrollTop = chatBody.scrollHeight;
+                    }, 1000);
+                }
+            }
+
+            // Send message on button click
+            sendMessage.addEventListener('click', sendChatMessage);
+
+            // Send message on Enter key
+            chatInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+
+            // Mobile menu functionality
+            const createMobileMenu = () => {
+                if (window.innerWidth <= 768) {
+                    const categoryNav = document.querySelector('.category-nav');
+                    const categoryMenu = document.querySelector('.category-menu');
+
+                    if (!document.querySelector('.mobile-menu-toggle')) {
+                        const toggleBtn = document.createElement('button');
+                        toggleBtn.className = 'mobile-menu-toggle';
+                        toggleBtn.innerHTML = '<i class="fas fa-bars"></i> Menu';
+                        toggleBtn.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            z-index: 1000;
+                            background: var(--gradient-primary);
+                            color: white;
+                            border: none;
+                            padding: 14px 24px;
+                            border-radius: var(--radius-md);
+                            font-weight: 700;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            box-shadow: var(--shadow-lg);
+                            transition: all 0.3s;
+                            font-size: 15px;
+                        `;
+
+                        document.body.appendChild(toggleBtn);
+
+                        toggleBtn.addEventListener('click', function () {
+                            const isVisible = categoryMenu.style.display === 'flex';
+                            categoryMenu.style.display = isVisible ? 'none' : 'flex';
+                            this.innerHTML = isVisible ? '<i class="fas fa-bars"></i> Menu' : '<i class="fas fa-times"></i> Close';
+                        });
+
+                        categoryMenu.style.display = 'none';
+                        categoryMenu.style.flexDirection = 'column';
+                        categoryMenu.style.position = 'absolute';
+                        categoryMenu.style.top = '100%';
+                        categoryMenu.style.left = '0';
+                        categoryMenu.style.right = '0';
+                        categoryMenu.style.background = 'white';
+                        categoryMenu.style.zIndex = '999';
+                        categoryMenu.style.boxShadow = '0 10px 30px rgba(0,0,0,0.15)';
+                        categoryMenu.style.borderRadius = '0 0 var(--radius-md) var(--radius-md)';
+                        categoryNav.style.position = 'relative';
+                    }
+                } else {
+                    // Remove mobile menu toggle on larger screens
+                    const toggleBtn = document.querySelector('.mobile-menu-toggle');
+                    if (toggleBtn) {
+                        toggleBtn.remove();
+                    }
+                    const categoryMenu = document.querySelector('.category-menu');
+                    if (categoryMenu) {
+                        categoryMenu.style.display = 'flex';
+                        categoryMenu.style.flexDirection = 'row';
+                    }
+                }
+            };
+
+            createMobileMenu();
+            window.addEventListener('resize', createMobileMenu);
+
+            // Toast notification function
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.textContent = message;
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 100px;
+                    right: 30px;
+                    background: ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--primary)'};
+                    color: white;
+                    padding: 16px 24px;
+                    border-radius: var(--radius-md);
+                    box-shadow: var(--shadow-lg);
+                    z-index: 1001;
+                    animation: slideIn 0.3s ease-out;
+                    font-weight: 600;
+                    max-width: 300px;
+                `;
+
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.animation = 'slideOut 0.3s ease-out';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            // Add CSS for animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                @keyframes fadeInUp {
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Initialize fade-in animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const fadeObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                        fadeObserver.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            fadeElements.forEach(el => {
+                fadeObserver.observe(el);
+            });
+
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    if (href !== '#') {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Track Order - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Search Header -->
+        <div class="card border-0 shadow-sm mb-5 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="row g-0">
+                    <div class="col-md-4 bg-primary p-5 text-white d-flex flex-column justify-content-center">
+                        <h3 class="fw-bold mb-2">Track Order</h3>
+                        <p class="mb-0 opacity-75 small">Enter your tracking number to see the latest status of your
+                            shipment.</p>
+                    </div>
+                    <div class="col-md-8 p-5 bg-white">
+                        <form method="GET" action="{{ url_for('tracking') }}">
+                            <div class="input-group border rounded-pill overflow-hidden p-1 shadow-sm">
+                                <span class="input-group-text bg-white border-0 ps-3">
+                                    <i class="fas fa-receipt text-muted"></i>
+                                </span>
+                                <input type="text" name="receipt" class="form-control border-0 shadow-none px-3"
+                                    placeholder="Enter Tracking Number (e.g. TRK-123456)" value="{{ receipt or '' }}"
+                                    required>
+                                <button class="btn btn-primary rounded-pill px-4 fw-bold" type="submit">
+                                    Search
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if order %}
+        <!-- Status Banner -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            {% set status_icon =
+                            'box' if order.status == 'pending' else
+                            'check-double' if order.status == 'confirmed' else
+                            'truck-loading' if order.status == 'picked_up' else
+                            'truck' if order.status == 'in_transit' else
+                            'home' if order.status == 'out_for_delivery' else
+                            'check-circle' if order.status == 'delivered' else 'times-circle'
+                            %}
+                            <div class="avatar-lg bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                <i class="fas fa-{{ status_icon }}"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0">{{ order.status|replace('_', ' ')|title }}</h4>
+                                <p class="text-muted mb-0">Tracking No: <span class="fw-bold text-dark">{{
+                                        order.receipt_number }}</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Progress Steps -->
+                        <div class="track-progress mb-2">
+                            {% set steps = [
+                            {'id': 'pending', 'label': 'Ordered', 'icon': 'shopping-cart'},
+                            {'id': 'picked_up', 'label': 'Picked Up', 'icon': 'truck-loading'},
+                            {'id': 'in_transit', 'label': 'In Transit', 'icon': 'truck'},
+                            {'id': 'delivered', 'label': 'Delivered', 'icon': 'check-circle'}
+                            ] %}
+
+                            {# Logic to determine step state #}
+                            {% set current_index = 0 %}
+                            {% if order.status == 'delivered' %}{% set current_index = 4 %}
+                            {% elif order.status == 'in_transit' or order.status == 'out_for_delivery' %}{% set
+                            current_index = 3 %}
+                            {% elif order.status == 'picked_up' %}{% set current_index = 2 %}
+                            {% elif order.status == 'confirmed' %}{% set current_index = 1 %}
+                            {% else %}{% set current_index = 1 %}{% endif %}
+
+                            {% for step in steps %}
+                            {% set is_completed = loop.index < current_index %} {% set
+                                is_active=loop.index==current_index %} <div
+                                class="track-step {{ 'completed' if is_completed }} {{ 'active' if is_active }}">
+                                <div class="step-icon">
+                                    <i class="fas fa-{{ step.icon }}"></i>
+                                </div>
+                                <div class="step-label">{{ step.label }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100 bg-dark text-white">
+                <div class="card-body p-4 d-flex flex-column justify-content-center text-center">
+                    <h6 class="text-uppercase small fw-bold opacity-75 mb-3">Estimated Arrival</h6>
+                    {% if order.status == 'delivered' %}
+                    <h2 class="fw-bold text-success mb-1">Delivered</h2>
+                    <p class="mb-0 small opacity-75">Completed on {{ order.delivered_at.strftime('%d %b, %Y') if
+                        order.delivered_at else order.updated_at.strftime('%d %b, %Y') }}</p>
+                    {% else %}
+                    <h2 class="fw-bold mb-1">
+                        {% if order.status == 'pending' %}Processing
+                        {% else %}
+                        {{ (order.created_at + timedelta(days=3)).strftime('%d %b, %Y') }}
+                        {% endif %}
+                    </h2>
+                    <p class="mb-0 small opacity-75">Scheduled via {{ order.receipt_mode|replace('_', ' ')|title if
+                        order.receipt_mode else 'Standard' }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left: Tracking History -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-history me-2 text-primary"></i>Travel History</h5>
+                </div>
+                <div class="card-body px-4">
+                    <div class="customer-timeline">
+                        {% for update in tracking_updates %}
+                        <div class="customer-timeline-item {{ 'latest' if loop.first }}">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6 class="fw-bold text-dark mb-0">{{ update.status }}</h6>
+                                <span class="small text-muted">{{ update.created_at.strftime('%d %b, %I:%M %p')
+                                    }}</span>
+                            </div>
+                            <p class="small text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i> {{
+                                update.location or 'Processing Hub' }}</p>
+                            {% if update.description %}
+                            <div class="bg-light p-2 rounded small text-secondary">
+                                {{ update.description }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <p class="text-muted">Order details are being processed.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Shipment Details -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-box-open me-2 text-primary"></i>Shipment Details</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item px-4 py-3 border-0">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="text-muted small mb-1 uppercase fw-bold">Receiver</div>
+                                    <div class="fw-bold text-dark">{{ order.receiver_name }}</div>
+                                    <div class="small text-muted text-truncate">{{ order.receiver_city }}</div>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <div class="text-muted small mb-1 uppercase fw-bold">Package</div>
+                                    <div class="fw-bold text-dark">{{ order.number_of_boxes }} Box(es)</div>
+                                    <div class="small text-muted">{{ order.weight or 0 }} kg</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-4 py-3 border-top bg-light-subtle">
+                            <div class="text-muted small mb-2 uppercase fw-bold">Delivery Address</div>
+                            <div class="small text-dark">
+                                {{ order.receiver_address }}<br>
+                                {{ order.receiver_city }}, {{ order.receiver_state }} {{ order.receiver_pincode }}
+                            </div>
+                        </div>
+                        <div class="list-group-item px-4 py-3 border-0">
+                            <div class="row text-center g-0">
+                                <div class="col-4">
+                                    <div class="small text-muted mb-1">Service</div>
+                                    <span class="badge bg-info-subtle text-info border border-info">{{
+                                        order.receipt_mode|replace('_', ' ')|title if order.receipt_mode else 'Standard'
+                                        }}</span>
+                                </div>
+                                <div class="col-4 border-start">
+                                    <div class="small text-muted mb-1">Weight</div>
+                                    <div class="fw-bold">{{ order.weight or 0 }} kg</div>
+                                </div>
+                                <div class="col-4 border-start">
+                                    <div class="small text-muted mb-1">Payment</div>
+                                    <span
+                                        class="badge bg-{{ 'success' if order.payment_status == 'paid' else 'warning' }}-subtle text-{{ 'success' if order.payment_status == 'paid' else 'warning' }} border border-{{ 'success' if order.payment_status == 'paid' else 'warning' }}">
+                                        {{ order.payment_status|title }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Card -->
+            <div class="card border-0 shadow-sm bg-primary text-white overflow-hidden">
+                <div class="card-body p-4 position-relative">
+                    <i class="fas fa-headset position-absolute end-0 bottom-0 mb-n2 me-n2 display-1 opacity-25"></i>
+                    <h6 class="fw-bold mb-2">Need Assistance?</h6>
+                    <p class="small mb-3 opacity-75">If you have any questions regarding your delivery, our support team
+                        is here to help.</p>
+                    <a href="#" class="btn btn-light btn-sm fw-bold px-3">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% elif receipt %}
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="fas fa-search-location display-1 text-muted opacity-25"></i>
+        </div>
+        <h4 class="fw-bold">No Shipment Found</h4>
+        <p class="text-muted">We couldn't find any order with the tracking number <span class="text-dark fw-bold">"{{
+                receipt }}"</span>.<br>Please double-check the number and try again.</p>
+        <a href="{{ url_for('tracking') }}" class="btn btn-primary mt-3 px-4 rounded-pill">Try Another Number</a>
+    </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timeline-marker {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-top: 5px;
+    }
+</style>
+{% endblock %}

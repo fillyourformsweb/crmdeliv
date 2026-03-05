@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Flask
+instance/
+uploads/
+*.db
+
+# IDEs
+.idea/
+.vscode/
+.project
+.pydevproject
+
+# OS
+.DS_Store
+thumbs.db
+desktop.ini

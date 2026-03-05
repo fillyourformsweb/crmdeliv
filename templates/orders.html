@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Orders - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="page-content-wrapper w-100">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-7">
+            <h5 class="text-indigo fw-bold mb-1" style="color: var(--luxury-blue) !important;">Shipment Management</h5>
+            <h1 class="display-4 fw-black text-dark mb-2">Order Control</h1>
+            <p class="text-muted fs-5 mb-0">Monitor and manage all active logistics from a single pane.</p>
+        </div>
+        <div class="col-md-5 text-md-end mt-3 mt-md-0">
+            <div class="d-flex justify-content-md-end gap-3">
+                <a href="{{ url_for('walkin_order') }}" class="luxury-btn btn btn-primary border-0"
+                    style="background: var(--primary-gradient);">
+                    <i class="fas fa-plus me-1"></i> New Walk-in
+                </a>
+                <a href="{{ url_for('client_order') }}" class="luxury-btn btn btn-dark border-0">
+                    <i class="fas fa-building me-1"></i> Corporate
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Advanced Filter Card -->
+    <div class="luxury-card mb-4">
+        <div class="card-body p-4">
+            <form method="GET" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted">Search Shipments</label>
+                    <input type="text" name="search" class="form-control luxury-input"
+                        placeholder="Name, Phone, Receipt..." value="{{ search }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-muted">Status</label>
+                    <select name="status" class="form-select luxury-input">
+                        <option value="">All Statuses</option>
+                        <option value="pending" {{ 'selected' if status_filter=='pending' }}>Pending</option>
+                        <option value="confirmed" {{ 'selected' if status_filter=='confirmed' }}>Confirmed</option>
+                        <option value="in_transit" {{ 'selected' if status_filter=='in_transit' }}>In Transit</option>
+                        <option value="delivered" {{ 'selected' if status_filter=='delivered' }}>Delivered</option>
+                        <option value="cancelled" {{ 'selected' if status_filter=='cancelled' }}>Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-muted">Order Type</label>
+                    <select name="order_type" class="form-select luxury-input">
+                        <option value="">All Types</option>
+                        <option value="walkin" {{ 'selected' if order_type_filter=='walkin' }}>Walk-in</option>
+                        <option value="client" {{ 'selected' if order_type_filter=='client' }}>Client</option>
+                    </select>
+                </div>
+                <div class="col-md-5 d-flex gap-2">
+                    <button type="submit" class="luxury-btn btn btn-primary flex-grow-1">
+                        <i class="fas fa-filter me-1"></i> Apply Filters
+                    </button>
+                    <a href="{{ url_for('orders') }}" class="luxury-btn btn btn-light border">
+                        <i class="fas fa-undo me-1"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="luxury-card">
+        <div class="table-responsive">
+            <table class="table luxury-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Receipt #</th>
+                        <th>Type</th>
+                        <th>Customer / Receiver</th>
+                        <th>Payment Mode</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Verified</th>
+                        <th>Date</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('order_details', id=order.id) }}" class="fw-bold text-decoration-none">
+                                {{ order.receipt_number }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if order.order_type == 'client' %}
+                            <span
+                                class="luxury-badge bg-primary-subtle text-primary border border-primary-subtle">Client</span>
+                            {% else %}
+                            <span
+                                class="luxury-badge bg-secondary-subtle text-secondary border border-secondary-subtle">Walk-in</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ order.customer_name }}</div>
+                            <div class="text-muted small"><i class="fas fa-arrow-right me-1 text-primary"></i>{{
+                                order.receiver_name or 'N/A' }}</div>
+                        </td>
+                        <td>
+                            <span class="luxury-badge bg-info-subtle text-info border border-info-subtle">
+                                {{ order.receipt_mode|replace('_', ' ')|title if order.receipt_mode else 'N/A' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">₹{{ "%.2f"|format(order.total_amount or 0) }}</div>
+                        </td>
+                        <td>
+                            <span class="luxury-badge bg-{{ 
+                                'warning' if order.status == 'pending' else 
+                                'info' if order.status == 'in_transit' else 
+                                'success' if order.status == 'delivered' else 
+                                'danger' if order.status == 'cancelled' else 'secondary' 
+                            }}-subtle text-{{
+                                'warning' if order.status == 'pending' else 
+                                'info' if order.status == 'in_transit' else 
+                                'success' if order.status == 'delivered' else 
+                                'danger' if order.status == 'cancelled' else 'secondary'
+                            }} border border-{{
+                                'warning' if order.status == 'pending' else 
+                                'info' if order.status == 'in_transit' else 
+                                'success' if order.status == 'delivered' else 
+                                'danger' if order.status == 'cancelled' else 'secondary'
+                            }}-subtle">
+                                {{ order.status|replace('_', ' ')|title }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if order.excel_verified %}
+                            <div class="bg-success-subtle text-success rounded-circle d-inline-flex align-items-center justify-content-center"
+                                style="width: 28px; height: 28px;">
+                                <i class="fas fa-check-double small"></i>
+                            </div>
+                            {% else %}
+                            <div class="bg-light text-muted rounded-circle d-inline-flex align-items-center justify-content-center border"
+                                style="width: 28px; height: 28px;">
+                                <i class="fas fa-clock small"></i>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="small text-muted fw-semibold">{{ order.created_at.strftime('%d %b, %Y') }}</div>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{{ url_for('order_details', id=order.id) }}"
+                                    class="btn btn-light btn-sm rounded-circle border p-2" title="View Details">
+                                    <i class="fas fa-eye text-primary"></i>
+                                </a>
+                                <a href="{{ url_for('print_label', id=order.id) }}"
+                                    class="btn btn-light btn-sm rounded-circle border p-2" target="_blank"
+                                    title="Print Label">
+                                    <i class="fas fa-print text-info"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="fas fa-box-open fa-3x text-muted opacity-25"></i>
+                            </div>
+                            <h5 class="text-muted fw-normal">No orders found matching your criteria</h5>
+                            <a href="{{ url_for('orders') }}" class="btn btn-link">Clear all filters</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

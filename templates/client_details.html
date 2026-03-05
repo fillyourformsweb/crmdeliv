@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Client Details - {{ client.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-primary fw-bold mb-1">Corporate Relations</h5>
+        <h1 class="display-6 fw-black text-dark mb-1">{{ client.name }}</h1>
+        <p class="text-muted mb-0">{{ client.company_name or 'Personal Account' }}</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+            <a href="{{ url_for('clients') }}" class="btn btn-light border-0 px-4">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+            <a href="{{ url_for('edit_client', id=client.id) }}" class="btn btn-primary px-4">
+                <i class="fas fa-edit me-2"></i>Edit Profile
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Client Info Summary -->
+    <div class="col-lg-4">
+        <div class="card luxury-card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent border-0 px-4 pt-4">
+                <h5 class="fw-bold mb-0 text-dark"><i
+                        class="fas fa-info-circle me-2 text-primary opacity-50"></i>Profile Summary</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <label class="small fw-bold text-uppercase text-muted d-block">Primary Contact</label>
+                    <div class="text-dark">{{ client.phone }}</div>
+                    {% if client.alt_phone %}<div class="text-muted small">Alt: {{ client.alt_phone }}</div>{% endif %}
+                </div>
+                <div class="mb-3">
+                    <label class="small fw-bold text-uppercase text-muted d-block">Email</label>
+                    <div class="text-dark">{{ client.email or 'N/A' }}</div>
+                    {% if client.alt_email %}<div class="text-muted small">Alt: {{ client.alt_email }}</div>{% endif %}
+                </div>
+                <div class="mb-3">
+                    <label class="small fw-bold text-uppercase text-muted d-block">Main Address</label>
+                    <div class="text-dark small">{{ client.address or 'N/A' }}</div>
+                </div>
+                {% if client.alt_address %}
+                <div class="mb-3">
+                    <label class="small fw-bold text-uppercase text-muted d-block">Alternate Address</label>
+                    <div class="text-dark small">{{ client.alt_address }}</div>
+                </div>
+                {% endif %}
+                <div class="row">
+                    <div class="col-6">
+                        <label class="small fw-bold text-uppercase text-muted d-block">GST No.</label>
+                        <div class="text-dark small">{{ client.gst_number or 'N/A' }}</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="small fw-bold text-uppercase text-muted d-block">Bill Pattern</label>
+                        <div class="text-dark small">{{ client.bill_pattern or 'N/A' }}</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="small fw-bold text-uppercase text-muted d-block">Billing Date</label>
+                        <div class="text-dark small">Day {{ client.billing_date or 'N/A' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receivers and Addresses -->
+    <div class="col-lg-8">
+        <!-- Addresses Section -->
+        <div class="card luxury-card border-0 shadow-sm mb-4">
+            <div
+                class="card-header bg-transparent border-0 px-4 pt-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i
+                        class="fas fa-map-marker-alt me-2 text-primary opacity-50"></i>Saved Sender Addresses</h5>
+                <a href="{{ url_for('add_client_address', client_id=client.id) }}"
+                    class="btn btn-sm btn-outline-primary rounded-pill">
+                    <i class="fas fa-plus me-1"></i>Add Address
+                </a>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-sm luxury-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Label</th>
+                                <th>Address</th>
+                                <th>Location</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for addr in client.addresses %}
+                            <tr>
+                                <td><span class="badge bg-light text-primary border">{{ addr.address_label }}</span>
+                                </td>
+                                <td class="small">{{ addr.address }}</td>
+                                <td class="small">{{ addr.city }}, {{ addr.state }} {{ addr.pincode }}</td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('edit_client_address', id=addr.id) }}"
+                                        class="text-warning me-2"><i class="fas fa-edit"></i></a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-3">No additional addresses saved.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Receivers Section -->
+        <div class="card luxury-card border-0 shadow-sm">
+            <div
+                class="card-header bg-transparent border-0 px-4 pt-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-user-friends me-2 text-primary opacity-50"></i>Saved
+                    Receivers</h5>
+                <a href="{{ url_for('add_receiver', client_id=client.id) }}"
+                    class="btn btn-sm btn-outline-primary rounded-pill">
+                    <i class="fas fa-plus me-1"></i>Add Receiver
+                </a>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-sm luxury-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Address</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for receiver in client.receivers %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ receiver.name }}</div>
+                                    <div class="text-muted xs-small">{{ receiver.company_name or '' }}</div>
+                                </td>
+                                <td class="small">
+                                    <div>{{ receiver.phone }}</div>
+                                    <div class="text-muted xs-small">{{ receiver.email or '' }}</div>
+                                </td>
+                                <td class="small">
+                                    {{ receiver.address }}
+                                    {% if receiver.city or receiver.state or receiver.pincode %}
+                                    <div class="text-muted xs-small">
+                                        {{ receiver.city or '' }}{% if receiver.city and receiver.state %}, {% endif %}
+                                        {{ receiver.state or '' }} {{ receiver.pincode or '' }}
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('edit_receiver', id=receiver.id) }}"
+                                        class="text-warning me-2"><i class="fas fa-edit"></i></a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-3">No receivers saved for this client.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .xs-small {
+        font-size: 0.75rem;
+    }
+</style>
+{% endblock %}

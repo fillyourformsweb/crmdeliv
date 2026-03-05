@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CRM Delivery{% endblock %}
+
+{% block content %}
+<!-- Main Content Column -->
+<div class="col-12">
+    <!-- Welcome Header -->
+    <div class="row mb-5 align-items-end">
+        <div class="col-md-8">
+            <h1 class="display-4 fw-black text-primary mb-1">Dashboard Overview</h1>
+            <p class="text-muted fs-5 mb-0">Here's what's happening with your deliveries today.</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="luxury-card d-inline-flex align-items-center px-4 py-2 border shadow-sm bg-white" style="border-radius: 12px;">
+                <i class="far fa-calendar-alt text-dark me-2"></i>
+                <span class="fw-bold text-dark">{{ now.strftime('%A, %d %B %Y') }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card stat-card luxury-card stat-card-total border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-content">
+                            <div class="text-label mb-1">Total Orders</div>
+                            <h2 class="stat-number mb-0 pulse-slow">{{ total_orders }}</h2>
+                        </div>
+                        <div class="stat-icon-circle-box bg-blue-light shadow-sm">
+                            <i class="fas fa-box"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card luxury-card stat-card-pending border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-content">
+                            <div class="text-label mb-1">Pending</div>
+                            <h2 class="stat-number mb-0 text-gold pulse-slow">{{ pending_orders }}</h2>
+                        </div>
+                        <div class="stat-icon-circle-box bg-gold-light shadow-sm">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card luxury-card stat-card-transit border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-content">
+                            <div class="text-label mb-1">In Transit</div>
+                            <h2 class="stat-number mb-0 text-transit pulse-slow">{{ in_transit }}</h2>
+                        </div>
+                        <div class="stat-icon-circle-box bg-cyan-light shadow-sm">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card luxury-card stat-card-delivered border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-content">
+                            <div class="text-label mb-1">Delivered</div>
+                            <h2 class="stat-number mb-0 text-delivered pulse-slow">{{ delivered }}</h2>
+                        </div>
+                        <div class="stat-icon-circle-box bg-emerald-light shadow-sm">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Status Distribution -->
+        <div class="col-lg-7">
+            <div class="card luxury-card h-100 border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0 px-4 pt-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-chart-pie me-2 text-primary opacity-50"></i>Distribution Analysis</h5>
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm rounded-pill px-3 fw-bold border-0" type="button">Real-time</button>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div style="height: 300px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Overview -->
+        <div class="col-lg-5">
+            <div class="card luxury-card h-100 border-0 shadow-sm overflow-hidden">
+                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-users-cog me-2 text-primary opacity-50"></i>Fleet & Personnel</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush border-0">
+                        <div class="list-group-item p-4 border-0">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary-subtle p-3 rounded-4 me-3">
+                                    <i class="fas fa-user-tie fs-4 text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h3 class="fw-black mb-0 text-dark">{{ total_staff }}</h3>
+                                    <p class="text-muted small fw-bold text-uppercase mb-0">Total Staff Members</p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-3">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item p-4 border-0 bg-light-subtle">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info-subtle p-3 rounded-4 me-3">
+                                    <i class="fas fa-motorcycle fs-4 text-info"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h3 class="fw-black mb-0 text-dark">{{ delivery_personnel }}</h3>
+                                    <p class="text-muted small fw-bold text-uppercase mb-0">Dispatchers & Couriers</p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-info-subtle text-info rounded-pill px-3">On Duty</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-primary text-white text-center">
+                        <p class="small mb-0 opacity-75 fw-bold text-uppercase" style="letter-spacing: 1px;">Fleet Utilization</p>
+                        <h2 class="fw-black mb-0 mt-1">94%</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    const pending = {{ pending_orders|tojson }};
+    const inTransit = {{ in_transit|tojson }};
+    const delivered = {{ delivered|tojson }};
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'In Transit', 'Delivered'],
+            datasets: [{
+                data: [pending, inTransit, delivered],
+                backgroundColor: ['#ffc107', '#0dcaf0', '#198754'],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        font: {
+                            size: 13
+                        }
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+});
+</script>
+{% endblock %}

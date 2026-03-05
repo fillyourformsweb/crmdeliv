@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Order - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-edit"></i> Edit Order</h2>
+    </div>
+</div>
+
+<form method="POST">
+    <div class="card mb-4 border-warning">
+        <div class="card-header bg-warning text-dark fw-bold">
+            <i class="fas fa-barcode"></i> critical: Receipt Number
+        </div>
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Receipt Number</label>
+                    <input type="text" name="receipt_number" class="form-control luxury-input"
+                        value="{{ order.receipt_number }}" required>
+                    <div class="form-text">Warning: Changing this will affect tracking and search.</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="alert alert-light border mb-0">
+                        <strong>Current Type:</strong> {{ order.receipt_type|title }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-user"></i> Customer Details
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Customer Name *</label>
+                        <input type="text" name="customer_name" class="form-control" value="{{ order.customer_name }}"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone *</label>
+                        <input type="text" name="customer_phone" class="form-control" value="{{ order.customer_phone }}"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="customer_email" class="form-control"
+                            value="{{ order.customer_email or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea name="customer_address" class="form-control"
+                            rows="2">{{ order.customer_address or '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-map-marker-alt"></i> Receiver Details
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Receiver Name</label>
+                        <input type="text" name="receiver_name" class="form-control"
+                            value="{{ order.receiver_name or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Receiver Phone</label>
+                        <input type="text" name="receiver_phone" class="form-control"
+                            value="{{ order.receiver_phone or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea name="receiver_address" class="form-control"
+                            rows="2">{{ order.receiver_address or '' }}</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">City</label>
+                            <input type="text" name="receiver_city" class="form-control"
+                                value="{{ order.receiver_city or '' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">State</label>
+                            <input type="text" name="receiver_state" class="form-control"
+                                value="{{ order.receiver_state or '' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Pincode</label>
+                            <input type="text" name="receiver_pincode" class="form-control"
+                                value="{{ order.receiver_pincode or '' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-box"></i> Package & Status
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Receipt Mode</label>
+                            <select name="receipt_mode" class="form-select">
+                                <option value="">Select Mode</option>
+                                <option value="standard" {{ 'selected' if order.receipt_mode=='standard' }}>Standard
+                                </option>
+                                <option value="prime" {{ 'selected' if order.receipt_mode=='prime' }}>Prime</option>
+                                <option value="parcel" {{ 'selected' if order.receipt_mode=='parcel' }}>Parcel</option>
+                                <option value="state_express" {{ 'selected' if order.receipt_mode=='state_express' }}>
+                                    State Express</option>
+                                <option value="road_express" {{ 'selected' if order.receipt_mode=='road_express' }}>Road
+                                    Express</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="pending" {{ 'selected' if order.status=='pending' }}>Pending</option>
+                                <option value="confirmed" {{ 'selected' if order.status=='confirmed' }}>Confirmed
+                                </option>
+                                <option value="in_transit" {{ 'selected' if order.status=='in_transit' }}>In Transit
+                                </option>
+                                <option value="delivered" {{ 'selected' if order.status=='delivered' }}>Delivered
+                                </option>
+                                <option value="cancelled" {{ 'selected' if order.status=='cancelled' }}>Cancelled
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Package Description</label>
+                        <textarea name="package_description" class="form-control"
+                            rows="2">{{ order.package_description or '' }}</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Weight (kg)</label>
+                            <input type="number" name="weight" class="form-control" step="0.01"
+                                value="{{ order.weight or '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Number of Boxes</label>
+                            <input type="number" name="number_of_boxes" class="form-control"
+                                value="{{ order.number_of_boxes }}" min="1">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Insured/Declared Value (Optional)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" name="insured_amount" class="form-control" step="0.01" min="0"
+                                value="{{ order.insured_amount or '' }}" placeholder="0.00">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Handling Tags Selection -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-tag"></i> Handling Tags
+                </div>
+                <div class="card-body">
+                    {% set tags_list = order.handling_tags.split(',') if order.handling_tags else [] %}
+                    <div class="row g-2">
+                        {% set predefined = [
+                        ('HANDLE WITH CARE', 'Handle With Care', 'hand-holding-heart', 'danger'),
+                        ('FRAGILE', 'Fragile', 'wine-glass', 'danger'),
+                        ('THIS SIDE UP', 'This Side Up', 'arrow-up', 'primary'),
+                        ('KEEP UPRIGHT', 'Keep Upright', 'level-up-alt', 'primary'),
+                        ('KEEP DRY', 'Keep Dry', 'tint', 'info'),
+                        ('TEMPERATURE SENSITIVE', 'Temperature Sensitive', 'thermometer-half', 'warning'),
+                        ('DO NOT BEND', 'Do Not Bend', 'ban', 'danger'),
+                        ('DO NOT STACK', 'Do Not Stack', 'layer-group', 'danger'),
+                        ('DO NOT DROP', 'Do Not Drop', 'exclamation-triangle', 'warning'),
+                        ('SIGNATURE REQUIRED', 'Signature Required', 'signature', 'success')
+                        ] %}
+
+                        {% for val, label, icon, color in predefined %}
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input type="checkbox" name="handling_tags" value="{{ val }}" class="form-check-input"
+                                    id="tag{{ loop.index }}" {{ 'checked' if val in tags_list }}>
+                                <label class="form-check-label" for="tag{{ loop.index }}">
+                                    <i class="fas fa-{{ icon }} text-{{ color }}"></i> {{ label }}
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <!-- Custom Tag (If not in predefined) -->
+                        <div class="col-12 mt-3">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Custom Tag
+                                (Optional)</label>
+                            {% set custom_tag = "" %}
+                            {% for t in tags_list %}
+                            {% set is_predefined = false %}
+                            {% for val, label, icon, color in predefined %}
+                            {% if t == val %}{% set is_predefined = true %}{% endif %}
+                            endfor
+                            {% if not is_predefined %}{% set custom_tag = t %}{% endif %}
+                            {% endfor %}
+                            <input type="text" name="custom_handling_tag" class="form-control"
+                                placeholder="Enter custom instruction..." value="{{ custom_tag }}" maxlength="50">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-warning">
+                    <i class="fas fa-rupee-sign"></i> Payment
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Payment Status</label>
+                            <select name="payment_status" class="form-select">
+                                <option value="unpaid" {{ 'selected' if order.payment_status=='unpaid' }}>Unpaid
+                                </option>
+                                <option value="partial" {{ 'selected' if order.payment_status=='partial' }}>Partial
+                                </option>
+                                <option value="paid" {{ 'selected' if order.payment_status=='paid' }}>Paid</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Payment Mode</label>
+                            <select name="payment_mode" class="form-select">
+                                <option value="">Select Mode</option>
+                                <option value="cash" {{ 'selected' if order.payment_mode=='cash' }}>Cash</option>
+                                <option value="card" {{ 'selected' if order.payment_mode=='card' }}>Card</option>
+                                <option value="upi" {{ 'selected' if order.payment_mode=='upi' }}>UPI</option>
+                                <option value="credit" {{ 'selected' if order.payment_mode=='credit' }}>Credit</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-sticky-note"></i> Notes
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Special Instructions</label>
+                        <textarea name="special_instructions" class="form-control"
+                            rows="2">{{ order.special_instructions or '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Internal Notes</label>
+                        <textarea name="internal_notes" class="form-control"
+                            rows="2">{{ order.internal_notes or '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-save"></i> Update Order
+        </button>
+        <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-secondary btn-lg">Cancel</a>
+    </div>
+</form>
+{% endblock %}

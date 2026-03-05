@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block title %}Consolidated Bill - {{ client.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+
+        .luxury-navbar,
+        .luxury-sidebar,
+        .btn-no-print,
+        .action-bar {
+            display: none !important;
+        }
+
+        .main-content-wrapper {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .bill-container {
+            box-shadow: none !important;
+            border: 1px solid #000 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        body {
+            background: white !important;
+        }
+    }
+
+    .bill-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border: 1px solid #333;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .invoice-header {
+        text-align: center;
+        border-bottom: 2px solid #000;
+        padding: 5px;
+        color: red;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .bill-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-bottom: 1px solid #333;
+    }
+
+    .grid-cell {
+        padding: 10px;
+        border-right: 1px solid #333;
+    }
+
+    .grid-cell:last-child {
+        border-right: none;
+    }
+
+    .label-small {
+        font-size: 0.8rem;
+        color: #555;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .cell-content {
+        font-size: 0.95rem;
+    }
+
+    .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+        border: 1px solid #333;
+        padding: 6px;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    .invoice-table th {
+        background: #f8f9fa;
+        font-weight: bold;
+    }
+
+    .totals-area {
+        width: 100%;
+        border: 1px solid #000;
+        margin-top: -1px;
+        /* Align with table above if needed */
+    }
+
+    .totals-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .totals-table td {
+        border: 1px solid #000;
+        padding: 5px 10px;
+        vertical-align: top;
+        font-size: 0.85rem;
+    }
+
+    .label-cell {
+        font-weight: 600;
+        background: #fff;
+    }
+
+    .value-cell {
+        text-align: right;
+    }
+
+    .terms-section {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+    }
+
+    .signatory-section {
+        text-align: right;
+        padding: 20px 10px 5px;
+        font-weight: bold;
+    }
+
+    .signatory-box {
+        border-top: none;
+        height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-reveal">
+    <div class="d-flex justify-content-between align-items-center mb-4 btn-no-print action-bar">
+        <a href="{{ url_for('client_orders_due', client_id=client.id) }}" class="btn btn-light rounded-pill px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to Orders
+        </a>
+        <button onclick="window.print()" class="btn btn-primary px-4">
+            <i class="fas fa-print me-2"></i>Print Bill
+        </button>
+    </div>
+
+    <div class="bill-container">
+        <!-- Logo Section -->
+        <div class="text-center p-4">
+            {% if is_gst %}
+            <img src="{{ url_for('static', filename='bill/Letterhead_page-0002.jpg.jpeg') }}" alt="Company Letterhead"
+                style="max-width: 100%; width: auto;">
+            {% else %}
+            <img src="{{ url_for('static', filename='bill/not gst.png') }}" alt="Company Letterhead"
+                style="max-width: 100%; width: auto;">
+            {% endif %}
+        </div>
+
+        <div class="invoice-header bg-light py-2" style="color: #333; border-top: 2px solid #000;">CONSOLIDATED COURIER
+            BILL</div>
+
+        <div class="bill-grid">
+            <div class="grid-cell" style="border-bottom: 1px solid #333;">
+                <span class="label-small">Client:</span>
+                <div class="cell-content fw-bold">{{ client.name }}</div>
+            </div>
+            <div class="grid-cell" style="border-bottom: 1px solid #333;">
+                <span class="label-small">Bill Date:</span>
+                <div class="cell-content">{{ now.strftime('%d/%m/%Y') }}</div>
+                {% if start_date and end_date %}
+                <span class="label-small mt-2">Period:</span>
+                <div class="cell-content">{{ start_date.strftime('%d/%m/%Y') }} to {{ end_date.strftime('%d/%m/%Y') }}
+                </div>
+                {% elif start_date %}
+                <span class="label-small mt-2">From:</span>
+                <div class="cell-content">{{ start_date.strftime('%d/%m/%Y') }}</div>
+                {% elif end_date %}
+                <span class="label-small mt-2">To:</span>
+                <div class="cell-content">{{ end_date.strftime('%d/%m/%Y') }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="bill-grid">
+            <div class="grid-cell">
+                <div class="fw-bold mb-1">Bill By:</div>
+                <div class="fw-bold text-uppercase">{{ branch.name if branch else 'M/S FILL YOUR FORMS' }}</div>
+                <div class="small">Address: {{ branch.address if branch else '746/891, University Chauarah, Old Katra,
+                    Prayagraj, Uttar Pradesh, India-211002' | replace('\n', '<br>') | safe }}</div>
+                <div class="small mt-2">Contact: {{ branch.phone if branch else '9532631383; 9161712113' }}</div>
+                <div class="small">Email: {{ branch.email if branch else 'courier@fillyourforms.com' }}</div>
+                {% if is_gst and branch and branch.gst_number %}
+                <div class="small">GSTIN: {{ branch.gst_number }}</div>
+                {% endif %}
+            </div>
+            <div class="grid-cell">
+                <div class="fw-bold mb-1">Bill To:</div>
+                <div class="fw-bold">{{ client.name }}</div>
+                {% if client.company_name %}
+                <div class="small">{{ client.company_name }}</div>
+                {% endif %}
+                <div class="small">Address: {{ client.address or 'N/A' }}</div>
+                <div class="small mt-2">Contact: {{ client.phone }}</div>
+                {% if client.email %}
+                <div class="small">Email: {{ client.email }}</div>
+                {% endif %}
+                {% if is_gst and client.gst_number %}
+                <div class="small">GSTIN: {{ client.gst_number }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th style="width: 40px;">S.No.</th>
+                    <th>Date</th>
+                    <th>Receipt No.</th>
+                    <th>Consignee</th>
+                    <th>Destination</th>
+                    <th>Weight(kg)</th>
+                    {% if is_gst %}
+                    <th>HSN/SAC</th>
+                    {% endif %}
+                    <th>Amount</th>
+                    <th>Received</th>
+                    <th>Due</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if orders %}
+                {% for order in orders %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ order.created_at.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ order.receipt_number }}</td>
+                    <td class="text-uppercase">{{ order.receiver_name or 'N/A' }}</td>
+                    <td>{{ order.receiver_city or '' }}{% if order.receiver_state %}, {{ order.receiver_state }}{% endif
+                        %}</td>
+                    <td>{{ "%.2f"|format(order.weight or 0) }}</td>
+                    {% if is_gst %}
+                    <td>996511</td>
+                    {% endif %}
+                    <td>{{ "%.2f"|format(order.total_amount or 0) }}</td>
+                    <td>{{ "%.2f"|format(order.received_amount or 0) }}</td>
+                    <td>{{ "%.2f"|format((order.total_amount or 0) - (order.received_amount or 0)) }}</td>
+                </tr>
+                {% endfor %}
+                <tr class="fw-bold bg-light">
+                    <td colspan="{% if is_gst %}6{% else %}5{% endif %}" class="text-end">GRAND TOTAL</td>
+                    <td>{{ "%.2f"|format(grand_total_weight) }}</td>
+                    <td>{{ "%.2f"|format(grand_total_amount) }}</td>
+                    <td>{{ "%.2f"|format(grand_received_amount) }}</td>
+                    <td class="{{ 'text-danger' if grand_due_amount > 0 else 'text-success' }}">{{
+                        "%.2f"|format(grand_due_amount) }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="text-center py-4">No orders found for the selected period.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <div class="totals-area">
+            <table class="totals-table">
+                <tr>
+                    <td colspan="2" class="label-cell" style="width: 50%;">Total in words</td>
+                    <td class="label-cell">Taxable Value</td>
+                    <td class="value-cell">₹{{ "%.2f"|format(taxable_value) if is_gst else
+                        "%.2f"|format(grand_total_amount) }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" rowspan="2" style="height: 60px;">
+                        <!-- Words will appear here -->
+                    </td>
+                    {% if is_gst %}
+                    <td class="label-cell">CGST [09%]</td>
+                    <td class="value-cell">₹{{ "%.2f"|format(cgst_amount) }}</td>
+                    {% else %}
+                    <td class="label-cell">Net Total</td>
+                    <td class="value-cell">₹{{ "%.2f"|format(grand_total_amount) }}</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    {% if is_gst %}
+                    <td class="label-cell">SGST [09%]</td>
+                    <td class="value-cell">₹{{ "%.2f"|format(sgst_amount) }}</td>
+                    {% else %}
+                    <td colspan="2"></td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td class="label-cell" style="width: 15%;">HSN/SAC</td>
+                    <td style="width: 35%;">{% if is_gst %}996511{% endif %}</td>
+                    <td class="label-cell bg-light">Total Invoice Value(INR)</td>
+                    <td class="value-cell fw-bold bg-light">₹{{ "%.2f"|format(grand_total_amount) }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="terms-section">
+                        <div class="fw-bold text-center border-bottom mb-2">Terms & Conditions</div>
+                        <ul class="ps-3 mb-0">
+                            <li>Proper packaging is sender's responsibility.</li>
+                            <li>No liability for damage due to poor packing or delays.</li>
+                            <li>Delivery timelines are estimates only.</li>
+                            <li>Incorrect address/refusal may result in return at sender's cost.</li>
+                            <li>Claims must be reported within 48 hours.</li>
+                        </ul>
+                    </td>
+                    <td colspan="2" class="signatory-section">
+                        <div class="signatory-box">
+                            <div></div>
+                            <div>Authorised Signatory</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

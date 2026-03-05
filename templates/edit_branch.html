@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Branch - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-edit"></i> Edit Branch: {{ branch.name }}</h2>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Branch Name *</label>
+                    <input type="text" name="name" class="form-control" value="{{ branch.name }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Branch Code *</label>
+                    <input type="text" name="code" class="form-control" value="{{ branch.code }}" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Phone</label>
+                    <input type="text" name="phone" class="form-control" value="{{ branch.phone or '' }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ branch.email or '' }}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+                <textarea name="address" class="form-control" rows="2">{{ branch.address or '' }}</textarea>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="is_active" class="form-check-input" id="isActive" {{ 'checked' if
+                    branch.is_active else '' }}>
+                <label class="form-check-label" for="isActive">Active</label>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+                <a href="{{ url_for('branches') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

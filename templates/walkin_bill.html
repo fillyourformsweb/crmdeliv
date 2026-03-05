@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+
+{% block title %}Invoice - {{ order.receipt_number }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+
+        .luxury-navbar,
+        .luxury-sidebar,
+        .btn-no-print,
+        .payment-section {
+            display: none !important;
+        }
+
+        .main-content-wrapper {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .bill-container {
+            box-shadow: none !important;
+            border: 1px solid #000 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        body {
+            background: white !important;
+        }
+    }
+
+    .bill-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border: 1px solid #333;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .invoice-header {
+        text-align: center;
+        border-bottom: 2px solid #000;
+        padding: 5px;
+        color: red;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .bill-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-bottom: 1px solid #333;
+    }
+
+    .grid-cell {
+        padding: 10px;
+        border-right: 1px solid #333;
+    }
+
+    .grid-cell:last-child {
+        border-right: none;
+    }
+
+    .label-small {
+        font-size: 0.8rem;
+        color: #555;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .cell-content {
+        font-size: 0.95rem;
+    }
+
+    .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+        border: 1px solid #333;
+        padding: 8px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .invoice-table th {
+        background: #f8f9fa;
+        font-weight: bold;
+    }
+
+    .totals-area {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        border: 1px solid #333;
+    }
+
+    .terms-box {
+        padding: 10px;
+        border-right: 1px solid #333;
+        font-size: 0.75rem;
+    }
+
+    .calculations-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .calc-row {
+        display: contents;
+    }
+
+    .calc-label {
+        padding: 5px 10px;
+        border-bottom: 1px solid #333;
+        border-right: 1px solid #333;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .calc-value {
+        padding: 5px 10px;
+        border-bottom: 1px solid #333;
+        text-align: right;
+        font-size: 0.85rem;
+    }
+
+    .signatory-box {
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        padding-bottom: 5px;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-reveal">
+    <div class="d-flex justify-content-between align-items-center mb-4 btn-no-print">
+        <a href="{{ url_for('orders') }}" class="btn btn-light rounded-pill px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to Orders
+        </a>
+        <div class="d-flex align-items-center gap-3">
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="billType" id="billTypeNonGST" value="no" {{ 'checked' if not
+                    is_gst else '' }} onchange="toggleBillType()">
+                <label class="btn btn-outline-primary" for="billTypeNonGST">Non-GST Bill</label>
+
+                <input type="radio" class="btn-check" name="billType" id="billTypeGST" value="yes" {{ 'checked' if
+                    is_gst else '' }} onchange="toggleBillType()">
+                <label class="btn btn-outline-primary" for="billTypeGST">GST Bill</label>
+            </div>
+            <div class="btn-group">
+                <button onclick="window.print()" class="btn btn-primary px-4">
+                    <i class="fas fa-print me-2"></i>Print Invoice
+                </button>
+                <button onclick="showPaymentModal()" class="btn btn-success px-4">
+                    <i class="fas fa-rupee-sign me-2"></i>Record Payment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% set total = order.total_amount or 0 %}
+
+    <div class="bill-container">
+        <!-- Logo Section -->
+        <div class="text-center p-4">
+            {% if is_gst %}
+            <img src="{{ url_for('static', filename='bill/Letterhead_page-0002.jpg.jpeg') }}" alt="Company Letterhead"
+                style="max-width: 100%; width: auto;">
+            {% else %}
+            <img src="{{ url_for('static', filename='bill/not gst.png') }}" alt="Company Letterhead"
+                style="max-width: 100%; width: auto;">
+            {% endif %}
+        </div>
+
+        <div class="invoice-header bg-light py-2" style="color: #333; border-top: 2px solid #000;">INVOICE</div>
+
+        <div class="bill-grid">
+            <div class="grid-cell" style="border-bottom: 1px solid #333;">
+                <span class="label-small">Tracking No:</span>
+                <div class="cell-content fw-bold">{{ order.receipt_number }}</div>
+            </div>
+            <div class="grid-cell" style="border-bottom: 1px solid #333;">
+                <span class="label-small">Invoice Date:</span>
+                <div class="cell-content">{{ order.created_at.strftime('%d/%m/%Y') }}</div>
+                <span class="label-small mt-2">Invoice Due Date:</span>
+                <div class="cell-content">{{ order.created_at.strftime('%d/%m/%Y') }}</div>
+            </div>
+        </div>
+
+        <div class="bill-grid">
+            <div class="grid-cell">
+                <div class="fw-bold mb-1">Bill By:</div>
+                <div class="fw-bold text-uppercase">M/S FILL YOUR FORMS</div>
+                <div class="small">Address: 746/891, University Chauarah,<br>
+                    Old Katra, Prayagraj, Uttar Pradesh,<br>
+                    India-211002</div>
+                <div class="small mt-2">Contact: 9532631383; 9161712113</div>
+                <div class="small">Email: courier@fillyourforms.com</div>
+            </div>
+            <div class="grid-cell">
+                <div class="fw-bold mb-1">Bill To (Sender):</div>
+                <div class="fw-bold">{{ order.customer_name }}</div>
+                <div class="small">Address: {{ order.customer_address }}</div>
+                <div class="small mt-2">Contact: {{ order.customer_phone }}</div>
+                <div class="small">Email: {{ order.customer_email or 'N/A' }}</div>
+                <hr class="my-1" style="border-top: 1px dashed #333;">
+                <div class="small fw-bold">Receiver: {{ order.receiver_name }}</div>
+                <div class="small">Dest: {{ order.receiver_city }}{% if order.receiver_state %}, {{ order.receiver_state
+                    }}{% endif %}</div>
+            </div>
+        </div>
+
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">S.No.</th>
+                    <th>Date</th>
+                    <th>Consignment No.</th>
+                    <th>Consignee</th>
+                    <th>Weight(kg)</th>
+                    {% if is_gst %}
+                    <th>HSN/SAC</th>
+                    {% endif %}
+                    <th>Destination</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>{{ order.created_at.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ order.id }}</td>
+                    <td class="text-uppercase">{{ order.receiver_name }}</td>
+                    <td>{{ "%.2f"|format(order.weight or 0) }}</td>
+                    {% if is_gst %}
+                    <td>996511</td>
+                    {% endif %}
+                    <td>{{ order.receiver_city }}</td>
+                </tr>
+                {% for i in range(2, 11) %}
+                <tr>
+                    <td>{{ i }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    {% if is_gst %}
+                    <td></td>
+                    {% endif %}
+                    <td></td>
+                </tr>
+                {% endfor %}
+                <tr class="fw-bold">
+                    <td colspan="4" class="text-end">Total Weight</td>
+                    <td>{{ "%.2f"|format(order.weight or 0) }}</td>
+                    {% if is_gst %}
+                    <td></td>
+                    {% endif %}
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="totals-area">
+            <div class="terms-box">
+                <div class="fw-bold mb-2">Terms & Conditions</div>
+                <ul class="ps-3 mb-0" style="list-style-type: decimal;">
+                    <li>Condition of goods not checked.</li>
+                    <li>No liability for fragile items or delays.</li>
+                    <li>Claims must be made in writing within 24 hours.</li>
+                    <li>All disputes subject to Prayagraj jurisdiction.</li>
+                    <li>Standard T&C apply as per company policy.</li>
+                </ul>
+            </div>
+            <div class="calculations-box">
+                {% if is_gst %}
+                {% set taxable_value = total / 1.18 %}
+                {% set cgst_amount = taxable_value * 0.09 %}
+                {% set sgst_amount = taxable_value * 0.09 %}
+                <div class="calc-row">
+                    <div class="calc-label">Total in words</div>
+                    <div class="calc-value"></div>
+                </div>
+                <div class="calc-row">
+                    <div class="calc-label">Taxable Value</div>
+                    <div class="calc-value">₹{{ "%.2f"|format(taxable_value) }}</div>
+                </div>
+                <div class="calc-row">
+                    <div class="calc-label"></div>
+                    <div class="calc-value">CGST [09%]: ₹{{ "%.2f"|format(cgst_amount) }}</div>
+                </div>
+                <div class="calc-row">
+                    <div class="calc-label">HSN/SAC</div>
+                    <div class="calc-value">SGST [09%]: ₹{{ "%.2f"|format(sgst_amount) }}</div>
+                </div>
+                <div class="calc-row">
+                    <div class="calc-label bg-light">Total Invoice Value (INR)</div>
+                    <div class="calc-value fw-bold bg-light">₹{{ "%.2f"|format(total) }}</div>
+                </div>
+                {% else %}
+                <div class="calc-row">
+                    <div class="calc-label">Total Amount</div>
+                    <div class="calc-value">₹{{ "%.2f"|format(total) }}</div>
+                </div>
+                <div class="calc-row">
+                    <div class="calc-label bg-light">NET PAYABLE</div>
+                    <div class="calc-value fw-bold bg-light">₹{{ "%.2f"|format(total) }}</div>
+                </div>
+                {% endif %}
+
+                <!-- Payment Received Section -->
+                {% if order.received_amount and order.received_amount > 0 %}
+                <div class="calc-row">
+                    <div class="calc-label text-success">Amount Received</div>
+                    <div class="calc-value text-success fw-bold">₹{{ "%.2f"|format(order.received_amount) }}</div>
+                </div>
+                {% if order.payment_mode %}
+                <div class="calc-row">
+                    <div class="calc-label">Payment Mode</div>
+                    <div class="calc-value text-uppercase">{{ order.payment_mode }}</div>
+                </div>
+                {% endif %}
+                {% set balance_due = total - order.received_amount %}
+                {% if balance_due > 0 %}
+                <div class="calc-row">
+                    <div class="calc-label text-danger">Balance Due</div>
+                    <div class="calc-value text-danger fw-bold">₹{{ "%.2f"|format(balance_due) }}</div>
+                </div>
+                {% elif balance_due == 0 %}
+                <div class="calc-row">
+                    <div class="calc-label text-success bg-success-subtle">Payment Status</div>
+                    <div class="calc-value text-success fw-bold bg-success-subtle">✓ PAID IN FULL</div>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="calc-row">
+                    <div class="calc-label text-warning">Payment Status</div>
+                    <div class="calc-value text-warning">PENDING</div>
+                </div>
+                {% endif %}
+
+                <div class="signatory-box" style="grid-column: span 2;">
+                    Signatory for M/S FILL YOUR FORMS
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal fade payment-section" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-rupee-sign me-2"></i>Record Payment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Total Bill Amount: ₹{{ "%.2f"|format(order.total_amount) }}</strong>
+                </div>
+                <form id="paymentForm">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold fs-5">How much did you receive? <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" id="receivedAmount" class="form-control" step="0.01"
+                                value="{{ order.total_amount }}" required>
+                        </div>
+                        <small class="text-muted">Enter the amount you received from customer</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold fs-5">Which payment method did you receive? <span
+                                class="text-danger">*</span></label>
+                        <select id="paymentMode" class="form-select form-select-lg" required>
+                            <option value="">-- Select Payment Method --</option>
+                            <option value="cash">💵 Cash</option>
+                            <option value="upi">📱 UPI / Digital Payment</option>
+                            <option value="card">💳 Card (Debit/Credit)</option>
+                            <option value="bank_transfer">🏦 Bank Transfer</option>
+                            <option value="cheque">📝 Cheque</option>
+                        </select>
+                        <small class="text-muted">Select how the customer paid</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary btn-lg px-5" onclick="submitPayment()">
+                    <i class="fas fa-save me-2"></i>Save Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const orderID = Number('{{ order.id }}'); // Fix for linting
+    const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    function showPaymentModal() { paymentModal.show(); }
+    function submitPayment() {
+        const receivedAmount = parseFloat(document.getElementById('receivedAmount').value);
+        const paymentMode = document.getElementById('paymentMode').value;
+        fetch('/api/walkin/payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderID, received_amount: receivedAmount, payment_mode: paymentMode })
+        }).then(res => res.json()).then(data => {
+            if (data.success) { alert('Payment saved!'); location.reload(); }
+            else { alert('Error: ' + data.message); }
+        });
+    }
+
+    // GST toggle functionality
+    function toggleBillType() {
+        const isGST = document.querySelector('input[name="billType"]:checked').value;
+        const currentUrl = new URL(window.location.href);
+        if (isGST === 'yes') {
+            currentUrl.searchParams.set('gst', 'yes');
+        } else {
+            currentUrl.searchParams.delete('gst');
+        }
+        window.location.href = currentUrl.toString();
+    }
+</script>
+{% endblock %}

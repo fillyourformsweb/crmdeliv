@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Billing Patterns - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-calculator"></i> Billing Patterns (10-15-30)</h2>
+    </div>
+    <div class="col-auto">
+        <a href="{{ url_for('add_billing_pattern') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Pattern
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    {% for pattern in patterns %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 {{ 'border-success' if pattern.is_active else 'border-secondary' }}">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ pattern.name }}</h5>
+                <span class="badge bg-{{ 'success' if pattern.is_active else 'secondary' }}">
+                    {{ 'Active' if pattern.is_active else 'Inactive' }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-primary fs-5">Pattern {{ pattern.pattern_type }}</span>
+                </div>
+                <table class="table table-sm">
+                    <tr>
+                        <td>Base Rate</td>
+                        <td class="text-end fw-bold">₹{{ "%.2f"|format(pattern.base_rate) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Rate per kg</td>
+                        <td class="text-end fw-bold">₹{{ "%.2f"|format(pattern.rate_per_kg) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Min Weight</td>
+                        <td class="text-end">{{ pattern.min_weight }} kg</td>
+                    </tr>
+                    <tr>
+                        <td>Max Weight</td>
+                        <td class="text-end">{{ pattern.max_weight or 'Unlimited' }} kg</td>
+                    </tr>
+                    <tr>
+                        <td>Additional Charges</td>
+                        <td class="text-end">₹{{ "%.2f"|format(pattern.additional_charges) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Discount</td>
+                        <td class="text-end text-success">{{ pattern.discount_percentage }}%</td>
+                    </tr>
+                </table>
+                {% if pattern.description %}
+                <p class="small text-muted">{{ pattern.description }}</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <div class="btn-group w-100">
+                    <a href="{{ url_for('edit_billing_pattern', id=pattern.id) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="{{ url_for('delete_billing_pattern', id=pattern.id) }}" class="btn btn-danger"
+                       onclick="return confirm('Are you sure?')">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">No billing patterns configured</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Check Tracking Status{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-indigo fw-bold mb-1" style="color: var(--luxury-blue) !important;">Assign Operations</h5>
+        <h1 class="display-4 fw-black text-dark mb-2">Tracking Control</h1>
+        <p class="text-muted fs-5 mb-0">Current tracking sequences successfully assigned to your hub.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <div class="luxury-card d-inline-flex align-items-center px-4 py-2 border shadow-sm bg-white"
+            style="border-radius: 12px;">
+            <i class="fas fa-satellite-dish text-primary me-2"></i>
+            <span class="fw-bold text-dark">Live Sync Active</span>
+        </div>
+    </div>
+</div>
+
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card luxury-card border-0 shadow-sm">
+            <div class="card-body p-5 text-center">
+                {% if assignments %}
+                {% for item in assignments %}
+                <div class="mb-5 last-child-mb-0">
+                    <h5 class="text-uppercase text-muted small fw-bold mb-3">Branch: {{ item.branch.name }}</h5>
+                    <div class="display-4 fw-black text-primary mb-2">
+                        {% if item.range_end %}
+                        {{ item.prefix or '' }}{{ item.base_number|int + item.current_sequence + 1 }}
+                        {% else %}
+                        {{ item.prefix or '' }}{{ item.base_number }}{{ (item.current_sequence + 1)|string|rjust(6, '0')
+                        }}
+                        {% endif %}
+                    </div>
+                    <p class="text-muted">Next available tracking number</p>
+                    <div class="d-flex justify-content-center gap-4 mt-4">
+                        <div class="text-center">
+                            <div class="fw-bold h5 mb-0">{{ item.current_sequence }}</div>
+                            <div class="small text-muted">Used So Far</div>
+                        </div>
+                        <div class="vr"></div>
+                        <div class="text-center">
+                            <div class="fw-bold h5 mb-0">{{ item.user.username }}</div>
+                            <div class="small text-muted">Assigned To</div>
+                        </div>
+                    </div>
+                </div>
+                {% if not loop.last %}
+                <hr class="my-5 opacity-10">{% endif %}
+                {% endfor %}
+                {% else %}
+                <div class="py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3 opacity-25"></i>
+                    <h4>No Active Assignments</h4>
+                    <p class="text-muted">You don't have any specific tracking sequences assigned to your branch yet.
+                        The
+                        system will use the default sequence.</p>
+                </div>
+                {% endif %}
+
+                <div class="mt-5">
+                    <a href="{{ url_for('client_order') }}" class="btn btn-primary px-4 py-2 rounded-pill">
+                        <i class="fas fa-plus me-2"></i>Create New Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .last-child-mb-0:last-child {
+        margin-bottom: 0 !important;
+    }
+</style>
+{% endblock %}

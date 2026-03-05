@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fly Delivery - Fast, Flawless and Future-Ready Logistics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        :root {
+            --primary: #0a2d7c;
+            --secondary: #ff6b00;
+            --accent: #00a8ff;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #28a745;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            color: var(--primary);
+            font-size: 32px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 28px;
+            color: var(--primary);
+        }
+        
+        .logo-text span {
+            color: var(--secondary);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 30px;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 16px;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        nav ul li a:hover {
+            color: var(--secondary);
+        }
+        
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--secondary);
+            transition: width 0.3s;
+        }
+        
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0a2569;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(10, 45, 124, 0.2);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+            margin-left: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e55c00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.2);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(10, 45, 124, 0.9), rgba(10, 45, 124, 0.8)), url('https://images.unsplash.com/photo-1607082350899-7e105aa886ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 48px;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            opacity: 0.9;
+        }
+        
+        .tracking-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 40px auto 0;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tracking-box h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .tracking-input-group {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .tracking-input-group input {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 16px;
+        }
+        
+        .tracking-input-group button {
+            border-radius: 0 4px 4px 0;
+            padding: 0 30px;
+        }
+        
+        .branch-locator {
+            display: flex;
+            margin-top: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .branch-locator i {
+            color: var(--secondary);
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        /* Services Section */
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .services {
+            padding: 80px 0;
+            background-color: white;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .service-card {
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+        
+        .service-icon {
+            background-color: var(--primary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .service-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        /* About Section */
+        .about {
+            padding: 80px 0;
+            background-color: #f0f4ff;
+        }
+        
+        .about-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 50px;
+            align-items: center;
+        }
+        
+        .about-text h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: flex;
+            margin-top: 30px;
+        }
+        
+        .stat-item {
+            margin-right: 40px;
+        }
+        
+        .stat-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--secondary);
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        /* Partners Section */
+        .partners {
+            padding: 80px 0;
+            background-color: white;
+        }
+        
+        .partners-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 50px;
+            align-items: center;
+        }
+        
+        .partners-text h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        /* Testimonials Section */
+        .testimonials {
+            padding: 80px 0;
+            background-color: #f0f4ff;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .testimonial-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 28px;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo span {
+            color: var(--secondary);
+        }
+        
+        .footer-links h4, .footer-contact h4 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links ul li a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links ul li a:hover {
+            color: var(--secondary);
+        }
+        
+        .footer-contact p {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .footer-contact i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+        
+        .copyright a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+        
+        /* Chat Bot */
+        .chat-bot {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+        
+        .chat-toggle {
+            background-color: var(--secondary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+            transition: transform 0.3s;
+        }
+        
+        .chat-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .chat-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-header h3 {
+            font-size: 18px;
+        }
+        
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .chat-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            max-width: 80%;
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+        }
+        
+        .bot-message {
+            background-color: #f0f4ff;
+            color: var(--dark);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .user-message {
+            background-color: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .chat-input button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .chat-input button:hover {
+            background-color: #0a2569;
+        }
+        
+        .quick-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .quick-option {
+            background-color: #f0f4ff;
+            border: 1px solid #d0d9ff;
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quick-option:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            nav ul {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-window {
+                width: 300px;
+                height: 450px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                padding: 15px 0;
+            }
+            
+            .header-actions {
+                margin-top: 15px;
+            }
+            
+            .tracking-input-group {
+                flex-direction: column;
+            }
+            
+            .tracking-input-group input {
+                border-radius: 4px;
+                margin-bottom: 10px;
+            }
+            
+            .tracking-input-group button {
+                border-radius: 4px;
+                width: 100%;
+            }
+            
+            .about-content, .partners-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                flex-direction: column;
+            }
+            
+            .stat-item {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .chat-window {
+                width: 280px;
+                right: -20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <i class="fas fa-paper-plane logo-icon"></i>
+                <div class="logo-text">Fly<span>Delivery</span></div>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#partners">Partners</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="btn btn-outline">Login</button>
+                <button class="btn btn-primary">Track</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Fast, Flawless And Future-Ready Logistics</h1>
+            <p>Experience business excellence with technology-backed logistics solutions at your fingertips. Swift, safe delivery across India and worldwide.</p>
+            
+            <div class="tracking-box">
+                <h3>Track Your Shipment</h3>
+                <div class="tracking-input-group">
+                    <input type="text" id="trackingId" placeholder="Enter Tracking ID or Order/Reference Number">
+                    <button class="btn btn-secondary" id="trackBtn">Track</button>
+                </div>
+                <div class="branch-locator">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Conveniently locate our stores by entering your pin code and state</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="container">
+            <div class="section-title">
+                <h2>OUR SERVICES</h2>
+                <p>Next-Gen Logistics, Tailored For You</p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3>Domestic Delivery</h3>
+                    <p>Ensure swift and secure deliveries throughout India, featuring competitive rates, convenient payment options, and comprehensive transit protection.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>International Delivery</h3>
+                    <p>Experience seamless international shipping to 196+ countries with competitive pricing, prompt customs clearance, and multi-courier benefits.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h3>Express Delivery</h3>
+                    <p>Get your packages delivered at express speed with our Prime Track service that guarantees next or second business day delivery.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Customer-Centric Logistics Pioneers</h2>
+                    <p>With 20 years of unrivaled logistics mastery, we have expanded our operations worldwide achieving a turnover exceeding 405 crores (FY23-24).</p>
+                    <p>Our commitment to excellence is exemplified by our unique service attributes such as "Prime Track" that guarantees next or second business day delivery, Air Express Cargo that lets you deliver heavy shipments at express speed.</p>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">20+</div>
+                            <div class="stat-label">Years Experience</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">405+ Cr</div>
+                            <div class="stat-label">Annual Turnover</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">196+</div>
+                            <div class="stat-label">Countries Served</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" style="margin-top: 30px;">Know More →</button>
+                </div>
+                
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Logistics" style="width: 100%; border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners Section -->
+    <section class="partners" id="partners">
+        <div class="container">
+            <div class="partners-content">
+                <div class="partners-image">
+                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Partnership" style="width: 100%; border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+                </div>
+                
+                <div class="partners-text">
+                    <h2>Become Our Partner</h2>
+                    <p>Our dynamic logistics franchise network has over 6500 thriving partners. Backed by a decade-long commitment to our associates, we strive for mutual growth and revenue expansion with every partnership.</p>
+                    <p>We aim to cultivate entrepreneurship, and empower franchise owners through comprehensive training and mentorship. We bring you franchise models to suit your entrepreneurial aspirations.</p>
+                    <button class="btn btn-secondary" style="margin-top: 30px;">Enquire Now →</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>CLIENT TESTIMONIALS</h2>
+                <p>What our valued clients say about our services</p>
+            </div>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"We have been associated with Fly Delivery since the past year and it has truly been a wonderful journey. Your service is undoubtedly excellent and customer care is also responsive."</p>
+                    <p class="testimonial-author">Zebronics India Pvt. Ltd.</p>
+                </div>
+                
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Dear Fly Delivery Management, I take this opportunity to appreciate your logistics services. We have been associated with Fly Delivery for the last 2 years. We always get good response & proper service."</p>
+                    <p class="testimonial-author">STI Fasteners</p>
+                </div>
+                
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"It is noted that your present service is better than earlier. I hope that we remain satisfied with your service and wish you all the success in this industry."</p>
+                    <p class="testimonial-author">The Waxpol Industries Limited</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <div class="footer-logo">Fly<span>Delivery</span></div>
+                    <p>With you always, providing fast, flawless and future-ready logistics solutions for businesses and individuals worldwide.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Useful Links</h4>
+                    <ul>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#partners">Become a Partner</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                        <li><a href="#">Career</a></li>
+                        <li><a href="#">Gallery</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Head Office, A-64, Naraina Industrial Area, Phase-1 New Delhi - 110028</p>
+                    <p><i class="fas fa-envelope"></i> customercare@flydelivery.in</p>
+                    <p><i class="fas fa-phone"></i> 011-4559 3500</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2024 Copyright flydelivery.in. All Rights Reserved. | Powered By Fly Delivery Pvt. Ltd.</p>
+                <p><a href="#">Privacy Policy</a> | <a href="#">Terms & Conditions</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chat Bot -->
+    <div class="chat-bot">
+        <div class="chat-toggle" id="chatToggle">
+            <i class="fas fa-robot"></i>
+        </div>
+        
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h3>Fly Delivery Assistant</h3>
+                <button class="close-chat" id="closeChat"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="chat-body" id="chatBody">
+                <div class="message bot-message">
+                    Hello! I'm your Fly Delivery assistant. How can I help you today?
+                </div>
+                <div class="message bot-message">
+                    You can:
+                    <div class="quick-options">
+                        <div class="quick-option" data-action="track">Track a shipment</div>
+                        <div class="quick-option" data-action="services">Know about services</div>
+                        <div class="quick-option" data-action="partner">Become a partner</div>
+                        <div class="quick-option" data-action="contact">Contact support</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Type your message...">
+                <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chat Bot Functionality
+        const chatToggle = document.getElementById('chatToggle');
+        const chatWindow = document.getElementById('chatWindow');
+        const closeChat = document.getElementById('closeChat');
+        const chatBody = document.getElementById('chatBody');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const trackBtn = document.getElementById('trackBtn');
+        const trackingId = document.getElementById('trackingId');
+        
+        // Toggle chat window
+        chatToggle.addEventListener('click', () => {
+            chatWindow.style.display = 'flex';
+        });
+        
+        closeChat.addEventListener('click', () => {
+            chatWindow.style.display = 'none';
+        });
+        
+        // Quick options functionality
+        document.querySelectorAll('.quick-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const action = this.getAttribute('data-action');
+                handleQuickOption(action);
+            });
+        });
+        
+        // Handle quick option selection
+        function handleQuickOption(action) {
+            let botResponse = "";
+            
+            switch(action) {
+                case 'track':
+                    botResponse = "Please enter your tracking ID. You can find it in your shipment confirmation email or on the receipt.";
+                    break;
+                case 'services':
+                    botResponse = "We offer Domestic Delivery across India, International Delivery to 196+ countries, and Express Delivery with next or second business day guarantee. Which service would you like to know more about?";
+                    break;
+                case 'partner':
+                    botResponse = "We have a thriving franchise network with over 6500 partners. We provide comprehensive training and mentorship. Would you like me to connect you with our partnership team?";
+                    break;
+                case 'contact':
+                    botResponse = "You can contact us at customercare@flydelivery.in or call 011-4559 3500. Our head office is at A-64, Naraina Industrial Area, Phase-1, New Delhi - 110028.";
+                    break;
+            }
+            
+            addBotMessage(botResponse);
+        }
+        
+        // Send message function
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (message === "") return;
+            
+            addUserMessage(message);
+            chatInput.value = "";
+            
+            // Simulate bot response after delay
+            setTimeout(() => {
+                let botResponse = getBotResponse(message.toLowerCase());
+                addBotMessage(botResponse);
+            }, 1000);
+        }
+        
+        // Add user message to chat
+        function addUserMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', 'user-message');
+            messageDiv.textContent = message;
+            chatBody.appendChild(messageDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+        
+        // Add bot message to chat
+        function addBotMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', 'bot-message');
+            messageDiv.textContent = message;
+            chatBody.appendChild(messageDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+        
+        // Get bot response based on user input
+        function getBotResponse(message) {
+            if (message.includes('track') || message.includes('tracking') || message.includes('shipment')) {
+                return "Please enter your tracking ID. You can find it in your shipment confirmation email or on the receipt. I can help you check the status once you provide the ID.";
+            } else if (message.includes('service') || message.includes('deliver')) {
+                return "We offer Domestic Delivery (across India), International Delivery (196+ countries), and Express Delivery (next/second business day). We also provide logistics solutions for businesses. Which service interests you?";
+            } else if (message.includes('partner') || message.includes('franchise')) {
+                return "We have over 6500 franchise partners. We provide training, mentorship, and multiple franchise models. Would you like me to connect you with our partnership team or send you more information?";
+            } else if (message.includes('contact') || message.includes('support') || message.includes('help')) {
+                return "You can reach us at customercare@flydelivery.in or call 011-4559 3500. Our office hours are 9 AM to 7 PM, Monday to Saturday.";
+            } else if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+                return "Hello! How can I assist you with Fly Delivery services today?";
+            } else if (message.includes('thank')) {
+                return "You're welcome! Is there anything else I can help you with?";
+            } else if (message.includes('cost') || message.includes('price') || message.includes('rate')) {
+                return "Our pricing depends on package weight, dimensions, destination, and service type. For accurate pricing, please visit our website or contact our customer care.";
+            } else if (message.includes('time') || message.includes('duration') || message.includes('delivery time')) {
+                return "Domestic delivery typically takes 2-5 business days. Express delivery guarantees next or second business day. International delivery varies by destination (usually 5-15 business days).";
+            } else {
+                return "I'm here to help with tracking shipments, service information, partnership inquiries, or any other Fly Delivery questions. How can I assist you?";
+            }
+        }
+        
+        // Event listeners for chat
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        // Tracking functionality
+        trackBtn.addEventListener('click', () => {
+            const id = trackingId.value.trim();
+            if (id === "") {
+                alert("Please enter a tracking ID");
+                return;
+            }
+            
+            // Simulate tracking
+            alert(`Tracking shipment with ID: ${id}\n\nStatus: In transit\nLocation: Delhi Sorting Facility\nEstimated Delivery: Tomorrow by 5 PM`);
+            
+            // Also add to chat if open
+            if (chatWindow.style.display === 'flex') {
+                addUserMessage(`Track shipment: ${id}`);
+                setTimeout(() => {
+                    addBotMessage(`I found your shipment with ID: ${id}\nStatus: In transit\nCurrent Location: Delhi Sorting Facility\nEstimated Delivery: Tomorrow by 5 PM`);
+                }, 1000);
+            }
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Initialize with a welcome message if chat is opened
+        setTimeout(() => {
+            if (Math.random() > 0.7) {
+                chatWindow.style.display = 'flex';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

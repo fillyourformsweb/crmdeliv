@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    <title>{% block title %}CRM Delivery System{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    {% if current_user.is_authenticated %}
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark luxury-navbar sticky-top">
+        <div class="container-fluid px-3 px-md-4">
+            <!-- Mobile Toggle -->
+            <button class="btn btn-link text-white d-lg-none me-2 p-0" id="mobileSidebarToggle">
+                <i class="fas fa-bars-staggered fs-4"></i>
+            </button>
+
+            <!-- Brand Section in Nav -->
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('dashboard') }}">
+                <div class="brand-logo-white me-2 me-md-3">
+                    <i class="fas fa-truck-fast"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="fw-black fs-4 fs-md-3">CRM</span><span
+                        class="fw-light fs-4 fs-md-3 opacity-75">DELIVERY</span>
+                </div>
+            </a>
+
+            <div class="ms-auto d-flex align-items-center">
+                <!-- User Profile Section -->
+                <div class="dropdown">
+                    <a class="nav-profile-trigger dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <div class="avatar-circle">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="user-name d-none d-md-inline">{{ current_user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-3 animate-slide-up">
+                        <li>
+                            <div class="px-3 py-2">
+                                <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Account
+                                </div>
+                                <div class="fw-bold text-primary">{{ current_user.username }}</div>
+                                <span class="badge bg-primary-subtle text-primary rounded-pill mt-1">{{
+                                    current_user.role|upper }}</span>
+                            </div>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider opacity-50">
+                        </li>
+                        <li><a class="dropdown-item py-2 text-danger fw-bold" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Classy Sidebar -->
+    <aside class="luxury-sidebar" id="mainSidebar">
+        <!-- Sidebar Brand (Mobile Only) -->
+        <div class="d-md-none p-4 mb-2" style="background: var(--primary-gradient);">
+            <div class="d-flex align-items-center gap-3 text-white">
+                <div class="avatar-circle bg-white bg-opacity-25" style="border: none;">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">{{ current_user.username }}</h6>
+                    <span class="small opacity-75">{{ current_user.role|upper }} Hub</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Track Order Box (Absolute Top as requested) -->
+        <div class="p-3">
+            <div class="sidebar-track-box mb-0">
+                <h6><i class="fas fa-search-location me-2"></i>Logistics Search</h6>
+                <form action="{{ url_for('tracking') }}" method="GET">
+                    <div class="position-relative">
+                        <input type="text" name="receipt_number" class="sidebar-track-input"
+                            placeholder="Tracking Number..." required>
+                        <button type="submit"
+                            class="position-absolute end-0 top-0 h-100 border-0 bg-transparent text-white pe-3 opacity-75">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="sidebar-nav pt-2">
+            <div class="sidebar-heading">Main Operations</div>
+
+            {% if current_user.role == 'customer' %}
+            <a href="{{ url_for('customer_dashboard') }}"
+                class="sidebar-link {{ 'active' if request.endpoint == 'customer_dashboard' }}">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>My Dashboard</span>
+            </a>
+            <a href="{{ url_for('tracking') }}" class="sidebar-link {{ 'active' if request.endpoint == 'tracking' }}">
+                <i class="fas fa-location-arrow"></i>
+                <span>Live Tracking</span>
+            </a>
+            {% else %}
+            <a href="{{ url_for('dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'dashboard' }}">
+                <i class="fas fa-chart-line"></i>
+                <span>Insights</span>
+            </a>
+            <a href="{{ url_for('orders') }}"
+                class="sidebar-link {{ 'active' if request.endpoint in ['orders', 'walkin_order', 'client_order', 'order_details', 'edit_order'] }}">
+                <i class="fas fa-boxes"></i>
+                <span>Orders</span>
+            </a>
+            <a href="{{ url_for('staff_receipt_check') }}"
+                class="sidebar-link {{ 'active' if request.endpoint == 'staff_receipt_check' }}">
+                <i class="fas fa-receipt"></i>
+                <span>Tracking Status</span>
+            </a>
+            <a href="{{ url_for('clients') }}"
+                class="sidebar-link {{ 'active' if request.endpoint in ['clients', 'add_client', 'edit_client', 'view_client_prices', 'set_client_prices'] }}">
+                <i class="fas fa-building"></i>
+                <span>Corporate</span>
+            </a>
+            <a href="{{ url_for('customers') }}" class="sidebar-link {{ 'active' if request.endpoint == 'customers' }}">
+                <i class="fas fa-user-friends"></i>
+                <span>Individuals</span>
+            </a>
+            <a href="{{ url_for('excel_upload') }}"
+                class="sidebar-link {{ 'active' if request.endpoint in ['excel_upload', 'upload_confirmation'] }}">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Bulk Import</span>
+            </a>
+
+            <div class="sidebar-heading mt-4">Shipment Tracking</div>
+            <a href="{{ url_for('orders', status='in_transit') }}"
+                class="sidebar-link {{ 'active' if request.args.get('status') == 'in_transit' }}">
+                <i class="fas fa-shipping-fast"></i>
+                <span>In Transit</span>
+            </a>
+            <a href="{{ url_for('orders', status='at_destination') }}"
+                class="sidebar-link {{ 'active' if request.args.get('status') == 'at_destination' }}">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>At Destination</span>
+            </a>
+            <a href="{{ url_for('orders', status='delivered') }}"
+                class="sidebar-link {{ 'active' if request.args.get('status') == 'delivered' }}">
+                <i class="fas fa-check-circle"></i>
+                <span>Delivered</span>
+            </a>
+            <a href="{{ url_for('orders', status='rto') }}"
+                class="sidebar-link {{ 'active' if request.args.get('status') == 'rto' }}">
+                <i class="fas fa-undo"></i>
+                <span>RTO / Returns</span>
+            </a>
+
+            {% if current_user.role == 'admin' %}
+            <div class="sidebar-heading mt-4">Finance & Analytics</div>
+            <a href="{{ url_for('detailed_reports') }}"
+                class="sidebar-link {{ 'active' if request.endpoint == 'detailed_reports' }}">
+                <i class="fas fa-chart-pie"></i>
+                <span>Analytics Suite</span>
+            </a>
+            <a href="{{ url_for('due_amount_report') }}"
+                class="sidebar-link {{ 'active' if request.endpoint == 'due_amount_report' }}">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Due Reports</span>
+            </a>
+            <a href="{{ url_for('client_due_report') }}"
+                class="sidebar-link {{ 'active' if request.endpoint in ['client_due_report', 'client_orders_due', 'print_consolidated_bill'] }}">
+                <i class="fas fa-receipt"></i>
+                <span>Client Due Report</span>
+            </a>
+
+            <div class="sidebar-heading mt-4">Management</div>
+            <a href="{{ url_for('staff_management') }}"
+                class="sidebar-link {{ 'active' if request.endpoint == 'staff_management' }}">
+                <i class="fas fa-users-cog"></i>
+                <span>Team Access</span>
+            </a>
+            <a href="{{ url_for('delivery_personnel') }}"
+                class="sidebar-link {{ 'active' if request.endpoint == 'delivery_personnel' }}">
+                <i class="fas fa-motorcycle"></i>
+                <span>Dispatchers</span>
+            </a>
+            <a href="{{ url_for('branches') }}" class="sidebar-link {{ 'active' if request.endpoint == 'branches' }}">
+                <i class="fas fa-network-wired"></i>
+                <span>Hubs</span>
+            </a>
+            {% if current_user.role in ['admin', 'manager'] %}
+            <a href="{{ url_for('admin_receipts') }}"
+                class="sidebar-link {{ 'active' if request.endpoint == 'admin_receipts' }}">
+                <i class="fas fa-file-invoice"></i>
+                <span>Tracking Control</span>
+            </a>
+            {% endif %}
+
+            <div class="sidebar-heading mt-4">Pricing Management</div>
+            <a href="{{ url_for('insurance_settings') }}"
+                class="sidebar-link {{ 'active' if request.endpoint == 'insurance_settings' }}">
+                <i class="fas fa-shield-alt"></i>
+                <span>Insurance Master</span>
+            </a>
+            <a href="{{ url_for('default_prices') }}"
+                class="sidebar-link {{ 'active' if request.endpoint in ['default_prices', 'add_default_price', 'edit_default_price'] }}">
+                <i class="fas fa-tags"></i>
+                <span>Price Master</span>
+            </a>
+            <a href="{{ url_for('clients') }}"
+                class="sidebar-link {{ 'active' if request.endpoint in ['clients', 'view_client_prices', 'set_client_prices'] }}">
+                <i class="fas fa-hand-holding-usd"></i>
+                <span>Client Prices</span>
+            </a>
+            <a href="{{ url_for('public_prices') }}"
+                class="sidebar-link {{ 'active' if request.endpoint == 'public_prices' }}">
+                <i class="fas fa-globe"></i>
+                <span>Public View</span>
+            </a>
+
+            {% endif %}
+            {% endif %}
+        </div>
+    </aside>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="{{ url_for('dashboard') }}" class="bottom-nav-link {{ 'active' if request.endpoint == 'dashboard' }}">
+            <i class="fas fa-chart-line"></i>
+            <span>Stats</span>
+        </a>
+        <a href="{{ url_for('orders') }}" class="bottom-nav-link {{ 'active' if request.endpoint == 'orders' }}">
+            <i class="fas fa-boxes"></i>
+            <span>Orders</span>
+        </a>
+        <a href="{{ url_for('walkin_order') }}" class="bottom-nav-link nav-center">
+            <i class="fas fa-plus"></i>
+        </a>
+        <a href="{{ url_for('clients') }}" class="bottom-nav-link {{ 'active' if request.endpoint == 'clients' }}">
+            <i class="fas fa-building"></i>
+            <span>Corporate</span>
+        </a>
+        <a href="{{ url_for('tracking') }}" class="bottom-nav-link {{ 'active' if request.endpoint == 'tracking' }}">
+            <i class="fas fa-search-location"></i>
+            <span>Track</span>
+        </a>
+    </nav>
+
+    {% else %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-0">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="{{ url_for('tracking') }}">
+                <i class="fas fa-truck me-2"></i>CRM Delivery
+            </a>
+            <div class="ms-auto">
+                <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm px-4 rounded-pill fw-bold">
+                    <i class="fas fa-sign-in-alt me-1"></i> Staff Login
+                </a>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <div class="{{ 'main-content-wrapper' if current_user.is_authenticated }}">
+        <div class="container-fluid py-3 py-md-4 {{ 'px-3 px-md-4' if current_user.is_authenticated }}">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div
+                class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show {{ 'luxury-card border-0 shadow-sm' if current_user.is_authenticated else '' }} mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {{ message }}
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <div class="row">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mobile Sidebar Logic
+        const sidebar = document.getElementById('mainSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const toggle = document.getElementById('mobileSidebarToggle');
+
+        if (toggle) {
+            toggle.addEventListener('click', () => {
+                sidebar.classList.add('mobile-open');
+                overlay.classList.add('active');
+            });
+        }
+
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            });
+        }
+
+        // Close sidebar on link click (for mobile)
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 992) {
+                    sidebar.classList.remove('mobile-open');
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

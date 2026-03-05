@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Client Due Report - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="page-content-wrapper w-100">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <h5 class="text-primary fw-bold mb-1">Financial Intelligence</h5>
+            <h1 class="display-5 fw-black text-dark mb-2">Client Due Report</h1>
+            <p class="text-muted fs-5 mb-0">Monitor and manage outstanding payments from corporate clients.</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+                <button class="btn btn-primary px-4" onclick="window.print()">
+                    <i class="fas fa-print me-2"></i>Print
+                </button>
+                <button class="btn btn-success px-4" onclick="exportToExcel()">
+                    <i class="fas fa-file-excel me-2"></i>Export
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card luxury-card border-0 shadow-sm mb-5">
+        <div class="card-header bg-transparent border-0 px-4 pt-4">
+            <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-filter me-2 text-primary opacity-50"></i>Filter
+                Analytics</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label small fw-bold text-uppercase text-muted">From Date</label>
+                    <input type="date" class="form-control luxury-input" id="filterFrom" onchange="loadClientDues()">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-bold text-uppercase text-muted">To Date</label>
+                    <input type="date" class="form-control luxury-input" id="filterTo" onchange="loadClientDues()">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="card luxury-card border-0 bg-primary text-white p-4">
+                <div class="small fw-bold text-uppercase opacity-75">Total Outstanding</div>
+                <h2 class="fw-black mb-0 mt-1" id="totalDue">₹0</h2>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card luxury-card border-0 bg-dark text-white p-4">
+                <div class="small fw-bold text-uppercase opacity-75">Clients with Dues</div>
+                <h2 class="fw-black mb-0 mt-1" id="totalClients">0</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Table -->
+    <div class="card luxury-card border-0 shadow-sm mb-5">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="clientDueTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted">Client</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Company</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Total Orders</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Total Amount</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Received</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Due Amount</th>
+                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Last Order</th>
+                            <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="spinner-border text-primary"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function loadClientDues() {
+        const filters = {
+            start_date: document.getElementById('filterFrom').value,
+            end_date: document.getElementById('filterTo').value
+        };
+
+        const tbody = document.querySelector('#clientDueTable tbody');
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+
+        fetch('/api/client-due-summary?' + new URLSearchParams(filters))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateSummary(data.summary);
+                    updateClientTable(data.clients);
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-danger">Error loading data: ' + data.error + '</td></tr>';
+                }
+            })
+            .catch(error => {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-danger">Error: ' + error + '</td></tr>';
+            });
+    }
+
+    function updateSummary(summary) {
+        document.getElementById('totalDue').textContent = '₹' + summary.total_due.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('totalClients').textContent = summary.total_clients;
+    }
+
+    function updateClientTable(clients) {
+        const tbody = document.querySelector('#clientDueTable tbody');
+        if (!clients.length) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-muted">No clients with outstanding dues found.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = clients.map(c => `
+            <tr>
+                <td class="px-4">
+                    <div class="fw-bold text-dark">${c.name}</div>
+                    <div class="small text-muted"><i class="fas fa-phone me-1"></i>${c.phone}</div>
+                </td>
+                <td>
+                    <div class="fw-semibold">${c.company_name || 'Personal'}</div>
+                    ${c.email ? '<div class="small text-muted">' + c.email + '</div>' : ''}
+                </td>
+                <td><span class="badge bg-light text-dark rounded-pill">${c.total_orders} orders</span></td>
+                <td class="fw-bold">₹${c.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                <td class="text-success fw-bold">₹${c.received_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                <td class="text-danger fw-black">₹${c.due_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                <td class="small text-muted">${c.last_order_date || 'N/A'}</td>
+                <td class="px-4 text-end">
+                    <a href="/client/${c.id}/orders-due" class="btn btn-sm btn-primary rounded-pill px-3">
+                        <i class="fas fa-eye me-1"></i>View Orders
+                    </a>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function exportToExcel() {
+        alert('Export functionality coming soon!');
+    }
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', () => loadClientDues());
+</script>
+{% endblock %}

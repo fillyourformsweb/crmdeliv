@@ -1,0 +1,37 @@
+import os
+import secrets
+import random
+from datetime import datetime, timedelta
+from functools import wraps
+import pandas as pd
+from io import BytesIO
+import qrcode
+import base64
+import json
+import fitz  # PyMuPDF
+import google.generativeai as genai
+from PIL import Image
+
+from flask import (
+    Flask, render_template, request, redirect, url_for, flash, 
+    jsonify, session, send_file, make_response
+)
+from flask_login import (
+    LoginManager, login_user, logout_user, login_required, current_user
+)
+from werkzeug.utils import secure_filename
+
+from config import Config
+from models import (
+    db, init_db, User, Branch, Client, Order, ReceiptSetting,
+    TrackingUpdate, ExcelUpload, ExcelData, SystemSettings,
+    DefaultStatePrice, ClientStatePrice, Notification, StaffReceiptAssignment, Receiver,
+    BillingPattern
+)
+
+app = Flask(__name__)
+app.config.from_object(Config)
+
+# Configure Gemini
+if app.config.get('GEMINI_API_KEY'):
+    genai.configure(api_key=app.config['GEMINI_API_KEY'])

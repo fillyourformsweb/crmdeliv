@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Receipt Assignments{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-file-invoice me-2"></i>Staff-Wise Receipt Assignments</h2>
+        <p class="text-muted">Assign receipt number sequences to specific staff members or managers.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Add/Edit Assignment -->
+    <div class="col-lg-4">
+        <div class="card luxury-card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent border-0 px-4 pt-4">
+                <h5 class="fw-bold mb-0 text-dark">{{ 'Edit Assignment' if edit_item else 'Create New Assignment' }}
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST"
+                    action="{{ url_for('edit_receipt_assignment', id=edit_item.id) if edit_item else url_for('admin_receipts') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Branch</label>
+                        <select name="branch_id" class="form-select" required {{ 'disabled' if edit_item else '' }}>
+                            <option value="">Choose...</option>
+                            {% for branch in branches %}
+                            <option value="{{ branch.id }}" {{ 'selected' if edit_item and
+                                edit_item.branch_id==branch.id else '' }}>
+                                {{ branch.name }} ({{ branch.code }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if edit_item %}
+                        <input type="hidden" name="branch_id" value="{{ edit_item.branch_id }}">
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Receipt Prefix (Optional)</label>
+                        <input type="text" name="prefix" class="form-control" placeholder="e.g. BR1-"
+                            value="{{ edit_item.prefix if edit_item else '' }}">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Start Number (From)</label>
+                            <input type="text" name="base_number" class="form-control"
+                                value="{{ edit_item.base_number if edit_item else '100000' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">End Number (To / Optional)</label>
+                            <input type="text" name="range_end" class="form-control"
+                                value="{{ edit_item.range_end if edit_item else '' }}" placeholder="Optional">
+                        </div>
+                        <div class="form-text mt-1">If End Number is provided, the sequence will be added numerically
+                            (Start + Seq). Otherwise, it will be characters-concatenated with 6-digit padding.</div>
+                    </div>
+                    {% if edit_item %}
+                    <div class="mb-3">
+                        <label class="form-label">Current Sequence</label>
+                        <input type="number" name="current_sequence" class="form-control"
+                            value="{{ edit_item.current_sequence }}" required>
+                        <div class="form-text">Current used count. Change to adjust next number.</div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="is_active" class="form-check-input" id="isActive" {{ 'checked' if
+                            edit_item.is_active else '' }}>
+                        <label class="form-check-label" for="isActive">Active</label>
+                    </div>
+                    {% endif %}
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-save me-1"></i>{{ 'Update' if edit_item else 'Create' }} Assignment
+                        </button>
+                        {% if edit_item %}
+                        <a href="{{ url_for('admin_receipts') }}" class="btn btn-secondary">Cancel</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignments List -->
+    <div class="col-lg-8">
+        <div class="card luxury-card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0 px-4 pt-4">
+                <h5 class="fw-bold mb-0 text-dark">Existing Assignments</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table luxury-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Branch</th>
+                                <th>Preview / Prefix</th>
+                                <th>Current Seq</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in assignments %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ item.user.username }}</div>
+                                    <div class="text-muted small text-capitalize">{{ item.user.role }}</div>
+                                </td>
+                                <td class="small">{{ item.branch.name }}</td>
+                                <td>
+                                    <code class="text-primary">
+                                        {% if item.range_end %}
+                                            {{ item.prefix or '' }}{{ item.base_number }} - {{ item.range_end }}
+                                        {% else %}
+                                            {{ item.prefix or '' }}{{ item.base_number }}XXXXXX
+                                        {% endif %}
+                                    </code>
+                                </td>
+                                <td class="fw-bold">{{ item.current_sequence }}</td>
+                                <td>
+                                    {% if item.is_active %}
+                                    <span class="badge bg-success-soft text-success rounded-pill">Active</span>
+                                    {% else %}
+                                    <span class="badge bg-danger-soft text-danger rounded-pill">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ url_for('edit_receipt_assignment', id=item.id) }}"
+                                            class="btn btn-sm btn-outline-primary rounded-pill">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <a href="{{ url_for('toggle_receipt_assignment', id=item.id) }}"
+                                            class="btn btn-sm {{ 'btn-outline-danger' if item.is_active else 'btn-outline-success' }} rounded-pill">
+                                            {{ 'Deactivate' if item.is_active else 'Activate' }}
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">No receipt assignments found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

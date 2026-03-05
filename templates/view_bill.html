@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Invoice #{{ bill.bill_number }} - Admin Intelligence{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        .luxury-navbar, .luxury-sidebar, .btn-no-print {
+            display: none !important;
+        }
+        .main-content-wrapper {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .invoice-print-container {
+            box-shadow: none !important;
+            border: 1px solid #eee !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
+    .invoice-header-bg {
+        background: linear-gradient(135deg, #0d6efd 0%, #003399 100%);
+        color: white;
+        border-radius: 1rem 1rem 0 0;
+        padding: 3rem 2rem;
+    }
+    .invoice-badge-paid {
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        border: 1px solid #28a745;
+    }
+    .invoice-badge-pending {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+        border: 1px solid #ffc107;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="col-12 page-reveal">
+    <div class="d-flex justify-content-between align-items-center mb-4 btn-no-print">
+        <a href="{{ url_for('orders') }}" class="btn btn-light rounded-pill px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to Logistics
+        </a>
+        <div class="btn-group">
+            <button onclick="window.print()" class="btn btn-luxury rounded-start-pill px-4">
+                <i class="fas fa-print me-2"></i>Print Invoice
+            </button>
+            <button class="btn btn-primary rounded-end-pill px-4">
+                <i class="fas fa-file-pdf me-2"></i>Export PDF
+            </button>
+        </div>
+    </div>
+
+    <div class="luxury-card shadow-lg border-0 mx-auto invoice-print-container" style="max-width: 900px;">
+        <!-- Executive Header -->
+        <div class="invoice-header-bg">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="fw-black mb-0 tracking-wider">INVOICE</h1>
+                    <p class="opacity-75 mb-0">Record #{{ bill.bill_number }}</p>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <div class="brand-text text-white">
+                        <span class="fw-black fs-2">CRM</span><span class="fw-light fs-2 opacity-75">DELIVERY</span>
+                    </div>
+                    <p class="small opacity-75 mb-0">Global Logistics Intelligence Suite</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-5">
+            <!-- Details Row -->
+            <div class="row mb-5">
+                <div class="col-md-4">
+                    <h6 class="text-uppercase text-muted fw-bold mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">Sender / Client</h6>
+                    <h5 class="fw-bold mb-1">{{ bill.name }}</h5>
+                    <p class="text-muted small mb-0">{{ bill.address }}</p>
+                    <p class="text-muted small mb-0">{{ bill.city }}, {{ bill.state }} - {{ bill.pincode }}</p>
+                    <p class="text-muted small">Ph: {{ bill.phone }}</p>
+                </div>
+                <div class="col-md-4 border-start ps-4">
+                    <h6 class="text-uppercase text-muted fw-bold mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">Logistics Details</h6>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Date:</span>
+                        <span class="fw-bold small">{{ bill.bill_date }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Client ID:</span>
+                        <span class="fw-bold small">{{ bill.client_id }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted small">Status:</span>
+                        <span class="badge {% if bill.status == 'Paid' %}invoice-badge-paid{% else %}invoice-badge-pending{% endif %} px-2 py-1 rounded-pill small">
+                            {{ bill.status|upper }}
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-4 border-start ps-4">
+                    <h6 class="text-uppercase text-muted fw-bold mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">Payment Record</h6>
+                    <div class="p-3 bg-light rounded-4 text-center">
+                        <h2 class="fw-black text-primary mb-0">₹{{ "%.2f"|format(bill.total_amount or 0) }}</h2>
+                        <small class="text-uppercase text-muted fw-bold" style="font-size: 0.6rem;">Total Payable (INR)</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <div class="table-responsive mb-5">
+                <table class="table table-borderless align-middle">
+                    <thead class="bg-light">
+                        <tr class="text-uppercase small fw-bold text-muted">
+                            <th class="ps-3 py-3">Logistics Description</th>
+                            <th class="text-center py-3">Weight Class</th>
+                            <th class="text-center py-3">Units</th>
+                            <th class="text-end pe-3 py-3">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-bottom">
+                            <td class="ps-3 py-4">
+                                <div class="fw-bold text-dark">Premium Shipping Services</div>
+                                <div class="small text-muted">Standard transit with real-time tracking</div>
+                            </td>
+                            <td class="text-center py-4">
+                                <span class="badge bg-primary-subtle text-primary rounded-pill px-3">{{ bill.weight_category }}</span>
+                            </td>
+                            <td class="text-center py-4">{{ bill.quantity }}</td>
+                            <td class="text-end pe-3 py-4 fw-bold text-primary">₹{{ "%.2f"|format(bill.total_amount or 0) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer Section -->
+            <div class="row align-items-end pt-4 border-top">
+                <div class="col-md-8">
+                    <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.75rem;">Intelligence Notes</h6>
+                    <p class="small text-muted mb-0">
+                        {{ bill.notes if bill.notes else "Standard delivery terms applied. Insurance included for declared value items only." }}
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="p-3 border rounded-4">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">Subtotal:</small>
+                            <small class="fw-bold">₹{{ "%.2f"|format(bill.total_amount or 0) }}</small>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <small class="text-muted">Taxes (Inc.):</small>
+                            <small class="fw-bold">₹0.00</small>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2 border-top">
+                            <span class="fw-black text-primary">GRAND TOTAL</span>
+                            <span class="fw-black text-primary">₹{{ "%.2f"|format(bill.total_amount or 0) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legal Footer -->
+            <div class="text-center mt-5 pt-5 opacity-50">
+                <p class="small mb-0">This is a system-generated executive record. No physical signature is required.</p>
+                <p class="small">Generated via CRM Delivery Intelligence Suite</p>
+            </div>
+        </div>
+    </div>
+    
+    {% if current_user.role == 'admin' and bill.status != 'Paid' %}
+    <div class="mt-4 text-center btn-no-print">
+        <button onclick="markPaid({{ bill.id }})" class="btn btn-success px-5 rounded-pill shadow-sm">
+            <i class="fas fa-check-circle me-2"></i>Apply Payment Received
+        </button>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function markPaid(orderId) {
+    if(confirm('Confirm payment receipt for this invoice?')) {
+        fetch(`/api/mark_paid/${orderId}`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) location.reload();
+            });
+    }
+}
+</script>
+{% endblock %}

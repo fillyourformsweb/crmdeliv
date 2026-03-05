@@ -1,0 +1,3215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Services</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ========== RESET & BASE STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        /* ========== NAVIGATION BAR ========== */
+        .navbar {
+            background: linear-gradient(135deg, hsl(229, 72%, 15%) 0%, hsl(209, 65%, 32%) 100%);
+            color: white;
+            padding: 0 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-brand i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .nav-brand h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 6px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: white;
+            color: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* ========== ORDER NUMBER BAR ========== */
+        .order-bar {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-info {
+            display: flex;
+            gap: 30px;
+        }
+
+        .order-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .order-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .order-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ========== HEADER ========== */
+        .app-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .app-header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .app-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* ========== QUICK SERVICE GRID ========== */
+        .service-grid-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .service-grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Services Selection */
+        .services-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #667eea;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-title i {
+            font-size: 24px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .service-card {
+            background: #f8f9ff;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            text-align: center;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .service-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .service-card.selected .service-price {
+            color: white;
+        }
+
+        .service-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .service-card.selected .service-icon {
+            color: white;
+        }
+
+        .service-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #28a745;
+            margin-bottom: 5px;
+        }
+
+        .service-unit {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .service-card.selected .service-unit {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .service-checkmark {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .service-card.selected .service-checkmark {
+            opacity: 1;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: white;
+            color: #667eea;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .quantity-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .selected-count {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* ========== PAYMENT SECTION ========== */
+        .payment-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Customer Info */
+        .customer-info {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .customer-lookup {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            align-items: center;
+        }
+
+        .customer-found {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .customer-found.show {
+            display: flex;
+        }
+
+        .customer-history {
+            background: #e7f3ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .customer-history.show {
+            display: block;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        /* Amount Summary */
+        .amount-summary {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .amount-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .amount-row:last-child {
+            border-bottom: none;
+        }
+
+        .amount-label {
+            color: #555;
+            font-size: 15px;
+        }
+
+        .amount-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .total-row {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #667eea;
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            margin-bottom: 25px;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .payment-option {
+            position: relative;
+        }
+
+        .payment-option input {
+            display: none;
+        }
+
+        .payment-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            text-align: center;
+            height: 100%;
+        }
+
+        .payment-label i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #667eea;
+        }
+
+        .payment-option input:checked+.payment-label {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .payment-label:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        /* Amount Received */
+        .amount-received {
+            margin-bottom: 25px;
+        }
+
+        .amount-input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 15px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        #amountReceived {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        #amountReceived:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .change-display {
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .change-exact {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            display: block;
+        }
+
+        .change-due {
+            background: rgba(255, 152, 0, 0.1);
+            color: #ff9800;
+            display: block;
+        }
+
+        .change-return {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: auto;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-clear {
+            background: #f8f9fa;
+            color: #666;
+        }
+
+        .btn-clear:hover {
+            background: #e9ecef;
+        }
+
+        .btn-complete {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn-complete:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ba87e 100%);
+        }
+
+        .btn-complete:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ========== MODAL STYLES ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header i {
+            font-size: 48px;
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .transaction-details {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-print {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-new {
+            background: #28a745;
+            color: white;
+        }
+
+        /* ========== QUANTITY MODAL ========== */
+        .quantity-modal .modal-content {
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .quantity-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .quantity-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .qty-btn {
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .qty-btn-minus {
+            background: #dc3545;
+            color: white;
+        }
+
+        .qty-btn-plus {
+            background: #28a745;
+            color: white;
+        }
+
+        .qty-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* ========== NOTIFICATION ========== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease;
+            transform-origin: top right;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .notification-error {
+            background: #dc3545;
+            color: white;
+        }
+
+        .notification-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .notification-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                flex-direction: column;
+                gap: 0;
+                padding: 20px;
+                transition: left 0.3s;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 10px;
+            }
+
+            .nav-stats {
+                flex-direction: column;
+                width: 100%;
+                gap: 10px;
+            }
+
+            .stat-box {
+                width: 100%;
+            }
+
+            .order-container {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .order-info {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+            }
+
+            .order-actions {
+                width: 100%;
+            }
+
+            .services-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .payment-options {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .services-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .service-card {
+                padding: 10px;
+            }
+
+            .service-name {
+                font-size: 12px;
+                min-height: 35px;
+            }
+
+            .service-price {
+                font-size: 16px;
+            }
+
+            .quantity-controls {
+                gap: 5px;
+            }
+
+            .quantity-btn {
+                width: 25px;
+                height: 25px;
+                font-size: 12px;
+            }
+
+            .quantity-input {
+                width: 35px;
+                font-size: 14px;
+            }
+        }
+
+        /* ========== QUICK ACTIONS ========== */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-action-btn:hover {
+            background: #f8f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ========== LOADING ========== */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ========== SEARCH ========== */
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* ========== ORDER NUMBER DISPLAY ========== */
+        .order-number-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .order-number-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .order-number-value {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        #appLogo {
+            height: 48px;
+            margin-right: 12px;
+            vertical-align: middle;
+        }
+
+        /* ========== DAILY STATS ========== */
+        .daily-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 24px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-card-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* ========== SELECTED ITEMS LIST ========== */
+        .selected-items {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .selected-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .item-quantity {
+            color: #666;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .item-total {
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 10px;
+        }
+
+        .empty-items {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .empty-items i {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-print"></i>
+                <h1>Quick Services</h1>
+            </div>
+
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="nav-menu" id="navMenu">
+                <ul class="nav-links">
+                    <li><a href="/tasks" class="nav-link active"><i class="fas fa-home"></i> Back to Task</a></li>
+                    <li><a href="javascript:void(0)" class="nav-link" onclick="window.openChat()"><i
+                                class="fas fa-comments"></i> Group Chat</a></li>
+                </ul>
+
+                <div class="nav-stats">
+                    <div class="stat-box">
+                        <div class="stat-label">Today's Orders</div>
+                        <div class="stat-value" id="todayOrders">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Today's Revenue</div>
+                        <div class="stat-value" id="todayRevenue">₹0</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        </div>
+    </nav>
+
+    <!-- Order Number Bar -->
+    <div class="order-bar">
+        <div class="order-container">
+            <div class="order-info">
+                <div class="order-item">
+                    <div class="order-label">Current Order #</div>
+                    <div class="order-value" id="currentOrderNumber">QS-001</div>
+                </div>
+                <div class="order-item">
+                    <div class="order-label">Transaction #</div>
+                    <div class="order-value" id="currentTransactionId">TXN-001</div>
+                </div>
+                <div class="order-item">
+                    <div class="order-label">Date & Time</div>
+                    <div class="order-value" id="currentDateTime">Loading...</div>
+                </div>
+            </div>
+
+            <div class="order-actions">
+                <button class="btn quick-action-btn" onclick="newOrder()">
+                    <i class="fas fa-plus"></i> New Order
+                </button>
+                <button class="btn quick-action-btn" onclick="printCurrentOrder()">
+                    <i class="fas fa-print"></i> Print Current
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Order Number Display -->
+        <div class="order-number-display">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
+                <img id="appLogo" src="/static/img/logo.png" alt="Logo" onerror="this.style.display='none'" />
+                <div style="text-align:left;">
+                    <div class="order-number-label">PROCESSING ORDER</div>
+                    <div class="order-number-value" id="mainOrderNumber">QS-001</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Stats -->
+        <div class="daily-stats">
+            <div class="stat-card">
+                <i class="fas fa-shopping-cart"></i>
+                <div class="stat-card-value" id="totalOrdersToday">0</div>
+                <div class="stat-card-label">Total Orders Today</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-money-bill-wave"></i>
+                <div class="stat-card-value" id="totalRevenueToday">₹0</div>
+                <div class="stat-card-label">Revenue Today</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <div class="stat-card-value" id="totalCustomersToday">0</div>
+                <div class="stat-card-label">Customers Today</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <div class="stat-card-value" id="avgOrderValue">₹0</div>
+                <div class="stat-card-label">Avg Order Value</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <input type="hidden" id="currentUserRole" value="{{ user_role or '' }}">
+            <input type="hidden" id="currentUsername" value="{{ username or '' }}">
+            <input type="hidden" id="currentUserBranch" value="{{ user_branch or '' }}">
+            <input type="hidden" id="currentUserId" value="{{ user_id or '' }}">
+
+            <button class="quick-action-btn" id="clearAllBtn">
+                <i class="fas fa-times"></i> Clear All
+            </button>
+            <button class="quick-action-btn" id="filterBtn">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+            <button class="quick-action-btn" id="viewHistoryBtn">
+                <i class="fas fa-history"></i> View Today's Orders
+            </button>
+            <button class="quick-action-btn" id="quickHelpBtn">
+                <i class="fas fa-question-circle"></i> Quick Help
+            </button>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="service-grid-container">
+            <!-- Services Selection -->
+            <div class="services-section">
+                <div class="section-title">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>Select Services for Order <span id="orderNumberInTitle" style="color: #764ba2;">QS-001</span>
+                    </h2>
+                    <span class="selected-count" id="selectedCount">0 items</span>
+                </div>
+
+                <!-- Search -->
+                <div class="search-box">
+                    <input type="text" class="search-input" id="serviceSearch" placeholder="🔍 Search services...">
+                </div>
+
+                <!-- Services Grid -->
+                <div class="services-grid" id="servicesGrid">
+                    <!-- Services will load here -->
+                    <div class="loading" id="loadingServices">
+                        <div class="spinner"></div>
+                        <p>Loading services...</p>
+                    </div>
+                </div>
+
+                <!-- Selected Items List -->
+                <div class="selected-items">
+                    <h3 style="color: #667eea; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-list"></i> Selected Items
+                    </h3>
+                    <div id="selectedItemsList">
+                        <div class="empty-items">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>No items selected yet</p>
+                            <p style="font-size: 12px; color: #999;">Click on services above to add them</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Total -->
+                <div class="amount-summary">
+                    <div class="amount-row">
+                        <span class="amount-label">Total Items:</span>
+                        <span class="amount-value" id="itemsCount">0</span>
+                    </div>
+                    <div class="amount-row">
+                        <span class="amount-label">Total Quantity:</span>
+                        <span class="amount-value" id="totalQuantity">0</span>
+                    </div>
+                    <div class="amount-row total-row">
+                        <span class="amount-label">ORDER TOTAL:</span>
+                        <span class="amount-value" id="orderTotal">₹0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="payment-section">
+                <!-- Customer Info -->
+                <div class="customer-info">
+                    <div class="section-title">
+                        <i class="fas fa-user"></i>
+                        <h2>Customer Details</h2>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="customerName">Customer Name:</label>
+                        <input type="text" class="form-input" id="customerName" placeholder="Enter customer name">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="customerPhone">Phone Number:</label>
+                        <div class="customer-lookup">
+                            <input type="tel" class="form-input" id="customerPhone" placeholder="Enter phone number"
+                                style="flex: 1;">
+                            <button class="btn quick-action-btn" id="lookupCustomerBtn" style="padding: 10px 15px;">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+
+                        <!-- Customer Found Display -->
+                        <div id="customerFound" class="customer-found">
+                            <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                            <div>
+                                <strong id="foundCustomerName"></strong> found in database
+                                <div style="font-size: 12px; margin-top: 5px;">
+                                    <span id="foundCustomerHistory"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Customer History -->
+                        <div id="customerHistory" class="customer-history">
+                            <h4 style="margin-bottom: 10px; color: #333;">Previous Orders:</h4>
+                            <div id="customerOrdersList">
+                                <!-- Previous orders will appear here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="customerEmail">Email (Optional):</label>
+                        <input type="email" class="form-input" id="customerEmail" placeholder="Enter email address">
+                    </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="payment-methods">
+                    <div class="section-title">
+                        <i class="fas fa-credit-card"></i>
+                        <h2>Payment Method</h2>
+                    </div>
+
+                    <div class="payment-options">
+                        <div class="payment-option">
+                            <input type="radio" id="cashPayment" name="paymentMethod" value="cash" checked>
+                            <label class="payment-label" for="cashPayment">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <span>Cash</span>
+                            </label>
+                        </div>
+
+                        <div class="payment-option">
+                            <input type="radio" id="cardPayment" name="paymentMethod" value="card">
+                            <label class="payment-label" for="cardPayment">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Card</span>
+                            </label>
+                        </div>
+
+                        <div class="payment-option">
+                            <input type="radio" id="upiPayment" name="paymentMethod" value="upi">
+                            <label class="payment-label" for="upiPayment">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>UPI</span>
+                            </label>
+                        </div>
+
+                        <div class="payment-option">
+                            <input type="radio" id="onlinePayment" name="paymentMethod" value="online">
+                            <label class="payment-label" for="onlinePayment">
+                                <i class="fas fa-globe"></i>
+                                <span>Online</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amount Received -->
+                <div class="amount-received">
+                    <div class="section-title">
+                        <i class="fas fa-rupee-sign"></i>
+                        <h2>Payment Details</h2>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Amount Received:</label>
+                        <div class="amount-input-group">
+                            <span class="currency-symbol">₹</span>
+                            <input type="number" class="form-input" id="amountReceived" placeholder="0" min="0"
+                                step="1">
+                        </div>
+
+                        <!-- Change Display -->
+                        <div id="changeDisplay" class="change-display">
+                            <i class="fas fa-calculator"></i>
+                            <span id="changeText">Change: ₹0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Notes -->
+                <div class="form-group">
+                    <label class="form-label" for="orderNotes">Order Notes (Optional):</label>
+                    <textarea class="form-input" id="orderNotes" rows="2"
+                        placeholder="Any special instructions or notes..."></textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-clear" id="clearBtn">
+                        <i class="fas fa-redo"></i>
+                        Clear Order
+                    </button>
+                    <button class="btn btn-complete" id="completeBtn" disabled>
+                        <i class="fas fa-check-circle"></i>
+                        Complete Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quantity Selection Modal -->
+    <div class="modal-overlay quantity-modal" id="quantityModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-list-ol"></i>
+                <h3>Select Quantity</h3>
+                <p id="quantityServiceName">Service Name</p>
+            </div>
+
+            <div class="quantity-display" id="selectedQuantity">1</div>
+
+            <div class="quantity-buttons">
+                <button class="qty-btn qty-btn-minus" id="decreaseQty">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button class="qty-btn qty-btn-plus" id="increaseQty">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn" id="cancelQtyBtn" style="background: #6c757d; color: white;">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn btn-new" id="confirmQtyBtn">
+                    <i class="fas fa-check"></i> Add to Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-check-circle"></i>
+                <h3>Order Completed! 🎉</h3>
+                <p>Order #<span id="modalOrderNumber">QS-001</span> has been completed successfully</p>
+            </div>
+
+            <div class="transaction-details" id="receiptDetails">
+                <div class="detail-row"><span>Order Number</span><strong id="modalOrderNum">QS-001</strong></div>
+                <div class="detail-row"><span>Transaction ID</span><span id="modalTransactionId">TXN-001</span></div>
+                <div class="detail-row"><span>Customer</span><span id="modalCustomer">Walk-in Customer</span></div>
+                <div class="detail-row"><span>Items</span><span id="modalItemsCount">0 items</span></div>
+                <div class="detail-row"><span>Subtotal</span><span id="modalSubtotal">₹0.00</span></div>
+
+                <div class="detail-row"><span>Total</span><strong id="modalTotal">₹0.00</strong></div>
+                <div class="detail-row"><span>Amount Received</span><span id="modalReceived">₹0.00</span></div>
+                <div class="detail-row"><span>Change</span><span id="modalChange">₹0.00</span></div>
+                <div class="detail-row"><span>Payment Method</span><span id="modalMethod">Cash</span></div>
+                <div class="detail-row"><span>Time</span><span id="modalTime">Just now</span></div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-print" id="printBtn">
+                    <i class="fas fa-print"></i>
+                    Print Receipt
+                </button>
+                <button class="btn btn-print" id="shareWhatsappBtn">
+                    <i class="fab fa-whatsapp"></i>
+                    Share to WhatsApp
+                </button>
+                <button class="btn btn-new" id="newOrderBtn">
+                    <i class="fas fa-plus"></i>
+                    New Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-question-circle"></i>
+                <h3>Quick Help Guide</h3>
+            </div>
+
+            <div class="transaction-details">
+                <p><strong>📋 Order Processing Steps:</strong></p>
+                <ol style="padding-left: 20px; margin: 15px 0;">
+                    <li><strong>Select services</strong> - Click on service cards</li>
+                    <li><strong>Enter quantity</strong> - Use the popup to select quantity</li>
+                    <li><strong>Enter phone number</strong> - Customer name will auto-fill if in database</li>
+                    <li><strong>Choose payment method</strong></li>
+                    <li><strong>Enter amount received</strong></li>
+                    <li><strong>Click "Complete Order"</strong></li>
+                </ol>
+
+                <p><strong>🔢 Quantity Controls:</strong></p>
+                <ul style="padding-left: 20px; margin: 15px 0;">
+                    <li>Click service card to select quantity</li>
+                    <li>Use +/- buttons to adjust quantity</li>
+                    <li>Change quantity later in selected items list</li>
+                    <li>Remove items with trash icon</li>
+                </ul>
+
+                <p><strong>👤 Customer Lookup:</strong></p>
+                <p>When you enter a phone number, the system automatically checks if the customer exists in the database
+                    and fills their name automatically.</p>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-print" id="closeHelpBtn">
+                    <i class="fas fa-check"></i>
+                    Got It!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today Orders Modal -->
+    <div class="modal-overlay" id="todayOrdersModal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-list"></i>
+                <h3>Today's Orders</h3>
+            </div>
+            <div class="transaction-details" id="todayOrdersContent" style="max-height:400px;overflow:auto">
+                <p>Loading...</p>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" id="closeTodayOrdersBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Modal -->
+    <div class="modal-overlay" id="filterModal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-filter"></i>
+                <h3>Filter Orders</h3>
+            </div>
+            <div class="transaction-details">
+                <div class="detail-row"><span>Date From</span><input type="date" id="filterFrom" class="form-input">
+                </div>
+                <div class="detail-row"><span>Date To</span><input type="date" id="filterTo" class="form-input"></div>
+                <div class="detail-row"><span>Branch</span><input type="text" id="filterBranch" class="form-input"
+                        placeholder="Branch ID"></div>
+                <div class="detail-row"><span>Staff</span><input type="text" id="filterStaff" class="form-input"
+                        placeholder="Staff username"></div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" id="applyFilterBtn">Apply</button>
+                <button class="btn" id="closeFilterBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+
+        // ========== CUSTOMER DATABASE ==========
+        class CustomerDatabase {
+            constructor() {
+                // ========== CONFIGURATION ==========
+                const config = {
+                    currency: '₹',
+                    defaultServices: [
+                        { id: 1, name: "Consultation", price: 30, unit: "Per", icon: "fa-user-md", category: "quick" },
+                        { id: 2, name: "Documentation", price: 50, unit: "Per", icon: "fa-file-alt", category: "quick" },
+                        { id: 3, name: "Fast Processing", price: 100, unit: "Per", icon: "fa-bolt", category: "quick" }
+                    ],
+                    taxRate: 0.05,
+                    companyName: "ServiceHub Quick"
+                };
+                // Load from localStorage if available
+                this.loadFromStorage();
+            }
+
+            loadFromStorage() {
+                const saved = localStorage.getItem('customerDatabase');
+                if (saved) {
+                    this.customers = JSON.parse(saved);
+                }
+            }
+
+            saveToStorage() {
+                localStorage.setItem('customerDatabase', JSON.stringify(this.customers));
+            }
+
+            findCustomerByPhone(phone) {
+                return this.customers.find(customer => customer.phone === phone);
+            }
+
+            findCustomerByName(name) {
+                return this.customers.find(customer =>
+                    customer.name.toLowerCase().includes(name.toLowerCase()) ||
+                    name.toLowerCase().includes(customer.name.toLowerCase())
+                );
+            }
+
+            addCustomer(customerData) {
+                const newCustomer = {
+                    id: this.customers.length + 1,
+                    name: customerData.name,
+                    phone: customerData.phone,
+                    email: customerData.email || '',
+                    totalOrders: 0,
+                    totalSpent: 0,
+                    lastVisit: new Date().toISOString().split('T')[0],
+                    favoriteServices: []
+                };
+
+                this.customers.push(newCustomer);
+                this.saveToStorage();
+                return newCustomer;
+            }
+
+            updateCustomer(phone, orderData) {
+                const customer = this.findCustomerByPhone(phone);
+                if (customer) {
+                    customer.totalOrders += 1;
+                    customer.totalSpent += orderData.total;
+                    customer.lastVisit = new Date().toISOString().split('T')[0];
+
+                    // Add services to favorites if not already there
+                    orderData.services.forEach(service => {
+                        if (!customer.favoriteServices.includes(service.name)) {
+                            customer.favoriteServices.push(service.name);
+                        }
+                    });
+
+                    this.saveToStorage();
+                }
+            }
+
+            getCustomerHistory(phone) {
+                // In real app, this would fetch from transaction history
+                const customer = this.findCustomerByPhone(phone);
+                if (!customer) return [];
+
+                // Simulated order history
+                return [
+                    { date: customer.lastVisit, amount: 250, items: 3 },
+                    { date: "2024-01-10", amount: 500, items: 5 },
+                    { date: "2024-01-05", amount: 350, items: 2 }
+                ].slice(0, customer.totalOrders);
+            }
+
+            searchCustomers(query) {
+                return this.customers.filter(customer =>
+                    customer.name.toLowerCase().includes(query.toLowerCase()) ||
+                    customer.phone.includes(query)
+                );
+            }
+        }
+
+        // ========== ORDER & TRANSACTION NUMBER SYSTEM ==========
+        class OrderSystem {
+            constructor() {
+                this.orderCounter = this.loadCounter('orderCounter', 1);
+                this.transactionCounter = this.loadCounter('transactionCounter', 1);
+                this.todayOrders = [];
+                this.todayDate = new Date().toDateString();
+            }
+
+            loadCounter(key, defaultValue) {
+                const saved = localStorage.getItem(key);
+                const date = localStorage.getItem('lastCounterDate');
+
+                // Reset counter if it's a new day
+                if (date !== this.todayDate) {
+                    localStorage.setItem('lastCounterDate', this.todayDate);
+                    return defaultValue;
+                }
+
+                return saved ? parseInt(saved) : defaultValue;
+            }
+
+            saveCounter(key, value) {
+                localStorage.setItem(key, value);
+            }
+
+            generateOrderNumber() {
+                const orderNum = `QS-${this.orderCounter.toString().padStart(3, '0')}`;
+                this.orderCounter++;
+                this.saveCounter('orderCounter', this.orderCounter);
+                return orderNum;
+            }
+
+            generateTransactionId() {
+                const txId = `TXN-${this.transactionCounter.toString().padStart(3, '0')}`;
+                this.transactionCounter++;
+                this.saveCounter('transactionCounter', this.transactionCounter);
+                return txId;
+            }
+
+            saveOrder(order) {
+                // Get today's orders
+                let todayOrders = JSON.parse(localStorage.getItem('todayOrders') || '[]');
+
+                // Check if we need to clear yesterday's orders
+                const lastOrderDate = localStorage.getItem('lastOrderDate');
+                if (lastOrderDate !== this.todayDate) {
+                    todayOrders = [];
+                    localStorage.setItem('lastOrderDate', this.todayDate);
+                }
+
+                // Add new order
+                todayOrders.push(order);
+                localStorage.setItem('todayOrders', JSON.stringify(todayOrders));
+                this.todayOrders = todayOrders;
+
+                // Update daily stats
+                this.updateDailyStats();
+            }
+
+            getTodayOrders() {
+                const lastOrderDate = localStorage.getItem('lastOrderDate');
+                if (lastOrderDate !== this.todayDate) {
+                    return [];
+                }
+                return JSON.parse(localStorage.getItem('todayOrders') || '[]');
+            }
+
+            updateDailyStats() {
+                const orders = this.getTodayOrders();
+
+                // Calculate stats
+                const totalOrders = orders.length;
+                const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+                const uniqueCustomers = [...new Set(orders.map(order => order.customerPhone || order.customerName || 'Walk-in'))].length;
+                const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+
+                // Update UI
+                document.getElementById('todayOrders').textContent = totalOrders;
+                document.getElementById('todayRevenue').textContent = `₹${totalRevenue}`;
+                document.getElementById('totalOrdersToday').textContent = totalOrders;
+                document.getElementById('totalRevenueToday').textContent = `₹${totalRevenue}`;
+                document.getElementById('totalCustomersToday').textContent = uniqueCustomers;
+                document.getElementById('avgOrderValue').textContent = `₹${avgOrderValue}`;
+            }
+        }
+        // ========== CONFIGURATION ==========
+        const config = {
+            currency: '₹',
+            defaultServices: [
+                { id: 1, name: "Consultation", price: 30, unit: "Per", icon: "fa-user-md", category: "quick" },
+                { id: 2, name: "Documentation", price: 50, unit: "Per", icon: "fa-file-alt", category: "quick" },
+                { id: 3, name: "Fast Processing", price: 100, unit: "Per", icon: "fa-bolt", category: "quick" }
+            ],
+            taxRate: 0.05,
+            companyName: "ServiceHub Quick"
+        };
+
+        // ========== STATE MANAGEMENT ==========
+        let state = {
+            orderSystem: new OrderSystem(),
+            customerDB: new CustomerDatabase(),
+            currentOrder: {
+                number: '',
+                transactionId: '',
+                services: [], // Array of {service, quantity, totalPrice}
+                customerName: '',
+                customerPhone: '',
+                customerEmail: '',
+                paymentMethod: 'cash',
+                amountReceived: 0,
+                change: 0,
+                notes: '',
+                timestamp: ''
+            },
+            services: [...config.defaultServices],
+            filteredServices: [...config.defaultServices],
+            quantityModal: {
+                service: null,
+                quantity: 1,
+                editingIndex: -1 // -1 for new, index for editing existing
+            }
+        };
+
+        // ========== DOM ELEMENTS ==========
+        const elements = {
+            // Navigation
+            mobileMenuBtn: document.getElementById('mobileMenuBtn'),
+            navMenu: document.getElementById('navMenu'),
+
+            // Order numbers
+            currentOrderNumber: document.getElementById('currentOrderNumber'),
+            currentTransactionId: document.getElementById('currentTransactionId'),
+            currentDateTime: document.getElementById('currentDateTime'),
+            mainOrderNumber: document.getElementById('mainOrderNumber'),
+            orderNumberInTitle: document.getElementById('orderNumberInTitle'),
+
+            // Services
+            servicesGrid: document.getElementById('servicesGrid'),
+            selectedCount: document.getElementById('selectedCount'),
+            itemsCount: document.getElementById('itemsCount'),
+            totalQuantity: document.getElementById('totalQuantity'),
+            orderTotal: document.getElementById('orderTotal'),
+            selectedItemsList: document.getElementById('selectedItemsList'),
+
+            // Payment
+            amountReceived: document.getElementById('amountReceived'),
+            changeDisplay: document.getElementById('changeDisplay'),
+            changeText: document.getElementById('changeText'),
+            completeBtn: document.getElementById('completeBtn'),
+
+            // Customer
+            customerName: document.getElementById('customerName'),
+            customerPhone: document.getElementById('customerPhone'),
+            customerEmail: document.getElementById('customerEmail'),
+            orderNotes: document.getElementById('orderNotes'),
+            lookupCustomerBtn: document.getElementById('lookupCustomerBtn'),
+            customerFound: document.getElementById('customerFound'),
+            foundCustomerName: document.getElementById('foundCustomerName'),
+            foundCustomerHistory: document.getElementById('foundCustomerHistory'),
+            customerHistory: document.getElementById('customerHistory'),
+            customerOrdersList: document.getElementById('customerOrdersList'),
+
+            // Search
+            serviceSearch: document.getElementById('serviceSearch'),
+
+            // Buttons
+            clearBtn: document.getElementById('clearBtn'),
+            clearAllBtn: document.getElementById('clearAllBtn'),
+            viewHistoryBtn: document.getElementById('viewHistoryBtn'),
+            quickHelpBtn: document.getElementById('quickHelpBtn'),
+
+            // Quantity Modal
+            quantityModal: document.getElementById('quantityModal'),
+            quantityServiceName: document.getElementById('quantityServiceName'),
+            selectedQuantity: document.getElementById('selectedQuantity'),
+            decreaseQty: document.getElementById('decreaseQty'),
+            increaseQty: document.getElementById('increaseQty'),
+            cancelQtyBtn: document.getElementById('cancelQtyBtn'),
+            confirmQtyBtn: document.getElementById('confirmQtyBtn'),
+
+            // Success Modal
+            successModal: document.getElementById('successModal'),
+            modalOrderNumber: document.getElementById('modalOrderNumber'),
+            modalOrderNum: document.getElementById('modalOrderNum'),
+            modalTransactionId: document.getElementById('modalTransactionId'),
+            modalCustomer: document.getElementById('modalCustomer'),
+            modalItemsCount: document.getElementById('modalItemsCount'),
+            modalSubtotal: document.getElementById('modalSubtotal'),
+
+            modalTax: document.getElementById('modalTax'),
+            modalTotal: document.getElementById('modalTotal'),
+            modalReceived: document.getElementById('modalReceived'),
+            modalChange: document.getElementById('modalChange'),
+            modalMethod: document.getElementById('modalMethod'),
+            modalTime: document.getElementById('modalTime'),
+
+            // Modal buttons
+            printBtn: document.getElementById('printBtn'),
+            shareWhatsappBtn: document.getElementById('shareWhatsappBtn'),
+            newOrderBtn: document.getElementById('newOrderBtn'),
+            closeHelpBtn: document.getElementById('closeHelpBtn')
+        };
+
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            // Initialize order system
+            initializeOrder();
+
+            // Load services from database
+            loadServicesFromDatabase();
+
+            // Setup UI
+            renderSelectedItems();
+            setupEventListeners();
+            updateUI();
+            updateDateTime();
+
+            // Load daily stats from database
+            loadStatsFromDatabase();
+            // Update stats according to current user role
+            fetchAndUpdateStats();
+
+            // Show welcome message
+            showNotification(`Ready to process orders! Current order: ${state.currentOrder.number}`, 'info');
+
+            // Start clock update
+            setInterval(updateDateTime, 1000);
+        }
+
+        // ========== DATABASE INTEGRATION ==========
+        async function loadServicesFromDatabase() {
+            try {
+                const response = await fetch('/api/quick_services/all');
+                if (response.ok) {
+                    const services = await response.json();
+                    if (services && services.length > 0) {
+                        // Map database services to frontend format
+                        state.services = services.map(s => ({
+                            id: s.id,
+                            name: s.name,
+                            price: s.price,
+                            unit: s.unit || 'Per',
+                            icon: s.icon || 'fa-cog',
+                            category: s.category || 'quick'
+                        }));
+                        state.filteredServices = [...state.services];
+                        showNotification(`Loaded ${services.length} services from database`, 'success');
+                    } else {
+                        // Fallback to default services if database is empty
+                        state.services = [...config.defaultServices];
+                        state.filteredServices = [...config.defaultServices];
+                        showNotification('Using default services (database empty)', 'info');
+                    }
+                } else {
+                    // Fallback to defaults on error
+                    state.services = [...config.defaultServices];
+                    state.filteredServices = [...config.defaultServices];
+                    showNotification('Using default services (API error)', 'warning');
+                }
+            } catch (error) {
+                console.error('Error loading services:', error);
+                // Fallback to defaults
+                state.services = [...config.defaultServices];
+                state.filteredServices = [...config.defaultServices];
+                showNotification('Using default services (connection error)', 'warning');
+            }
+
+            // Render services after loading
+            renderServices();
+        }
+
+        async function loadStatsFromDatabase() {
+            try {
+                const response = await fetch('/api/quick_services/stats?period=today');
+                if (response.ok) {
+                    const stats = await response.json();
+                    // Update UI with database stats
+                    document.getElementById('todayOrders').textContent = stats.total_orders || 0;
+                    document.getElementById('todayRevenue').textContent = `₹${stats.total_revenue || 0}`;
+                    document.getElementById('totalOrdersToday').textContent = stats.total_orders || 0;
+                    document.getElementById('totalRevenueToday').textContent = `₹${stats.total_revenue || 0}`;
+                    document.getElementById('totalCustomersToday').textContent = stats.unique_customers || 0;
+                    document.getElementById('avgOrderValue').textContent = `₹${Math.round(stats.avg_order_value || 0)}`;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                // Keep using local stats
+                state.orderSystem.updateDailyStats();
+            }
+        }
+
+        function initializeOrder() {
+            // Generate new order numbers
+            state.currentOrder.number = state.orderSystem.generateOrderNumber();
+            state.currentOrder.transactionId = state.orderSystem.generateTransactionId();
+            state.currentOrder.timestamp = new Date().toISOString();
+
+            // Update UI with order numbers
+            updateOrderNumbers();
+        }
+
+        function updateOrderNumbers() {
+            elements.currentOrderNumber.textContent = state.currentOrder.number;
+            elements.currentTransactionId.textContent = state.currentOrder.transactionId;
+            elements.mainOrderNumber.textContent = state.currentOrder.number;
+            elements.orderNumberInTitle.textContent = state.currentOrder.number;
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+            const timeStr = now.toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            elements.currentDateTime.textContent = `${dateStr} ${timeStr}`;
+        }
+
+        // ========== SERVICE MANAGEMENT WITH QUANTITY ==========
+        function renderServices() {
+            const loading = document.getElementById('loadingServices');
+            if (loading) loading.style.display = 'none';
+
+            elements.servicesGrid.innerHTML = '';
+
+            state.filteredServices.forEach(service => {
+                // Check if service is already in order
+                const orderItem = state.currentOrder.services.find(item => item.service.id === service.id);
+                const isSelected = !!orderItem;
+
+                const serviceCard = document.createElement('div');
+                serviceCard.className = `service-card ${isSelected ? 'selected' : ''}`;
+                serviceCard.innerHTML = `
+                    <div class="service-icon">
+                        <i class="fas ${service.icon}"></i>
+                    </div>
+                    <div class="service-name">${service.name}</div>
+                    <div class="service-price">${config.currency}${service.price}</div>
+                    <div class="service-unit">${service.unit}</div>
+                    
+                    ${isSelected ? `
+                        <div class="service-checkmark"><i class="fas fa-check"></i></div>
+                        <div class="quantity-controls" title="Click + / - or type number">
+                            <button type="button" class="quantity-btn decrease" data-id="${service.id}" aria-label="Decrease quantity">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" 
+                                   inputmode="numeric" pattern="\d*"
+                                   class="quantity-input" 
+                                   data-id="${service.id}" 
+                                   value="${orderItem.quantity}" 
+                                   min="1" 
+                                   max="999" 
+                                   title="Type quantity or use + / -">
+                            <button type="button" class="quantity-btn increase" data-id="${service.id}" aria-label="Increase quantity">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    ` : ''}
+                `;
+
+                // Add click event for selection
+                serviceCard.addEventListener('click', (e) => {
+                    if (!e.target.closest('.quantity-controls') && !e.target.closest('.quantity-btn') && !e.target.closest('.quantity-input')) {
+                        showQuantityModal(service);
+                    }
+                });
+
+                elements.servicesGrid.appendChild(serviceCard);
+            });
+
+            // Add event listeners for quantity controls
+            addQuantityEventListeners();
+        }
+
+        function addQuantityEventListeners() {
+            // Decrease buttons
+            document.querySelectorAll('.quantity-btn.decrease').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const serviceId = parseInt(btn.dataset.id);
+                    updateServiceQuantity(serviceId, -1);
+                });
+            });
+
+            // Increase buttons
+            document.querySelectorAll('.quantity-btn.increase').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const serviceId = parseInt(btn.dataset.id);
+                    updateServiceQuantity(serviceId, 1);
+                });
+            });
+
+            // Quantity inputs (change on blur and live input)
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    e.stopPropagation();
+                    const serviceId = parseInt(input.dataset.id);
+                    let newQuantity = parseInt(input.value);
+                    if (Number.isNaN(newQuantity) || newQuantity < 1) return;
+                    // Update visually but debounce full rerender until blur/change
+                    setServiceQuantity(serviceId, newQuantity);
+                });
+
+                input.addEventListener('change', (e) => {
+                    e.stopPropagation();
+                    const serviceId = parseInt(input.dataset.id);
+                    const newQuantity = Math.max(1, parseInt(input.value) || 1);
+                    setServiceQuantity(serviceId, newQuantity);
+                });
+
+                input.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            });
+        }
+
+        function updateServiceQuantity(serviceId, change) {
+            const index = state.currentOrder.services.findIndex(item => item.service.id === serviceId);
+            if (index !== -1) {
+                const newQuantity = Math.max(1, state.currentOrder.services[index].quantity + change);
+                state.currentOrder.services[index].quantity = newQuantity;
+                state.currentOrder.services[index].totalPrice = state.currentOrder.services[index].service.price * newQuantity;
+
+                updateOrderTotals();
+                updateUI();
+                renderServices();
+                renderSelectedItems();
+
+                showNotification(`Quantity updated to ${newQuantity}`, 'info');
+            }
+        }
+
+        function setServiceQuantity(serviceId, quantity) {
+            const index = state.currentOrder.services.findIndex(item => item.service.id === serviceId);
+            if (index !== -1) {
+                const newQuantity = Math.max(1, quantity);
+                state.currentOrder.services[index].quantity = newQuantity;
+                state.currentOrder.services[index].totalPrice = state.currentOrder.services[index].service.price * newQuantity;
+
+                updateOrderTotals();
+                updateUI();
+                renderServices();
+                renderSelectedItems();
+
+                showNotification(`Quantity set to ${newQuantity}`, 'info');
+            }
+        }
+
+        function showQuantityModal(service, editingIndex = -1) {
+            state.quantityModal.service = service;
+            state.quantityModal.editingIndex = editingIndex;
+
+            // Set default quantity
+            if (editingIndex !== -1) {
+                state.quantityModal.quantity = state.currentOrder.services[editingIndex].quantity;
+            } else {
+                state.quantityModal.quantity = 1;
+            }
+
+            // Update modal content
+            elements.quantityServiceName.textContent = service.name;
+            elements.selectedQuantity.textContent = state.quantityModal.quantity;
+
+            // Show modal
+            elements.quantityModal.style.display = 'flex';
+        }
+
+        function hideQuantityModal() {
+            elements.quantityModal.style.display = 'none';
+            state.quantityModal.service = null;
+            state.quantityModal.quantity = 1;
+            state.quantityModal.editingIndex = -1;
+        }
+
+        function addServiceWithQuantity() {
+            if (!state.quantityModal.service) return;
+
+            const { service, quantity, editingIndex } = state.quantityModal;
+
+            if (editingIndex !== -1) {
+                // Update existing item
+                state.currentOrder.services[editingIndex].quantity = quantity;
+                state.currentOrder.services[editingIndex].totalPrice = service.price * quantity;
+                showNotification(`Updated ${service.name} quantity to ${quantity}`, 'info');
+            } else {
+                // Add new item
+                const existingIndex = state.currentOrder.services.findIndex(item => item.service.id === service.id);
+
+                if (existingIndex !== -1) {
+                    // Service already exists, update quantity
+                    state.currentOrder.services[existingIndex].quantity += quantity;
+                    state.currentOrder.services[existingIndex].totalPrice = service.price * state.currentOrder.services[existingIndex].quantity;
+                    showNotification(`Added ${quantity} more ${service.name}`, 'info');
+                } else {
+                    // Add new service
+                    state.currentOrder.services.push({
+                        service: service,
+                        quantity: quantity,
+                        totalPrice: service.price * quantity
+                    });
+                    showNotification(`Added ${quantity} × ${service.name} to order`, 'info');
+                }
+            }
+
+            updateOrderTotals();
+            updateUI();
+            renderServices();
+            renderSelectedItems();
+            hideQuantityModal();
+        }
+
+        function removeService(serviceId) {
+            const index = state.currentOrder.services.findIndex(item => item.service.id === serviceId);
+            if (index !== -1) {
+                const serviceName = state.currentOrder.services[index].service.name;
+                state.currentOrder.services.splice(index, 1);
+
+                updateOrderTotals();
+                updateUI();
+                renderServices();
+                renderSelectedItems();
+
+                showNotification(`Removed ${serviceName} from order`, 'info');
+            }
+        }
+
+        function renderSelectedItems() {
+            if (state.currentOrder.services.length === 0) {
+                elements.selectedItemsList.innerHTML = `
+                    <div class="empty-items">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>No items selected yet</p>
+                        <p style="font-size: 12px; color: #999;">Click on services above to add them</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let itemsHTML = '';
+            state.currentOrder.services.forEach((item, index) => {
+                itemsHTML += `
+                    <div class="selected-item">
+                        <div class="item-details">
+                            <div class="item-name">${item.service.name}</div>
+                            <div class="item-quantity">${item.quantity} × ${config.currency}${item.service.price} = ${config.currency}${item.totalPrice}</div>
+                        </div>
+                        <div class="item-total">${config.currency}${item.totalPrice}</div>
+                        <button class="remove-item" onclick="editServiceQuantity(${index})" title="Edit quantity">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="remove-item" onclick="removeService(${item.service.id})" title="Remove item">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            elements.selectedItemsList.innerHTML = itemsHTML;
+        }
+
+        function editServiceQuantity(index) {
+            if (state.currentOrder.services[index]) {
+                showQuantityModal(state.currentOrder.services[index].service, index);
+            }
+        }
+
+        function updateOrderTotals() {
+            // Calculate totals
+            let totalItems = 0;
+            let totalQuantity = 0;
+            let totalAmount = 0;
+
+            state.currentOrder.services.forEach(item => {
+                totalItems++;
+                totalQuantity += item.quantity;
+                totalAmount += item.totalPrice;
+            });
+
+            state.currentOrder.total = totalAmount;
+
+            // Update UI
+            elements.itemsCount.textContent = totalItems;
+            elements.totalQuantity.textContent = totalQuantity;
+            elements.orderTotal.textContent = `${config.currency}${totalAmount}`;
+
+            // Update change calculation
+            calculateChange();
+        }
+
+        function calculateChange() {
+            const amount = parseFloat(elements.amountReceived.value) || 0;
+            state.currentOrder.amountReceived = amount;
+            state.currentOrder.change = amount - state.currentOrder.total;
+
+            updateChangeDisplay();
+            updateCompleteButton();
+        }
+
+        function updateChangeDisplay() {
+            const changeEl = elements.changeDisplay;
+            const changeText = elements.changeText;
+
+            if (state.currentOrder.amountReceived === 0) {
+                changeEl.style.display = 'none';
+                return;
+            }
+
+            if (state.currentOrder.change === 0) {
+                changeEl.className = 'change-display change-exact';
+                changeText.innerHTML = `<i class="fas fa-check-circle"></i> Exact amount paid`;
+                changeEl.style.display = 'block';
+            } else if (state.currentOrder.change < 0) {
+                changeEl.className = 'change-display change-due';
+                changeText.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Due: ${config.currency}${Math.abs(state.currentOrder.change)}`;
+                changeEl.style.display = 'block';
+            } else {
+                changeEl.className = 'change-display change-return';
+                changeText.innerHTML = `<i class="fas fa-coins"></i> Return: ${config.currency}${state.currentOrder.change}`;
+                changeEl.style.display = 'block';
+            }
+        }
+
+        // ========== CUSTOMER LOOKUP ==========
+        async function lookupCustomer() {
+            const phone = elements.customerPhone.value.trim();
+
+            if (!phone) {
+                showNotification('Please enter a phone number', 'warning');
+                return;
+            }
+
+            try {
+                // Fetch customer from database API
+                const response = await fetch(`/api/customers/check?phone=${encodeURIComponent(phone)}`);
+                const data = await response.json();
+
+                if (data.exists) {
+                    // Auto-fill customer details
+                    elements.customerName.value = data.name;
+                    elements.customerEmail.value = data.email || '';
+
+                    // Show customer found message
+                    elements.foundCustomerName.textContent = data.name;
+                    elements.foundCustomerHistory.textContent =
+                        `${data.total_services || 0} orders | ₹${data.total_spent || 0} spent`;
+                    elements.customerFound.classList.add('show');
+
+                    // Show customer history
+                    await showCustomerHistoryFromAPI(phone);
+
+                    showNotification(`Customer found: ${data.name}`, 'success');
+                } else {
+                    // Customer not found
+                    elements.customerFound.classList.remove('show');
+                    elements.customerHistory.classList.remove('show');
+                    showNotification('Customer not found in database', 'info');
+                }
+            } catch (error) {
+                console.error('Error looking up customer:', error);
+                showNotification('Error looking up customer', 'error');
+            }
+
+            // Update order state
+            state.currentOrder.customerName = elements.customerName.value;
+            state.currentOrder.customerPhone = phone;
+            state.currentOrder.customerEmail = elements.customerEmail.value;
+        }
+
+        async function showCustomerHistoryFromAPI(phone) {
+            try {
+                // Fetch customer history from tasks
+                const response = await fetch(`/api/tasks?customer_phone=${encodeURIComponent(phone)}&limit=5`);
+                if (response.ok) {
+                    const tasks = await response.json();
+                    if (tasks && tasks.length > 0) {
+                        let historyHTML = '';
+                        tasks.forEach(task => {
+                            const date = new Date(task.created_at).toLocaleDateString();
+                            historyHTML += `
+                                <div class="history-item">
+                                    <span>${date}</span>
+                                    <span>${task.service_name || 'Service'}</span>
+                                    <span style="color: #28a745; font-weight: 600;">₹${task.total_amount || 0}</span>
+                                </div>
+                            `;
+                        });
+                        elements.customerOrdersList.innerHTML = historyHTML;
+                        elements.customerHistory.classList.add('show');
+                    } else {
+                        elements.customerOrdersList.innerHTML = '<p style="color: #666; text-align: center;">No previous orders found</p>';
+                        elements.customerHistory.classList.add('show');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading customer history:', error);
+            }
+        }
+
+
+        // ========== UI UPDATES ==========
+        function updateUI() {
+            // Update counts
+            const totalItems = state.currentOrder.services.length;
+            const totalQuantity = state.currentOrder.services.reduce((sum, item) => sum + item.quantity, 0);
+            elements.selectedCount.textContent = `${totalQuantity} items`;
+
+            // Update complete button state
+            elements.completeBtn.disabled = state.currentOrder.services.length === 0;
+
+            // Update customer info in state
+            state.currentOrder.customerName = elements.customerName.value;
+            state.currentOrder.customerPhone = elements.customerPhone.value;
+            state.currentOrder.customerEmail = elements.customerEmail.value;
+            state.currentOrder.notes = elements.orderNotes.value;
+
+            // Update payment method
+            const paymentRadio = document.querySelector('input[name="paymentMethod"]:checked');
+            if (paymentRadio) {
+                state.currentOrder.paymentMethod = paymentRadio.value;
+            }
+        }
+
+        function updateCompleteButton() {
+            const dueAmount = state.currentOrder.change < 0 ? Math.abs(state.currentOrder.change) : 0;
+            if (dueAmount > 0) {
+                elements.completeBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Complete (Due: ${config.currency}${dueAmount})`;
+                elements.completeBtn.style.background = 'linear-gradient(135deg, #ff9800 0%, #ff5722 100%)';
+            } else {
+                elements.completeBtn.innerHTML = `<i class="fas fa-check-circle"></i> Complete Order`;
+                elements.completeBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+            }
+        }
+
+        // ========== EVENT LISTENERS ==========
+        function setupEventListeners() {
+            // Mobile menu
+            elements.mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+
+            // Amount received input
+            elements.amountReceived.addEventListener('input', function () {
+                calculateChange();
+            });
+
+            // Customer info inputs
+            elements.customerName.addEventListener('input', updateUI);
+            elements.customerPhone.addEventListener('input', updateUI);
+            elements.customerEmail.addEventListener('input', updateUI);
+            elements.orderNotes.addEventListener('input', updateUI);
+
+            // Customer phone lookup on blur (when user leaves the field)
+            elements.customerPhone.addEventListener('blur', function () {
+                const phone = this.value.trim();
+                if (phone.length >= 10) {
+                    setTimeout(() => lookupCustomer(), 500); // Small delay to allow user to finish typing
+                }
+            });
+
+            // Manual lookup button
+            elements.lookupCustomerBtn.addEventListener('click', lookupCustomer);
+
+            // Payment method changes
+            document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+                radio.addEventListener('change', updateUI);
+            });
+
+            // Search
+            elements.serviceSearch.addEventListener('input', async function () {
+                const searchTerm = this.value.trim();
+                if (searchTerm) {
+                    try {
+                        // Try API search first
+                        const response = await fetch(`/api/quick_services/all?search=${encodeURIComponent(searchTerm)}`);
+                        if (response.ok) {
+                            const services = await response.json();
+                            if (services && services.length > 0) {
+                                state.filteredServices = services.map(s => ({
+                                    id: s.id,
+                                    name: s.name,
+                                    price: s.price,
+                                    unit: s.unit || 'per service',
+                                    icon: s.icon || 'fa-cog',
+                                    category: s.category || 'quick'
+                                }));
+                            } else {
+                                // Fallback to local search
+                                state.filteredServices = state.services.filter(service =>
+                                    service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    (service.category && service.category.toLowerCase().includes(searchTerm.toLowerCase()))
+                                );
+                            }
+                        } else {
+                            // Fallback to local search
+                            state.filteredServices = state.services.filter(service =>
+                                service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                (service.category && service.category.toLowerCase().includes(searchTerm.toLowerCase()))
+                            );
+                        }
+                    } catch (error) {
+                        // Fallback to local search
+                        state.filteredServices = state.services.filter(service =>
+                            service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            (service.category && service.category.toLowerCase().includes(searchTerm.toLowerCase()))
+                        );
+                    }
+                } else {
+                    state.filteredServices = [...state.services];
+                }
+                renderServices();
+            });
+
+            // Quick help button
+            const quickHelpBtn = document.getElementById('quickHelpBtn');
+            if (quickHelpBtn) quickHelpBtn.addEventListener('click', () => {
+                document.getElementById('helpModal').style.display = 'flex';
+            });
+
+            const closeHelpBtn = document.getElementById('closeHelpBtn');
+            if (closeHelpBtn) closeHelpBtn.addEventListener('click', () => document.getElementById('helpModal').style.display = 'none');
+
+            // View today's orders
+            const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+            if (viewHistoryBtn) viewHistoryBtn.addEventListener('click', viewTodaysOrders);
+
+            // Filter button
+            const filterBtn = document.getElementById('filterBtn');
+            if (filterBtn) filterBtn.addEventListener('click', () => { document.getElementById('filterModal').style.display = 'flex'; });
+
+            const closeFilterBtn = document.getElementById('closeFilterBtn');
+            if (closeFilterBtn) closeFilterBtn.addEventListener('click', () => document.getElementById('filterModal').style.display = 'none');
+
+            const applyFilterBtn = document.getElementById('applyFilterBtn');
+            if (applyFilterBtn) applyFilterBtn.addEventListener('click', applyFilters);
+
+            const closeTodayOrdersBtn = document.getElementById('closeTodayOrdersBtn');
+            if (closeTodayOrdersBtn) closeTodayOrdersBtn.addEventListener('click', () => document.getElementById('todayOrdersModal').style.display = 'none');
+
+            // Quantity modal events
+            elements.decreaseQty.addEventListener('click', function () {
+                if (state.quantityModal.quantity > 1) {
+                    state.quantityModal.quantity--;
+                    elements.selectedQuantity.textContent = state.quantityModal.quantity;
+                }
+            });
+
+            elements.increaseQty.addEventListener('click', function () {
+                state.quantityModal.quantity++;
+                elements.selectedQuantity.textContent = state.quantityModal.quantity;
+            });
+
+            elements.cancelQtyBtn.addEventListener('click', hideQuantityModal);
+            elements.confirmQtyBtn.addEventListener('click', addServiceWithQuantity);
+
+            // Action buttons
+            elements.clearBtn.addEventListener('click', clearCurrentOrder);
+            elements.clearAllBtn.addEventListener('click', clearAll);
+            elements.completeBtn.addEventListener('click', completeOrder);
+
+            // Modal buttons
+            elements.printBtn.addEventListener('click', printReceipt);
+            if (elements.shareWhatsappBtn) {
+                elements.shareWhatsappBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    shareToWhatsApp();
+                });
+            }
+            elements.newOrderBtn.addEventListener('click', newOrder);
+            elements.closeHelpBtn.addEventListener('click', hideHelp);
+
+            // Quick actions
+            elements.viewHistoryBtn.addEventListener('click', showHistory);
+            elements.quickHelpBtn.addEventListener('click', showHelp);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboardShortcuts);
+        }
+
+        function toggleMobileMenu() {
+            elements.navMenu.classList.toggle('active');
+        }
+
+        // ========== ORDER PROCESSING ==========
+        async function completeOrder() {
+            if (state.currentOrder.services.length === 0) {
+                showNotification('Please add at least one service to the order', 'error');
+                return;
+            }
+
+            // Validate customer info
+            if (!state.currentOrder.customerName.trim()) {
+                if (!confirm('No customer name provided. Continue as Walk-in Customer?')) {
+                    return;
+                }
+                state.currentOrder.customerName = 'Walk-in Customer';
+            }
+
+            // Validate phone number
+            if (!state.currentOrder.customerPhone.trim()) {
+                state.currentOrder.customerPhone = '';
+            }
+
+            // Validate amount received
+            if (!state.currentOrder.amountReceived || state.currentOrder.amountReceived < state.currentOrder.total) {
+                if (!confirm(`Amount received (₹${state.currentOrder.amountReceived || 0}) is less than total (₹${state.currentOrder.total}). Continue anyway?`)) {
+                    return;
+                }
+            }
+
+            // Show confirmation dialog before saving to database
+            const orderSummary = `
+Order Number: ${state.currentOrder.number}
+Transaction ID: ${state.currentOrder.transactionId}
+Customer: ${state.currentOrder.customerName || 'Walk-in Customer'}
+Phone: ${state.currentOrder.customerPhone || 'N/A'}
+Items: ${state.currentOrder.services.length} items (${state.currentOrder.services.reduce((sum, item) => sum + item.quantity, 0)} total quantity)
+Total Amount: ₹${state.currentOrder.total}
+Amount Received: ₹${state.currentOrder.amountReceived || 0}
+Change: ₹${state.currentOrder.change > 0 ? state.currentOrder.change : 0}
+Payment Method: ${state.currentOrder.paymentMethod.charAt(0).toUpperCase() + state.currentOrder.paymentMethod.slice(1)}
+
+Are you sure you want to save this order to the database?`;
+
+            if (!confirm(orderSummary)) {
+                showNotification('Order cancelled. Order was NOT saved to database.', 'info');
+                return;
+            }
+
+            // Update final timestamp
+            state.currentOrder.timestamp = new Date().toISOString();
+            state.currentOrder.completed = true;
+
+            // Prepare transaction data for API
+            // Backend requires `total_amount` — include it explicitly.
+            const transactionData = {
+                customer_name: state.currentOrder.customerName,
+                customer_phone: state.currentOrder.customerPhone,
+                customer_email: state.currentOrder.customerEmail,
+                services_data: state.currentOrder.services.map(item => ({
+                    id: item.service.id,
+                    service_code: item.service.service_code || '',
+                    name: item.service.name,
+                    quantity: item.quantity,
+                    price: item.service.price,
+                    total: item.totalPrice,
+                    description: item.service.description || ''
+                })),
+                // keep subtotal for backward-compatibility, and add total_amount which the API expects
+                subtotal: state.currentOrder.total,
+                total_amount: state.currentOrder.total,
+
+                discount: 0,
+
+                amount_received: state.currentOrder.amountReceived,
+                payment_method: state.currentOrder.paymentMethod,
+                notes: state.currentOrder.notes
+            };
+
+            try {
+                // Save to database via API
+                const response = await fetch('/api/quick_services/transaction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(transactionData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Also save to local storage for backup
+                    state.orderSystem.saveOrder({
+                        ...state.currentOrder,
+                        services: state.currentOrder.services.map(item => ({
+                            name: item.service.name,
+                            quantity: item.quantity,
+                            price: item.service.price,
+                            total: item.totalPrice
+                        }))
+                    });
+
+                    // Update modal with order details
+                    updateSuccessModal();
+
+                    // Show success modal
+                    elements.successModal.style.display = 'flex';
+
+                    // Reload stats from database
+                    loadStatsFromDatabase();
+
+                    showNotification(`Order ${state.currentOrder.number} completed successfully!`, 'success');
+                } else {
+                    showNotification(`Error saving transaction: ${result.error || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving transaction:', error);
+                showNotification(`Error saving transaction: ${error.message}`, 'error');
+            }
+        }
+
+        function updateSuccessModal() {
+            const totalItems = state.currentOrder.services.reduce((sum, item) => sum + item.quantity, 0);
+
+            const subtotal = Math.round(state.currentOrder.total * 100) / 100;
+
+
+            elements.modalOrderNumber.textContent = state.currentOrder.number;
+            elements.modalOrderNum.textContent = state.currentOrder.number;
+            elements.modalTransactionId.textContent = state.currentOrder.transactionId;
+            elements.modalCustomer.textContent = state.currentOrder.customerName || 'Walk-in Customer';
+            elements.modalItemsCount.textContent = `${totalItems} items`;
+            if (elements.modalSubtotal) elements.modalSubtotal.textContent = `${config.currency}${subtotal}`;
+
+            ;
+            elements.modalReceived.textContent = `${config.currency}${state.currentOrder.amountReceived}`;
+            const changeForReceipt = state.currentOrder.change;
+            elements.modalChange.textContent = `${config.currency}${changeForReceipt > 0 ? changeForReceipt : 0}`;
+            elements.modalMethod.textContent = state.currentOrder.paymentMethod.charAt(0).toUpperCase() + state.currentOrder.paymentMethod.slice(1);
+            elements.modalTime.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // ========== ORDER MANAGEMENT ==========
+        function newOrder() {
+            // Hide any open modals
+            elements.successModal.style.display = 'none';
+            hideQuantityModal();
+
+            // Save current order to history if it has items
+            if (state.currentOrder.services.length > 0 && !state.currentOrder.completed) {
+                if (confirm(`Current order ${state.currentOrder.number} has items. Save as draft?`)) {
+                    saveOrderDraft();
+                }
+            }
+
+            // Generate new order numbers
+            initializeOrder();
+
+            // Clear current order data
+            clearCurrentOrder();
+
+            // Reset form
+            elements.customerName.value = '';
+            elements.customerPhone.value = '';
+            elements.customerEmail.value = '';
+            elements.orderNotes.value = '';
+            elements.amountReceived.value = '';
+            elements.serviceSearch.value = '';
+            elements.customerFound.classList.remove('show');
+            elements.customerHistory.classList.remove('show');
+
+            // Reset filtered services
+            state.filteredServices = [...config.defaultServices];
+
+            // Update UI
+            updateUI();
+            renderServices();
+            renderSelectedItems();
+            updateChangeDisplay();
+
+            showNotification(`New order ${state.currentOrder.number} created`, 'info');
+        }
+
+        function clearCurrentOrder() {
+            state.currentOrder.services = [];
+            state.currentOrder.amountReceived = 0;
+            state.currentOrder.change = 0;
+            updateOrderTotals();
+            updateUI();
+            renderServices();
+            renderSelectedItems();
+            updateChangeDisplay();
+            showNotification('Current order cleared', 'info');
+        }
+
+        function clearAll() {
+            if (confirm('Clear all data and start fresh? This will clear the current order.')) {
+                newOrder();
+                showNotification('All data cleared', 'info');
+            }
+        }
+
+        function saveOrderDraft() {
+            const draft = {
+                orderNumber: state.currentOrder.number,
+                services: state.currentOrder.services,
+                customerName: state.currentOrder.customerName,
+                total: state.currentOrder.total,
+                timestamp: new Date().toISOString()
+            };
+
+            let drafts = JSON.parse(localStorage.getItem('orderDrafts') || '[]');
+            drafts.push(draft);
+            localStorage.setItem('orderDrafts', JSON.stringify(drafts.slice(-10)));
+        }
+
+        // ========== OTHER FUNCTIONS ==========
+        function showHelp() {
+            // Simple help - could be expanded to show modal
+            showNotification('Click services to select quantity. Enter phone number to auto-fill customer details.', 'info');
+        }
+
+        function hideHelp() {
+            // Placeholder for help modal
+        }
+
+        function showHistory() {
+            // Placeholder for history modal
+            showNotification('History feature coming soon!', 'info');
+        }
+
+        function printReceipt() {
+            if (!state.currentOrder || state.currentOrder.services.length === 0) {
+                showNotification('No items to print', 'warning');
+                return;
+            }
+
+            const subtotal = Math.round(state.currentOrder.total * 100) / 100;
+
+
+
+            const win = window.open('', '_blank', 'width=600,height=800');
+            const styles = `
+                body{font-family: Arial, Helvetica, sans-serif; padding:20px;}
+                .logo{display:flex;align-items:center;gap:12px}
+                h2{margin:0}
+                table{width:100%;border-collapse:collapse;margin-top:12px}
+                th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}
+                tfoot td{font-weight:700}
+            `;
+
+            const itemsHtml = state.currentOrder.services.map(item => `
+                <tr>
+                    <td>${item.service.name} <small style="color:#666;">(${item.quantity} × ${config.currency}${item.service.price})</small></td>
+                    <td style="text-align:right">${config.currency}${(Math.round(item.totalPrice * 100) / 100).toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            const receiptHtml = `
+                <html>
+                <head>
+                    <title>Receipt - ${state.currentOrder.number}</title>
+                    <style>${styles}</style>
+                </head>
+                <body>
+                    <div class="logo">
+                        <img src="/static/img/logo.png" style="height:64px;" onerror="this.style.display='none'" />
+                        <div>
+                            <h2>FillYourForm/h2>
+                           
+                        </div>
+                    </div>
+                    <hr />
+                    <div>Order: <strong>${state.currentOrder.number}</strong></div>
+                    <div>Transaction: <strong>${state.currentOrder.transactionId}</strong></div>
+                    <div>Customer: <strong>${state.currentOrder.customerName || 'Walk-in Customer'}</strong></div>
+                    <table>
+                        <thead><tr><th>Item</th><th style="text-align:right">Amount</th></tr></thead>
+                        <tbody>
+                            ${itemsHtml}
+                        </tbody>
+                        <tfoot>
+                            <tr><td>Subtotal</td><td style="text-align:right">${config.currency}${subtotal.toFixed(2)}</td></tr>
+                            
+                           
+                        </tfoot>
+                    </table>
+                    <div style="margin-top:12px">Payment: <strong>${state.currentOrder.paymentMethod}</strong></div>
+                    <div style="margin-top:8px">Amount Received: <strong>${config.currency}${(state.currentOrder.amountReceived || 0).toFixed(2)}</strong></div>
+                    
+                    <hr />
+                    <div style="text-align:center; margin-top:12px;">Thank you for your business!</div>
+                </body>
+                </html>
+            `;
+
+            win.document.open();
+            win.document.write(receiptHtml);
+            win.document.close();
+            // Give the window a moment to render then print
+            setTimeout(() => {
+                try {
+                    win.focus();
+                    win.print();
+                } catch (e) {
+                    console.error('Print failed', e);
+                }
+            }, 500);
+        }
+
+        function shareToWhatsApp() {
+            if (!state.currentOrder || state.currentOrder.services.length === 0) {
+                showNotification('No items to share', 'warning');
+                return;
+            }
+
+            const subtotal = Math.round(state.currentOrder.total * 100) / 100;
+
+
+            let message = `Order ${state.currentOrder.number}\nTransaction: ${state.currentOrder.transactionId}\n`;
+            message += `Customer: ${state.currentOrder.customerName || 'Walk-in'}\n\n`;
+            state.currentOrder.services.forEach(item => {
+                message += `${item.quantity} x ${item.service.name} = ${config.currency}${(Math.round(item.totalPrice * 100) / 100).toFixed(2)}\n`;
+            });
+            message += `\nSubtotal: ${config.currency}${subtotal.toFixed(2)}\n`;
+
+
+            message += `Payment: ${state.currentOrder.paymentMethod}\n`;
+            message += `\nThank you!`;
+
+            const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        function printCurrentOrder() {
+            if (state.currentOrder.services.length === 0) {
+                showNotification('No items in current order to print', 'warning');
+                return;
+            }
+            printReceipt();
+        }
+
+        function handleKeyboardShortcuts(e) {
+            // F1 - Help
+            if (e.key === 'F1') {
+                e.preventDefault();
+                showHelp();
+            }
+
+            // Ctrl + N - New order
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                newOrder();
+            }
+
+            // Ctrl + C - Clear order
+            if (e.ctrlKey && e.key === 'c') {
+                e.preventDefault();
+                clearCurrentOrder();
+            }
+
+            // Esc - Close modals
+            if (e.key === 'Escape') {
+                elements.successModal.style.display = 'none';
+                hideQuantityModal();
+            }
+        }
+
+        // ========== NOTIFICATION SYSTEM ==========
+        function showNotification(message, type = 'info') {
+            // Remove existing notification
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+
+            // Create notification
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${getNotificationIcon(type)}"></i>
+                <span>${message}</span>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+        function getNotificationIcon(type) {
+            const icons = {
+                success: 'check-circle',
+                error: 'exclamation-circle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
+            return icons[type] || 'info-circle';
+        }
+
+        // ======== Orders / Filter / Help helpers ========
+        async function fetchTransactions(params = {}) {
+            // Build query params
+            const qp = new URLSearchParams();
+            for (const k in params) {
+                if (params[k]) qp.append(k, params[k]);
+            }
+            const url = '/api/quick_services/transactions' + (qp.toString() ? '?' + qp.toString() : '');
+            try {
+                const resp = await fetch(url);
+                const text = await resp.text();
+                try {
+                    const data = JSON.parse(text);
+                    return { success: true, data: data };
+                } catch (e) {
+                    // server returned HTML or plain text
+                    return { success: false, html: text };
+                }
+            } catch (err) {
+                console.error('Fetch transactions error', err);
+                return { success: false, error: err.message };
+            }
+        }
+
+        async function viewTodaysOrders() {
+            const role = document.getElementById('currentUserRole').value || '';
+            const branch = document.getElementById('currentUserBranch').value || '';
+            const username = document.getElementById('currentUsername').value || '';
+
+            const params = { date: 'today' };
+            if (role === 'manager' && branch) params.branch = branch;
+            if (role === 'staff' && username) params.staff = username;
+
+            const result = await fetchTransactions(params);
+            const container = document.getElementById('todayOrdersContent');
+            if (!container) return;
+            if (!result.success) {
+                // show HTML or error
+                container.innerHTML = result.html || `<pre>${escapeHtml(result.error || 'No data')}</pre>`;
+            } else {
+                const tx = result.transactions || result.data || [];
+                if (!Array.isArray(tx) || tx.length === 0) {
+                    container.innerHTML = '<p>No orders for today.</p>';
+                } else {
+                    let rows = tx.map(t => `
+                        <tr>
+                            <td>${escapeHtml(t.order_number || t.number || '')}</td>
+                            <td>${escapeHtml(t.transaction_id || t.txn || '')}</td>
+                            <td>${escapeHtml(t.customer_name || t.customer || '')}</td>
+                            <td style="text-align:right">${t.total_amount || t.total || ''}</td>
+                            <td>${escapeHtml(t.payment_method || '')}</td>
+                            <td>${escapeHtml(t.staff_name || t.created_by || t.username || '')}</td>
+                            <td>${escapeHtml(t.created_at || t.timestamp || '')}</td>
+                        </tr>
+                    `).join('');
+
+                    container.innerHTML = `
+                        <table style="width:100%;border-collapse:collapse">
+                            <thead><tr><th>Order#</th><th>Txn</th><th>Customer</th><th>Total</th><th>Payment</th><th>Staff</th><th>Time</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    `;
+                }
+            }
+            document.getElementById('todayOrdersModal').style.display = 'flex';
+        }
+
+        async function applyFilters() {
+            const from = document.getElementById('filterFrom').value;
+            const to = document.getElementById('filterTo').value;
+            const branch = document.getElementById('filterBranch').value;
+            const staff = document.getElementById('filterStaff').value;
+            const params = {};
+            if (from) params.from = from;
+            if (to) params.to = to;
+            if (branch) params.branch = branch;
+            if (staff) params.staff = staff;
+            // reuse fetch and render into todayOrdersModal
+            const result = await fetchTransactions(params);
+            const container = document.getElementById('todayOrdersContent');
+            if (!container) return;
+            if (!result.success) {
+                container.innerHTML = result.html || `<pre>${escapeHtml(result.error || 'No data')}</pre>`;
+            } else {
+                const tx = result.transactions || result.data || [];
+                if (!Array.isArray(tx) || tx.length === 0) container.innerHTML = '<p>No orders found.</p>';
+                else {
+                    let rows = tx.map(t => `
+                        <tr>
+                            <td>${escapeHtml(t.order_number || t.number || '')}</td>
+                            <td>${escapeHtml(t.transaction_id || t.txn || '')}</td>
+                            <td>${escapeHtml(t.customer_name || t.customer || '')}</td>
+                            <td style="text-align:right">${t.total_amount || t.total || ''}</td>
+                            <td>${escapeHtml(t.payment_method || '')}</td>
+                            <td>${escapeHtml(t.staff_name || t.created_by || t.username || '')}</td>
+                            <td>${escapeHtml(t.created_at || t.timestamp || '')}</td>
+                        </tr>
+                    `).join('');
+                    container.innerHTML = `<table style="width:100%;border-collapse:collapse"><thead><tr><th>Order#</th><th>Txn</th><th>Customer</th><th>Total</th><th>Payment</th><th>Staff</th><th>Time</th></tr></thead><tbody>${rows}</tbody></table>`;
+                }
+            }
+            document.getElementById('filterModal').style.display = 'none';
+            document.getElementById('todayOrdersModal').style.display = 'flex';
+        }
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        async function fetchAndUpdateStats() {
+            const role = document.getElementById('currentUserRole').value || '';
+            const branch = document.getElementById('currentUserBranch').value || '';
+            const username = document.getElementById('currentUsername').value || '';
+
+            const params = { date: 'today' };
+            if (role === 'manager' && branch) params.branch = branch;
+            if (role === 'staff' && username) params.staff = username;
+
+            const result = await fetchTransactions(params);
+            if (!result.success) {
+                // if HTML returned, skip
+                return;
+            }
+            const tx = result.transactions || result.data || [];
+            const ordersCount = Array.isArray(tx) ? tx.length : 0;
+            const revenue = Array.isArray(tx) ? tx.reduce((s, t) => s + (parseFloat(t.total_amount || t.total || 0) || 0), 0) : 0;
+            const customers = new Set((Array.isArray(tx) ? tx.map(t => (t.customer_phone || t.customer || t.customer_name || '')) : [])).size;
+            const avg = ordersCount ? (revenue / ordersCount) : 0;
+
+            const currency = config.currency || '₹';
+            document.getElementById('todayOrders').textContent = ordersCount;
+            document.getElementById('todayRevenue').textContent = currency + revenue.toFixed(2);
+            document.getElementById('totalOrdersToday').textContent = ordersCount;
+            document.getElementById('totalRevenueToday').textContent = currency + revenue.toFixed(2);
+            document.getElementById('totalCustomersToday').textContent = customers;
+            document.getElementById('avgOrderValue').textContent = currency + avg.toFixed(2);
+        }
+
+        // ========== INITIAL TUTORIAL ==========
+        setTimeout(() => {
+            if (!localStorage.getItem('quickServiceTutorialSeen')) {
+                showNotification('💡 Tip: Click services to select quantity. Enter phone number to auto-fill customer details.', 'info');
+                localStorage.setItem('quickServiceTutorialSeen', 'true');
+            }
+        }, 1500);
+    </script>
+    <!-- Group Chat Widget -->
+    {% include 'chat_widget.html' %}
+</body>
+
+</html>

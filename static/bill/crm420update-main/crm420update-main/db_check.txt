@@ -1,0 +1,1 @@
+[(0, 'id', 'INTEGER', 1, None, 1), (1, 'name', 'VARCHAR(100)', 1, None, 0), (2, 'code', 'VARCHAR(20)', 1, None, 0), (3, 'address', 'VARCHAR(300)', 0, None, 0), (4, 'phone', 'VARCHAR(20)', 0, None, 0), (5, 'email', 'VARCHAR(120)', 0, None, 0), (6, 'is_active', 'BOOLEAN', 0, None, 0), (7, 'created_at', 'DATETIME', 0, None, 0), (8, 'gst_number', 'TEXT', 0, None, 0)]

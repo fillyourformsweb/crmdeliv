@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Confirmation - Logistics Intelligence{% endblock %}
+
+{% block content %}
+<div class="col-12 page-reveal">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-black text-primary mb-1">DATA RECONCILIATION</h1>
+            <p class="text-muted">Upload external logistics confirmation for AWB matching</p>
+        </div>
+        <a href="{{ url_for('orders') }}" class="btn btn-light rounded-pill px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to Orders
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="luxury-card mb-4">
+                <div class="card-body p-5 text-center">
+                    <form method="POST" action="{{ url_for('upload_confirmation') }}" enctype="multipart/form-data" id="uploadForm">
+                        <div class="upload-zone p-5 mb-4" id="dropZone" style="border: 2px dashed #dee2e6; border-radius: 2rem; cursor: pointer; transition: all 0.3s ease;">
+                            <div class="feature-icon bg-primary-subtle text-primary mx-auto mb-3">
+                                <i class="fas fa-cloud-upload-alt fa-2x"></i>
+                            </div>
+                            <h4 class="fw-bold">Drop Logistics File</h4>
+                            <p class="text-muted">Excel (.xlsx) or CSV files supported</p>
+                            <input type="file" name="excel_file" id="excel_file" class="d-none" accept=".xlsx,.xls,.csv" onchange="updateFileInfo()">
+                            <button type="button" class="btn btn-luxury px-4 rounded-pill mt-2" onclick="document.getElementById('excel_file').click()">
+                                Select File
+                            </button>
+                        </div>
+                        
+                        <div id="fileInfo" class="d-none mb-4 animate-slide-up">
+                            <div class="p-3 bg-light rounded-4 d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-file-excel fa-2x text-success me-3"></i>
+                                    <div class="text-start">
+                                        <div class="fw-bold" id="fileNameDisplay">filename.xlsx</div>
+                                        <div class="small text-muted" id="fileSizeDisplay">0 KB</div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-link text-danger" onclick="clearFile()">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold" id="submitBtn" disabled>
+                                <i class="fas fa-microchip me-2"></i>Process Intelligence Match
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="luxury-card">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="mb-0 fw-bold text-uppercase tracking-wider">Required Data Structure</h6>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-3">Column Name</th>
+                                    <th>Data Point</th>
+                                    <th>Importance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-3">AWB No</td>
+                                    <td>Unique tracking ID</td>
+                                    <td><span class="badge bg-danger rounded-pill">Mandatory</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-3">Destination</td>
+                                    <td>Delivery City/Hub</td>
+                                    <td><span class="badge bg-primary rounded-pill">Verification</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-3">Total Amount</td>
+                                    <td>Vendor billed amount</td>
+                                    <td><span class="badge bg-success rounded-pill">Profit Calc</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="luxury-card mb-4 bg-primary text-white">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-robot me-2"></i>AI Reconciliation</h5>
+                    <p class="small opacity-75 mb-4">Our matching engine automatically syncs vendor data with internal records to identify profit leakage.</p>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="fas fa-check-circle mt-1 me-2 text-white"></i>
+                            <span class="small">Automatic Profit/Loss detection per AWB</span>
+                        </li>
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="fas fa-check-circle mt-1 me-2 text-white"></i>
+                            <span class="small">Cross-check destination accuracy</span>
+                        </li>
+                        <li class="d-flex align-items-start">
+                            <i class="fas fa-check-circle mt-1 me-2 text-white"></i>
+                            <span class="small">Flag discrepancies for manual audit</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="luxury-card p-4">
+                <h6 class="fw-bold mb-3">Matching Logic</h6>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="avatar-circle-sm bg-light text-primary me-3">1</div>
+                    <div class="small text-muted">Awb Number Matching</div>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="avatar-circle-sm bg-light text-primary me-3">2</div>
+                    <div class="small text-muted">Vendor Amount Comparison</div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="avatar-circle-sm bg-light text-primary me-3">3</div>
+                    <div class="small text-muted">Status Synchronization</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('excel_file');
+    
+    dropZone.onclick = () => fileInput.click();
+
+    dropZone.ondragover = (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = '#0d6efd';
+        dropZone.style.background = '#f8f9ff';
+    };
+
+    dropZone.ondragleave = () => {
+        dropZone.style.borderColor = '#dee2e6';
+        dropZone.style.background = 'transparent';
+    };
+
+    dropZone.ondrop = (e) => {
+        e.preventDefault();
+        fileInput.files = e.dataTransfer.files;
+        updateFileInfo();
+    };
+
+    function updateFileInfo() {
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            document.getElementById('fileNameDisplay').textContent = file.name;
+            document.getElementById('fileSizeDisplay').textContent = (file.size / 1024).toFixed(2) + ' KB';
+            document.getElementById('fileInfo').classList.remove('d-none');
+            document.getElementById('submitBtn').disabled = false;
+        }
+    }
+
+    function clearFile() {
+        fileInput.value = '';
+        document.getElementById('fileInfo').classList.add('d-none');
+        document.getElementById('submitBtn').disabled = true;
+    }
+</script>
+{% endblock %}

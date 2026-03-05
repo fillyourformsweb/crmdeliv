@@ -1,0 +1,588 @@
+{% extends "base.html" %}
+
+{% block title %}New Walk-in Order - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-primary fw-bold mb-1">Dispatch Center</h5>
+        <h1 class="display-5 fw-black text-dark mb-2">New Walk-in Order</h1>
+        <p class="text-muted fs-5 mb-0">Enter customer and shipment details to generate a new receipt.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('orders') }}" class="luxury-btn btn btn-light border px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+</div>
+
+<form method="POST" id="orderForm" class="page-reveal">
+    <!-- Receipt Mode Selection (TOP) -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card luxury-card border-0 shadow-sm">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between flex-wrap gap-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-circle-sm bg-primary-subtle text-primary">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">Receipt Mode</h5>
+                            <p class="small text-muted mb-0">Choose how to generate the receipt number</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-4">
+                        <div class="d-flex gap-3">
+                            <div class="form-check custom-radio flex-shrink-0">
+                                <input class="form-check-input" type="radio" name="receipt_type" id="typeStandard"
+                                    value="standard" checked>
+                                <label class="form-check-label fw-bold" for="typeStandard">Automatic</label>
+                            </div>
+                            <div class="form-check custom-radio flex-shrink-0">
+                                <input class="form-check-input" type="radio" name="receipt_type" id="typeManual"
+                                    value="manual">
+                                <label class="form-check-label fw-bold" for="typeManual">Manual Entry</label>
+                            </div>
+                        </div>
+
+                        <div id="receiptFields" style="min-width: 250px;">
+                            <input type="text" name="receipt_number" id="receiptNumberInput"
+                                class="form-control luxury-input" required placeholder="Generating..."
+                                style="height: 45px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <!-- Customer & Receiver Section -->
+            <div class="card luxury-card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                    <h5 class="fw-bold mb-0 text-dark"><i
+                            class="fas fa-user-circle me-2 text-primary opacity-50"></i>Sender Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Customer Name *</label>
+                            <input type="text" name="customer_name" class="form-control luxury-input"
+                                placeholder="Full Name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Contact Number *</label>
+                            <input type="text" name="customer_phone" class="form-control luxury-input"
+                                placeholder="+1..." required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Email Address</label>
+                            <input type="email" name="customer_email" class="form-control luxury-input"
+                                placeholder="email@example.com">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Pickup Address *</label>
+                            <textarea name="customer_address" class="form-control luxury-input" rows="2"
+                                placeholder="Full pickup address..." required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card luxury-card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                    <h5 class="fw-bold mb-0 text-dark"><i
+                            class="fas fa-map-marker-alt me-2 text-success opacity-50"></i>Receiver Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Receiver Name *</label>
+                            <input type="text" name="receiver_name" class="form-control luxury-input"
+                                placeholder="Full Name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Receiver Number *</label>
+                            <input type="text" name="receiver_phone" class="form-control luxury-input"
+                                placeholder="+1..." required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Delivery Address *</label>
+                            <textarea name="receiver_address" class="form-control luxury-input" rows="2"
+                                placeholder="Full delivery address..." required></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">City</label>
+                            <input type="text" name="receiver_city" class="form-control luxury-input"
+                                placeholder="City">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">State</label>
+                            <select name="receiver_state" id="receiver_state" class="form-select luxury-input">
+                                <option value="">Select State</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Pincode</label>
+                            <input type="text" name="receiver_pincode" class="form-control luxury-input"
+                                placeholder="Code">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <!-- Package & Billing Section -->
+            <div class="card luxury-card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Shipping Mode *</label>
+                        <select name="receipt_mode" class="form-select luxury-input" required>
+                            <option value="">Select Shipping Mode</option>
+                            <option value="standard">Standard Delivery</option>
+                            <option value="prime">Prime Express</option>
+                            <option value="parcel">Parcel Service</option>
+                            <option value="state_express">State Express</option>
+                            <option value="road_express">Road Express</option>
+                        </select>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Weight (kg)</label>
+                            <div class="input-group">
+                                <input type="number" name="weight" id="weight" class="form-control luxury-input"
+                                    step="0.01" min="0" placeholder="0.00">
+                                <span class="input-group-text bg-light border-0">KG</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Qty (Boxes)</label>
+                            <input type="number" name="number_of_boxes" class="form-control luxury-input" value="1"
+                                min="1">
+                        </div>
+                    </div>
+                    <div id="stateError" class="alert alert-warning border-0 shadow-sm mb-4" style="display: none;">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle me-3 fs-4 text-warning"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">State not in database</h6>
+                                <p class="small mb-0 opacity-75">Please select a valid state from the list to enable
+                                    pricing.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="billingSection" style="display: none;">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Payment Mode *</label>
+                                <select name="payment_mode" class="form-select luxury-input" required>
+                                    <option value="cash" selected>Cash</option>
+                                    <option value="upi">UPI / Scanner</option>
+                                    <option value="online">Online Transfer</option>
+                                    <option value="card">Card Payment</option>
+                                    <option value="credit">Credit / To-Pay</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Amount Received *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0">₹</span>
+                                <input type="number" name="received_amount" id="received_amount"
+                                    class="form-control luxury-input" step="0.01" min="0" placeholder="0.00">
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <small class="text-muted">Auto-calculated (editable)</small>
+                                <span id="rateIndicator"
+                                    class="badge rounded-pill bg-light text-muted small border shadow-sm px-3"
+                                    style="display: none;">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Insured/Declared Value
+                            (Optional)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0">₹</span>
+                            <input type="number" name="insured_amount" class="form-control luxury-input" step="0.01"
+                                min="0" placeholder="Enter item value for insurance...">
+                        </div>
+                        <small class="text-muted">Declare item value for insurance coverage</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Handling Tags Selection -->
+            <div class="card luxury-card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="fas fa-tag me-2 text-warning opacity-50"></i>Handling Tags
+                    </h5>
+                    <p class="small text-muted mb-0">Select tags to print on box label</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-2">
+                        <!-- Care & Fragile -->
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="HANDLE WITH CARE"
+                                    class="form-check-input" id="tag1">
+                                <label class="form-check-label" for="tag1">
+                                    <i class="fas fa-hand-holding-heart text-danger"></i> Handle With Care
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="FRAGILE" class="form-check-input"
+                                    id="tag2">
+                                <label class="form-check-label" for="tag2">
+                                    <i class="fas fa-wine-glass text-danger"></i> Fragile
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Position & Orientation -->
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="THIS SIDE UP"
+                                    class="form-check-input" id="tag3">
+                                <label class="form-check-label" for="tag3">
+                                    <i class="fas fa-arrow-up text-primary"></i> This Side Up
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="KEEP UPRIGHT"
+                                    class="form-check-input" id="tag4">
+                                <label class="form-check-label" for="tag4">
+                                    <i class="fas fa-level-up-alt text-primary"></i> Keep Upright
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Environment -->
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="KEEP DRY" class="form-check-input"
+                                    id="tag5">
+                                <label class="form-check-label" for="tag5">
+                                    <i class="fas fa-tint text-info"></i> Keep Dry
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="TEMPERATURE SENSITIVE"
+                                    class="form-check-input" id="tag6">
+                                <label class="form-check-label" for="tag6">
+                                    <i class="fas fa-thermometer-half text-warning"></i> Temperature Sensitive
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Handling Warnings -->
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="DO NOT BEND" class="form-check-input"
+                                    id="tag7">
+                                <label class="form-check-label" for="tag7">
+                                    <i class="fas fa-ban text-danger"></i> Do Not Bend
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="DO NOT STACK"
+                                    class="form-check-input" id="tag8">
+                                <label class="form-check-label" for="tag8">
+                                    <i class="fas fa-layer-group text-danger"></i> Do Not Stack
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Additional -->
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="DO NOT DROP" class="form-check-input"
+                                    id="tag9">
+                                <label class="form-check-label" for="tag9">
+                                    <i class="fas fa-exclamation-triangle text-warning"></i> Do Not Drop
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="SIGNATURE REQUIRED"
+                                    class="form-check-input" id="tag10">
+                                <label class="form-check-label" for="tag10">
+                                    <i class="fas fa-signature text-success"></i> Signature Required
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- NEW TAGS -->
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="PERISHABLE" class="form-check-input"
+                                    id="tag11">
+                                <label class="form-check-label" for="tag11">
+                                    <i class="fas fa-apple-alt text-success"></i> Perishable
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="HAZARDOUS MATERIAL"
+                                    class="form-check-input" id="tag12">
+                                <label class="form-check-label" for="tag12">
+                                    <i class="fas fa-radiation text-danger"></i> Hazardous Material
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="ELECTRONICS" class="form-check-input"
+                                    id="tag13">
+                                <label class="form-check-label" for="tag13">
+                                    <i class="fas fa-microchip text-primary"></i> Electronics
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="GLASS INSIDE"
+                                    class="form-check-input" id="tag14">
+                                <label class="form-check-label" for="tag14">
+                                    <i class="fas fa-wine-bottle text-info"></i> Glass Inside
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="HEAVY PACKAGE"
+                                    class="form-check-input" id="tag15">
+                                <label class="form-check-label" for="tag15">
+                                    <i class="fas fa-weight-hanging text-dark"></i> Heavy Package
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="LIQUID INSIDE"
+                                    class="form-check-input" id="tag16">
+                                <label class="form-check-label" for="tag16">
+                                    <i class="fas fa-flask text-info"></i> Liquid Inside
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="NO HOOKS" class="form-check-input"
+                                    id="tag17">
+                                <label class="form-check-label" for="tag17">
+                                    <i class="fas fa-times-circle text-danger"></i> No Hooks
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check custom-checkbox">
+                                <input type="checkbox" name="handling_tags" value="PROTECT FROM SUN"
+                                    class="form-check-input" id="tag18">
+                                <label class="form-check-label" for="tag18">
+                                    <i class="fas fa-sun text-warning"></i> Protect From Sun
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Custom Tag Input -->
+                        <div class="col-12 mt-3">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Custom Tag
+                                (Optional)</label>
+                            <input type="text" name="custom_handling_tag" class="form-control luxury-input"
+                                placeholder="Enter custom handling instruction..." maxlength="50">
+                            <small class="text-muted">Add your own custom handling instruction</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Actions -->
+            <div class="card luxury-card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="form-check mb-4 custom-checkbox">
+                        <input type="checkbox" name="create_customer_link" class="form-check-input" id="createLink">
+                        <label class="form-check-label fw-bold text-dark" for="createLink">
+                            Enable Customer Self-Onboarding
+                        </label>
+                        <p class="small text-muted mb-0">Sends a secure link for the customer to fill additional KYC
+                            details.</p>
+                    </div>
+                    <button type="submit" class="luxury-btn btn btn-primary w-100 py-3 fw-bold fs-5 shadow-lg mb-3">
+                        <i class="fas fa-check-circle me-2"></i>Finalize & Print Receipt
+                    </button>
+                    <a href="{{ url_for('orders') }}"
+                        class="btn btn-link w-100 text-muted text-decoration-none fw-bold">Discard Order</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Receipt Type Toggle & Auto-generation
+    const typeManual = document.getElementById('typeManual');
+    const typeStandard = document.getElementById('typeStandard');
+    const receiptInput = document.getElementById('receiptNumberInput');
+
+    function updateReceiptField() {
+        if (typeStandard && typeStandard.checked) {
+            receiptInput.placeholder = "Generating...";
+            receiptInput.readOnly = true;
+            fetch('/api/receipt/next')
+                .then(res => res.json())
+                .then(data => {
+                    receiptInput.value = data.receipt_number;
+                });
+        } else if (receiptInput) {
+            receiptInput.value = "";
+            receiptInput.placeholder = "Enter Manual Receipt Number";
+            receiptInput.readOnly = false;
+            receiptInput.focus();
+        }
+    }
+
+    if (typeManual && typeStandard) {
+        [typeManual, typeStandard].forEach(radio => {
+            radio.addEventListener('change', updateReceiptField);
+        });
+    }
+
+    // Link Shipping Mode to Receipt Generation
+    const shippingModeSelect = document.querySelector('select[name="receipt_mode"]');
+    if (shippingModeSelect) {
+        shippingModeSelect.addEventListener('change', function () {
+            if (this.value && this.value !== 'standard') {
+                if (typeManual) {
+                    typeManual.checked = true;
+                    updateReceiptField();
+                }
+            } else if (this.value === 'standard') {
+                if (typeStandard) {
+                    typeStandard.checked = true;
+                    updateReceiptField();
+                }
+            }
+        });
+    }
+
+    // Auto-calculate amount based on weight and receiver state
+    const weightInput = document.getElementById('weight');
+    const receivedAmountInput = document.getElementById('received_amount');
+    const stateInput = document.getElementById('receiver_state');
+    const cityInput = document.querySelector('input[name="receiver_city"]');
+    const rateIndicator = document.getElementById('rateIndicator');
+
+    // Fetch states for dropdown
+    fetch('/api/states')
+        .then(res => res.json())
+        .then(states => {
+            if (stateInput) {
+                states.forEach(state => {
+                    const option = document.createElement('option');
+                    option.value = state;
+                    option.textContent = state;
+                    stateInput.appendChild(option);
+                });
+            }
+        });
+
+    const billingSection = document.getElementById('billingSection');
+    const stateError = document.getElementById('stateError');
+    const submitBtn = document.querySelector('button[type="submit"]');
+
+    // Add event listeners for auto-calculation
+    if (weightInput) weightInput.addEventListener('input', calculateAmount);
+    if (stateInput) {
+        stateInput.addEventListener('change', calculateAmount);
+    }
+    if (cityInput) {
+        cityInput.addEventListener('input', calculateAmount);
+        cityInput.addEventListener('blur', calculateAmount);
+    }
+
+    function calculateAmount() {
+        const weight = parseFloat(weightInput.value) || 0;
+        const state = stateInput ? stateInput.value.trim() : '';
+
+        if (state) {
+            // Show billing section immediately if a state is selected
+            if (billingSection) billingSection.style.display = 'block';
+            if (stateError) stateError.style.display = 'none';
+
+            if (weight) {
+                fetch('/api/calculate-amount', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        weight: weight,
+                        state: state
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error || data.rate_type === 'none') {
+                            if (billingSection) billingSection.style.display = 'none';
+                            if (stateError) stateError.style.display = 'block';
+                            if (submitBtn) submitBtn.disabled = true;
+                            if (receivedAmountInput) receivedAmountInput.required = false;
+                            return;
+                        }
+
+                        // Valid rate found
+                        if (submitBtn) submitBtn.disabled = false;
+                        if (receivedAmountInput) {
+                            receivedAmountInput.required = true;
+                            // Auto-fill the received amount
+                            if (data.total_amount > 0 || !receivedAmountInput.value) {
+                                receivedAmountInput.value = (data.total_amount || 0).toFixed(2);
+                            }
+                        }
+
+                        // Update rate indicator
+                        if (rateIndicator) {
+                            rateIndicator.style.display = 'inline-block';
+                            if (data.rate_type === 'state') {
+                                rateIndicator.className = 'badge rounded-pill bg-success-subtle text-success small border border-success border-opacity-25 shadow-sm px-3';
+                                rateIndicator.innerHTML = '<i class="fas fa-map-marker-alt me-1"></i>State-wise Rate';
+                            } else if (data.rate_type === 'client') {
+                                rateIndicator.className = 'badge rounded-pill bg-primary-subtle text-primary small border border-primary border-opacity-25 shadow-sm px-3';
+                                rateIndicator.innerHTML = '<i class="fas fa-building me-1"></i>Priority Client Rate';
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error calculating amount:', error);
+                    });
+            }
+        } else {
+            if (billingSection) billingSection.style.display = 'none';
+            if (stateError) stateError.style.display = 'none';
+            if (submitBtn) submitBtn.disabled = true;
+            if (rateIndicator) rateIndicator.style.display = 'none';
+        }
+    }
+
+    // Initial load
+    updateReceiptField();
+</script>
+{% endblock %}

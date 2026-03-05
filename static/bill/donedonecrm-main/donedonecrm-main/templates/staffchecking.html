@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Checking</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* All your existing CSS remains the same, just add these new styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a5fb4 0%, #26a269 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .checkin-container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin: 80px auto 20px;
+        }
+
+        .checkin-header {
+            background: linear-gradient(135deg, #1a5fb4, #0d4a9c);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .checkin-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .checkin-body {
+            padding: 30px;
+        }
+
+        /* Terms & Conditions Modal Styles */
+        .terms-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .terms-content {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .terms-header {
+            background: linear-gradient(135deg, #1a5fb4, #0d4a9c);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .terms-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .terms-body {
+            padding: 25px;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+
+        .terms-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .terms-section h4 {
+            color: #1a5fb4;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .terms-section p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .terms-list {
+            padding-left: 20px;
+            color: #666;
+        }
+
+        .terms-list li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .terms-actions {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-agree {
+            background: linear-gradient(135deg, #26a269, #1f7e4e);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-agree:hover {
+            background: linear-gradient(135deg, #1f7e4e, #186d41);
+            transform: translateY(-2px);
+        }
+
+        .btn-read-terms {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a5fb4;
+            background: none;
+            border: 2px solid #1a5fb4;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 20px auto;
+            transition: all 0.3s;
+        }
+
+        .btn-read-terms:hover {
+            background: #1a5fb4;
+            color: white;
+        }
+
+        /* Keep all your existing styles below */
+        .status-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #1a5fb4;
+        }
+
+        .status-card h3 {
+            margin-bottom: 10px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #currentStatus {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        #currentTime {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a5fb4;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a5fb4;
+            box-shadow: 0 0 0 3px rgba(26, 95, 180, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-checkin,
+        .btn-checkout {
+            flex: 1;
+            padding: 14px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-checkin {
+            background: linear-gradient(135deg, #1a5fb4, #0d4a9c);
+        }
+
+        .btn-checkin:hover:not(:disabled) {
+            background: linear-gradient(135deg, #0d4a9c, #0c3d87);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 74, 156, 0.3);
+        }
+
+        .btn-checkout {
+            background: linear-gradient(135deg, #26a269, #1f7e4e);
+        }
+
+        .btn-checkout:hover:not(:disabled) {
+            background: linear-gradient(135deg, #1f7e4e, #186d41);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(38, 162, 105, 0.3);
+        }
+
+        .btn-checkin:disabled,
+        .btn-checkout:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: #e8f6f0;
+            color: #26a269;
+            border-left: 4px solid #26a269;
+            display: block;
+        }
+
+        .message.error {
+            background: #fee;
+            color: #c33;
+            border-left: 4px solid #c33;
+            display: block;
+        }
+
+        .message.info {
+            background: #e8f2ff;
+            color: #1a5fb4;
+            border-left: 4px solid #1a5fb4;
+            display: block;
+        }
+
+        .history-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+        }
+
+        .history-card h3 {
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .attendance-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .attendance-item:last-child {
+            border-bottom: none;
+        }
+
+        .attendance-date {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .attendance-time {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .attendance-status {
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-in {
+            background: #e8f6f0;
+            color: #26a269;
+        }
+
+        .status-out {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1a5fb4;
+        }
+
+        .nav-user {
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-task {
+            padding: 8px 15px;
+            background: #1a5fb4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-task:hover {
+            background: #0d4a9c;
+        }
+
+        .btn-logout {
+            padding: 8px 15px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #c82333;
+        }
+
+        /* Manager Checkout Styles */
+        .manager-fields {
+            display: none;
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .pending-tasks-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pending-content {
+            background: white;
+            width: 95%;
+            max-width: 600px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .pending-header {
+            background: #f44336;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pending-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .pending-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+        }
+
+        .pending-item h5 {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .pending-item textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+
+        .pending-footer {
+            padding: 15px 20px;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .checkin-container {
+                margin-top: 100px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .navbar {
+                padding: 10px 15px;
+            }
+
+            .nav-user {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 5px;
+            }
+
+            .terms-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Terms & Conditions Modal -->
+    <div id="termsModal" class="terms-modal">
+        <div class="terms-content">
+            <div class="terms-header">
+                <h3><i class="fas fa-file-contract"></i> Terms & Conditions</h3>
+                <button onclick="closeTerms()"
+                    style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="terms-body">
+                <!-- Terms content will be loaded here -->
+            </div>
+            <div class="terms-actions">
+                <button onclick="closeTerms()" class="btn btn-secondary">Close</button>
+                <button onclick="agreeToTerms()" class="btn-agree">
+                    <i class="fas fa-check-circle"></i> I Agree
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">Staff Portal</div>
+            <div class="nav-user">
+                Welcome, <span id="staffName">Staff</span>
+                <button class="btn-task" onclick="window.location.href='/tasks'">
+                    <i class="fas fa-tasks"></i> Task
+                </button>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="checkin-container">
+        <div class="checkin-header">
+            <h1><i class="fas fa-user-clock"></i> Staff Check-In</h1>
+            <p>Please check in before starting your work</p>
+        </div>
+
+        <div class="checkin-body">
+            <div class="status-card">
+                <h3><i class="fas fa-info-circle"></i> Today's Status</h3>
+                <div id="currentStatus">Loading...</div>
+                <div id="currentTime">--:--:--</div>
+            </div>
+
+            <div class="form-group">
+                <label for="branchSelect"><i class="fas fa-building"></i> Branch Name *</label>
+                <select id="branchSelect" required>
+                    <option value="">Loading branches...</option>
+                </select>
+            </div>
+
+            <button onclick="showTerms()" class="btn-read-terms">
+                <i class="fas fa-scroll"></i> Read Terms & Conditions
+            </button>
+
+            <!-- Manager Special Fields -->
+            <div id="managerFields" class="manager-fields">
+                <h4 style="margin-bottom: 15px; color: #e65100;"><i class="fas fa-wallet"></i> Manager Settlement</h4>
+                <div class="form-group">
+                    <label for="onlineCash"><i class="fas fa-money-bill-wave"></i> Online Cash Received (₹)</label>
+                    <input type="number" id="onlineCash" class="form-control" placeholder="0.00" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="extraAmount"><i class="fas fa-receipt"></i> Extra Amount Used (₹)</label>
+                    <input type="number" id="extraAmount" class="form-control" placeholder="0.00" step="0.01">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-checkin" id="checkinBtn" onclick="checkIn()">
+                    <i class="fas fa-sign-in-alt"></i> Check In
+                </button>
+                <button class="btn-checkout" id="checkoutBtn" onclick="processCheckoutInitiation()" disabled>
+                    <i class="fas fa-sign-out-alt"></i> Check Out
+                </button>
+            </div>
+
+            <div id="attendanceMessage" class="message"></div>
+
+            <div class="history-card">
+                <h3><i class="fas fa-history"></i> Recent Attendance</h3>
+
+                <!-- Filters (only for admin) -->
+                <div id="filterSection"
+                    style="display: none; margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd;">
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <label for="filterStaffSelect"
+                                style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                                <i class="fas fa-user"></i> Filter by Staff
+                            </label>
+                            <select id="filterStaffSelect" class="form-group select"
+                                style="width: 100%; padding: 8px 12px; border: 2px solid #e9ecef; border-radius: 6px; font-size: 14px;">
+                                <option value="">All Staff</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label for="filterStatusSelect"
+                                style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                                <i class="fas fa-filter"></i> Filter by Status
+                            </label>
+                            <select id="filterStatusSelect" class="form-group select"
+                                style="width: 100%; padding: 8px 12px; border: 2px solid #e9ecef; border-radius: 6px; font-size: 14px;">
+                                <option value="">All Status</option>
+                                <option value="checked_in">Checked In</option>
+                                <option value="checked_out">Checked Out</option>
+                            </select>
+                        </div>
+                        <div style="flex: 0 0 auto;">
+                            <button onclick="applyFilters()"
+                                style="padding: 8px 20px; background: #1a5fb4; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">
+                                <i class="fas fa-search"></i> Apply
+                            </button>
+                        </div>
+                        <div style="flex: 0 0 auto;">
+                            <button onclick="resetFilters()"
+                                style="padding: 8px 20px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="attendanceHistory">Loading history...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Tasks Modal -->
+    <div id="pendingTasksModal" class="pending-tasks-modal">
+        <div class="pending-content">
+            <div class="pending-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Pending Tasks Reason</h3>
+                <button onclick="closePendingModal()"
+                    style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="pending-body">
+                <p id="pendingIntroText">The following tasks are still assigned to you. Please provide a reason why they
+                    are not completed yet before checking out:</p>
+                <div id="pendingTasksList">
+                    <!-- Tasks will be loaded here -->
+                </div>
+            </div>
+            <div class="pending-footer">
+                <button onclick="closePendingModal()" class="btn btn-secondary">Cancel</button>
+                <button onclick="confirmFinalCheckout()" class="btn btn-danger" id="finalCheckoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Complete Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let termsAgreed = localStorage.getItem('termsAgreed') === 'true';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async function () {
+            await checkAuth();
+            await loadBranches();
+            await loadTodayStatus();
+            await loadAttendanceHistory();
+
+            // Show terms on first visit
+            if (!termsAgreed) {
+                setTimeout(() => {
+                    showTerms();
+                }, 1000);
+            }
+        });
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/check-auth');
+                const data = await response.json();
+
+                if (data.authenticated) {
+                    currentUser = data.user;
+                    document.getElementById('staffName').textContent = currentUser.username;
+
+                    // Allow staff, managers, and admins to access this check-in page
+                    if (!['staff', 'manager', 'employee', 'user', 'admin'].includes(currentUser.post.toLowerCase())) {
+                        alert('This page is for staff, managers, or admins only');
+                        window.location.href = '/login';
+                    }
+
+                    // Show filters if admin
+                    if (currentUser.post.toLowerCase() === 'admin') {
+                        document.getElementById('filterSection').style.display = 'block';
+                        await loadStaffForFilter();
+                    }
+
+                    // Show manager fields if manager
+                    if (currentUser.post.toLowerCase() === 'manager') {
+                        document.getElementById('managerFields').style.display = 'block';
+                    }
+                } else {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Auth error:', error);
+                window.location.href = '/login';
+            }
+        }
+
+        // Load branches from database
+        async function loadBranches() {
+            try {
+                const response = await fetch('/api/branches/all');
+                if (response.ok) {
+                    const branches = await response.json();
+                    const branchSelect = document.getElementById('branchSelect');
+
+                    branchSelect.innerHTML = '<option value="">Select Branch</option>';
+
+                    branches.forEach(branch => {
+                        const option = document.createElement('option');
+                        option.value = branch.name;
+                        option.textContent = `${branch.name} (${branch.code})`;
+                        option.dataset.branchId = branch.id;
+                        branchSelect.appendChild(option);
+                    });
+                } else {
+                    loadDefaultBranches();
+                }
+            } catch (error) {
+                console.error('Error loading branches:', error);
+                loadDefaultBranches();
+            }
+        }
+
+        function loadDefaultBranches() {
+            const branchSelect = document.getElementById('branchSelect');
+            branchSelect.innerHTML = `
+                <option value="">Select Branch</option>
+                <option value="Nani">Nani</option>
+                <option value="University">University</option>
+                <option value="Bank Road">Bank Road</option>
+            `;
+        }
+
+        // Load today's status
+        async function loadTodayStatus() {
+            try {
+                const response = await fetch('/api/attendance/today');
+                const status = await response.json();
+
+                updateTime();
+                setInterval(updateTime, 1000);
+
+                if (status && status.check_in) {
+                    const checkInTime = new Date(status.check_in).toLocaleTimeString('en-IN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+
+                    document.getElementById('currentStatus').innerHTML = `
+                        <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                        Checked in at ${checkInTime}
+                        ${status.check_out ? `<br><i class="fas fa-check-circle" style="color: #28a745;"></i> Checked out at ${new Date(status.check_out).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}` : ''}
+                    `;
+
+                    // Check if already checked in today
+                    if (status.check_in && !status.check_out) {
+                        // Already checked in - disable check-in, enable check-out
+                        document.getElementById('checkinBtn').disabled = true;
+                        document.getElementById('checkoutBtn').disabled = false;
+
+                        // Update status message
+                        document.getElementById('currentStatus').innerHTML = `
+                            <i class="fas fa-check-circle" style="color: #26a269;"></i>
+                            Checked In - Ready to Check Out
+                        `;
+
+                        // Show checkout prompt
+                        showMessage('✓ You are already checked in today. Please check out when you finish work.', 'success');
+                    } else if (status.check_in && status.check_out) {
+                        // Already checked out - disable both buttons
+                        document.getElementById('checkinBtn').disabled = true;
+                        document.getElementById('checkoutBtn').disabled = true;
+
+                        document.getElementById('currentStatus').innerHTML = `
+                            <i class="fas fa-check-double" style="color: #666;"></i>
+                            Already Checked Out
+                        `;
+
+                        showMessage('You have already checked out today. No further action needed.', 'info');
+                    }
+
+                    if (status.branch_name) {
+                        document.getElementById('branchSelect').value = status.branch_name;
+                        document.getElementById('branchSelect').disabled = true;
+                    }
+                } else {
+                    document.getElementById('currentStatus').innerHTML = `
+                        <i class="fas fa-clock" style="color: #ffc107;"></i>
+                        Not checked in yet
+                    `;
+                    document.getElementById('checkinBtn').disabled = false;
+                    document.getElementById('checkoutBtn').disabled = true;
+                    showMessage('Please check in to start your work day.', 'info');
+                }
+            } catch (error) {
+                console.error('Error loading status:', error);
+                document.getElementById('currentStatus').innerHTML = `
+                    <i class="fas fa-exclamation-circle" style="color: #dc3545;"></i>
+                    Error loading status
+                `;
+            }
+        }
+
+        // Load staff for filter (admin only)
+        async function loadStaffForFilter() {
+            try {
+                const response = await fetch('/api/staff');
+                if (response.ok) {
+                    const staff = await response.json();
+                    const select = document.getElementById('filterStaffSelect');
+                    select.innerHTML = '<option value="">All Staff</option>';
+
+                    staff.forEach(person => {
+                        const option = document.createElement('option');
+                        option.value = person.id;
+                        option.textContent = `${person.name || person.username}${person.department ? ' (' + person.department + ')' : ''}`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading staff:', error);
+            }
+        }
+
+        // Load attendance history
+        async function loadAttendanceHistory() {
+            try {
+                let url = '/api/attendance/history';
+                const params = new URLSearchParams();
+
+                // Add filters if admin
+                if (currentUser && currentUser.post.toLowerCase() === 'admin') {
+                    const staffId = document.getElementById('filterStaffSelect').value;
+                    const status = document.getElementById('filterStatusSelect').value;
+
+                    if (staffId) {
+                        params.append('staff_id', staffId);
+                    }
+                    if (status) {
+                        params.append('status', status);
+                    }
+                }
+
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
+
+                const response = await fetch(url);
+                if (response.ok) {
+                    const history = await response.json();
+                    const historyDiv = document.getElementById('attendanceHistory');
+
+                    if (history.length === 0) {
+                        historyDiv.innerHTML = '<div style="color: #666; font-style: italic;">No attendance records found</div>';
+                        return;
+                    }
+
+                    let historyHTML = '';
+                    history.forEach(record => {
+                        const date = new Date(record.created_at).toLocaleDateString('en-IN');
+                        const checkInTime = record.check_in ? new Date(record.check_in).toLocaleTimeString('en-IN', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) : '--:--';
+                        const checkOutTime = record.check_out ? new Date(record.check_out).toLocaleTimeString('en-IN', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) : '--:--';
+
+                        // Show staff name if admin
+                        const staffName = record.user_name ? `<div style="font-weight: 600; color: #1a5fb4; margin-bottom: 3px;">${record.user_name}</div>` : '';
+
+                        historyHTML += `
+                            <div class="attendance-item">
+                                <div>
+                                    ${staffName}
+                                    <div class="attendance-date">${date}</div>
+                                    <div class="attendance-time">${checkInTime} - ${checkOutTime}</div>
+                                    <small>${record.branch_name}</small>
+                                </div>
+                                <span class="attendance-status ${record.status === 'checked_in' ? 'status-in' : 'status-out'}">
+                                    ${record.status === 'checked_in' ? 'IN' : 'OUT'}
+                                </span>
+                            </div>
+                        `;
+                    });
+
+                    historyDiv.innerHTML = historyHTML;
+                }
+            } catch (error) {
+                console.error('Error loading history:', error);
+                document.getElementById('attendanceHistory').innerHTML = '<div style="color: #dc3545;">Error loading history</div>';
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            loadAttendanceHistory();
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('filterStaffSelect').value = '';
+            document.getElementById('filterStatusSelect').value = '';
+            loadAttendanceHistory();
+        }
+
+        // Check in function
+        async function checkIn() {
+            if (!termsAgreed) {
+                showMessage('Please agree to the terms and conditions first', 'error');
+                showTerms();
+                return;
+            }
+
+            const branchSelect = document.getElementById('branchSelect');
+            const branch = branchSelect.value;
+            const selectedOption = branchSelect.options[branchSelect.selectedIndex];
+            const branchId = selectedOption.dataset.branchId;
+
+            if (!branch) {
+                showMessage('Please select a branch', 'error');
+                return;
+            }
+
+            const checkinBtn = document.getElementById('checkinBtn');
+            const originalText = checkinBtn.innerHTML;
+            checkinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking In...';
+            checkinBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/attendance/checkin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        branch: branch,
+                        branch_id: branchId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    branchSelect.disabled = true;
+                    document.getElementById('checkoutBtn').disabled = false;
+
+                    setTimeout(() => {
+                        const role = (currentUser.post || '').toLowerCase();
+                        if (role === 'manager') window.location.href = '/manager';
+                        else window.location.href = '/tasks';
+                    }, 1500);
+                } else {
+                    showMessage(data.message, 'error');
+                    checkinBtn.innerHTML = originalText;
+                    checkinBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error checking in', 'error');
+                checkinBtn.innerHTML = originalText;
+                checkinBtn.disabled = false;
+            }
+        }
+
+        // Updated checkout to accept parameters
+        async function checkOut(onlineCash = 0, extraAmount = 0, pendingTasks = []) {
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            const originalText = checkoutBtn.innerHTML;
+            checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking Out...';
+            checkoutBtn.disabled = true;
+
+            // If we are calling it from elsewhere, we might already have values
+            // Otherwise we try to read from fields directly (for managers)
+            if (pendingTasks.length === 0) {
+                onlineCash = parseFloat(document.getElementById('onlineCash')?.value || 0);
+                extraAmount = parseFloat(document.getElementById('extraAmount')?.value || 0);
+            }
+
+            try {
+                const response = await fetch('/api/attendance/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        online_cash: onlineCash,
+                        extra_amount: extraAmount,
+                        pending_tasks: pendingTasks
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    checkoutBtn.disabled = true;
+                    document.getElementById('checkinBtn').disabled = false;
+
+                    await Promise.all([
+                        loadTodayStatus(),
+                        loadAttendanceHistory()
+                    ]);
+
+                    console.log('Checkout completed and data reloaded');
+
+                    // Reset fields
+                    if (document.getElementById('onlineCash')) document.getElementById('onlineCash').value = '';
+                    if (document.getElementById('extraAmount')) document.getElementById('extraAmount').value = '';
+                } else {
+                    showMessage(data.message, 'error');
+                    checkoutBtn.innerHTML = originalText;
+                    checkoutBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error checking out:', error);
+                showMessage('Error checking out: ' + error.message, 'error');
+                checkoutBtn.innerHTML = originalText;
+                checkoutBtn.disabled = false;
+            }
+        }
+
+        // New Logic for Pending Tasks
+        async function processCheckoutInitiation() {
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            const originalText = checkoutBtn.innerHTML;
+            checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking Pending...';
+            checkoutBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/staff/pending-tasks');
+                const data = await response.json();
+
+                if (data.success && data.tasks && data.tasks.length > 0) {
+                    showPendingModal(data.tasks);
+                    checkoutBtn.innerHTML = originalText;
+                    checkoutBtn.disabled = false;
+                } else {
+                    await checkOut();
+                }
+            } catch (error) {
+                console.error('Error fetching pending tasks:', error);
+                await checkOut();
+            }
+        }
+
+        function showPendingModal(tasks) {
+            const listDiv = document.getElementById('pendingTasksList');
+            listDiv.innerHTML = '';
+
+            tasks.forEach(task => {
+                const item = document.createElement('div');
+                item.className = 'pending-item';
+                item.innerHTML = `
+                    <h5>Task: ${task.order_no} - ${task.customer_name}</h5>
+                    <p style="font-size: 0.8rem; color: #666; margin-bottom: 8px;">Service: ${task.service_name}</p>
+                    <textarea placeholder="Enter reason why this task is still pending..." data-task-id="${task.id}" required></textarea>
+                `;
+                listDiv.appendChild(item);
+            });
+
+            document.getElementById('pendingTasksModal').style.display = 'flex';
+        }
+
+        function closePendingModal() {
+            document.getElementById('pendingTasksModal').style.display = 'none';
+        }
+
+        async function confirmFinalCheckout() {
+            const textareas = document.querySelectorAll('#pendingTasksList textarea');
+            const pendingReasons = [];
+            let allFilled = true;
+
+            textareas.forEach(ta => {
+                const reason = ta.value.trim();
+                if (!reason) {
+                    allFilled = false;
+                    ta.style.borderColor = 'red';
+                } else {
+                    ta.style.borderColor = '#ddd';
+                    pendingReasons.push({
+                        task_id: parseInt(ta.dataset.taskId),
+                        reason: reason
+                    });
+                }
+            });
+
+            if (!allFilled) {
+                alert('Please provide a reason for all pending tasks.');
+                return;
+            }
+
+            const onlineCash = parseFloat(document.getElementById('onlineCash')?.value || 0);
+            const extraAmount = parseFloat(document.getElementById('extraAmount')?.value || 0);
+
+            await checkOut(onlineCash, extraAmount, pendingReasons);
+            closePendingModal();
+        }
+
+        // Show terms modal
+        function showTerms() {
+            const termsBody = document.querySelector('.terms-body');
+            termsBody.innerHTML = `
+                <div class="terms-section">
+                    <h4><i class="fas fa-gavel"></i> Terms & Conditions for E-Filing Staff</h4>
+                    <p>By using this system, you agree to the following terms:</p>
+                </div>
+                
+                <div class="terms-section">
+                    <h4><i class="fas fa-tasks"></i> 1. Scope of Work</h4>
+                    <p>E-filing staff are authorized only to:</p>
+                    <ul class="terms-list">
+                        <li>Assist citizens in filling government forms</li>
+                        <li>Upload documents on official government portals</li>
+                        <li>Track application status and acknowledgements</li>
+                    </ul>
+                    <p>Staff shall not provide legal advice unless officially qualified and authorized.</p>
+                </div>
+                
+                <div class="terms-section">
+                    <h4><i class="fas fa-user-shield"></i> 2. Confidentiality & Data Protection</h4>
+                    <p>All citizen information (Aadhaar, PAN, bank details, certificates, etc.) is strictly confidential.</p>
+                    <p>Sharing or disclosing citizen data to any unauthorized person is strictly prohibited.</p>
+                    <p>Staff must comply with:</p>
+                    <ul class="terms-list">
+                        <li>Information Technology Act, 2000</li>
+                        <li>Digital Personal Data Protection (DPDP) Act, 2023</li>
+                    </ul>
+                </div>
+                
+                <div class="terms-section">
+                    <h4><i class="fas fa-key"></i> 3. Access Control & Security</h4>
+                    <p>Staff shall use only authorized IDs and passwords provided by the organization.</p>
+                    <p>Sharing of login credentials or portal access is not permitted.</p>
+                </div>
+                
+                <div class="terms-section">
+                    <h4><i class="fas fa-file-contract"></i> 4. Accuracy & Integrity</h4>
+                    <p>Staff are responsible for accurate data entry and verifying documents before upload.</p>
+                    <p>Errors caused by negligence may result in disciplinary action.</p>
+                </div>
+                
+                <div class="terms-section">
+                    <h4><i class="fas fa-ban"></i> 5. Prohibition of Misuse</h4>
+                    <p>Staff must not:</p>
+                    <ul class="terms-list">
+                        <li>Alter or manipulate documents</li>
+                        <li>Upload fake or incorrect information</li>
+                        <li>Use citizen data for personal benefit</li>
+                        <li>Demand unauthorized fees or benefits</li>
+                    </ul>
+                </div>
+                
+                <div class="terms-section">
+                    <h4><i class="fas fa-shield-alt"></i> 6. Privacy Policy</h4>
+                    <p>Citizen consent is taken before collecting or using any personal data.</p>
+                    <p>Personal information is not shared with third parties, except government departments as required.</p>
+                    <p>Data is retained only for the period necessary to complete the service.</p>
+                </div>
+                
+                <div class="terms-section">
+                    <h4><i class="fas fa-exclamation-triangle"></i> 7. Disciplinary Action</h4>
+                    <p>Violation of these terms may result in:</p>
+                    <ul class="terms-list">
+                        <li>Warning or suspension</li>
+                        <li>Termination of employment</li>
+                        <li>Legal action under applicable laws</li>
+                    </ul>
+                </div>
+                
+                <div class="terms-section">
+                    <h4><i class="fas fa-check-circle"></i> 8. Acceptance</h4>
+                    <p>By agreeing to these terms, you confirm that:</p>
+                    <ul class="terms-list">
+                        <li>These terms are read and understood</li>
+                        <li>All responsibilities will be followed</li>
+                        <li>Legal consequences of violations are acknowledged</li>
+                    </ul>
+                </div>
+            `;
+
+            document.getElementById('termsModal').style.display = 'flex';
+        }
+
+        // Close terms modal
+        function closeTerms() {
+            document.getElementById('termsModal').style.display = 'none';
+        }
+
+        // Agree to terms
+        function agreeToTerms() {
+            termsAgreed = true;
+            localStorage.setItem('termsAgreed', 'true');
+            closeTerms();
+            showMessage('Terms & Conditions accepted', 'success');
+        }
+
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        // Show message
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('attendanceMessage');
+            messageDiv.textContent = message;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                try {
+                    await fetch('/api/logout', { method: 'POST' });
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+                localStorage.removeItem('termsAgreed');
+                window.location.href = '/login';
+            }
+        }
+    </script>
+</body>
+
+</html>

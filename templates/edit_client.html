@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Corporate Client - {{ client.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-primary fw-bold mb-1">Corporate Relations</h5>
+        <h1 class="display-5 fw-black text-dark mb-2">Edit Client Profile</h1>
+        <p class="text-muted fs-5 mb-0">Update account details and billing configurations for <strong>{{ client.name
+                }}</strong>.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+            <a href="{{ url_for('clients') }}" class="btn btn-light border-0 px-4">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+            <a href="{{ url_for('view_client_prices', client_id=client.id) }}" class="btn btn-primary px-4">
+                <i class="fas fa-tags me-2"></i>Manage Prices
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center page-reveal">
+    <div class="col-lg-10">
+        <form method="POST">
+            <div class="card luxury-card border-0 shadow-sm overflow-hidden mb-5">
+                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-edit me-2 text-primary opacity-50"></i>Profile
+                        Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Legal Name / Contact
+                                Person</label>
+                            <input type="text" name="name" class="form-control luxury-input" value="{{ client.name }}"
+                                required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Company / Brand
+                                Name</label>
+                            <input type="text" name="company_name" class="form-control luxury-input"
+                                value="{{ client.company_name or '' }}">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Primary Phone
+                                Number</label>
+                            <input type="text" name="phone" class="form-control luxury-input" value="{{ client.phone }}"
+                                required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Alternate Phone
+                                Number</label>
+                            <input type="text" name="alt_phone" class="form-control luxury-input"
+                                value="{{ client.alt_phone or '' }}">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Email Address
+                                (Invoicing)</label>
+                            <input type="email" name="email" class="form-control luxury-input"
+                                value="{{ client.email or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Alternate Email
+                                Address</label>
+                            <input type="email" name="alt_email" class="form-control luxury-input"
+                                value="{{ client.alt_email or '' }}">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Registered Office
+                                Address</label>
+                            <textarea name="address" class="form-control luxury-input"
+                                rows="3">{{ client.address or '' }}</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Alternate Address</label>
+                            <textarea name="alt_address" class="form-control luxury-input"
+                                rows="3">{{ client.alt_address or '' }}</textarea>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">GST Identification
+                                Number</label>
+                            <input type="text" name="gst_number" class="form-control luxury-input"
+                                value="{{ client.gst_number or '' }}" placeholder="e.g. 27AAACN1234F1Z5">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Bill Pattern</label>
+                            <input type="text" name="bill_pattern" class="form-control luxury-input"
+                                value="{{ client.bill_pattern or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Billing Date
+                                (1-31)</label>
+                            <input type="number" name="billing_date" class="form-control luxury-input"
+                                value="{{ client.billing_date or '' }}" min="1" max="31" placeholder="e.g. 10">
+                            <small class="text-muted">Day of the month for consolidated billing</small>
+                        </div>
+                        <div class="col-md-4">
+                            <!-- Billing Pattern Removed -->
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-check form-switch p-3 bg-light rounded-4">
+                                <input class="form-check-input ms-0 me-3" type="checkbox" name="is_active" id="isActive"
+                                    {{ 'checked' if client.is_active }}>
+                                <label class="form-check-label fw-bold text-dark" for="isActive">Client Account
+                                    Active</label>
+                                <div class="small text-muted ps-5">Inactive clients cannot place new orders but
+                                    historical data remains accessible.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light border-0 p-4 text-end">
+                    <button type="submit" class="luxury-btn btn btn-primary px-5 py-2 fw-bold rounded-pill">
+                        <i class="fas fa-save me-2"></i>Synchronize Profile
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Box Label - {{ order.receipt_number }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 10mm;
+            background: #f5f5f5;
+        }
+
+        .label {
+            width: 100mm;
+            background: white;
+            border: 4px solid #000;
+            padding: 0;
+            page-break-after: always;
+            position: relative;
+        }
+
+        /* Company Logo Header */
+        .header {
+            text-align: center;
+            background: #1a1a1a;
+            padding: 3mm 5mm;
+        }
+
+        .logo-img {
+            width: 70%;
+            max-width: 60mm;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Receipt Number */
+        .receipt-number {
+            font-size: 14px;
+            font-weight: bold;
+            background: #000;
+            color: #fff;
+            padding: 2mm;
+            text-align: center;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* TO Section (Top Priority) */
+        .to-section {
+            padding: 4mm;
+            border-bottom: 3px dashed #22c55e;
+            background: linear-gradient(to bottom, #f0fdf4 0%, #ffffff 100%);
+        }
+
+        .to-header {
+            background: #22c55e;
+            color: white;
+            padding: 2mm 3mm;
+            margin: -4mm -4mm 3mm -4mm;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .to-content {
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .to-content strong {
+            font-size: 14px;
+            display: block;
+            margin-bottom: 1mm;
+            color: #000;
+        }
+
+        /* FROM Section */
+        .from-section {
+            padding: 3mm 4mm;
+            border-bottom: 2px solid #e5e7eb;
+            background: #fff7ed;
+        }
+
+        .from-header {
+            font-size: 10px;
+            font-weight: bold;
+            color: #f97316;
+            text-transform: uppercase;
+            margin-bottom: 2mm;
+            letter-spacing: 0.5px;
+        }
+
+        .from-content {
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        .from-content div {
+            margin-bottom: 1mm;
+        }
+
+        /* Handling Tags */
+        .tags-section {
+            padding: 3mm 4mm;
+            background: #fefce8;
+            border-bottom: 2px solid #eab308;
+        }
+
+        .tags-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2mm;
+            margin-top: 2mm;
+        }
+
+        .tag-item {
+            background: #000;
+            color: #fbbf24;
+            text-align: center;
+            padding: 1.5mm;
+            font-size: 9px;
+            font-weight: bold;
+            border: 2px solid #fbbf24;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .tag-item.priority {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+            grid-column: 1 / -1;
+            font-size: 10px;
+        }
+
+        /* Package Info */
+        .package-info {
+            padding: 3mm 4mm;
+            background: #f9fafb;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #d1d5db;
+        }
+
+        .info-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 8px;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .info-value {
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
+            margin-top: 1mm;
+        }
+
+        /* Box Counter */
+        .box-counter {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            background: #fef3c7;
+            border: 3px solid #000;
+            padding: 2mm;
+            margin: 3mm 4mm;
+            letter-spacing: 1px;
+        }
+
+        /* Footer */
+        .footer {
+            font-size: 7px;
+            text-align: center;
+            color: #6b7280;
+            padding: 2mm;
+            background: #f9fafb;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="no-print"
+        style="margin-bottom: 20px; text-align: center; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <button onclick="window.print()"
+            style="padding: 12px 40px; font-size: 16px; background: #22c55e; color: white; border: none; border-radius: 6px; cursor: pointer; margin-right: 10px; font-weight: bold;">
+            🖨️ Print Label
+        </button>
+        <button onclick="window.close()"
+            style="padding: 12px 40px; font-size: 16px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+            ✕ Close
+        </button>
+    </div>
+
+    <div class="label">
+        <!-- Company Logo Header -->
+        <div class="header">
+            <img src="{{ url_for('static', filename='bill/9f73ebff-39d6-4575-9086-68ee709ad4d8.jpeg') }}" alt="FYF Logo"
+                class="logo-img">
+        </div>
+
+        <!-- Receipt Number -->
+        <div class="receipt-number">
+            {{ order.receipt_number }}
+        </div>
+
+        <!-- TO Section (Receiver - Top Priority) -->
+        <div class="to-section">
+            <div class="to-header">📥 TO (RECEIVER)</div>
+            <div class="to-content">
+                <strong>{{ order.receiver_name }}</strong>
+                <div>📞 {{ order.receiver_phone }}</div>
+                <div style="margin-top: 2mm; font-weight: 600;">
+                    📍 {{ order.receiver_address or '' }}
+                </div>
+                {% if order.receiver_city or order.receiver_state or order.receiver_pincode %}
+                <div style="margin-top: 1mm;">
+                    {{ order.receiver_city or '' }}{% if order.receiver_state %}, {{ order.receiver_state }}{% endif %}
+                    - {{ order.receiver_pincode or '' }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- FROM Section (Sender) -->
+        <div class="from-section">
+            <div class="from-header">📤 FROM (SENDER)</div>
+            <div class="from-content">
+                <div><strong>{{ order.customer_name }}</strong></div>
+                <div>📞 {{ order.customer_phone }}</div>
+                {% if order.customer_address %}
+                <div>{{ order.customer_address }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Handling Tags -->
+        {% if order.handling_tags %}
+        <div class="tags-section">
+            <div
+                style="font-size: 10px; font-weight: bold; color: #854d0e; text-transform: uppercase; margin-bottom: 1mm;">
+                ⚠️ SPECIAL HANDLING
+            </div>
+            <div class="tags-grid">
+                {% for tag in order.handling_tags.split(',') if tag %}
+                <div class="tag-item {% if 'FRAGILE' in tag or 'CARE' in tag %}priority{% endif %}">
+                    {{ tag.strip() }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Package Info -->
+        <div class="package-info">
+            <div class="info-item">
+                <div class="info-label">Mode</div>
+                <div class="info-value">{{ order.receipt_mode|replace('_', ' ')|title if order.receipt_mode else 'STD'
+                    }}</div>
+            </div>
+            <div class="info-item" style="border-left: 1px solid #d1d5db; border-right: 1px solid #d1d5db;">
+                <div class="info-label">Weight</div>
+                <div class="info-value">{{ "%.1f"|format(order.weight or 0) }} KG</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Created</div>
+                <div class="info-value" style="font-size: 9px;">{{ order.created_at.strftime('%d/%m') }}</div>
+            </div>
+        </div>
+
+        <!-- Box Counter -->
+        <div class="box-counter">
+            📦 BOX 1 OF {{ order.number_of_boxes }}
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Track: {{ request.url_root }}tracking?receipt={{ order.receipt_number }}
+        </div>
+    </div>
+</body>
+
+</html>

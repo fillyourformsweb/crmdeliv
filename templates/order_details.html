@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block title %}Order {{ order.receipt_number }} - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="page-content-wrapper w-100">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-black text-primary mb-1">
+                <i class="fas fa-file-invoice me-2"></i>Order Details: {{ order.receipt_number }}
+            </h2>
+            <div class="d-flex align-items-center gap-2">
+                <span class="luxury-badge bg-{{ 
+                    'warning' if order.status == 'pending' else 
+                    'info' if order.status == 'in_transit' else 
+                    'success' if order.status == 'delivered' else 'secondary' 
+                }}-subtle text-{{
+                    'warning' if order.status == 'pending' else 
+                    'info' if order.status == 'in_transit' else 
+                    'success' if order.status == 'delivered' else 'secondary'
+                }} border border-{{
+                    'warning' if order.status == 'pending' else 
+                    'info' if order.status == 'in_transit' else 
+                    'success' if order.status == 'delivered' else 'secondary'
+                }}-subtle">
+                    {{ order.status|replace('_', ' ')|title }}
+                </span>
+                <span class="text-muted small">| Created on {{ order.created_at.strftime('%d %b, %Y') }}</span>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('edit_order', id=order.id) }}" class="luxury-btn btn btn-warning text-white">
+                <i class="fas fa-edit me-1"></i> Edit
+            </a>
+            <a href="{{ url_for('print_label', id=order.id) }}" class="luxury-btn btn btn-info text-white" target="_blank">
+                <i class="fas fa-print me-1"></i> Label
+            </a>
+            <a href="{{ url_for('print_all_labels', id=order.id) }}" class="luxury-btn btn btn-secondary text-white" target="_blank">
+                <i class="fas fa-tags me-1"></i> All Labels
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="luxury-card h-100">
+                        <div class="card-header border-0 bg-primary-subtle py-3 px-4">
+                            <h6 class="mb-0 fw-bold text-primary"><i class="fas fa-user-circle me-2"></i>Customer Info</h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <label class="small text-muted text-uppercase fw-bold opacity-50 d-block">Full Name</label>
+                                <div class="fw-bold fs-5 text-dark">{{ order.customer_name }}</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="small text-muted text-uppercase fw-bold opacity-50 d-block">Phone Number</label>
+                                <div class="text-dark font-monospace">{{ order.customer_phone }}</div>
+                            </div>
+                            {% if order.customer_email %}
+                            <div class="mb-3">
+                                <label class="small text-muted text-uppercase fw-bold opacity-50 d-block">Email Address</label>
+                                <div class="text-dark">{{ order.customer_email }}</div>
+                            </div>
+                            {% endif %}
+                            <div class="mb-0">
+                                <label class="small text-muted text-uppercase fw-bold opacity-50 d-block">Address</label>
+                                <div class="text-dark">{{ order.customer_address or 'N/A' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="luxury-card h-100">
+                        <div class="card-header border-0 bg-success-subtle py-3 px-4">
+                            <h6 class="mb-0 fw-bold text-success"><i class="fas fa-map-marker-alt me-2"></i>Destination</h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <label class="small text-muted text-uppercase fw-bold opacity-50 d-block">Recipient Name</label>
+                                <div class="fw-bold fs-5 text-dark">{{ order.receiver_name or 'N/A' }}</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="small text-muted text-uppercase fw-bold opacity-50 d-block">Recipient Phone</label>
+                                <div class="text-dark font-monospace">{{ order.receiver_phone or 'N/A' }}</div>
+                            </div>
+                            <div class="mb-0">
+                                <label class="small text-muted text-uppercase fw-bold opacity-50 d-block">Delivery Address</label>
+                                <div class="text-dark">
+                                    {{ order.receiver_address or 'N/A' }}<br>
+                                    <span class="fw-bold">{{ order.receiver_city or 'N/A' }}</span>, {{ order.receiver_state or '' }} {{ order.receiver_pincode or '' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="luxury-card mb-4">
+                <div class="card-header border-0 bg-info-subtle py-3 px-4">
+                    <h6 class="mb-0 fw-bold text-info"><i class="fas fa-box-open me-2"></i>Package Specifications</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4 text-center">
+                        <div class="col-6 col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold opacity-50 d-block mb-1">Order Type</label>
+                            <span class="luxury-badge bg-light border text-dark">{{ order.order_type|title }}</span>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold opacity-50 d-block mb-1">Receipt Mode</label>
+                            <span class="luxury-badge bg-light border text-dark">{{ order.receipt_mode|replace('_', ' ')|title if order.receipt_mode else 'N/A' }}</span>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold opacity-50 d-block mb-1">Total Weight</label>
+                            <div class="fw-black fs-4 text-primary">{{ order.weight or 0 }} <small class="fs-6">kg</small></div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold opacity-50 d-block mb-1">Box Count</label>
+                            <div class="fw-black fs-4 text-primary">{{ order.number_of_boxes }}</div>
+                        </div>
+                    </div>
+                    {% if order.package_description or order.special_instructions %}
+                    <hr class="my-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="small text-muted text-uppercase fw-bold opacity-50 d-block mb-1">Description</label>
+                            <p class="text-dark small">{{ order.package_description or 'No description provided' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small text-muted text-uppercase fw-bold opacity-50 d-block mb-1">Instructions</label>
+                            <p class="text-dark small italic">{{ order.special_instructions or 'None' }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="luxury-card mb-4 border-start border-4 border-warning">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-warning text-uppercase mb-3"><i class="fas fa-file-invoice-dollar me-2"></i>Financial Summary</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Base Logistics</span>
+                                <span class="fw-semibold">₹{{ "%.2f"|format(order.base_amount or 0) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Weight Surplus</span>
+                                <span class="fw-semibold">₹{{ "%.2f"|format(order.weight_charges or 0) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Extra Charges</span>
+                                <span class="fw-semibold">₹{{ "%.2f"|format(order.additional_charges or 0) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Promotional Discount</span>
+                                <span class="text-danger fw-semibold">-₹{{ "%.2f"|format(order.discount or 0) }}</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-black text-dark fs-5">Grand Total</span>
+                                <span class="fw-black text-primary fs-4">₹{{ "%.2f"|format(order.total_amount or 0) }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-5 offset-md-1 border-start px-4">
+                            <div class="mb-4">
+                                <label class="small text-muted text-uppercase fw-bold opacity-50 d-block mb-2">Payment Status</label>
+                                <span class="luxury-badge bg-{{ 'success' if order.payment_status == 'paid' else 'warning' }}-subtle text-{{ 'success' if order.payment_status == 'paid' else 'warning' }} border border-{{ 'success' if order.payment_status == 'paid' else 'warning' }}-subtle px-4">
+                                    {{ order.payment_status|upper }}
+                                </span>
+                            </div>
+                            <div class="mb-0">
+                                <label class="small text-muted text-uppercase fw-bold opacity-50 d-block mb-1">Payment Channel</label>
+                                <div class="fw-bold text-dark fs-5">{{ order.payment_mode|title if order.payment_mode else 'N/A' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operations Console -->
+            <div class="luxury-card mb-4 border-start border-4 border-primary">
+                <div class="card-header border-0 bg-transparent py-3 px-4">
+                    <h6 class="mb-0 fw-bold text-primary"><i class="fas fa-terminal me-2"></i>Operations Console</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Logistics Personnel</label>
+                            <form action="{{ url_for('assign_delivery', order_id=order.id) }}" method="POST" class="input-group">
+                                <select name="delivery_person_id" class="form-select luxury-input">
+                                    <option value="">Choose Personnel...</option>
+                                    {% for person in delivery_personnel %}
+                                    <option value="{{ person.id }}" {{ 'selected' if order.delivery_person_id == person.id }}>
+                                        {{ person.username }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="luxury-btn btn btn-primary px-4">Assign</button>
+                            </form>
+                            {% if order.delivery_person %}
+                            <div class="mt-2 small text-primary fw-bold">
+                                <i class="fas fa-id-card me-1"></i>Currently assigned to: {{ order.delivery_person.username }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Logistics Status</label>
+                            <form action="{{ url_for('update_order_status', id=order.id) }}" method="POST">
+                                <div class="row g-2">
+                                    <div class="col-8">
+                                        <select name="status" class="form-select luxury-input" required>
+                                            <option value="pending" {{ 'selected' if order.status == 'pending' }}>Pending</option>
+                                            <option value="confirmed" {{ 'selected' if order.status == 'confirmed' }}>Confirmed</option>
+                                            <option value="picked_up" {{ 'selected' if order.status == 'picked_up' }}>Picked Up</option>
+                                            <option value="in_transit" {{ 'selected' if order.status == 'in_transit' }}>In Transit</option>
+                                            <option value="out_for_delivery" {{ 'selected' if order.status == 'out_for_delivery' }}>Out for Delivery</option>
+                                            <option value="delivered" {{ 'selected' if order.status == 'delivered' }}>Delivered</option>
+                                            <option value="cancelled" {{ 'selected' if order.status == 'cancelled' }}>Cancelled</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <button type="submit" class="luxury-btn btn btn-success w-100">Update</button>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <input type="text" name="location" class="form-control luxury-input form-control-sm" placeholder="Current Node/City">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tracking Timeline -->
+            <div class="luxury-card mb-4">
+                <div class="card-header border-0 bg-transparent py-3 px-4">
+                    <h6 class="mb-0 fw-bold text-dark"><i class="fas fa-history me-2 text-muted"></i>Movement History</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table luxury-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Status Flag</th>
+                                    <th>Node Point</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for update in tracking_updates %}
+                                <tr>
+                                    <td class="small font-monospace">{{ update.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    <td><span class="luxury-badge bg-primary-subtle text-primary border border-primary-subtle">{{ update.status|upper }}</span></td>
+                                    <td class="fw-bold">{{ update.location or 'Processing Center' }}</td>
+                                    <td class="text-muted small">{{ update.description or 'Automatic system update' }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">Initial shipment record established.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="luxury-card mb-4 text-center p-4">
+                <h6 class="fw-bold text-uppercase text-muted mb-3 small">Shipment QR Pass</h6>
+                <div class="bg-light p-3 rounded-4 d-inline-block border">
+                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="img-fluid" style="max-width: 200px;">
+                </div>
+                <p class="small text-muted mt-3 mb-0">Scan for instant digital tracking pass</p>
+            </div>
+
+            <div class="luxury-card mb-4">
+                <div class="card-header border-0 bg-transparent py-3 px-4">
+                    <h6 class="mb-0 fw-bold text-dark"><i class="fas fa-link me-2 text-muted"></i>Shareable Access</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <label class="small text-muted fw-bold text-uppercase d-block mb-2">Public Tracking Link</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control luxury-input form-control-sm" 
+                                   value="{{ url_for('track_by_link', link=order.tracking_link, _external=True) }}" 
+                                   id="trackingLink" readonly>
+                            <button class="luxury-btn btn btn-light border btn-sm" onclick="copyLink('trackingLink')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    {% if order.customer_form_link %}
+                    <div class="mb-0">
+                        <label class="small text-muted fw-bold text-uppercase d-block mb-2">Customer Data Form</label>
+                        <div class="input-group mb-2">
+                            <input type="text" class="form-control luxury-input form-control-sm" 
+                                   value="{{ url_for('customer_form', token=order.customer_form_link, _external=True) }}" 
+                                   id="customerFormLink" readonly>
+                            <button class="luxury-btn btn btn-light border btn-sm" onclick="copyLink('customerFormLink')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <span class="luxury-badge bg-{{ 'success' if order.customer_form_completed else 'warning' }}-subtle text-{{ 'success' if order.customer_form_completed else 'warning' }} border border-{{ 'success' if order.customer_form_completed else 'warning' }}-subtle w-100 text-center">
+                            {{ 'Form Verification Complete' if order.customer_form_completed else 'Awaiting Customer Input' }}
+                        </span>
+                    </div>
+                    {% else %}
+                    <button class="luxury-btn btn btn-outline-primary w-100" onclick="generateLink()">
+                        <i class="fas fa-magic me-2"></i>Generate Smart Link
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="luxury-card bg-dark text-white p-4">
+                <h6 class="fw-bold text-uppercase mb-4 opacity-75 small">System Meta Data</h6>
+                <div class="mb-3">
+                    <div class="small opacity-50 text-uppercase fw-bold" style="font-size: 0.65rem;">Registry Timestamp</div>
+                    <div class="fw-semibold">{{ order.created_at.strftime('%d %B %Y | %H:%M') }}</div>
+                </div>
+                <div class="mb-3">
+                    <div class="small opacity-50 text-uppercase fw-bold" style="font-size: 0.65rem;">Originating Officer</div>
+                    <div class="fw-semibold">{{ order.created_by_user.username if order.created_by_user else 'System Generated' }}</div>
+                </div>
+                {% if order.delivered_at %}
+                <div class="mb-3 text-success">
+                    <div class="small opacity-50 text-uppercase fw-bold" style="font-size: 0.65rem;">Delivery Logged</div>
+                    <div class="fw-bold">{{ order.delivered_at.strftime('%d %B %Y | %H:%M') }}</div>
+                </div>
+                {% endif %}
+                {% if order.internal_notes %}
+                <hr class="opacity-25">
+                <div class="small opacity-50 text-uppercase fw-bold mb-2" style="font-size: 0.65rem;">Officer's Memo</div>
+                <p class="small mb-0 fst-italic">{{ order.internal_notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyLink(inputId) {
+    const input = document.getElementById(inputId);
+    input.select();
+    document.execCommand('copy');
+    alert('Link copied to clipboard!');
+}
+
+function generateLink() {
+    fetch('{{ url_for("generate_customer_link", id=order.id) }}', {method: 'POST'})
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Link generated: ' + data.link);
+                location.reload();
+            }
+        });
+}
+</script>
+{% endblock %}
