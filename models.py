@@ -400,6 +400,21 @@ class ClientStatePrice(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+class NormalClientStatePrice(db.Model):
+    __tablename__ = 'normal_client_state_prices'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    state = db.Column(db.String(100), unique=True, nullable=False)
+    price_100gm = db.Column(db.Float, default=0)
+    price_250gm = db.Column(db.Float, default=0)
+    price_500gm = db.Column(db.Float, default=0)
+    price_750gm = db.Column(db.Float, default=0)
+    price_1kg = db.Column(db.Float, default=0)
+    price_2kg = db.Column(db.Float, default=0)
+    price_3kg = db.Column(db.Float, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class SystemSettings(db.Model):
     __tablename__ = 'system_settings'
     

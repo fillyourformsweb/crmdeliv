@@ -27,7 +27,7 @@ from config import Config
 from models import (
     db, init_db, User, Branch, Client, Order, ReceiptSetting,
     TrackingUpdate, ExcelUpload, ExcelData, SystemSettings,
-    DefaultStatePrice, ClientStatePrice, Notification, StaffReceiptAssignment, Receiver,
+    DefaultStatePrice, ClientStatePrice, NormalClientStatePrice, Notification, StaffReceiptAssignment, Receiver,
     BillingPattern
 )
 
@@ -358,7 +358,19 @@ def calculate_order_amount(weight, billing_pattern_id=None, state=None, client_i
                 res_list[4] += insurance_charge # Add to total
                 return (*tuple(res_list), 'client', insurance_charge)
 
-    # 2. Check for Default State Price
+    # 2. Check for Normal Client State Price (Default for all clients)
+    if client_id and state_clean:
+        normal_client_price = NormalClientStatePrice.query.filter(
+            db.func.lower(NormalClientStatePrice.state) == state_clean
+        ).first()
+        if normal_client_price:
+            result = calculate_from_state_price(weight, normal_client_price)
+            if result:
+                res_list = list(result)
+                res_list[4] += insurance_charge # Add to total
+                return (*tuple(res_list), 'normal_client', insurance_charge)
+
+    # 3. Check for Default State Price
     if state_clean:
         default_price = DefaultStatePrice.query.filter(
             db.func.lower(DefaultStatePrice.state) == state_clean
@@ -2644,6 +2656,79 @@ def delete_default_price(price_id):
     db.session.commit()
     flash(f'Pricing for {state_name} deleted.', 'success')
     return redirect(url_for('default_prices'))
+
+
+@app.route('/normal-client-prices')
+@login_required
+@manager_required
+def normal_client_prices():
+    prices = NormalClientStatePrice.query.all()
+    return render_template('normal_client_prices.html', prices=prices)
+
+
+@app.route('/normal-client-price/add', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_normal_client_price():
+    if request.method == 'POST':
+        state = request.form.get('state')
+        if NormalClientStatePrice.query.filter_by(state=state).first():
+            flash('Default client price for this state already exists.', 'error')
+            return redirect(url_for('add_normal_client_price'))
+            
+        price = NormalClientStatePrice(
+            state=state,
+            price_100gm=float(request.form.get('price_100gm', 0)),
+            price_250gm=float(request.form.get('price_250gm', 0)),
+            price_500gm=float(request.form.get('price_500gm', 0)),
+            price_750gm=float(request.form.get('price_750gm', 0)),
+            price_1kg=float(request.form.get('price_1kg', 0)),
+            price_2kg=float(request.form.get('price_2kg', 0)),
+            price_3kg=float(request.form.get('price_3kg', 0))
+        )
+        db.session.add(price)
+        db.session.commit()
+        flash(f'Default client prices for {state} added successfully!', 'success')
+        return redirect(url_for('normal_client_prices'))
+        
+    return render_template('add_normal_client_price.html')
+
+
+@app.route('/normal-client-price/edit/<int:price_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_normal_client_price(price_id):
+    price = NormalClientStatePrice.query.get_or_404(price_id)
+    
+    if request.method == 'POST':
+        price.state = request.form.get('state')
+        price.price_100gm = float(request.form.get('price_100gm', 0))
+        price.price_250gm = float(request.form.get('price_250gm', 0))
+        price.price_500gm = float(request.form.get('price_500gm', 0))
+        price.price_750gm = float(request.form.get('price_750gm', 0))
+        price.price_1kg = float(request.form.get('price_1kg', 0))
+        price.price_2kg = float(request.form.get('price_2kg', 0))
+        price.price_3kg = float(request.form.get('price_3kg', 0))
+        
+        db.session.commit()
+        flash(f'Default client prices for {price.state} updated successfully!', 'success')
+        return redirect(url_for('normal_client_prices'))
+        
+    return render_template('edit_normal_client_price.html', price=price)
+
+
+@app.route('/normal-client-price/delete/<int:price_id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_normal_client_price(price_id):
+    price = NormalClientStatePrice.query.get_or_404(price_id)
+    state_name = price.state
+    db.session.delete(price)
+    db.session.commit()
+    flash(f'Default client pricing for {state_name} deleted.', 'success')
+    return redirect(url_for('normal_client_prices'))
+
+
 
 
 @app.route('/client-prices/<int:client_id>')

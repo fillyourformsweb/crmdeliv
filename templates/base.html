@@ -229,6 +229,11 @@
                 <i class="fas fa-tags"></i>
                 <span>Price Master</span>
             </a>
+            <a href="{{ url_for('normal_client_prices') }}"
+                class="sidebar-link {{ 'active' if request.endpoint in ['normal_client_prices', 'add_normal_client_price', 'edit_normal_client_price'] }}">
+                <i class="fas fa-user-tag"></i>
+                <span>Normal Client Prices</span>
+            </a>
             <a href="{{ url_for('clients') }}"
                 class="sidebar-link {{ 'active' if request.endpoint in ['clients', 'view_client_prices', 'set_client_prices'] }}">
                 <i class="fas fa-hand-holding-usd"></i>
