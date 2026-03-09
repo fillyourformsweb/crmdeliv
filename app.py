@@ -12,6 +12,7 @@ import json
 import fitz  # PyMuPDF
 import google.generativeai as genai
 from PIL import Image
+import requests
 
 from flask import (
     Flask, render_template, request, redirect, url_for, flash, 
@@ -593,11 +594,33 @@ def add_branch():
 
 
 
+@app.route('/api/pincode/<pincode>')
+def pincode_lookup(pincode):
+    if not pincode or len(pincode) != 6 or not pincode.isdigit():
+        return jsonify({'success': False, 'message': 'Invalid pincode format'}), 400
+    
+    try:
+        response = requests.get(f"https://api.postalpincode.in/pincode/{pincode}")
+        data = response.json()
+        
+        if data[0]['Status'] == 'Success':
+            post_office = data[0]['PostOffice'][0]
+            return jsonify({
+                'success': True,
+                'city': post_office['District'],
+                'state': post_office['State']
+            })
+        else:
+            return jsonify({'success': False, 'message': 'Pincode not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
 @app.route('/branch/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_branch(id):
     branch = Branch.query.get_or_404(id)
+    # ... logic continues
     
     if request.method == 'POST':
         branch.name = request.form.get('name')
@@ -809,7 +832,12 @@ def add_client():
             alt_phone=request.form.get('alt_phone'),
             alt_email=request.form.get('alt_email'),
             address=request.form.get('address'),
+            landmark=request.form.get('landmark'),
+            city=request.form.get('city'),
+            state=request.form.get('state'),
+            pincode=request.form.get('pincode'),
             alt_address=request.form.get('alt_address'),
+            alt_landmark=request.form.get('alt_landmark'),
             gst_number=request.form.get('gst_number'),
             bill_pattern=request.form.get('bill_pattern'),
             billing_date=request.form.get('billing_date', type=int)
@@ -836,7 +864,12 @@ def edit_client(id):
         client.alt_phone = request.form.get('alt_phone')
         client.alt_email = request.form.get('alt_email')
         client.address = request.form.get('address')
+        client.landmark = request.form.get('landmark')
+        client.city = request.form.get('city')
+        client.state = request.form.get('state')
+        client.pincode = request.form.get('pincode')
         client.alt_address = request.form.get('alt_address')
+        client.alt_landmark = request.form.get('alt_landmark')
         client.gst_number = request.form.get('gst_number')
         client.bill_pattern = request.form.get('bill_pattern')
         client.billing_date = request.form.get('billing_date', type=int)
@@ -864,7 +897,7 @@ def add_receiver(client_id):
     client = Client.query.get_or_404(client_id)
     if request.method == 'POST':
         pincode = request.form.get('pincode')
-        if not validate_pincode(pincode):
+        if not pincode or len(pincode) != 6 or not pincode.isdigit():
             flash('Invalid Pincode. It must be exactly 6 digits.', 'error')
             return redirect(url_for('add_receiver', client_id=client_id))
             
@@ -881,6 +914,7 @@ def add_receiver(client_id):
             city=request.form.get('city'),
             state=request.form.get('state'),
             pincode=pincode,
+            landmark=request.form.get('landmark'),
             gst_number=request.form.get('gst_number'),
             bill_pattern=request.form.get('bill_pattern')
         )
@@ -931,7 +965,7 @@ def add_client_address(client_id):
     client = Client.query.get_or_404(client_id)
     if request.method == 'POST':
         pincode = request.form.get('pincode')
-        if not validate_pincode(pincode):
+        if not pincode or len(pincode) != 6 or not pincode.isdigit():
             flash('Invalid Pincode. It must be exactly 6 digits.', 'error')
             return redirect(url_for('add_client_address', client_id=client_id))
             
@@ -941,7 +975,8 @@ def add_client_address(client_id):
             address=request.form.get('address'),
             city=request.form.get('city'),
             state=request.form.get('state'),
-            pincode=pincode
+            pincode=pincode,
+            landmark=request.form.get('landmark')
         )
         db.session.add(address)
         db.session.commit()
@@ -1042,7 +1077,7 @@ def walkin_order():
             all_tags.append(custom_tag)
         
         receiver_pincode = request.form.get('receiver_pincode')
-        if not validate_pincode(receiver_pincode):
+        if not receiver_pincode or len(receiver_pincode) != 6 or not receiver_pincode.isdigit():
             flash('Invalid Pincode. It must be exactly 6 digits.', 'danger')
             return redirect(url_for('walkin_order'))
         
@@ -1232,7 +1267,7 @@ def client_order():
         
         # Validate Pincode
         receiver_pincode = request.form.get('receiver_pincode')
-        if not validate_pincode(receiver_pincode):
+        if not receiver_pincode or len(receiver_pincode) != 6 or not receiver_pincode.isdigit():
             flash('Invalid Pincode. It must be exactly 6 digits.', 'danger')
             return redirect(url_for('client_order'))
         
@@ -1368,6 +1403,7 @@ def edit_order(id):
         order.receiver_name = request.form.get('receiver_name')
         order.receiver_phone = request.form.get('receiver_phone')
         order.receiver_address = request.form.get('receiver_address')
+        order.receiver_landmark = request.form.get('receiver_landmark')
         order.receiver_city = request.form.get('receiver_city')
         order.receiver_state = request.form.get('receiver_state')
         order.receiver_pincode = request.form.get('receiver_pincode')
@@ -1532,10 +1568,11 @@ def customer_form(token):
         order.receiver_state = request.form.get('receiver_state') or order.receiver_state
         
         pincode = request.form.get('receiver_pincode')
-        if pincode and not validate_pincode(pincode):
+        if pincode and (len(pincode) != 6 or not pincode.isdigit()):
             flash('Invalid Pincode. It must be exactly 6 digits.', 'error')
             return redirect(url_for('customer_form', token=token))
             
+        order.receiver_landmark = request.form.get('receiver_landmark') or order.receiver_landmark
         order.receiver_pincode = pincode or order.receiver_pincode
         order.package_description = request.form.get('package_description') or order.package_description
         order.special_instructions = request.form.get('special_instructions') or order.special_instructions

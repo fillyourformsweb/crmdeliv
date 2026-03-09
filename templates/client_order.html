@@ -163,10 +163,16 @@
                                 <option value="">Select State</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Pincode</label>
-                            <input type="text" name="receiver_pincode" class="form-control luxury-input"
-                                placeholder="Code" pattern="[0-9]{6}" minlength="6" maxlength="6" inputmode="numeric">
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Pincode *</label>
+                            <input type="text" name="receiver_pincode" id="receiver_pincode"
+                                class="form-control luxury-input" placeholder="Code" pattern="[0-9]{6}" minlength="6"
+                                maxlength="6" inputmode="numeric" required>
+                        </div>
+                        <div class="col-md-9">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Landmark</label>
+                            <input type="text" name="receiver_landmark" class="form-control luxury-input"
+                                placeholder="E.g. Near Bus Stand">
                         </div>
                     </div>
                 </div>
@@ -397,6 +403,33 @@
                 if (typeManual) { typeManual.checked = true; updateReceiptField(); }
             } else if (this.value === 'standard') {
                 if (typeStandard) { typeStandard.checked = true; updateReceiptField(); }
+            }
+        });
+    }
+
+    const pincodeInput = document.getElementById('receiver_pincode');
+    if (pincodeInput) {
+        pincodeInput.addEventListener('input', function () {
+            const pincode = this.value;
+            if (pincode.length === 6 && /^\d+$/.test(pincode)) {
+                fetch(`/api/pincode/${pincode}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            const cityInput = document.querySelector('input[name="receiver_city"]');
+                            if (cityInput) cityInput.value = data.city;
+                            if (stateSelect) {
+                                const options = Array.from(stateSelect.options);
+                                const matched = options.find(o =>
+                                    o.value.toLowerCase() === data.state.toLowerCase() ||
+                                    o.value.toLowerCase().includes(data.state.toLowerCase())
+                                );
+                                if (matched) stateSelect.value = matched.value;
+                            }
+                            calculateAmount();
+                        }
+                    })
+                    .catch(err => console.error('Pincode lookup failed:', err));
             }
         });
     }

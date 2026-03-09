@@ -61,7 +61,12 @@ class Client(db.Model):
     email = db.Column(db.String(120))
     phone = db.Column(db.String(20), nullable=False)
     address = db.Column(db.String(300))
+    landmark = db.Column(db.String(150))
+    city = db.Column(db.String(100))
+    state = db.Column(db.String(100))
+    pincode = db.Column(db.String(10))
     alt_address = db.Column(db.String(300))
+    alt_landmark = db.Column(db.String(150))
     alt_phone = db.Column(db.String(20))
     alt_email = db.Column(db.String(120))
     gst_number = db.Column(db.String(50))
@@ -114,6 +119,7 @@ class Receiver(db.Model):
             'city': self.city,
             'state': self.state,
             'pincode': self.pincode,
+            'landmark': self.landmark,
             'gst_number': self.gst_number,
             'bill_pattern': self.bill_pattern
         }
@@ -140,7 +146,8 @@ class ClientAddress(db.Model):
             'address': self.address,
             'city': self.city,
             'state': self.state,
-            'pincode': self.pincode
+            'pincode': self.pincode,
+            'landmark': self.landmark
         }
 
 
@@ -211,6 +218,10 @@ class Order(db.Model):
     customer_phone = db.Column(db.String(20), nullable=False)
     customer_email = db.Column(db.String(120))
     customer_address = db.Column(db.String(300))
+    customer_landmark = db.Column(db.String(150))
+    customer_city = db.Column(db.String(100))
+    customer_state = db.Column(db.String(100))
+    customer_pincode = db.Column(db.String(10))
     
     # Receiver Details
     receiver_name = db.Column(db.String(100))
@@ -219,6 +230,7 @@ class Order(db.Model):
     receiver_city = db.Column(db.String(100))
     receiver_state = db.Column(db.String(100))
     receiver_pincode = db.Column(db.String(10))
+    receiver_landmark = db.Column(db.String(150))
     
     # Package Details
     package_description = db.Column(db.Text)

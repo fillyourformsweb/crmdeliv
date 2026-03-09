@@ -48,8 +48,33 @@
                     <textarea name="address" class="form-control" rows="2"></textarea>
                 </div>
                 <div class="col-md-6 mb-3">
+                    <label class="form-label">Landmark</label>
+                    <input type="text" name="landmark" class="form-control">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">City</label>
+                    <input type="text" name="city" class="form-control">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">State</label>
+                    <input type="text" name="state" id="state" class="form-control">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Pincode *</label>
+                    <input type="text" name="pincode" id="pincode" class="form-control" pattern="[0-9]{6}" minlength="6"
+                        maxlength="6" inputmode="numeric" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
                     <label class="form-label">Alternate Address</label>
                     <textarea name="alt_address" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Alternate Landmark</label>
+                    <input type="text" name="alt_landmark" class="form-control">
                 </div>
             </div>
             <div class="row">
