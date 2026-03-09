@@ -133,9 +133,39 @@
             btn.addEventListener('click', function () {
                 const receiptNumber = this.getAttribute('data-receipt');
                 const dataId = this.getAttribute('data-id');
-                alert('Manual matching for ' + receiptNumber + ' can be triggered from the Order details page or bulk reconciliation tool.');
+
+                if (confirm('Attempt to match ' + receiptNumber + ' with existing orders?')) {
+                    const btnOriginalText = this.innerHTML;
+                    this.disabled = true;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                    const formData = new FormData();
+                    formData.append('data_id', dataId);
+
+                    fetch('/manual-match-excel', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                                this.disabled = false;
+                                this.innerHTML = btnOriginalText;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while matching.');
+                            this.disabled = false;
+                            this.innerHTML = btnOriginalText;
+                        });
+                }
             });
         });
     });
 </script>
+
 {% endblock %}

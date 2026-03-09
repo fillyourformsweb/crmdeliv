@@ -36,7 +36,8 @@
                     <tr>
                         <td>
                             <div class="d-flex align-items-center">
-                                <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                                    style="width: 40px; height: 40px;">
                                     <i class="fas fa-user"></i>
                                 </div>
                                 <div>
@@ -46,28 +47,43 @@
                             </div>
                         </td>
                         <td>
-                            <span class="luxury-badge bg-{{ 'primary' if user.role == 'staff' else 'dark' }}-subtle text-{{ 'primary' if user.role == 'staff' else 'dark' }} border border-{{ 'primary' if user.role == 'staff' else 'dark' }}-subtle">
-                                {{ user.role|upper }}
-                            </span>
+                            {% if user.role == 'admin' %}
+                            <span
+                                class="luxury-badge bg-danger-subtle text-danger border border-danger-subtle">ADMIN</span>
+                            {% elif user.role == 'manager' %}
+                            <span class="luxury-badge bg-info-subtle text-info border border-info-subtle">MANAGER</span>
+                            {% elif user.role == 'staff' %}
+                            <span
+                                class="luxury-badge bg-primary-subtle text-primary border border-primary-subtle">STAFF</span>
+                            {% else %}
+                            <span class="luxury-badge bg-dark-subtle text-dark border border-dark-subtle">{{
+                                user.role|upper }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div class="fw-semibold text-secondary"><i class="fas fa-map-marker-alt me-1"></i>{{
+                                user.branch.name if user.branch else 'All Branches' }}</div>
                         </td>
                         <td>
-                            <div class="fw-semibold text-secondary"><i class="fas fa-map-marker-alt me-1"></i>{{ user.branch.name if user.branch else 'All Branches' }}</div>
+                            <div class="text-dark small"><i class="fas fa-phone me-1 text-muted"></i>{{ user.phone or
+                                'No phone listed' }}</div>
                         </td>
                         <td>
-                            <div class="text-dark small"><i class="fas fa-phone me-1 text-muted"></i>{{ user.phone or 'No phone listed' }}</div>
-                        </td>
-                        <td>
-                            <span class="luxury-badge bg-{{ 'success' if user.is_active else 'danger' }}-subtle text-{{ 'success' if user.is_active else 'danger' }} border border-{{ 'success' if user.is_active else 'danger' }}-subtle">
+                            <span
+                                class="luxury-badge bg-{{ 'success' if user.is_active else 'danger' }}-subtle text-{{ 'success' if user.is_active else 'danger' }} border border-{{ 'success' if user.is_active else 'danger' }}-subtle">
                                 {{ 'Active' if user.is_active else 'Restricted' }}
                             </span>
                         </td>
                         <td class="text-end">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ url_for('edit_staff', id=user.id) }}" class="btn btn-light btn-sm rounded-circle border p-2" title="Edit Access">
+                                <a href="{{ url_for('edit_staff', id=user.id) }}"
+                                    class="btn btn-light btn-sm rounded-circle border p-2" title="Edit Access">
                                     <i class="fas fa-edit text-warning"></i>
                                 </a>
-                                <a href="{{ url_for('delete_staff', id=user.id) }}" class="btn btn-light btn-sm rounded-circle border p-2" 
-                                   onclick="return confirm('Revoke access for this user?')" title="Delete Member">
+                                <a href="{{ url_for('delete_staff', id=user.id) }}"
+                                    class="btn btn-light btn-sm rounded-circle border p-2"
+                                    onclick="return confirm('Revoke access for this user?')" title="Delete Member">
                                     <i class="fas fa-trash text-danger"></i>
                                 </a>
                             </div>
@@ -80,7 +96,8 @@
                                 <i class="fas fa-user-shield fa-3x text-muted opacity-25"></i>
                             </div>
                             <h5 class="text-muted fw-normal">No staff members configured</h5>
-                            <a href="{{ url_for('add_staff') }}" class="btn btn-link">Set up your first staff account</a>
+                            <a href="{{ url_for('add_staff') }}" class="btn btn-link">Set up your first staff
+                                account</a>
                         </td>
                     </tr>
                     {% endfor %}

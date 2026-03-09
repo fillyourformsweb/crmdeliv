@@ -1,3 +1,4 @@
+# Triggering server reload for template fix
 import os
 import secrets
 import random
@@ -401,7 +402,12 @@ def login():
                 flash('Your account is deactivated. Contact admin.', 'error')
                 return render_template('login.html')
             
+            if user.role not in ['admin', 'manager', 'customer']:
+                flash('Login access is restricted to Administrators and Managers.', 'error')
+                return render_template('login.html')
+            
             login_user(user, remember=True)
+
             flash('Login successful!', 'success')
             if user.role == 'customer':
                 return redirect(url_for('customer_dashboard'))
@@ -547,6 +553,7 @@ def branches():
 @admin_required
 def add_branch():
     if request.method == 'POST':
+        # Create Branch
         branch = Branch(
             name=request.form.get('name'),
             code=request.form.get('code'),
@@ -555,11 +562,35 @@ def add_branch():
             email=request.form.get('email')
         )
         db.session.add(branch)
+        db.session.flush() # Get branch.id
+
+        # Create Branch Admin (Manager)
+        admin_username = request.form.get('admin_username')
+        admin_email = request.form.get('admin_email')
+        admin_password = request.form.get('admin_password')
+
+        if User.query.filter_by(username=admin_username).first() or User.query.filter_by(email=admin_email).first():
+            db.session.rollback()
+            flash('Admin username or email already exists.', 'error')
+            return redirect(url_for('add_branch'))
+
+        branch_admin = User(
+            username=admin_username,
+            email=admin_email,
+            role='manager',
+            branch_id=branch.id,
+            phone=branch.phone,
+            address=branch.address
+        )
+        branch_admin.set_password(admin_password)
+        db.session.add(branch_admin)
+        
         db.session.commit()
-        flash('Branch added successfully!', 'success')
+        flash(f'Branch and Admin User "{admin_username}" created successfully!', 'success')
         return redirect(url_for('branches'))
     
     return render_template('add_branch.html')
+
 
 
 @app.route('/branch/edit/<int:id>', methods=['GET', 'POST'])
@@ -598,18 +629,30 @@ def delete_branch(id):
 
 @app.route('/staff')
 @login_required
-@admin_required
+@manager_required
 def staff_management():
-    staff = User.query.filter(User.role.in_(['staff', 'delivery'])).all()
-    branches = Branch.query.filter_by(is_active=True).all()
+    if current_user.role == 'admin':
+        staff = User.query.filter(User.role.in_(['staff', 'delivery', 'manager'])).all()
+        branches = Branch.query.filter_by(is_active=True).all()
+    else:
+        staff = User.query.filter(
+            User.role.in_(['staff', 'delivery']),
+            User.branch_id == current_user.branch_id
+        ).all()
+        branches = Branch.query.filter_by(id=current_user.branch_id).all()
     return render_template('staff_management.html', staff=staff, branches=branches)
+
+
 
 
 @app.route('/staff/add', methods=['GET', 'POST'])
 @login_required
-@admin_required
+@manager_required
 def add_staff():
-    branches = Branch.query.filter_by(is_active=True).all()
+    if current_user.role == 'admin':
+        branches = Branch.query.filter_by(is_active=True).all()
+    else:
+        branches = Branch.query.filter_by(id=current_user.branch_id).all()
     
     if request.method == 'POST':
         username = request.form.get('username')
@@ -623,11 +666,16 @@ def add_staff():
             flash('Email already exists.', 'error')
             return render_template('add_staff.html', branches=branches)
         
+        # Branch assignment logic
+        assigned_branch_id = request.form.get('branch_id')
+        if current_user.role != 'admin':
+            assigned_branch_id = current_user.branch_id
+        
         user = User(
             username=username,
             email=email,
             role=request.form.get('role'),
-            branch_id=request.form.get('branch_id') or None,
+            branch_id=assigned_branch_id or None,
             phone=request.form.get('phone'),
             address=request.form.get('address')
         )
@@ -641,18 +689,32 @@ def add_staff():
     return render_template('add_staff.html', branches=branches)
 
 
+
 @app.route('/staff/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
-@admin_required
+@manager_required
 def edit_staff(id):
     user = User.query.get_or_404(id)
-    branches = Branch.query.filter_by(is_active=True).all()
+    
+    # Permission check for Managers
+    if current_user.role != 'admin' and user.branch_id != current_user.branch_id:
+        flash('Permission denied. You can only edit staff from your own branch.', 'error')
+        return redirect(url_for('staff_management'))
+
+    if current_user.role == 'admin':
+        branches = Branch.query.filter_by(is_active=True).all()
+    else:
+        branches = Branch.query.filter_by(id=current_user.branch_id).all()
     
     if request.method == 'POST':
         user.username = request.form.get('username')
         user.email = request.form.get('email')
-        user.role = request.form.get('role')
-        user.branch_id = request.form.get('branch_id') or None
+        
+        # Only admins can change roles
+        if current_user.role == 'admin':
+            user.role = request.form.get('role')
+            user.branch_id = request.form.get('branch_id') or None
+        
         user.phone = request.form.get('phone')
         user.address = request.form.get('address')
         user.is_active = request.form.get('is_active') == 'on'
@@ -667,11 +729,18 @@ def edit_staff(id):
     return render_template('edit_staff.html', user=user, branches=branches)
 
 
+
 @app.route('/staff/delete/<int:id>')
 @login_required
-@admin_required
+@manager_required
 def delete_staff(id):
     user = User.query.get_or_404(id)
+    
+    # Permission check for Managers
+    if current_user.role != 'admin' and (user.branch_id != current_user.branch_id or user.role == 'manager'):
+        flash('Permission denied. You can only delete staff from your own branch.', 'error')
+        return redirect(url_for('staff_management'))
+
     if user.role == 'admin':
         flash('Cannot delete admin user.', 'error')
         return redirect(url_for('staff_management'))
@@ -680,6 +749,7 @@ def delete_staff(id):
     db.session.commit()
     flash('Staff member deleted successfully!', 'success')
     return redirect(url_for('staff_management'))
+
 
 
 # ============== DELIVERY PERSONNEL ==============
@@ -1534,11 +1604,15 @@ def receipt_settings():
 
 @app.route('/insurance-settings', methods=['GET', 'POST'])
 @login_required
-@admin_required
+@manager_required
 def insurance_settings():
     setting = SystemSettings.query.filter_by(key='insurance_percentage').first()
     
     if request.method == 'POST':
+        if current_user.role != 'admin':
+            flash('Only administrators can update settings.', 'error')
+            return redirect(url_for('insurance_settings'))
+
         percentage = request.form.get('insurance_percentage', '0')
         if not setting:
             setting = SystemSettings(key='insurance_percentage', value=percentage, description='Percentage for insurance calculation')
@@ -1687,6 +1761,36 @@ def verify_excel():
         return jsonify({'success': True, 'message': 'Order verified with Excel data'})
     
     return jsonify({'success': False, 'message': 'No matching Excel data found'})
+
+
+@app.route('/manual-match-excel', methods=['POST'])
+@login_required
+@staff_required
+def manual_match_excel():
+    data_id = request.form.get('data_id')
+    excel_data = ExcelData.query.get_or_404(data_id)
+    
+    if excel_data.matched:
+        return jsonify({'success': False, 'message': 'Record already matched'})
+        
+    order = Order.query.filter_by(receipt_number=excel_data.receipt_number).first()
+    
+    if order:
+        order.excel_weight = excel_data.weight
+        order.excel_amount = excel_data.amount
+        order.excel_verified = True
+        excel_data.matched = True
+        
+        # Update upload stats
+        upload = ExcelUpload.query.get(excel_data.upload_id)
+        if upload:
+            upload.records_matched += 1
+            
+        db.session.commit()
+        return jsonify({'success': True, 'message': f'Matched with Order #{order.receipt_number}'})
+    
+    return jsonify({'success': False, 'message': f'No matching Order found for {excel_data.receipt_number}'})
+
 
 
 # ============== MOBILE API ENDPOINTS ==============
@@ -2360,7 +2464,8 @@ def api_calculate_amount():
 
 @app.route('/reports')
 @login_required
-@admin_required
+@manager_required
+
 def reports():
     # Get date range
     start_date = request.args.get('start_date')
@@ -2434,7 +2539,8 @@ def export_report():
 
 @app.route('/default-prices')
 @login_required
-@admin_required
+@manager_required
+
 def default_prices():
     prices = DefaultStatePrice.query.all()
     return render_template('default_prices.html', prices=prices)
@@ -2542,7 +2648,8 @@ def view_client_prices(client_id):
 
 @app.route('/client-prices/<int:client_id>/set', methods=['GET', 'POST'])
 @login_required
-@staff_required
+@admin_required
+
 def set_client_prices(client_id):
     client = Client.query.get_or_404(client_id)
     selected_state = request.args.get('state')
@@ -2586,7 +2693,8 @@ def set_client_prices(client_id):
 
 @app.route('/client-prices/<int:client_id>/delete/<int:price_id>', methods=['POST'])
 @login_required
-@staff_required
+@admin_required
+
 def delete_client_price(client_id, price_id):
     price = ClientStatePrice.query.get_or_404(price_id)
     if price.client_id != client_id:
@@ -2604,14 +2712,16 @@ def delete_client_price(client_id, price_id):
 
 @app.route('/detailed-reports')
 @login_required
-@admin_required
+@manager_required
+
 def detailed_reports():
     return render_template('detailed_reports.html')
 
 
 @app.route('/due-amount-report')
 @login_required
-@admin_required
+@manager_required
+
 def due_amount_report():
     return render_template('due_amount_report.html')
 
@@ -2828,7 +2938,8 @@ def api_states():
 
 @app.route('/api/reports/overview')
 @login_required
-@admin_required
+@manager_required
+
 def api_report_overview():
     # Mock data for demonstration, in real app calculate from DB
     orders = Order.query.all()
@@ -2866,7 +2977,8 @@ def api_report_overview():
 
 @app.route('/api/reports/sales')
 @login_required
-@admin_required
+@manager_required
+
 def api_report_sales():
     # Logic for sales report
     labels = [(datetime.now() - timedelta(days=i)).strftime('%a') for i in range(6, -1, -1)]
@@ -2884,7 +2996,8 @@ def api_report_sales():
 
 @app.route('/api/reports/clients')
 @login_required
-@admin_required
+@manager_required
+
 def api_report_clients():
     clients = Client.query.all()
     return jsonify({
@@ -2908,7 +3021,8 @@ def api_report_clients():
 
 @app.route('/api/reports/performance')
 @login_required
-@admin_required
+@manager_required
+
 def api_report_performance():
     return jsonify({
         'order_growth': 12.5,
@@ -2965,8 +3079,9 @@ def fix_db():
 
 @app.route('/admin/receipts', methods=['GET', 'POST'])
 @login_required
-@admin_required
+@manager_required
 def admin_receipts():
+
     if request.method == 'POST':
         user_id = request.form.get('user_id')  # Optional now
         branch_id = request.form.get('branch_id')
@@ -3299,6 +3414,66 @@ def print_consolidated_bill(client_id):
                          taxable_value=taxable_value,
                          cgst_amount=cgst_amount,
                          sgst_amount=sgst_amount)
+
+
+@app.route('/client/<int:client_id>/adjustable-bill')
+@login_required
+@manager_required
+def adjustable_bill(client_id):
+    """Render a bill with editable fields for temporary adjustments"""
+    client = Client.query.get_or_404(client_id)
+    
+    start_date_str = request.args.get('start_date', '')
+    end_date_str = request.args.get('end_date', '')
+    is_gst = request.args.get('gst', 'no').lower() == 'yes'
+    
+    query = Order.query.filter_by(client_id=client_id, order_type='client')
+    
+    if start_date_str:
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        query = query.filter(Order.created_at >= start_date)
+    else:
+        start_date = None
+    
+    if end_date_str:
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+        end_date_display = end_date
+        end_date = end_date + timedelta(days=1)
+        query = query.filter(Order.created_at < end_date)
+    else:
+        end_date_display = None
+    
+    orders = query.order_by(Order.created_at.asc()).all()
+    
+    grand_total_amount = sum(o.total_amount or 0 for o in orders)
+    grand_received_amount = sum(o.received_amount or 0 for o in orders)
+    grand_due_amount = grand_total_amount - grand_received_amount
+    grand_total_weight = sum(o.weight or 0 for o in orders)
+    
+    if is_gst:
+        taxable_value = grand_total_amount / 1.18
+        cgst_amount = taxable_value * 0.09
+        sgst_amount = taxable_value * 0.09
+    else:
+        taxable_value = 0
+        cgst_amount = 0
+        sgst_amount = 0
+    
+    return render_template('adjustable_consolidated_bill.html',
+                         client=client,
+                         orders=orders,
+                         start_date=start_date,
+                         end_date=end_date_display,
+                         grand_total_amount=grand_total_amount,
+                         grand_received_amount=grand_received_amount,
+                         grand_due_amount=grand_due_amount,
+                         grand_total_weight=grand_total_weight,
+                         is_gst=is_gst,
+                         taxable_value=taxable_value,
+                         cgst_amount=cgst_amount,
+                         sgst_amount=sgst_amount,
+                         now=datetime.now())
+
 
 
 # ============== ADMIN EXPORT ==============

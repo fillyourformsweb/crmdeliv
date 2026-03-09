@@ -94,12 +94,18 @@
                         <label class="btn btn-outline-primary" for="billTypeGST">GST Bill</label>
                     </div>
                 </div>
-                <button class="btn btn-primary px-4" onclick="printConsolidatedBill()">
-                    <i class="fas fa-print me-2"></i>Print Consolidated Bill
-                </button>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-info px-4" onclick="generateAdjustableBill()">
+                        <i class="fas fa-edit me-2"></i>Adjustable Bill
+                    </button>
+                    <button class="btn btn-primary px-4" onclick="printConsolidatedBill()">
+                        <i class="fas fa-print me-2"></i>Print Consolidated Bill
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+
 
     <!-- Orders Table -->
     <div class="card luxury-card border-0 shadow-sm mb-5">
@@ -341,7 +347,26 @@
         window.open(url, '_blank');
     }
 
+    function generateAdjustableBill() {
+        const startDate = document.getElementById('filterFrom').value;
+        const endDate = document.getElementById('filterTo').value;
+        const isGST = document.querySelector('input[name="billType"]:checked').value;
+
+        let url = `/client/${clientId}/adjustable-bill`;
+        const params = new URLSearchParams();
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        params.append('gst', isGST);
+
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+
+        window.open(url, '_blank');
+    }
+
     // Load data on page load
     document.addEventListener('DOMContentLoaded', () => loadOrders());
+
 </script>
 {% endblock %}

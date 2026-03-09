@@ -1,0 +1,467 @@
+{% extends "base.html" %}
+
+{% block title %}Adjustable Bill - {{ client.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+
+        .luxury-navbar,
+        .luxury-sidebar,
+        .btn-no-print,
+        .action-bar,
+        .edit-indicator {
+            display: none !important;
+        }
+
+        .main-content-wrapper {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .bill-container {
+            box-shadow: none !important;
+            border: 1px solid #000 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        body {
+            background: white !important;
+        }
+
+        input.editable-field {
+            border: none !important;
+            padding: 0 !important;
+            background: transparent !important;
+            color: black !important;
+            width: 100% !important;
+            text-align: inherit !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+        }
+
+        .is-fake-row {
+            background-color: transparent !important;
+        }
+    }
+
+    .bill-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border: 1px solid #333;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .invoice-header {
+        text-align: center;
+        border-bottom: 2px solid #000;
+        padding: 5px;
+        color: #333;
+        font-weight: bold;
+        text-transform: uppercase;
+        background: #f8f9fa;
+        color: #333;
+        border-top: 2px solid #000;
+    }
+
+    .bill-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-bottom: 1px solid #333;
+    }
+
+    .grid-cell {
+        padding: 10px;
+        border-right: 1px solid #333;
+    }
+
+    .grid-cell:last-child {
+        border-right: none;
+    }
+
+    .label-small {
+        font-size: 0.8rem;
+        color: #555;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+        border: 1px solid #333;
+        padding: 6px;
+        font-size: 0.85rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .invoice-table th {
+        background: #f8f9fa;
+        font-weight: bold;
+    }
+
+    .btn-delete-row {
+        position: absolute;
+        right: -30px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #dc3545;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    tr:hover .btn-delete-row {
+        opacity: 1;
+    }
+
+    .totals-area {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        border: 1px solid #333;
+    }
+
+    .terms-box {
+        padding: 10px;
+        border-right: 1px solid #333;
+        font-size: 0.75rem;
+    }
+
+    .calculations-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .calc-row {
+        display: contents;
+    }
+
+    .calc-label {
+        padding: 5px 10px;
+        border-bottom: 1px solid #333;
+        border-right: 1px solid #333;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .calc-value {
+        padding: 5px 10px;
+        border-bottom: 1px solid #333;
+        text-align: right;
+        font-size: 0.85rem;
+    }
+
+    .signatory-box {
+        height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        padding-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .editable-field {
+        border: 1px dashed #007bff;
+        background: #f0f7ff;
+        padding: 2px 5px;
+        border-radius: 3px;
+        width: 100%;
+        text-align: inherit;
+        font-family: inherit;
+        font-size: inherit;
+    }
+
+    .editable-field:focus {
+        outline: none;
+        background: #fff;
+        border-style: solid;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
+    }
+
+    .edit-indicator {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 50px;
+        z-index: 1000;
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-reveal">
+    <div class="d-flex justify-content-between align-items-center mb-4 btn-no-print action-bar">
+        <div>
+            <a href="{{ url_for('client_orders_due', client_id=client.id) }}" class="btn btn-light rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i>Back to Orders
+            </a>
+            <span class="ms-3 badge bg-info-subtle text-info border border-info border-opacity-25 p-2">
+                <i class="fas fa-edit me-1"></i>EDITABLE MODE
+            </span>
+        </div>
+        <div>
+            <button onclick="addRow()" class="btn btn-outline-success rounded-pill px-4 me-2">
+                <i class="fas fa-plus me-2"></i>Add Row
+            </button>
+            <button onclick="window.print()" class="btn btn-primary px-4">
+                <i class="fas fa-print me-2"></i>Print Bill
+            </button>
+        </div>
+    </div>
+
+    <div class="bill-container" id="printableBill">
+        <div class="text-center p-4">
+            {% if is_gst %}
+            <img src="{{ url_for('static', filename='bill/Letterhead_page-0002.jpg.jpeg') }}" alt="Letterhead"
+                style="max-width: 100%; width: auto;">
+            {% else %}
+            <img src="{{ url_for('static', filename='bill/not gst.png') }}" alt="Letterhead"
+                style="max-width: 100%; width: auto;">
+            {% endif %}
+        </div>
+
+        <div class="invoice-header bg-light py-2">ADJUSTABLE CONSOLIDATED COURIER BIIL</div>
+
+        <div class="bill-grid">
+            <div class="grid-cell" style="border-bottom: 1px solid #333;">
+                <span class="label-small">Client:</span>
+                <input type="text" class="editable-field fw-bold" value="{{ client.name }}">
+            </div>
+            <div class="grid-cell" style="border-bottom: 1px solid #333;">
+                <span class="label-small">Bill Date:</span>
+                <input type="text" class="editable-field" value="{{ now.strftime('%d/%m/%Y') }}">
+                {% if start_date and end_date %}
+                <span class="label-small mt-2">Period:</span>
+                <div class="cell-content">{{ start_date.strftime('%d/%m/%Y') }} to {{ end_date.strftime('%d/%m/%Y') }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="bill-grid">
+            <div class="grid-cell">
+                <div class="fw-bold mb-1">Bill By:</div>
+                <div class="fw-bold text-uppercase">M/S FILL YOUR FORMS</div>
+                <div class="small">Address: <input type="text" class="editable-field d-inline-block" style="width: 80%"
+                        value="746/891, University Chauarah, Old Katra, Prayagraj"></div>
+            </div>
+            <div class="grid-cell">
+                <div class="fw-bold mb-1">Bill To:</div>
+                <input type="text" class="editable-field fw-bold mb-1" value="{{ client.name }}">
+                <input type="text" class="editable-field small" value="{{ client.address or 'N/A' }}">
+            </div>
+        </div>
+
+        <table class="invoice-table" id="billTable">
+            <thead>
+                <tr>
+                    <th style="width: 40px;">S.No.</th>
+                    <th>Date</th>
+                    <th>Tracking No.</th>
+                    <th>Consignee</th>
+                    <th>Destination</th>
+                    <th>Weight(kg)</th>
+                    {% if is_gst %}<th>HSN/SAC</th>{% endif %}
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr class="order-row">
+                    <td class="sno">
+                        {{ loop.index }}
+                        <div class="btn-delete-row btn-no-print" onclick="deleteRow(this)">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                    </td>
+                    <td><input type="text" class="editable-field" value="{{ order.created_at.strftime('%d/%m/%Y') }}">
+                    </td>
+                    <td><input type="text" class="editable-field" value="{{ order.receipt_number }}"></td>
+                    <td><input type="text" class="editable-field text-uppercase"
+                            value="{{ order.receiver_name or 'N/A' }}"></td>
+                    <td>
+                        <input type="text" class="editable-field mb-1" value="{{ order.receiver_city or '' }}"
+                            placeholder="City">
+                        <input type="text" class="editable-field" value="{{ order.receiver_state or '' }}"
+                            placeholder="State">
+                    </td>
+                    <td><input type="number" step="0.01" class="editable-field weight-input"
+                            value="{{ '%.2f'|format(order.weight or 0) }}" oninput="updateTotals()"></td>
+                    {% if is_gst %}<td>996511</td>{% endif %}
+                    <td><input type="number" step="0.01" class="editable-field amount-input"
+                            value="{{ '%.2f'|format(order.total_amount or 0) }}" oninput="updateTotals()"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="fw-bold bg-light">
+                    <td colspan="5" class="text-end">GRAND TOTAL</td>
+                    <td id="grandWeight">{{ "%.2f"|format(grand_total_weight) }}</td>
+                    {% if is_gst %}<td></td>{% endif %}
+                    <td id="grandTotal">{{ "%.2f"|format(grand_total_amount) }}</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="totals-area">
+            <div class="terms-box">
+                <div class="fw-bold mb-2">Terms & Conditions</div>
+                <ul class="ps-3 mb-0" style="list-style-type: decimal; font-size: 0.7rem;">
+                    <li>No liability for fragile items or delays.</li>
+                    <li>Claims must be made within 24 hours.</li>
+                    <li>All disputes subject to Prayagraj jurisdiction.</li>
+                    <li contenteditable="true">Payment due within 15 days.</li>
+                </ul>
+            </div>
+            <div class="calculations-box">
+                {% if is_gst %}
+                <div class="calc-row">
+                    <div class="calc-label">Taxable Value</div>
+                    <div class="calc-value" id="taxableValue">₹{{ "%.2f"|format(taxable_value) }}</div>
+                </div>
+                <div class="calc-row">
+                    <div class="calc-label">CGST [09%]</div>
+                    <div class="calc-value" id="cgstAmount">₹{{ "%.2f"|format(cgst_amount) }}</div>
+                </div>
+                <div class="calc-row">
+                    <div class="calc-label">SGST [09%]</div>
+                    <div class="calc-value" id="sgstAmount">₹{{ "%.2f"|format(sgst_amount) }}</div>
+                </div>
+                <div class="calc-row">
+                    <div class="calc-label bg-light">Total Value</div>
+                    <div class="calc-value fw-bold bg-light" id="invoiceValue">₹{{ "%.2f"|format(grand_total_amount) }}
+                    </div>
+                </div>
+                {% else %}
+                <div class="calc-row">
+                    <div class="calc-label">Sub Total</div>
+                    <div class="calc-value" id="subTotal">₹{{ "%.2f"|format(grand_total_amount) }}</div>
+                </div>
+                <div class="calc-row">
+                    <div class="calc-label bg-light">NET PAYABLE</div>
+                    <div class="calc-value fw-bold bg-light" id="netPayable">₹{{ "%.2f"|format(grand_total_amount) }}
+                    </div>
+                </div>
+                {% endif %}
+                <div class="signatory-box" style="grid-column: span 2;">
+                    Signatory for M/S FILL YOUR FORMS
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="edit-indicator" id="editIndicator">
+    <i class="fas fa-info-circle me-2"></i>Updating...
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updateTotals() {
+        const editIndicator = document.getElementById('editIndicator');
+        if (editIndicator) editIndicator.style.display = 'block';
+
+        let totalWeight = 0;
+        let totalAmount = 0;
+
+        document.querySelectorAll('.weight-input').forEach(input => {
+            totalWeight += parseFloat(input.value) || 0;
+        });
+
+        document.querySelectorAll('.amount-input').forEach(input => {
+            totalAmount += parseFloat(input.value) || 0;
+        });
+
+        const grandW = document.getElementById('grandWeight');
+        const grandT = document.getElementById('grandTotal');
+        if (grandW) grandW.textContent = totalWeight.toFixed(2);
+        if (grandT) grandT.textContent = totalAmount.toFixed(2);
+
+        const isGstEnabled = {% if is_gst %} true{% else %} false{% endif %};
+
+    if (isGstEnabled) {
+        const taxable = totalAmount / 1.18;
+        const gstHalf = taxable * 0.09;
+
+        const taxV = document.getElementById('taxableValue');
+        const cgstV = document.getElementById('cgstAmount');
+        const sgstV = document.getElementById('sgstAmount');
+        const invV = document.getElementById('invoiceValue');
+
+        if (taxV) taxV.textContent = '₹' + taxable.toFixed(2);
+        if (cgstV) cgstV.textContent = '₹' + gstHalf.toFixed(2);
+        if (sgstV) sgstV.textContent = '₹' + gstHalf.toFixed(2);
+        if (invV) invV.textContent = '₹' + totalAmount.toFixed(2);
+    } else {
+        const subT = document.getElementById('subTotal');
+        const netP = document.getElementById('netPayable');
+        if (subT) subT.textContent = '₹' + totalAmount.toFixed(2);
+        if (netP) netP.textContent = '₹' + totalAmount.toFixed(2);
+    }
+
+    if (editIndicator) setTimeout(() => { editIndicator.style.display = 'none'; }, 500);
+    }
+
+    function addRow() {
+        const tableBody = document.querySelector('#billTable tbody');
+        if (!tableBody) return;
+        const nextIdx = tableBody.children.length + 1;
+        const isGstEnabled = {% if is_gst %} true{% else %} false{% endif %};
+
+    const tr = document.createElement('tr');
+    tr.className = 'order-row is-fake-row';
+    tr.innerHTML = `
+            <td class="sno">
+                ${nextIdx}
+                <div class="btn-delete-row btn-no-print" onclick="deleteRow(this)">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+            </td>
+            <td><input type="text" class="editable-field" value="${new Date().toLocaleDateString('en-GB')}"></td>
+            <td><input type="text" class="editable-field" value="MANUAL-${Math.floor(Math.random() * 10000)}"></td>
+            <td><input type="text" class="editable-field text-uppercase" value="NEW RECEIVER"></td>
+            <td>
+                <input type="text" class="editable-field mb-1" value="CITY" placeholder="City">
+                <input type="text" class="editable-field" value="STATE" placeholder="State">
+            </td>
+            <td><input type="number" step="0.01" class="editable-field weight-input" value="0.00" oninput="updateTotals()"></td>
+            ${isGstEnabled ? '<td>996511</td>' : ''}
+            <td><input type="number" step="0.01" class="editable-field amount-input" value="0.00" oninput="updateTotals()"></td>
+        `;
+    tableBody.appendChild(tr);
+    updateTotals();
+    }
+
+    function deleteRow(btn) {
+        if (confirm('Delete this row?')) {
+            const row = btn.closest('tr');
+            if (row) row.remove();
+            reindexSno();
+            updateTotals();
+        }
+    }
+
+    function reindexSno() {
+        document.querySelectorAll('.sno').forEach((td, idx) => {
+            const deleteBtn = td.querySelector('.btn-delete-row');
+            td.innerHTML = (idx + 1);
+            if (deleteBtn) td.appendChild(deleteBtn);
+        });
+    }
+</script>
+{% endblock %}
