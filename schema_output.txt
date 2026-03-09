@@ -1,0 +1,38 @@
+﻿Tables: [('branches',), ('billing_patterns',), ('default_state_prices',), ('system_settings',), ('users',), ('clients',), ('receivers',), ('client_addresses',), ('receipt_settings',), ('staff_receipt_assignments',), ('excel_uploads',), ('client_state_prices',), ('orders',), ('excel_data',), ('tracking_updates',), ('notifications',), ('normal_client_state_prices',)]
+
+Schema for default_state_prices:
+  id (INTEGER)
+  state (VARCHAR(100))
+  price_100gm (FLOAT)
+  price_250gm (FLOAT)
+  price_500gm (FLOAT)
+  price_750gm (FLOAT)
+  price_1kg (FLOAT)
+  price_2kg (FLOAT)
+  price_3kg (FLOAT)
+  created_at (DATETIME)
+
+Schema for client_state_prices:
+  id (INTEGER)
+  client_id (INTEGER)
+  state (VARCHAR(100))
+  price_100gm (FLOAT)
+  price_250gm (FLOAT)
+  price_500gm (FLOAT)
+  price_750gm (FLOAT)
+  price_1kg (FLOAT)
+  price_2kg (FLOAT)
+  price_3kg (FLOAT)
+  created_at (DATETIME)
+
+Schema for normal_client_state_prices:
+  id (INTEGER)
+  state (VARCHAR(100))
+  price_100gm (FLOAT)
+  price_250gm (FLOAT)
+  price_500gm (FLOAT)
+  price_750gm (FLOAT)
+  price_1kg (FLOAT)
+  price_2kg (FLOAT)
+  price_3kg (FLOAT)
+  created_at (DATETIME)

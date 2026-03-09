@@ -21,48 +21,54 @@
         <form method="POST">
             <div class="card luxury-card border-0 shadow-sm overflow-hidden mb-5">
                 <div class="card-header bg-transparent border-0 px-4 pt-4">
-                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-edit me-2 text-primary opacity-50"></i>Update Rate Definition</h5>
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-edit me-2 text-primary opacity-50"></i>Update
+                        Rate Definition</h5>
                 </div>
                 <div class="card-body p-4">
                     <div class="row g-4">
                         <div class="col-12">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Destination State Name</label>
-                            <input type="text" class="form-control luxury-input" name="state" value="{{ price.state }}" required>
+                            <label class="form-label small fw-bold text-uppercase text-muted">Destination State
+                                Name</label>
+                            <input type="text" class="form-control luxury-input" name="state" value="{{ price.state }}"
+                                required>
                         </div>
-                        
+
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">100gm Rate (₹)</label>
-                            <input type="number" step="0.01" class="form-control luxury-input" name="price_100gm" value="{{ price.price_100gm }}" required>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_100gm"
+                                value="{{ price.price_100gm }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">250gm Rate (₹)</label>
-                            <input type="number" step="0.01" class="form-control luxury-input" name="price_250gm" value="{{ price.price_250gm }}" required>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_250gm"
+                                value="{{ price.price_250gm }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">500gm Rate (₹)</label>
-                            <input type="number" step="0.01" class="form-control luxury-input" name="price_500gm" value="{{ price.price_500gm }}" required>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_500gm"
+                                value="{{ price.price_500gm }}" required>
                         </div>
-                        
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold text-uppercase text-muted">750gm Rate (₹)</label>
-                            <input type="number" step="0.01" class="form-control luxury-input" name="price_750gm" value="{{ price.price_750gm }}" required>
-                        </div>
+
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">1kg Standard (₹)</label>
-                            <input type="number" step="0.01" class="form-control luxury-input" name="price_1kg" value="{{ price.price_1kg }}" required>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_1kg"
+                                value="{{ price.price_1kg }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">2kg Parcel (₹)</label>
-                            <input type="number" step="0.01" class="form-control luxury-input" name="price_2kg" value="{{ price.price_2kg }}" required>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_2kg"
+                                value="{{ price.price_2kg }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">3kg Bulk (₹)</label>
-                            <input type="number" step="0.01" class="form-control luxury-input" name="price_3kg" value="{{ price.price_3kg }}" required>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_3kg"
+                                value="{{ price.price_3kg }}" required>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer bg-light border-0 p-4 d-flex justify-content-between">
-                    <button type="button" class="btn btn-outline-danger px-4 fw-bold rounded-pill" onclick="confirmDelete()">
+                    <button type="button" class="btn btn-outline-danger px-4 fw-bold rounded-pill"
+                        onclick="confirmDelete()">
                         <i class="fas fa-trash-alt me-2"></i>Delete Zone
                     </button>
                     <button type="submit" class="luxury-btn btn btn-primary px-5 py-2 fw-bold rounded-pill">
@@ -74,16 +80,17 @@
     </div>
 </div>
 
-<form id="deleteForm" method="POST" action="{{ url_for('delete_default_price', price_id=price.id) }}" style="display: none;"></form>
+<form id="deleteForm" method="POST" action="{{ url_for('delete_default_price', price_id=price.id) }}"
+    style="display: none;"></form>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function confirmDelete() {
-    if(confirm('Are you sure you want to delete pricing for {{ price.state }}? This action cannot be undone.')) {
-        document.getElementById('deleteForm').submit();
+    function confirmDelete() {
+        if (confirm('Are you sure you want to delete pricing for {{ price.state }}? This action cannot be undone.')) {
+            document.getElementById('deleteForm').submit();
+        }
     }
-}
 </script>
 {% endblock %}

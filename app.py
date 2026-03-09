@@ -319,7 +319,6 @@ def calculate_from_state_price(weight, price_obj):
     if weight <= 0.1: amount = price_obj.price_100gm
     elif weight <= 0.25: amount = price_obj.price_250gm
     elif weight <= 0.5: amount = price_obj.price_500gm
-    elif weight <= 0.75: amount = price_obj.price_750gm
     elif weight <= 1.0: amount = price_obj.price_1kg
     elif weight <= 2.0: amount = price_obj.price_2kg
     elif weight <= 3.0: amount = price_obj.price_3kg
@@ -2610,7 +2609,6 @@ def add_default_price():
             price_100gm=float(request.form.get('price_100gm', 0)),
             price_250gm=float(request.form.get('price_250gm', 0)),
             price_500gm=float(request.form.get('price_500gm', 0)),
-            price_750gm=float(request.form.get('price_750gm', 0)),
             price_1kg=float(request.form.get('price_1kg', 0)),
             price_2kg=float(request.form.get('price_2kg', 0)),
             price_3kg=float(request.form.get('price_3kg', 0))
@@ -2634,7 +2632,6 @@ def edit_default_price(price_id):
         price.price_100gm = float(request.form.get('price_100gm', 0))
         price.price_250gm = float(request.form.get('price_250gm', 0))
         price.price_500gm = float(request.form.get('price_500gm', 0))
-        price.price_750gm = float(request.form.get('price_750gm', 0))
         price.price_1kg = float(request.form.get('price_1kg', 0))
         price.price_2kg = float(request.form.get('price_2kg', 0))
         price.price_3kg = float(request.form.get('price_3kg', 0))
@@ -2681,7 +2678,6 @@ def add_normal_client_price():
             price_100gm=float(request.form.get('price_100gm', 0)),
             price_250gm=float(request.form.get('price_250gm', 0)),
             price_500gm=float(request.form.get('price_500gm', 0)),
-            price_750gm=float(request.form.get('price_750gm', 0)),
             price_1kg=float(request.form.get('price_1kg', 0)),
             price_2kg=float(request.form.get('price_2kg', 0)),
             price_3kg=float(request.form.get('price_3kg', 0))
@@ -2705,7 +2701,6 @@ def edit_normal_client_price(price_id):
         price.price_100gm = float(request.form.get('price_100gm', 0))
         price.price_250gm = float(request.form.get('price_250gm', 0))
         price.price_500gm = float(request.form.get('price_500gm', 0))
-        price.price_750gm = float(request.form.get('price_750gm', 0))
         price.price_1kg = float(request.form.get('price_1kg', 0))
         price.price_2kg = float(request.form.get('price_2kg', 0))
         price.price_3kg = float(request.form.get('price_3kg', 0))
@@ -2748,7 +2743,6 @@ def view_client_prices(client_id):
             'price_100gm': s.price_100gm,
             'price_250gm': s.price_250gm,
             'price_500gm': s.price_500gm,
-            'price_750gm': s.price_750gm,
             'price_1kg': s.price_1kg,
             'price_2kg': s.price_2kg,
             'price_3kg': s.price_3kg,
@@ -2756,7 +2750,6 @@ def view_client_prices(client_id):
             'custom_price_100gm': custom.price_100gm if custom else 0,
             'custom_price_250gm': custom.price_250gm if custom else 0,
             'custom_price_500gm': custom.price_500gm if custom else 0,
-            'custom_price_750gm': custom.price_750gm if custom else 0,
             'custom_price_1kg': custom.price_1kg if custom else 0,
             'custom_price_2kg': custom.price_2kg if custom else 0,
             'custom_price_3kg': custom.price_3kg if custom else 0
@@ -2790,7 +2783,6 @@ def set_client_prices(client_id):
         custom.price_100gm = float(request.form.get('price_100gm', 0))
         custom.price_250gm = float(request.form.get('price_250gm', 0))
         custom.price_500gm = float(request.form.get('price_500gm', 0))
-        custom.price_750gm = float(request.form.get('price_750gm', 0))
         custom.price_1kg = float(request.form.get('price_1kg', 0))
         custom.price_2kg = float(request.form.get('price_2kg', 0))
         custom.price_3kg = float(request.form.get('price_3kg', 0))
@@ -2855,7 +2847,6 @@ def public_prices():
         ('100gm', 'price_100gm'),
         ('250gm', 'price_250gm'),
         ('500gm', 'price_500gm'),
-        ('750gm', 'price_750gm'),
         ('1kg', 'price_1kg'),
         ('2kg', 'price_2kg'),
         ('3kg', 'price_3kg')
