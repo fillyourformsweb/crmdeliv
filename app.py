@@ -438,6 +438,46 @@ def logout():
     return redirect(url_for('login'))
 
 
+# ============== DATABASE FIX (TEMPORARY) ==============
+@app.route('/fix-db')
+def db_fix():
+    from sqlalchemy import text, inspect
+    results = []
+    
+    # Get columns currently in DB
+    inspector = inspect(db.engine)
+    try:
+        existing_cols = {c['name'].lower() for c in inspector.get_columns('orders')}
+    except Exception as e:
+        return f"Error inspecting table 'orders': {str(e)}"
+    
+    # Get columns defined in SQLAlchemy model
+    model_columns = {c.key: c.type for c in Order.__table__.columns}
+    
+    for col_name, col_type in model_columns.items():
+        if col_name.lower() not in existing_cols:
+            try:
+                # Map SQLAlchemy type to SQL type string for SQLite
+                type_str = str(col_type).upper()
+                if 'INTEGER' in type_str: sql_type = 'INTEGER'
+                elif 'FLOAT' in type_str: sql_type = 'FLOAT'
+                elif 'BOOLEAN' in type_str: sql_type = 'BOOLEAN'
+                elif 'DATETIME' in type_str: sql_type = 'DATETIME'
+                elif 'TEXT' in type_str: sql_type = 'TEXT'
+                else: sql_type = 'VARCHAR(255)'
+                
+                db.session.execute(text(f"ALTER TABLE orders ADD COLUMN {col_name} {sql_type}"))
+                db.session.commit()
+                results.append(f"Added {col_name} ({sql_type})")
+            except Exception as e:
+                db.session.rollback()
+                results.append(f"Failed to add {col_name}: {str(e)}")
+    
+    if not results:
+        results.append("No missing columns found in 'orders' table.")
+        
+    return "<h3>Database Synchronization Results</h3>" + "<br>".join(results) + "<br><br><a href='/dashboard'>Go to Dashboard</a>"
+
 # ============== DASHBOARD ==============
 
 @app.route('/dashboard')

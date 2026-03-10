@@ -1,9 +1,0 @@
-Connecting to database at: instance\crm_delivery.db
-Existing columns: ['id', 'receipt_number', 'order_type', 'receipt_mode', 'customer_name', 'customer_phone', 'customer_email', 'customer_address', 'receiver_name', 'receiver_phone', 'receiver_address', 'receiver_city', 'receiver_state', 'receiver_pincode', 'package_description', 'weight', 'dimensions', 'number_of_boxes', 'base_amount', 'weight_charges', 'additional_charges', 'discount', 'tax_amount', 'total_amount', 'status', 'payment_status', 'payment_mode', 'tracking_link', 'customer_form_link', 'customer_form_completed', 'special_instructions', 'internal_notes', 'client_id', 'branch_id', 'created_by', 'delivery_person_id', 'billing_pattern_id', 'created_at', 'updated_at', 'delivered_at', 'excel_verified', 'excel_weight', 'excel_amount', 'weight_category', 'weight_in_kg', 'calculated_amount', 'received_amount', 'amount_difference', 'difference_reason']
-Adding missing column: order_number
-Successfully added order_number
-Adding missing column: order_date
-Successfully added order_date
-Adding missing column: consignment_number
-Successfully added consignment_number
-Schema update check complete.
