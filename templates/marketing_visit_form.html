@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% block title %}{% if visit %}Edit Visit{% else %}New Visit / Pitch{% endif %} — CRM Delivery{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-hero {
+        background: linear-gradient(135deg, #1e1b4b, #2563eb);
+        border-radius: 18px;
+        padding: 1.75rem 2rem;
+        color: #fff;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-section {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .section-label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #6b7280;
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .form-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 4px;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 10px;
+        border: 1.5px solid #e5e7eb;
+        font-size: 0.88rem;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    }
+
+    .field-hint {
+        font-size: 0.72rem;
+        color: #9ca3af;
+        margin-top: 3px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="col-12">
+    <!-- Hero -->
+    <div class="form-hero d-flex align-items-center gap-3">
+        <div style="background:rgba(255,255,255,0.18);border-radius:12px;padding:10px 14px;font-size:1.4rem;">
+            {{ '✏️' if visit else '🚀' }}
+        </div>
+        <div>
+            <h3 class="mb-0 fw-black">{{ 'Edit Visit' if visit else 'New Visit / Pitch' }}</h3>
+            <p class="mb-0 opacity-75 small">{% if visit %}Update contact, courier and pitch details{% else %}Record a
+                new sales visit and prospect pitch{% endif %}</p>
+        </div>
+    </div>
+
+    <form method="POST">
+        <div class="row g-3">
+            <!-- Left: Contact + Company -->
+            <div class="col-12 col-lg-6">
+                <!-- Contact Details -->
+                <div class="form-section">
+                    <div class="section-label"><i class="fas fa-user-tie" style="color:#7c3aed;"></i> Contact Details
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Contact Name <span class="text-danger">*</span></label>
+                            <input type="text" name="contact_name" class="form-control" required
+                                value="{{ visit.contact_name if visit else '' }}"
+                                placeholder="Full name of contact person">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            <input type="text" name="contact_phone" class="form-control"
+                                value="{{ visit.contact_phone if visit else '' }}" placeholder="+91 98765 43210">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="contact_email" class="form-control"
+                                value="{{ visit.contact_email if visit else '' }}" placeholder="contact@company.com">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Designation</label>
+                            <input type="text" name="contact_designation" class="form-control"
+                                value="{{ visit.contact_designation if visit else '' }}"
+                                placeholder="e.g. Operations Manager">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company Details -->
+                <div class="form-section">
+                    <div class="section-label"><i class="fas fa-building" style="color:#2563eb;"></i> Company Details
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" name="company_name" class="form-control"
+                                value="{{ visit.company_name if visit else '' }}" placeholder="e.g. Sharma Enterprises">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Company Address</label>
+                            <textarea name="company_address" class="form-control" rows="2" placeholder="Street, area..."
+                                style="resize:none;">{{ visit.company_address if visit else '' }}</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">City</label>
+                            <input type="text" name="company_city" class="form-control"
+                                value="{{ visit.company_city if visit else '' }}" placeholder="e.g. Mumbai">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">State</label>
+                            <input type="text" name="company_state" class="form-control"
+                                value="{{ visit.company_state if visit else '' }}" placeholder="e.g. Maharashtra">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Courier Info + Pitch -->
+            <div class="col-12 col-lg-6">
+                <!-- Courier & Business Details -->
+                <div class="form-section">
+                    <div class="section-label"><i class="fas fa-truck" style="color:#d97706;"></i> Courier &amp;
+                        Business Info</div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Covered Area</label>
+                            <input type="text" name="covered_area" class="form-control"
+                                value="{{ visit.covered_area if visit else '' }}"
+                                placeholder="e.g. Mumbai, Pune, Nashik">
+                            <div class="field-hint">Geographic delivery area this prospect handles</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Load Frequency</label>
+                            <select name="load_frequency" class="form-select">
+                                <option value="" {% if not visit or not visit.load_frequency %}selected{% endif %}>
+                                    Select...</option>
+                                {% for f in ['Daily','Weekly','Bi-Weekly','Monthly','Seasonal','On-demand'] %}
+                                <option value="{{ f }}" {% if visit and visit.load_frequency==f %}selected{% endif %}>{{
+                                    f }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Load Capacity</label>
+                            <input type="text" name="load_capacity" class="form-control"
+                                value="{{ visit.load_capacity if visit else '' }}" placeholder="e.g. 50–100 kg/day">
+                            <div class="field-hint">Estimated shipment volume</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Current Courier</label>
+                            <input type="text" name="current_courier" class="form-control"
+                                value="{{ visit.current_courier if visit else '' }}"
+                                placeholder="e.g. DTDC, BlueDart, FedEx">
+                            <div class="field-hint">Which courier they currently use</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Price Certificate</label>
+                            <input type="text" name="price_cert" class="form-control"
+                                value="{{ visit.price_cert if visit else '' }}"
+                                placeholder="Any cert / approval required">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Desired Price</label>
+                            <input type="text" name="desired_price" class="form-control"
+                                value="{{ visit.desired_price if visit else '' }}"
+                                placeholder="e.g. ₹50/kg or ₹150 flat">
+                            <div class="field-hint">Client's expected price point</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pitch Notes + Status -->
+                <div class="form-section">
+                    <div class="section-label"><i class="fas fa-file-alt" style="color:#059669;"></i> Pitch &amp; Status
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pitch Notes</label>
+                        <textarea name="pitch_notes" class="form-control" rows="5"
+                            placeholder="Key pitch points, client objections, requirements, agreements..."
+                            style="resize:vertical;">{{ visit.pitch_notes if visit else '' }}</textarea>
+                    </div>
+                    <div>
+                        <label class="form-label">Pipeline Status</label>
+                        <select name="status" class="form-select">
+                            {% for s, label in [('new','🔵 New Lead'),('follow_up','🟡 Follow Up'),('converted','🟢
+                            Converted'),('lost','🔴 Lost')] %}
+                            <option value="{{ s }}" {% if visit and visit.status==s %}selected{% elif not visit and
+                                s=='new' %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex gap-2 justify-content-end mt-2 mb-4">
+            <a href="{{ url_for('marketing_visit_detail', visit_id=visit.id) if visit else url_for('marketing_visits') }}"
+                class="btn btn-outline-secondary px-4 rounded-pill fw-bold">Cancel</a>
+            <button type="submit" class="btn btn-primary px-5 rounded-pill fw-bold">
+                <i class="fas fa-save me-2"></i>{{ 'Save Changes' if visit else 'Record Visit' }}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

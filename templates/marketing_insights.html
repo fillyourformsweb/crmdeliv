@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+{% block title %}Marketing Insights — CRM Delivery{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --mkt-purple: #7c3aed;
+        --mkt-blue: #2563eb;
+        --mkt-green: #059669;
+        --mkt-amber: #d97706;
+        --mkt-red: #dc2626;
+    }
+
+    .insights-hero {
+        background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #1e40af 100%);
+        border-radius: 20px;
+        padding: 2rem 2.5rem;
+        color: #fff;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .insights-hero::before {
+        content: '';
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .insights-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        left: 40%;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .kpi-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 1.5rem;
+        transition: transform .2s, box-shadow .2s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .kpi-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    .kpi-value {
+        font-size: 2.2rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+
+    .kpi-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #6b7280;
+    }
+
+    .kpi-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .chart-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 1.5rem;
+    }
+
+    .chart-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 1.2rem;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .pill-new {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .pill-follow_up {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .pill-converted {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .pill-lost {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .visits-table th {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #6b7280;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .visits-table td {
+        vertical-align: middle;
+        font-size: 0.88rem;
+    }
+
+    .visits-table tr:hover {
+        background: #f9fafb;
+    }
+
+    .quick-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all .15s;
+    }
+
+    .qa-view {
+        background: #ede9fe;
+        color: #5b21b6;
+    }
+
+    .qa-view:hover {
+        background: #5b21b6;
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="col-12">
+    <!-- Hero Header -->
+    <div class="insights-hero">
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:10px 14px;font-size:1.5rem;">📊
+            </div>
+            <div>
+                <h2 class="mb-0 fw-black" style="font-size:1.8rem;">Marketing Insights</h2>
+                <p class="mb-0 opacity-75 small">Sales pipeline · Visit tracking · Follow-ups · Meetings</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap mt-3">
+            <a href="{{ url_for('marketing_visit_new') }}" class="btn btn-light btn-sm fw-bold px-4 rounded-pill">
+                <i class="fas fa-plus me-1"></i> New Visit / Pitch
+            </a>
+            <a href="{{ url_for('marketing_visits') }}" class="btn btn-outline-light btn-sm fw-bold px-4 rounded-pill">
+                <i class="fas fa-list me-1"></i> All Visits
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background:#ede9fe;color:#7c3aed;"><i class="fas fa-route"></i></div>
+                <div class="kpi-value" style="color:#7c3aed;">{{ total_visits }}</div>
+                <div class="kpi-label">Total Visits</div>
+                <span class="kpi-badge" style="background:#ede9fe;color:#7c3aed;">All Time</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background:#fef3c7;color:#d97706;"><i class="fas fa-bell"></i></div>
+                <div class="kpi-value" style="color:#d97706;">{{ follow_ups_due }}</div>
+                <div class="kpi-label">Follow-Ups Due</div>
+                <span class="kpi-badge" style="background:#fef3c7;color:#92400e;">Pending</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background:#dbeafe;color:#2563eb;"><i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="kpi-value" style="color:#2563eb;">{{ meetings_today }}</div>
+                <div class="kpi-label">Meetings Today</div>
+                <span class="kpi-badge" style="background:#dbeafe;color:#1d4ed8;">Today</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background:#d1fae5;color:#059669;"><i class="fas fa-handshake"></i></div>
+                <div class="kpi-value" style="color:#059669;">{{ conversions }}</div>
+                <div class="kpi-label">Conversions</div>
+                <span class="kpi-badge" style="background:#d1fae5;color:#065f46;">Won</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-8">
+            <div class="chart-card h-100">
+                <div class="chart-title"><i class="fas fa-chart-line me-2" style="color:#7c3aed;"></i>Visits Over Time
+                    (Last 30 Days)</div>
+                <canvas id="visitsLineChart" height="90"></canvas>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="chart-card h-100">
+                <div class="chart-title"><i class="fas fa-chart-donut me-2" style="color:#2563eb;"></i>Pipeline Status
+                </div>
+                <canvas id="statusDoughnut" height="180"></canvas>
+                <div id="statusLegend" class="d-flex flex-wrap gap-2 mt-3 justify-content-center"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-5">
+            <div class="chart-card h-100">
+                <div class="chart-title"><i class="fas fa-chart-bar me-2" style="color:#d97706;"></i>Follow-Up Activity
+                </div>
+                <canvas id="followupBar" height="140"></canvas>
+            </div>
+        </div>
+        <div class="col-12 col-md-7">
+            <!-- Recent Visits Table -->
+            <div class="chart-card h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="chart-title mb-0"><i class="fas fa-clipboard-list me-2"
+                            style="color:#059669;"></i>Recent Visits</div>
+                    <a href="{{ url_for('marketing_visits') }}" class="btn btn-sm"
+                        style="background:#f3f4f6;color:#374151;font-size:0.75rem;font-weight:700;border-radius:8px;">View
+                        All →</a>
+                </div>
+                {% if recent_visits %}
+                <div class="table-responsive">
+                    <table class="table table-borderless visits-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Company / Contact</th>
+                                <th>Area</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for v in recent_visits %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold" style="font-size:0.85rem;">{{ v.company_name or
+                                        v.contact_name }}</div>
+                                    <div class="text-muted" style="font-size:0.75rem;">{{ v.contact_name }} · {{
+                                        v.company_city or '—' }}</div>
+                                </td>
+                                <td><span style="font-size:0.8rem;">{{ v.covered_area or '—' }}</span></td>
+                                <td><span class="status-pill pill-{{ v.status }}">{{ v.status | replace('_', ' ')
+                                        }}</span></td>
+                                <td>
+                                    <a href="{{ url_for('marketing_visit_detail', visit_id=v.id) }}"
+                                        class="quick-action qa-view">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fas fa-route fa-3x mb-3 opacity-25"></i>
+                    <p>No visits recorded yet.</p>
+                    <a href="{{ url_for('marketing_visit_new') }}"
+                        class="btn btn-sm btn-primary rounded-pill px-4">Record First Visit</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    const COLORS = {
+        new: '#2563eb', follow_up: '#d97706', converted: '#059669', lost: '#dc2626'
+    };
+    const LABELS = {
+        new: 'New Lead', follow_up: 'Follow Up', converted: 'Converted', lost: 'Lost'
+    };
+
+    fetch('/marketing/insights/api/charts')
+        .then(r => r.json())
+        .then(data => {
+            // Line chart – visits per day
+            const days = data.daily_visits.map(d => d.day);
+            const counts = data.daily_visits.map(d => d.count);
+            new Chart(document.getElementById('visitsLineChart'), {
+                type: 'line',
+                data: {
+                    labels: days.length ? days : ['No data'],
+                    datasets: [{
+                        label: 'Visits',
+                        data: counts.length ? counts : [0],
+                        borderColor: '#7c3aed',
+                        backgroundColor: 'rgba(124,58,237,0.08)',
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#7c3aed',
+                        pointRadius: 4,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.04)' } },
+                        x: { grid: { display: false }, ticks: { maxRotation: 0, font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Doughnut – status breakdown
+            const statusKeys = Object.keys(data.status_breakdown);
+            const statusVals = Object.values(data.status_breakdown);
+            const doughnut = new Chart(document.getElementById('statusDoughnut'), {
+                type: 'doughnut',
+                data: {
+                    labels: statusKeys.map(k => LABELS[k] || k),
+                    datasets: [{
+                        data: statusVals.length ? statusVals : [1],
+                        backgroundColor: statusKeys.length ? statusKeys.map(k => COLORS[k] || '#9ca3af') : ['#e5e7eb'],
+                        borderWidth: 0, hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true, cutout: '68%',
+                    plugins: {
+                        legend: { display: false }, tooltip: {
+                            callbacks: {
+                                label: ctx => ` ${ctx.label}: ${ctx.parsed}`
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Legend
+            const legend = document.getElementById('statusLegend');
+            statusKeys.forEach((k, i) => {
+                legend.innerHTML += `<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;font-weight:600;color:#374151;">
+        <span style="width:9px;height:9px;border-radius:50%;background:${COLORS[k] || '#9ca3af'};display:inline-block;"></span>
+        ${LABELS[k] || k} (${statusVals[i]})
+      </span>`;
+            });
+
+            // Bar – follow-up
+            const fuKeys = Object.keys(data.followup_breakdown);
+            const fuVals = Object.values(data.followup_breakdown);
+            const fuColors = { pending: '#fbbf24', done: '#10b981', skipped: '#6b7280' };
+            new Chart(document.getElementById('followupBar'), {
+                type: 'bar',
+                data: {
+                    labels: fuKeys.length ? fuKeys.map(k => k.charAt(0).toUpperCase() + k.slice(1)) : ['No data'],
+                    datasets: [{
+                        label: 'Follow-Ups',
+                        data: fuVals.length ? fuVals : [0],
+                        backgroundColor: fuKeys.length ? fuKeys.map(k => fuColors[k] || '#a78bfa') : ['#e5e7eb'],
+                        borderRadius: 8, borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.04)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        })
+        .catch(err => console.error('Chart data error:', err));
+</script>
+{% endblock %}

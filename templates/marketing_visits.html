@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block title %}Sales Visits — CRM Delivery{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-bar {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .visit-table th {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #6b7280;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .visit-table td {
+        vertical-align: middle;
+        font-size: 0.87rem;
+    }
+
+    .visit-table tr:hover {
+        background: #f9fafb;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .pill-new {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .pill-follow_up {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .pill-converted {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .pill-lost {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all .15s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-view {
+        background: #ede9fe;
+        color: #5b21b6;
+    }
+
+    .btn-view:hover {
+        background: #5b21b6;
+        color: #fff;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #1e1b4b, #2563eb);
+        border-radius: 16px;
+        padding: 1.5rem 2rem;
+        color: #fff;
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="col-12">
+    <!-- Page Header -->
+    <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h3 class="mb-0 fw-black"><i class="fas fa-shoe-prints me-2"></i>Sales Visits</h3>
+            <p class="mb-0 opacity-75 small">All prospect visits and pitch records</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('marketing_insights') }}"
+                class="btn btn-outline-light btn-sm px-4 rounded-pill fw-bold">
+                <i class="fas fa-chart-pie me-1"></i> Insights
+            </a>
+            <a href="{{ url_for('marketing_visit_new') }}" class="btn btn-light btn-sm px-4 rounded-pill fw-bold">
+                <i class="fas fa-plus me-1"></i> New Visit
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-12 col-md-6">
+                <label class="form-label small fw-semibold mb-1">Search Company / Contact / City</label>
+                <div class="position-relative">
+                    <i class="fas fa-search position-absolute"
+                        style="left:12px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:0.8rem;"></i>
+                    <input type="text" name="search" value="{{ search }}" class="form-control ps-4"
+                        placeholder="Type to search...">
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <label class="form-label small fw-semibold mb-1">Status</label>
+                <select name="status" class="form-select">
+                    <option value="" {% if not status_filter %}selected{% endif %}>All Statuses</option>
+                    <option value="new" {% if status_filter=='new' %}selected{% endif %}>New Lead</option>
+                    <option value="follow_up" {% if status_filter=='follow_up' %}selected{% endif %}>Follow Up</option>
+                    <option value="converted" {% if status_filter=='converted' %}selected{% endif %}>Converted</option>
+                    <option value="lost" {% if status_filter=='lost' %}selected{% endif %}>Lost</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-3">
+                <button type="submit" class="btn btn-primary w-100 fw-bold">Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Visits Table -->
+    <div class="card border-0 shadow-sm" style="border-radius:16px;overflow:hidden;">
+        <div class="card-body p-0">
+            {% if visits %}
+            <div class="table-responsive">
+                <table class="table table-borderless visit-table mb-0">
+                    <thead style="background:#f9fafb;">
+                        <tr>
+                            <th class="ps-4">Company / Contact</th>
+                            <th>City / State</th>
+                            <th>Covered Area</th>
+                            <th>Current Courier</th>
+                            <th>Load Freq.</th>
+                            <th>Desired Price</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th class="pe-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for v in visits %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-semibold">{{ v.company_name or v.contact_name }}</div>
+                                <div class="text-muted" style="font-size:0.75rem;">
+                                    <i class="fas fa-user me-1"></i>{{ v.contact_name }}
+                                    {% if v.contact_phone %} · {{ v.contact_phone }}{% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div>{{ v.company_city or '—' }}</div>
+                                <div class="text-muted" style="font-size:0.75rem;">{{ v.company_state or '' }}</div>
+                            </td>
+                            <td>{{ v.covered_area or '—' }}</td>
+                            <td>{{ v.current_courier or '—' }}</td>
+                            <td>{{ v.load_frequency or '—' }}</td>
+                            <td>{{ v.desired_price or '—' }}</td>
+                            <td><span class="status-pill pill-{{ v.status }}">{{ v.status | replace('_',' ') }}</span>
+                            </td>
+                            <td style="font-size:0.78rem;color:#6b7280;">{{ v.visit_date.strftime('%d %b %Y') if
+                                v.visit_date else '—' }}</td>
+                            <td class="pe-4 text-end">
+                                <a href="{{ url_for('marketing_visit_detail', visit_id=v.id) }}"
+                                    class="action-btn btn-view">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-route fa-3x mb-3 opacity-25"></i>
+                <p class="mb-2">No visits found{% if search %} for "{{ search }}"{% endif %}.</p>
+                <a href="{{ url_for('marketing_visit_new') }}" class="btn btn-primary btn-sm rounded-pill px-4">
+                    <i class="fas fa-plus me-1"></i> Record First Visit
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

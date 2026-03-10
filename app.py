@@ -28,7 +28,7 @@ from models import (
     db, init_db, User, Branch, Client, Order, ReceiptSetting,
     TrackingUpdate, ExcelUpload, ExcelData, SystemSettings,
     DefaultStatePrice, ClientStatePrice, NormalClientStatePrice, Notification, StaffReceiptAssignment, Receiver,
-    BillingPattern
+    BillingPattern, SalesVisit, FollowUp, Meeting
 )
 
 app = Flask(__name__)
@@ -3731,6 +3731,234 @@ def scan_document():
     except Exception as e:
         print(f"AI Scan Error: {str(e)}")
         return jsonify({'error': f"Failed to process document: {str(e)}"}), 500
+
+
+# ============== MARKETING / SALES INSIGHTS ==============
+
+@app.route('/marketing/insights')
+@login_required
+@staff_required
+def marketing_insights():
+    from sqlalchemy import func
+    total_visits = SalesVisit.query.count()
+    follow_ups_due = FollowUp.query.filter_by(status='pending').count()
+    today = datetime.utcnow().date()
+    meetings_today = Meeting.query.filter(
+        db.func.date(Meeting.scheduled_at) == today,
+        Meeting.status == 'scheduled'
+    ).count()
+    conversions = SalesVisit.query.filter_by(status='converted').count()
+    recent_visits = SalesVisit.query.order_by(SalesVisit.created_at.desc()).limit(8).all()
+    return render_template('marketing_insights.html',
+        total_visits=total_visits,
+        follow_ups_due=follow_ups_due,
+        meetings_today=meetings_today,
+        conversions=conversions,
+        recent_visits=recent_visits
+    )
+
+
+@app.route('/marketing/insights/api/charts')
+@login_required
+@staff_required
+def marketing_charts_api():
+    from sqlalchemy import func
+    # Visits per day (last 30 days)
+    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    daily_visits = db.session.query(
+        db.func.date(SalesVisit.created_at).label('day'),
+        db.func.count(SalesVisit.id).label('count')
+    ).filter(SalesVisit.created_at >= thirty_days_ago)\
+     .group_by(db.func.date(SalesVisit.created_at))\
+     .order_by('day').all()
+
+    # Status breakdown
+    status_counts = db.session.query(
+        SalesVisit.status,
+        db.func.count(SalesVisit.id)
+    ).group_by(SalesVisit.status).all()
+
+    # Follow-up status breakdown
+    followup_counts = db.session.query(
+        FollowUp.status,
+        db.func.count(FollowUp.id)
+    ).group_by(FollowUp.status).all()
+
+    return jsonify({
+        'daily_visits': [{'day': str(r.day), 'count': r.count} for r in daily_visits],
+        'status_breakdown': {r[0]: r[1] for r in status_counts},
+        'followup_breakdown': {r[0]: r[1] for r in followup_counts}
+    })
+
+
+@app.route('/marketing/visits')
+@login_required
+@staff_required
+def marketing_visits():
+    status_filter = request.args.get('status', '')
+    search = request.args.get('search', '')
+    query = SalesVisit.query
+    if status_filter:
+        query = query.filter_by(status=status_filter)
+    if search:
+        query = query.filter(
+            (SalesVisit.contact_name.ilike(f'%{search}%')) |
+            (SalesVisit.company_name.ilike(f'%{search}%')) |
+            (SalesVisit.company_city.ilike(f'%{search}%'))
+        )
+    visits = query.order_by(SalesVisit.created_at.desc()).all()
+    return render_template('marketing_visits.html', visits=visits,
+                           status_filter=status_filter, search=search)
+
+
+@app.route('/marketing/visits/new', methods=['GET', 'POST'])
+@login_required
+@staff_required
+def marketing_visit_new():
+    if request.method == 'POST':
+        visit = SalesVisit(
+            contact_name=request.form.get('contact_name'),
+            contact_phone=request.form.get('contact_phone'),
+            contact_email=request.form.get('contact_email'),
+            contact_designation=request.form.get('contact_designation'),
+            company_name=request.form.get('company_name'),
+            company_address=request.form.get('company_address'),
+            company_city=request.form.get('company_city'),
+            company_state=request.form.get('company_state'),
+            covered_area=request.form.get('covered_area'),
+            load_frequency=request.form.get('load_frequency'),
+            load_capacity=request.form.get('load_capacity'),
+            current_courier=request.form.get('current_courier'),
+            price_cert=request.form.get('price_cert'),
+            desired_price=request.form.get('desired_price'),
+            pitch_notes=request.form.get('pitch_notes'),
+            status=request.form.get('status', 'new'),
+            visit_date=datetime.utcnow(),
+            created_by=current_user.id
+        )
+        db.session.add(visit)
+        db.session.commit()
+        flash('New visit / pitch recorded successfully!', 'success')
+        return redirect(url_for('marketing_visit_detail', visit_id=visit.id))
+    return render_template('marketing_visit_form.html', visit=None)
+
+
+@app.route('/marketing/visits/<int:visit_id>')
+@login_required
+@staff_required
+def marketing_visit_detail(visit_id):
+    visit = SalesVisit.query.get_or_404(visit_id)
+    return render_template('marketing_visit_detail.html', visit=visit)
+
+
+@app.route('/marketing/visits/<int:visit_id>/edit', methods=['GET', 'POST'])
+@login_required
+@staff_required
+def marketing_visit_edit(visit_id):
+    visit = SalesVisit.query.get_or_404(visit_id)
+    if request.method == 'POST':
+        visit.contact_name = request.form.get('contact_name')
+        visit.contact_phone = request.form.get('contact_phone')
+        visit.contact_email = request.form.get('contact_email')
+        visit.contact_designation = request.form.get('contact_designation')
+        visit.company_name = request.form.get('company_name')
+        visit.company_address = request.form.get('company_address')
+        visit.company_city = request.form.get('company_city')
+        visit.company_state = request.form.get('company_state')
+        visit.covered_area = request.form.get('covered_area')
+        visit.load_frequency = request.form.get('load_frequency')
+        visit.load_capacity = request.form.get('load_capacity')
+        visit.current_courier = request.form.get('current_courier')
+        visit.price_cert = request.form.get('price_cert')
+        visit.desired_price = request.form.get('desired_price')
+        visit.pitch_notes = request.form.get('pitch_notes')
+        visit.status = request.form.get('status', visit.status)
+        db.session.commit()
+        flash('Visit updated successfully!', 'success')
+        return redirect(url_for('marketing_visit_detail', visit_id=visit.id))
+    return render_template('marketing_visit_form.html', visit=visit)
+
+
+@app.route('/marketing/visits/<int:visit_id>/follow-up', methods=['POST'])
+@login_required
+@staff_required
+def marketing_add_followup(visit_id):
+    visit = SalesVisit.query.get_or_404(visit_id)
+    notes = request.form.get('notes', '').strip()
+    follow_up_date_str = request.form.get('follow_up_date')
+    if not notes:
+        flash('Follow-up notes are required.', 'error')
+        return redirect(url_for('marketing_visit_detail', visit_id=visit_id))
+    follow_up = FollowUp(
+        visit_id=visit.id,
+        notes=notes,
+        follow_up_date=datetime.strptime(follow_up_date_str, '%Y-%m-%dT%H:%M') if follow_up_date_str else None,
+        status='pending',
+        created_by=current_user.id
+    )
+    db.session.add(follow_up)
+    # Update visit status to follow_up if it was 'new'
+    if visit.status == 'new':
+        visit.status = 'follow_up'
+    db.session.commit()
+    flash('Follow-up added successfully!', 'success')
+    return redirect(url_for('marketing_visit_detail', visit_id=visit_id))
+
+
+@app.route('/marketing/visits/<int:visit_id>/followup/<int:fu_id>/done', methods=['POST'])
+@login_required
+@staff_required
+def marketing_followup_done(visit_id, fu_id):
+    fu = FollowUp.query.get_or_404(fu_id)
+    fu.status = 'done'
+    db.session.commit()
+    flash('Follow-up marked as done.', 'success')
+    return redirect(url_for('marketing_visit_detail', visit_id=visit_id))
+
+
+@app.route('/marketing/visits/<int:visit_id>/meeting', methods=['POST'])
+@login_required
+@staff_required
+def marketing_schedule_meeting(visit_id):
+    visit = SalesVisit.query.get_or_404(visit_id)
+    scheduled_str = request.form.get('scheduled_at')
+    if not scheduled_str:
+        flash('Meeting date/time is required.', 'error')
+        return redirect(url_for('marketing_visit_detail', visit_id=visit_id))
+    # Check if rescheduling an existing meeting
+    existing_meeting_id = request.form.get('reschedule_meeting_id')
+    if existing_meeting_id:
+        meeting = Meeting.query.get_or_404(int(existing_meeting_id))
+        meeting.rescheduled_at = datetime.strptime(scheduled_str, '%Y-%m-%dT%H:%M')
+        meeting.status = 'rescheduled'
+        meeting.notes = request.form.get('notes', meeting.notes)
+        flash('Meeting rescheduled successfully!', 'success')
+    else:
+        meeting = Meeting(
+            visit_id=visit.id,
+            scheduled_at=datetime.strptime(scheduled_str, '%Y-%m-%dT%H:%M'),
+            location=request.form.get('location'),
+            notes=request.form.get('notes'),
+            status='scheduled',
+            created_by=current_user.id
+        )
+        db.session.add(meeting)
+        flash('Meeting scheduled successfully!', 'success')
+    db.session.commit()
+    return redirect(url_for('marketing_visit_detail', visit_id=visit_id))
+
+
+@app.route('/marketing/visits/<int:visit_id>/status', methods=['POST'])
+@login_required
+@staff_required
+def marketing_update_status(visit_id):
+    visit = SalesVisit.query.get_or_404(visit_id)
+    new_status = request.form.get('status')
+    if new_status in ['new', 'follow_up', 'converted', 'lost']:
+        visit.status = new_status
+        db.session.commit()
+        flash(f'Status updated to {new_status.replace("_", " ").title()}.', 'success')
+    return redirect(url_for('marketing_visit_detail', visit_id=visit_id))
 
 
 # ============== RUN APP ==============

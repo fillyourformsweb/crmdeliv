@@ -162,9 +162,21 @@
                 <span>RTO / Returns</span>
             </a>
 
+            <div class="sidebar-heading mt-4">Marketing &amp; Sales</div>
+            <a href="{{ url_for('marketing_insights') }}"
+                class="sidebar-link {{ 'active' if request.endpoint == 'marketing_insights' }}">
+                <i class="fas fa-bullseye"></i>
+                <span>Insights</span>
+            </a>
+            <a href="{{ url_for('marketing_visits') }}"
+                class="sidebar-link {{ 'active' if request.endpoint in ['marketing_visits', 'marketing_visit_new', 'marketing_visit_detail', 'marketing_visit_edit'] }}">
+                <i class="fas fa-shoe-prints"></i>
+                <span>Sales Visits</span>
+            </a>
+
             {% if current_user.role in ['admin', 'manager'] %}
 
-            <div class="sidebar-heading mt-4">Finance & Analytics</div>
+            <div class="sidebar-heading mt-4">Finance &amp; Analytics</div>
             <a href="{{ url_for('detailed_reports') }}"
                 class="sidebar-link {{ 'active' if request.endpoint == 'detailed_reports' }}">
                 <i class="fas fa-chart-pie"></i>

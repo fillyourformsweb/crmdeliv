@@ -422,6 +422,73 @@ class SystemSettings(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+class SalesVisit(db.Model):
+    __tablename__ = 'sales_visits'
+
+    id = db.Column(db.Integer, primary_key=True)
+    # Contact Details
+    contact_name = db.Column(db.String(100), nullable=False)
+    contact_phone = db.Column(db.String(20))
+    contact_email = db.Column(db.String(120))
+    contact_designation = db.Column(db.String(100))
+    # Company Details
+    company_name = db.Column(db.String(150))
+    company_address = db.Column(db.String(300))
+    company_city = db.Column(db.String(100))
+    company_state = db.Column(db.String(100))
+    # Courier & Business Details
+    covered_area = db.Column(db.String(200))          # Geographic area covered
+    load_frequency = db.Column(db.String(100))         # Daily/Weekly/Monthly
+    load_capacity = db.Column(db.String(100))          # Estimated shipment volume
+    current_courier = db.Column(db.String(150))        # Which courier they use now
+    price_cert = db.Column(db.String(200))             # Price certification details
+    desired_price = db.Column(db.String(100))          # Client's desired price
+    # Pitch & Status
+    pitch_notes = db.Column(db.Text)
+    status = db.Column(db.String(30), default='new')   # new, follow_up, converted, lost
+    visit_date = db.Column(db.DateTime, default=datetime.utcnow)
+    # Meta
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    creator = db.relationship('User', foreign_keys=[created_by], backref='sales_visits')
+    follow_ups = db.relationship('FollowUp', back_populates='visit', cascade='all, delete-orphan', order_by='FollowUp.created_at')
+    meetings = db.relationship('Meeting', back_populates='visit', cascade='all, delete-orphan', order_by='Meeting.scheduled_at')
+
+
+class FollowUp(db.Model):
+    __tablename__ = 'follow_ups'
+
+    id = db.Column(db.Integer, primary_key=True)
+    visit_id = db.Column(db.Integer, db.ForeignKey('sales_visits.id'), nullable=False)
+    notes = db.Column(db.Text, nullable=False)
+    follow_up_date = db.Column(db.DateTime)             # Next scheduled follow-up date
+    status = db.Column(db.String(20), default='pending')  # pending, done, skipped
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    visit = db.relationship('SalesVisit', back_populates='follow_ups')
+    creator = db.relationship('User', foreign_keys=[created_by])
+
+
+class Meeting(db.Model):
+    __tablename__ = 'meetings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    visit_id = db.Column(db.Integer, db.ForeignKey('sales_visits.id'), nullable=False)
+    scheduled_at = db.Column(db.DateTime, nullable=False)
+    rescheduled_at = db.Column(db.DateTime)             # New datetime if rescheduled
+    location = db.Column(db.String(200))
+    notes = db.Column(db.Text)
+    status = db.Column(db.String(20), default='scheduled')  # scheduled, completed, cancelled, rescheduled
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    visit = db.relationship('SalesVisit', back_populates='meetings')
+    creator = db.relationship('User', foreign_keys=[created_by])
+
+
 def init_db(app):
     import os
     # Ensure the instance folder exists so SQLite can create the DB file

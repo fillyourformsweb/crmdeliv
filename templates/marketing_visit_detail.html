@@ -1,0 +1,508 @@
+{% extends "base.html" %}
+{% block title %}{{ visit.company_name or visit.contact_name }} — Visit Detail{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-hero {
+        background: linear-gradient(135deg, #1e1b4b, #1e40af);
+        border-radius: 18px;
+        padding: 2rem;
+        color: #fff;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .section-header {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #6b7280;
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .section-header i {
+        font-size: 0.9rem;
+    }
+
+    .info-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .info-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        min-width: 130px;
+    }
+
+    .info-value {
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: #111827;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .pill-new {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .pill-follow_up {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .pill-converted {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .pill-lost {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .timeline {
+        position: relative;
+        padding-left: 1.5rem;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e5e7eb;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 1.25rem;
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: -1.5rem;
+        top: 4px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 2px currentColor;
+    }
+
+    .tl-pending {
+        color: #f59e0b;
+    }
+
+    .tl-done {
+        color: #10b981;
+    }
+
+    .tl-skipped {
+        color: #6b7280;
+    }
+
+    .tl-scheduled {
+        color: #3b82f6;
+    }
+
+    .tl-rescheduled {
+        color: #8b5cf6;
+    }
+
+    .tl-completed {
+        color: #10b981;
+    }
+
+    .tl-cancelled {
+        color: #ef4444;
+    }
+
+    .timeline-body {
+        background: #f9fafb;
+        border-radius: 10px;
+        padding: 0.9rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .timeline-meta {
+        font-size: 0.72rem;
+        color: #9ca3af;
+        margin-top: 4px;
+    }
+
+    .pitch-box {
+        background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+    }
+
+    .courier-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media(max-width:576px) {
+        .courier-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .courier-tile {
+        background: #f9fafb;
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+    }
+
+    .courier-tile .tile-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #9ca3af;
+    }
+
+    .courier-tile .tile-value {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #111827;
+        margin-top: 2px;
+    }
+
+    .form-card {
+        background: #f9fafb;
+        border-radius: 14px;
+        padding: 1.25rem;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .mtg-badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 20px;
+        text-transform: uppercase;
+    }
+
+    .status-change-form .btn {
+        font-size: 0.75rem;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="col-12">
+    <!-- Breadcrumb -->
+    <nav class="mb-3" style="font-size:0.82rem;">
+        <a href="{{ url_for('marketing_insights') }}" class="text-decoration-none text-muted">Insights</a>
+        <span class="mx-2 text-muted">/</span>
+        <a href="{{ url_for('marketing_visits') }}" class="text-decoration-none text-muted">Visits</a>
+        <span class="mx-2 text-muted">/</span>
+        <span class="fw-semibold">{{ visit.company_name or visit.contact_name }}</span>
+    </nav>
+
+    <!-- Hero -->
+    <div class="detail-hero">
+        <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-3 mb-1">
+                    <div
+                        style="background:rgba(255,255,255,0.18);border-radius:12px;padding:10px 14px;font-size:1.4rem;">
+                        🏢</div>
+                    <div>
+                        <h3 class="mb-0 fw-black">{{ visit.company_name or visit.contact_name }}</h3>
+                        <p class="mb-0 opacity-75 small">{{ visit.contact_name }}{% if visit.contact_designation %} · {{
+                            visit.contact_designation }}{% endif %} · {{ visit.company_city or '' }} {{
+                            visit.company_state or '' }}</p>
+                    </div>
+                </div>
+                <span class="status-pill pill-{{ visit.status }} mt-2" style="border:2px solid rgba(255,255,255,0.3);">
+                    {{ visit.status | replace('_', ' ') }}
+                </span>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{{ url_for('marketing_visit_edit', visit_id=visit.id) }}"
+                    class="btn btn-light btn-sm px-3 rounded-pill fw-bold">
+                    <i class="fas fa-edit me-1"></i> Edit Visit
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Left Column -->
+        <div class="col-12 col-lg-7">
+            <!-- Contact Details -->
+            <div class="section-card">
+                <div class="section-header"><i class="fas fa-user-tie" style="color:#7c3aed;"></i> Contact Details</div>
+                <div class="info-row"><span class="info-label">Name</span><span class="info-value">{{ visit.contact_name
+                        }}</span></div>
+                <div class="info-row"><span class="info-label">Designation</span><span class="info-value">{{
+                        visit.contact_designation or '—' }}</span></div>
+                <div class="info-row"><span class="info-label">Phone</span><span class="info-value">
+                        {% if visit.contact_phone %}<a href="tel:{{ visit.contact_phone }}"
+                            class="text-decoration-none">{{ visit.contact_phone }}</a>{% else %}—{% endif %}
+                    </span></div>
+                <div class="info-row"><span class="info-label">Email</span><span class="info-value">
+                        {% if visit.contact_email %}<a href="mailto:{{ visit.contact_email }}"
+                            class="text-decoration-none">{{ visit.contact_email }}</a>{% else %}—{% endif %}
+                    </span></div>
+                <div class="info-row"><span class="info-label">Company</span><span class="info-value">{{
+                        visit.company_name or '—' }}</span></div>
+                <div class="info-row"><span class="info-label">Address</span><span class="info-value">{{
+                        visit.company_address or '—' }}</span></div>
+                <div class="info-row"><span class="info-label">City / State</span><span class="info-value">{{
+                        visit.company_city or '—' }}{% if visit.company_state %}, {{ visit.company_state }}{% endif
+                        %}</span></div>
+                <div class="info-row"><span class="info-label">Visit Date</span><span class="info-value">{{
+                        visit.visit_date.strftime('%d %b %Y, %I:%M %p') if visit.visit_date else '—' }}</span></div>
+            </div>
+
+            <!-- Courier & Business Info -->
+            <div class="section-card">
+                <div class="section-header"><i class="fas fa-truck" style="color:#2563eb;"></i> Courier &amp; Business
+                    Details</div>
+                <div class="courier-grid">
+                    <div class="courier-tile">
+                        <div class="tile-label">📍 Covered Area</div>
+                        <div class="tile-value">{{ visit.covered_area or '—' }}</div>
+                    </div>
+                    <div class="courier-tile">
+                        <div class="tile-label">📦 Load Frequency</div>
+                        <div class="tile-value">{{ visit.load_frequency or '—' }}</div>
+                    </div>
+                    <div class="courier-tile">
+                        <div class="tile-label">⚖️ Load Capacity</div>
+                        <div class="tile-value">{{ visit.load_capacity or '—' }}</div>
+                    </div>
+                    <div class="courier-tile">
+                        <div class="tile-label">🚚 Current Courier</div>
+                        <div class="tile-value">{{ visit.current_courier or '—' }}</div>
+                    </div>
+                    <div class="courier-tile">
+                        <div class="tile-label">📜 Price Certificate</div>
+                        <div class="tile-value">{{ visit.price_cert or '—' }}</div>
+                    </div>
+                    <div class="courier-tile" style="background:linear-gradient(135deg,#d1fae5,#dcfce7);">
+                        <div class="tile-label">💰 Desired Price</div>
+                        <div class="tile-value" style="color:#065f46;">{{ visit.desired_price or '—' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pitch Notes -->
+            <div class="section-card">
+                <div class="section-header"><i class="fas fa-file-alt" style="color:#d97706;"></i> Pitch Notes</div>
+                {% if visit.pitch_notes %}
+                <div class="pitch-box">
+                    <p class="mb-0" style="font-size:0.9rem;white-space:pre-line;">{{ visit.pitch_notes }}</p>
+                </div>
+                {% else %}
+                <p class="text-muted small mb-0 fst-italic">No pitch notes recorded.</p>
+                {% endif %}
+            </div>
+
+            <!-- Update Status -->
+            <div class="section-card status-change-form">
+                <div class="section-header"><i class="fas fa-exchange-alt" style="color:#059669;"></i> Update Pipeline
+                    Status</div>
+                <form method="POST" action="{{ url_for('marketing_update_status', visit_id=visit.id) }}"
+                    class="d-flex gap-2 flex-wrap">
+                    {% for s, label in [('new','New Lead'),('follow_up','Follow
+                    Up'),('converted','Converted'),('lost','Lost')] %}
+                    <button type="submit" name="status" value="{{ s }}"
+                        class="btn btn-sm {% if visit.status == s %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                        {{ label }}
+                    </button>
+                    {% endfor %}
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-12 col-lg-5">
+            <!-- Follow-Up Section -->
+            <div class="section-card">
+                <div class="section-header"><i class="fas fa-bell" style="color:#d97706;"></i> Follow-Ups
+                    <span class="ms-auto badge" style="background:#fef3c7;color:#92400e;">{{ visit.follow_ups|length
+                        }}</span>
+                </div>
+
+                <!-- Timeline -->
+                {% if visit.follow_ups %}
+                <div class="timeline mb-3">
+                    {% for fu in visit.follow_ups %}
+                    <div class="timeline-item">
+                        <div class="timeline-dot tl-{{ fu.status }}" style="background:currentColor;"></div>
+                        <div class="timeline-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <p class="mb-1">{{ fu.notes }}</p>
+                                {% if fu.status == 'pending' %}
+                                <form method="POST"
+                                    action="{{ url_for('marketing_followup_done', visit_id=visit.id, fu_id=fu.id) }}"
+                                    class="ms-2">
+                                    <button type="submit" class="btn btn-sm"
+                                        style="background:#d1fae5;color:#065f46;font-size:0.7rem;padding:2px 8px;border-radius:6px;font-weight:700;">✓
+                                        Done</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                            <div class="timeline-meta">
+                                <span class="badge tl-{{ fu.status }}"
+                                    style="background:currentColor;color:#fff;font-size:0.65rem;">{{ fu.status }}</span>
+                                {% if fu.follow_up_date %} · Next: <strong>{{ fu.follow_up_date.strftime('%d %b %Y')
+                                    }}</strong>{% endif %}
+                                · {{ fu.created_at.strftime('%d %b %Y') }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted small fst-italic mb-3">No follow-ups yet.</p>
+                {% endif %}
+
+                <!-- Add Follow-Up Form -->
+                <div class="form-card">
+                    <div style="font-size:0.78rem;font-weight:700;color:#374151;margin-bottom:0.75rem;">Add Follow-Up
+                    </div>
+                    <form method="POST" action="{{ url_for('marketing_add_followup', visit_id=visit.id) }}">
+                        <div class="mb-2">
+                            <textarea name="notes" class="form-control" rows="2" placeholder="Follow-up notes..."
+                                required style="font-size:0.85rem;resize:none;"></textarea>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label"
+                                style="font-size:0.75rem;color:#6b7280;font-weight:600;margin-bottom:3px;">Next
+                                Follow-Up Date (optional)</label>
+                            <input type="datetime-local" name="follow_up_date" class="form-control"
+                                style="font-size:0.85rem;">
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-sm w-100 fw-bold rounded-pill">
+                            <i class="fas fa-plus me-1"></i> Add Follow-Up
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Meetings Section -->
+            <div class="section-card">
+                <div class="section-header"><i class="fas fa-calendar-alt" style="color:#2563eb;"></i> Meetings
+                    <span class="ms-auto badge" style="background:#dbeafe;color:#1d4ed8;">{{ visit.meetings|length
+                        }}</span>
+                </div>
+
+                {% if visit.meetings %}
+                <div class="timeline mb-3">
+                    {% for m in visit.meetings %}
+                    <div class="timeline-item">
+                        <div class="timeline-dot tl-{{ m.status }}" style="background:currentColor;"></div>
+                        <div class="timeline-body">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-1">
+                                <div>
+                                    <strong style="font-size:0.88rem;">{{ m.scheduled_at.strftime('%d %b %Y, %I:%M %p')
+                                        }}</strong>
+                                    {% if m.rescheduled_at %}
+                                    <span class="ms-2 text-muted"
+                                        style="font-size:0.78rem;text-decoration:line-through;">→ {{
+                                        m.rescheduled_at.strftime('%d %b %Y, %I:%M %p') }}</span>
+                                    {% endif %}
+                                </div>
+                                <span class="mtg-badge tl-{{ m.status }}" style="background:currentColor;color:#fff;">{{
+                                    m.status }}</span>
+                            </div>
+                            {% if m.location %}<div class="text-muted" style="font-size:0.78rem;margin-top:3px;"><i
+                                    class="fas fa-map-marker-alt me-1"></i>{{ m.location }}</div>{% endif %}
+                            {% if m.notes %}<div style="font-size:0.82rem;margin-top:4px;">{{ m.notes }}</div>{% endif
+                            %}
+                            {% if m.status == 'scheduled' %}
+                            <div class="mt-2">
+                                <button class="btn btn-sm"
+                                    style="background:#ede9fe;color:#5b21b6;font-size:0.7rem;font-weight:700;"
+                                    onclick="document.getElementById('reschedule-{{ m.id }}').classList.toggle('d-none')">
+                                    <i class="fas fa-redo me-1"></i>Reschedule
+                                </button>
+                                <div id="reschedule-{{ m.id }}" class="d-none mt-2">
+                                    <form method="POST"
+                                        action="{{ url_for('marketing_schedule_meeting', visit_id=visit.id) }}"
+                                        class="d-flex gap-1">
+                                        <input type="hidden" name="reschedule_meeting_id" value="{{ m.id }}">
+                                        <input type="datetime-local" name="scheduled_at"
+                                            class="form-control form-control-sm" required style="font-size:0.8rem;">
+                                        <button type="submit" class="btn btn-sm btn-primary px-3 fw-bold">Save</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted small fst-italic mb-3">No meetings scheduled yet.</p>
+                {% endif %}
+
+                <!-- Schedule Meeting Form -->
+                <div class="form-card">
+                    <div style="font-size:0.78rem;font-weight:700;color:#374151;margin-bottom:0.75rem;">Schedule New
+                        Meeting</div>
+                    <form method="POST" action="{{ url_for('marketing_schedule_meeting', visit_id=visit.id) }}">
+                        <div class="mb-2">
+                            <label class="form-label"
+                                style="font-size:0.75rem;color:#6b7280;font-weight:600;margin-bottom:3px;">Date &amp;
+                                Time</label>
+                            <input type="datetime-local" name="scheduled_at" class="form-control" required
+                                style="font-size:0.85rem;">
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" name="location" class="form-control" placeholder="Location (optional)"
+                                style="font-size:0.85rem;">
+                        </div>
+                        <div class="mb-2">
+                            <textarea name="notes" class="form-control" rows="2" placeholder="Meeting agenda / notes..."
+                                style="font-size:0.85rem;resize:none;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold rounded-pill">
+                            <i class="fas fa-calendar-plus me-1"></i> Schedule Meeting
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
