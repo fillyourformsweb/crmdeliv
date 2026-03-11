@@ -6,31 +6,31 @@
 <!-- Main Content Column -->
 <div class="col-12">
     <!-- Welcome Hero Section -->
-    <div class="luxury-card mb-5 p-4 p-md-5 text-white position-relative overflow-hidden"
-        style="background: var(--primary-gradient); border: none;">
+    <div class="luxury-card hero-welcome-box mb-5 p-4 p-md-5 position-relative overflow-hidden"
+        style="background: transparent; border: none;">
         <!-- Abstract Background Shapes -->
-        <div class="position-absolute top-0 end-0 p-5 opacity-10"
+        <div class="position-absolute top-0 end-0 p-5 opacity-10 text-dark"
             style="transform: rotate(15deg) translate(20%, -20%);">
             <i class="fas fa-truck-fast display-1"></i>
         </div>
 
         <div class="row align-items-center position-relative z-1">
             <div class="col-md-9">
-                <h5 class="text-uppercase fw-bold opacity-50 mb-2" style="letter-spacing: 1px; font-size: 0.75rem;">
+                <h5 class="text-uppercase fw-bold opacity-50 mb-2 text-dark" style="letter-spacing: 1px; font-size: 0.75rem;">
                     Command Center</h5>
-                <h1 class="display-4 fw-black mb-1">
+                <h1 class="display-4 fw-black mb-1 text-dark">
                     {% set hour = now.hour %}
                     {% if hour < 12 %}Good Morning, {% elif hour < 17 %}Good Afternoon, {% else %}Good Evening,{% endif
                         %} <span class="opacity-75">{{ current_user.username }}</span>
                 </h1>
-                <p class="fs-6 opacity-75 mb-0">Operational overview for <strong>{{ now.strftime('%d %b') }}</strong>.
+                <p class="fs-6 opacity-75 mb-0 text-dark">Operational overview for <strong>{{ now.strftime('%d %b') }}</strong>.
                 </p>
             </div>
             <div class="col-md-3 text-md-end mt-4 mt-md-0 d-none d-md-block">
                 <div
-                    class="d-inline-flex align-items-center px-4 py-2 bg-white bg-opacity-10 rounded-pill backdrop-blur">
-                    <i class="far fa-calendar-alt me-2"></i>
-                    <span class="fw-bold">{{ now.strftime('%A') }}</span>
+                    class="d-inline-flex align-items-center px-4 py-2 bg-dark bg-opacity-10 rounded-pill backdrop-blur text-dark">
+                    <i class="far fa-calendar-alt me-2 text-dark"></i>
+                    <span class="fw-bold text-dark">{{ now.strftime('%A') }}</span>
                 </div>
             </div>
         </div>
