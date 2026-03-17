@@ -1,5 +1,10 @@
 /* Custom Styles for CRM Delivery System */
 
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
 /* Background Gradient Animation */
 body {
     background: linear-gradient(-45deg, #f8f9fa, #e9ecef, #f1f3f5, #f8f9fa);
