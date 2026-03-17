@@ -36,6 +36,7 @@
         border: 1px solid #ffc107;
     }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -48,8 +49,11 @@
             <button onclick="window.print()" class="btn btn-luxury rounded-start-pill px-4">
                 <i class="fas fa-print me-2"></i>Print Invoice
             </button>
-            <button class="btn btn-primary rounded-end-pill px-4">
+            <button onclick="downloadPDF()" class="btn btn-primary px-4">
                 <i class="fas fa-file-pdf me-2"></i>Export PDF
+            </button>
+            <button onclick="shareWhatsApp()" class="btn btn-whatsapp px-4" style="background-color: #25D366; color: white; border-radius: 0 50px 50px 0; border: none;">
+                <i class="fab fa-whatsapp me-2"></i>Share on WhatsApp
             </button>
         </div>
     </div>
@@ -170,7 +174,7 @@
     
     {% if current_user.role == 'admin' and bill.status != 'Paid' %}
     <div class="mt-4 text-center btn-no-print">
-        <button onclick="markPaid({{ bill.id }})" class="btn btn-success px-5 rounded-pill shadow-sm">
+        <button onclick="markPaid(Number('{{ bill.id }}'))" class="btn btn-success px-5 rounded-pill shadow-sm">
             <i class="fas fa-check-circle me-2"></i>Apply Payment Received
         </button>
     </div>
@@ -188,6 +192,25 @@ function markPaid(orderId) {
                 if(data.success) location.reload();
             });
     }
+}
+
+function downloadPDF() {
+    const element = document.querySelector('.invoice-print-container');
+    const opt = {
+        margin:       0.5,
+        filename:     'Invoice_{{ bill.bill_number }}.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(opt).save();
+}
+
+function shareWhatsApp() {
+    const phone = "{{ bill.phone }}";
+    const message = `Hi {{ bill.name }},\n\nYour invoice for #{{ bill.bill_number }} is ready.\n\nTotal Amount: ₹{{ "%.2f"|format(bill.total_amount or 0) }}\nStatus: {{ bill.status|upper }}\n\nThank you for choosing CRM Delivery!`;
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${encodedMessage}`, '_blank');
 }
 </script>
 {% endblock %}

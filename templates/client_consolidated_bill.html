@@ -138,6 +138,7 @@
         font-weight: bold;
     }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -146,9 +147,17 @@
         <a href="{{ url_for('client_orders_due', client_id=client.id) }}" class="btn btn-light rounded-pill px-4">
             <i class="fas fa-arrow-left me-2"></i>Back to Orders
         </a>
-        <button onclick="window.print()" class="btn btn-primary px-4">
-            <i class="fas fa-print me-2"></i>Print Bill
-        </button>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-primary px-4">
+                <i class="fas fa-print me-2"></i>Print Bill
+            </button>
+            <button onclick="downloadPDF()" class="btn btn-luxury px-4">
+                <i class="fas fa-file-pdf me-2"></i>Export PDF
+            </button>
+            <button onclick="shareWhatsApp()" class="btn btn-whatsapp px-4" style="background-color: #25D366; color: white; border: none; border-radius: 50px;">
+                <i class="fab fa-whatsapp me-2"></i>Share on WhatsApp
+            </button>
+        </div>
     </div>
 
     <div class="bill-container">
@@ -343,4 +352,26 @@
         </div>
     </div>
 </div>
+{% block extra_js %}
+<script>
+    function downloadPDF() {
+        const element = document.querySelector('.bill-container');
+        const opt = {
+            margin:       0.5,
+            filename:     'Consolidated_Bill_{{ client.name }}.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().from(element).set(opt).save();
+    }
+
+    function shareWhatsApp() {
+        const phone = "{{ client.phone }}";
+        const message = `Hi {{ client.name }},\n\nYour consolidated bill is ready.\n\nTotal Amount: ₹{{ "%.2f"|format(grand_total_amount) }}\nOutstanding Due: ₹{{ "%.2f"|format(grand_due_amount) }}\n\nThank you for choosing CRM Delivery!`;
+        const encodedMessage = encodeURIComponent(message);
+        window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${encodedMessage}`, '_blank');
+    }
+</script>
+{% endblock %}
 {% endblock %}

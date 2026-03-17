@@ -138,6 +138,7 @@
         font-weight: bold;
     }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -160,8 +161,16 @@
                 <button onclick="window.print()" class="btn btn-primary px-4">
                     <i class="fas fa-print me-2"></i>Print Invoice
                 </button>
-                <button onclick="showPaymentModal()" class="btn btn-success px-4">
+                <button onclick="recordPayment()" class="btn btn-success px-4">
                     <i class="fas fa-rupee-sign me-2"></i>Record Payment
+                </button>
+            </div>
+            <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+                <button onclick="downloadPDF()" class="btn btn-luxury px-4">
+                    <i class="fas fa-file-pdf me-2"></i>Export PDF
+                </button>
+                <button onclick="shareWhatsApp()" class="btn btn-whatsapp px-4" style="background-color: #25D366; color: white; border: none;">
+                    <i class="fab fa-whatsapp me-2"></i>Share on WhatsApp
                 </button>
             </div>
         </div>
@@ -433,6 +442,29 @@
             currentUrl.searchParams.delete('gst');
         }
         window.location.href = currentUrl.toString();
+    }
+
+    function downloadPDF() {
+        const element = document.querySelector('.bill-container');
+        const opt = {
+            margin:       0.5,
+            filename:     'Bill_{{ order.receipt_number }}.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().from(element).set(opt).save();
+    }
+
+    function shareWhatsApp() {
+        const phone = "{{ order.customer_phone }}";
+        const message = `Hi {{ order.customer_name }},\n\nYour bill for Order #{{ order.receipt_number }} is ready.\n\nTotal Amount: ₹{{ "%.2f"|format(order.total_amount) }}\nStatus: {{ order.status|upper }}\n\nYou can track your order here: ${window.location.host}/track/{{ order.tracking_link if order.tracking_link else order.receipt_number }}\n\nThank you for choosing CRM Delivery!`;
+        const encodedMessage = encodeURIComponent(message);
+        window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${encodedMessage}`, '_blank');
+    }
+
+    function recordPayment() {
+        showPaymentModal();
     }
 </script>
 {% endblock %}

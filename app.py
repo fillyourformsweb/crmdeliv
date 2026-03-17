@@ -28,7 +28,7 @@ from models import (
     db, init_db, User, Branch, Client, Order, ReceiptSetting,
     TrackingUpdate, ExcelUpload, ExcelData, SystemSettings,
     DefaultStatePrice, ClientStatePrice, NormalClientStatePrice, Notification, StaffReceiptAssignment, Receiver,
-    BillingPattern, SalesVisit, FollowUp, Meeting
+    BillingPattern, SalesVisit, FollowUp, Meeting, ClientAddress
 )
 
 app = Flask(__name__)
@@ -1010,6 +1010,7 @@ def edit_client_address(id):
             
         address.address_label = request.form.get('address_label')
         address.address = request.form.get('address')
+        address.landmark = request.form.get('landmark')
         address.city = request.form.get('city')
         address.state = request.form.get('state')
         address.pincode = pincode
