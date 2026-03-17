@@ -56,12 +56,34 @@
                                 value="0.00" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Extra Per KG (₹)</label>
-                            <input type="number" step="0.01" class="form-control luxury-input" name="price_extra_per_kg"
-                                value="20.00" required>
+                            <label class="form-label small fw-bold text-uppercase text-muted">3-10 kg Rate (₹/kg)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_3_10kg"
+                                value="0.00" required>
                         </div>
-                        <div class="col-md-8">
-                            <small class="text-muted"><strong>Note:</strong> 2kg = 1kg price × 2 | 3kg = 1kg price × 3 | >3kg = (1kg × 3) + extra per kg</small>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">10-25 kg Rate (₹/kg)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_10_25kg"
+                                value="0.00" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">25-50 kg Rate (₹/kg)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_25_50kg"
+                                value="0.00" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">50-100 kg Rate (₹/kg)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_50_100kg"
+                                value="0.00" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">100+ kg Rate (₹/kg)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_100plus_kg"
+                                value="0.00" required>
+                        </div>
+
+                        <div class="col-md-12">
+                            <small class="text-muted"><strong>Note:</strong> Weights &lt;1kg use fixed prices. Larger weights are charged per kg within their tier.</small>
                         </div>
                     </div>
                 </div>

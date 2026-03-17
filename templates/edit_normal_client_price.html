@@ -55,12 +55,34 @@
                                 value="{{ " %.2f"|format(price.price_1kg) }}" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Extra Per KG (₹)</label>
-                            <input type="number" step="0.01" class="form-control luxury-input" name="price_extra_per_kg"
-                                value="{{ " %.2f"|format(price.price_extra_per_kg or 20) }}" required>
+                            <label class="form-label small fw-bold text-uppercase text-muted">3-10 kg Rate (₹/kg)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_3_10kg"
+                                value="{{ " %.2f"|format(price.price_3_10kg or 0) }}" required>
                         </div>
-                        <div class="col-md-8">
-                            <small class="text-muted"><strong>Note:</strong> 2kg = 1kg × 2 = ₹{{ (price.price_1kg * 2)|int }} | 3kg = 1kg × 3 = ₹{{ (price.price_1kg * 3)|int }}</small>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">10-25 kg Rate (₹/kg)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_10_25kg"
+                                value="{{ " %.2f"|format(price.price_10_25kg or 0) }}" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">25-50 kg Rate (₹/kg)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_25_50kg"
+                                value="{{ " %.2f"|format(price.price_25_50kg or 0) }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">50-100 kg Rate (₹/kg)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_50_100kg"
+                                value="{{ " %.2f"|format(price.price_50_100kg or 0) }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">100+ kg Rate (₹/kg)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_100plus_kg"
+                                value="{{ " %.2f"|format(price.price_100plus_kg or 0) }}" required>
+                        </div>
+
+                        <div class="col-md-12">
+                            <small class="text-muted"><strong>Note:</strong> Small packages (<1kg) use fixed prices. Larger packages: 3-10kg, 10-25kg, 25-50kg, 50-100kg, 100+kg are charged per kg within their tier.</small>
                         </div>
                     </div>
                 </div>

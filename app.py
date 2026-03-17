@@ -2708,7 +2708,12 @@ def add_normal_client_price():
             price_1kg=float(request.form.get('price_1kg', 0)),
             price_2kg=float(request.form.get('price_2kg', 0)),
             price_3kg=float(request.form.get('price_3kg', 0)),
-            price_extra_per_kg=float(request.form.get('price_extra_per_kg', 20))
+            price_extra_per_kg=float(request.form.get('price_extra_per_kg', 20)),
+            price_3_10kg=float(request.form.get('price_3_10kg', 0)),
+            price_10_25kg=float(request.form.get('price_10_25kg', 0)),
+            price_25_50kg=float(request.form.get('price_25_50kg', 0)),
+            price_50_100kg=float(request.form.get('price_50_100kg', 0)),
+            price_100plus_kg=float(request.form.get('price_100plus_kg', 0))
         )
         db.session.add(price)
         db.session.commit()
@@ -2733,6 +2738,11 @@ def edit_normal_client_price(price_id):
         price.price_2kg = float(request.form.get('price_2kg', 0))
         price.price_3kg = float(request.form.get('price_3kg', 0))
         price.price_extra_per_kg = float(request.form.get('price_extra_per_kg', 20))
+        price.price_3_10kg = float(request.form.get('price_3_10kg', 0))
+        price.price_10_25kg = float(request.form.get('price_10_25kg', 0))
+        price.price_25_50kg = float(request.form.get('price_25_50kg', 0))
+        price.price_50_100kg = float(request.form.get('price_50_100kg', 0))
+        price.price_100plus_kg = float(request.form.get('price_100plus_kg', 0))
         
         db.session.commit()
         flash(f'Default client prices for {price.state} updated successfully!', 'success')

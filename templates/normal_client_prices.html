@@ -40,8 +40,11 @@
                                 <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">250g</th>
                                 <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">500g</th>
                                 <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">1kg</th>
-                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">2kg</th>
-                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">3kg</th>
+                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">3-10kg (₹/kg)</th>
+                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">10-25kg (₹/kg)</th>
+                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">25-50kg (₹/kg)</th>
+                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">50-100kg (₹/kg)</th>
+                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">100+kg (₹/kg)</th>
                                 {% if current_user.role == 'admin' %}
                                 <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted text-end">Actions
                                 </th>
@@ -61,8 +64,11 @@
                                 <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_250gm) }}</td>
                                 <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_500gm) }}</td>
                                 <td class="text-center fw-black text-primary">₹{{ "%.2f"|format(price.price_1kg) }}</td>
-                                <td class="text-center fw-bold text-success">₹{{ "%.2f"|format(price.price_1kg * 2) }}</td>
-                                <td class="text-center fw-bold text-success">₹{{ "%.2f"|format(price.price_1kg * 3) }}</td>
+                                <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_3_10kg) }}</td>
+                                <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_10_25kg) }}</td>
+                                <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_25_50kg) }}</td>
+                                <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_50_100kg) }}</td>
+                                <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_100plus_kg) }}</td>
                                 {% if current_user.role == 'admin' %}
                                 <td class="px-4 text-end">
                                     <div class="btn-group">
