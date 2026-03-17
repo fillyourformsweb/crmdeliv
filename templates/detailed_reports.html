@@ -40,17 +40,15 @@
 
 {% block content %}
 <div class="col-12 page-reveal">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="fw-black text-primary mb-1">ANALYTICS SUITE</h1>
-            <p class="text-muted">Enterprise-grade logistics and financial reporting</p>
-        </div>
+    <div class="mb-4">
+        <h1 class="fw-black text-primary mb-1">ANALYTICS SUITE</h1>
+        <p class="text-muted mb-3">Enterprise-grade logistics and financial reporting</p>
         <div class="d-flex gap-2">
-            <button class="btn btn-luxury px-4 rounded-pill" onclick="generateReport()">
-                <i class="fas fa-file-pdf me-2"></i>Generate PDF
+            <button class="btn btn-luxury flex-fill" onclick="generateReport()" style="border-radius:10px;">
+                <i class="fas fa-file-pdf me-1"></i> Generate PDF
             </button>
-            <button class="btn btn-primary px-4 rounded-pill" onclick="exportReport()">
-                <i class="fas fa-download me-2"></i>Export Dataset
+            <button class="btn btn-primary flex-fill" onclick="exportReport()" style="border-radius:10px;">
+                <i class="fas fa-download me-1"></i> Export Dataset
             </button>
         </div>
     </div>
