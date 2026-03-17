@@ -66,8 +66,8 @@
                             <div class="col-md-3">
                                 <label class="form-label small fw-bold">Sort By</label>
                                 <select id="sortField" class="form-select form-select-sm">
-                                    <option value="total_spent" selected>Total Value (Highest First)</option>
-                                    <option value="last_order_date">Last Order (Recent First)</option>
+                                    <option value="last_order_date" selected>Last Order (Recent First)</option>
+                                    <option value="total_spent">Total Value (Highest First)</option>
                                     <option value="total_orders">Order Count (Highest First)</option>
                                     <option value="name">Name (A-Z)</option>
                                 </select>
@@ -249,7 +249,7 @@
 
     resetBtn.addEventListener('click', () => {
         searchInput.value = '';
-        sortFieldSelect.value = 'total_spent';
+        sortFieldSelect.value = 'last_order_date';
         cityFilterSelect.value = '';
         stateFilterSelect.value = '';
         applyFilters();

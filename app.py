@@ -514,7 +514,7 @@ def customers():
             if order.created_at > customers_dict[key]['last_order_date']:
                 customers_dict[key]['last_order_date'] = order.created_at
     
-    customers_list = sorted(customers_dict.values(), key=lambda x: x['total_spent'], reverse=True)
+    customers_list = sorted(customers_dict.values(), key=lambda x: x['last_order_date'], reverse=True)
     
     cities = sorted(list(set(c['city'] for c in customers_list if c.get('city'))))
     states = sorted(list(set(c['state'] for c in customers_list if c.get('state'))))

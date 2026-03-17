@@ -20,7 +20,7 @@
     {% if current_user.is_authenticated %}
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark luxury-navbar sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark luxury-navbar">
         <div class="container-fluid px-3 px-md-4 flex-nowrap">
             <!-- Mobile Toggle -->
             <button class="btn btn-link text-white d-lg-none me-2 p-0" id="mobileSidebarToggle">
@@ -288,7 +288,7 @@
     </nav>
 
     {% else %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-0">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-0 fixed-top">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold" href="{{ url_for('tracking') }}">
                 <i class="fas fa-truck me-2"></i>CRM Delivery
@@ -302,7 +302,7 @@
     </nav>
     {% endif %}
 
-    <div class="{{ 'main-content-wrapper' if current_user.is_authenticated }}">
+    <div class="{{ 'main-content-wrapper' if current_user.is_authenticated else 'guest-content-wrapper' }}">
         <div class="container-fluid py-3 py-md-4 {{ 'px-3 px-md-4' if current_user.is_authenticated }}">
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -385,23 +385,7 @@
             }
         });
 
-        // 5. "Connect Up/Down": Proportional Scroll Synchronization
-        // This links the sidebar's vertical progress with the main page's progress
-        window.addEventListener('scroll', () => {
-            if (window.innerWidth < 992 || !sidebar) return;
-            
-            // If the user is manually using the sidebar, don't override it
-            if (sidebar.matches(':hover')) return;
 
-            const docH = document.documentElement.scrollHeight - window.innerHeight;
-            const sideH = sidebar.scrollHeight - sidebar.clientHeight;
-
-            if (docH > 0 && sideH > 0) {
-                const ratio = window.scrollY / docH;
-                // Move sidebar proportionally to feel 'connected' with page depth
-                sidebar.scrollTop = ratio * sideH;
-            }
-        });
     </script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block extra_js %}{% endblock %}
