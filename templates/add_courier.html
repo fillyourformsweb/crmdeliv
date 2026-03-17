@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Courier - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-primary fw-bold mb-1">Service Partners</h5>
+        <h1 class="display-5 fw-black text-dark mb-2">Add New Courier</h1>
+        <p class="text-muted fs-5 mb-0">Register a new courier partner in the system.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('couriers') }}" class="luxury-btn btn btn-light border px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to Couriers
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center page-reveal">
+    <div class="col-lg-8">
+        <form method="POST">
+            <div class="card luxury-card border-0 shadow-sm overflow-hidden mb-5">
+                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-plus-circle me-2 text-primary opacity-50"></i>Courier Details</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Courier Name *</label>
+                            <input type="text" class="form-control luxury-input" name="name"
+                                placeholder="e.g. DTDC, BlueDart, FedEx" required>
+                            <small class="text-muted">Unique identifier for this courier service</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Service Type</label>
+                            <input type="text" class="form-control luxury-input" name="service_type"
+                                placeholder="e.g. Express, Standard, Premium">
+                            <small class="text-muted">Type of service offered</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Contact Person</label>
+                            <input type="text" class="form-control luxury-input" name="contact_person"
+                                placeholder="e.g. John Doe">
+                            <small class="text-muted">Primary contact name</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Contact Email</label>
+                            <input type="email" class="form-control luxury-input" name="contact_email"
+                                placeholder="e.g. contact@courier.com">
+                            <small class="text-muted">Email address</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Contact Phone</label>
+                            <input type="tel" class="form-control luxury-input" name="contact_phone"
+                                placeholder="e.g. +91 98765 43210">
+                            <small class="text-muted">Phone number</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Description</label>
+                            <textarea class="form-control luxury-input" name="description" rows="3"
+                                placeholder="Additional notes or service details"></textarea>
+                            <small class="text-muted">Any additional information about this courier</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light border-0 px-4 py-3 d-flex justify-content-between">
+                    <a href="{{ url_for('couriers') }}" class="btn btn-light border px-4">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-check me-2"></i>Add Courier
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .luxury-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border-radius: 12px;
+    }
+    
+    .luxury-input {
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 10px 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .luxury-input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .page-reveal {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

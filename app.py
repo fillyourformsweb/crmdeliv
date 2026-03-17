@@ -34,7 +34,7 @@ from models import (
     db, init_db, User, Branch, Client, Order, ReceiptSetting,
     TrackingUpdate, ExcelUpload, ExcelData, SystemSettings,
     DefaultStatePrice, ClientStatePrice, NormalClientStatePrice, Notification, StaffReceiptAssignment, Receiver,
-    BillingPattern, SalesVisit, FollowUp, Meeting, ClientAddress
+    BillingPattern, SalesVisit, FollowUp, Meeting, ClientAddress, Courier
 )
 
 app = Flask(__name__)
@@ -837,6 +837,77 @@ def assign_delivery(order_id):
     
     flash('Delivery personnel assigned successfully!', 'success')
     return redirect(url_for('order_details', id=order_id))
+
+
+# ============== COURIER MANAGEMENT ==============
+
+@app.route('/couriers')
+@login_required
+@manager_required
+def couriers():
+    couriers = Courier.query.all()
+    return render_template('couriers.html', couriers=couriers)
+
+
+@app.route('/couriers/add', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_courier():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        
+        if Courier.query.filter_by(name=name).first():
+            flash('Courier with this name already exists.', 'error')
+            return redirect(url_for('add_courier'))
+        
+        courier = Courier(
+            name=name,
+            service_type=request.form.get('service_type', ''),
+            contact_person=request.form.get('contact_person', ''),
+            contact_email=request.form.get('contact_email', ''),
+            contact_phone=request.form.get('contact_phone', ''),
+            description=request.form.get('description', '')
+        )
+        db.session.add(courier)
+        db.session.commit()
+        flash(f'Courier "{name}" added successfully!', 'success')
+        return redirect(url_for('couriers'))
+    
+    return render_template('add_courier.html')
+
+
+@app.route('/couriers/edit/<int:courier_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_courier(courier_id):
+    courier = Courier.query.get_or_404(courier_id)
+    
+    if request.method == 'POST':
+        courier.name = request.form.get('name')
+        courier.service_type = request.form.get('service_type', '')
+        courier.contact_person = request.form.get('contact_person', '')
+        courier.contact_email = request.form.get('contact_email', '')
+        courier.contact_phone = request.form.get('contact_phone', '')
+        courier.description = request.form.get('description', '')
+        courier.is_active = request.form.get('is_active') == 'on'
+        
+        db.session.commit()
+        flash(f'Courier "{courier.name}" updated successfully!', 'success')
+        return redirect(url_for('couriers'))
+    
+    return render_template('edit_courier.html', courier=courier)
+
+
+@app.route('/couriers/delete/<int:courier_id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_courier(courier_id):
+    courier = Courier.query.get_or_404(courier_id)
+    courier_name = courier.name
+    db.session.delete(courier)
+    db.session.commit()
+    flash(f'Courier "{courier_name}" deleted successfully!', 'success')
+    return redirect(url_for('couriers'))
 
 
 # ============== CLIENT MANAGEMENT ==============
@@ -3910,7 +3981,8 @@ def marketing_visit_new():
         db.session.commit()
         flash('New visit / pitch recorded successfully!', 'success')
         return redirect(url_for('marketing_visit_detail', visit_id=visit.id))
-    return render_template('marketing_visit_form.html', visit=None)
+    couriers = Courier.query.filter_by(is_active=True).all()
+    return render_template('marketing_visit_form.html', visit=None, couriers=couriers)
 
 
 @app.route('/marketing/visits/<int:visit_id>')
@@ -3946,7 +4018,8 @@ def marketing_visit_edit(visit_id):
         db.session.commit()
         flash('Visit updated successfully!', 'success')
         return redirect(url_for('marketing_visit_detail', visit_id=visit.id))
-    return render_template('marketing_visit_form.html', visit=visit)
+    couriers = Courier.query.filter_by(is_active=True).all()
+    return render_template('marketing_visit_form.html', visit=visit, couriers=couriers)
 
 
 @app.route('/marketing/visits/<int:visit_id>/follow-up', methods=['POST'])

@@ -201,10 +201,15 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label">Current Courier</label>
-                            <input type="text" name="current_courier" class="form-control"
-                                value="{{ visit.current_courier if visit else '' }}"
-                                placeholder="e.g. DTDC, BlueDart, FedEx">
-                            <div class="field-hint">Which courier they currently use</div>
+                            <select name="current_courier" class="form-select form-control">
+                                <option value="">-- Select or Enter Courier --</option>
+                                {% for courier in couriers %}
+                                <option value="{{ courier.name }}" {% if visit and visit.current_courier == courier.name %}selected{% endif %}>
+                                    {{ courier.name }}{% if courier.service_type %} ({{ courier.service_type }}){% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Select from existing couriers or <a href="{{ url_for('add_courier') }}" target="_blank">add a new courier</a></small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Price Certificate</label>

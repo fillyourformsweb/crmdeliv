@@ -499,6 +499,21 @@ class Meeting(db.Model):
     creator = db.relationship('User', foreign_keys=[created_by])
 
 
+class Courier(db.Model):
+    __tablename__ = 'couriers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), unique=True, nullable=False)
+    service_type = db.Column(db.String(100))  # e.g., "Express", "Standard", "Premium"
+    contact_person = db.Column(db.String(100))
+    contact_email = db.Column(db.String(120))
+    contact_phone = db.Column(db.String(20))
+    description = db.Column(db.Text)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 def init_db(app):
     import os
     # Ensure the instance folder exists so SQLite can create the DB file
