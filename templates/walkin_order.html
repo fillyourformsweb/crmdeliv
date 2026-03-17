@@ -154,6 +154,20 @@
         </div>
 
         <div class="col-lg-5">
+            <!-- Available Offers Section -->
+            <div class="card luxury-card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #fff5e6 0%, #fffbf0 100%); border: 2px solid #ffc107;">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-gift fs-3 text-warning"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-2">View Available Offers</h6>
+                    <p class="small text-muted mb-3">Check special discounts & promotions</p>
+                    <button type="button" class="btn btn-warning btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#offersModal">
+                        <i class="fas fa-eye me-2"></i>Browse Offers
+                    </button>
+                </div>
+            </div>
+
             <!-- Package & Billing Section -->
             <div class="card luxury-card border-0 shadow-sm mb-4">
                 <div class="card-body p-4">
@@ -219,6 +233,22 @@
                                 <span id="rateIndicator"
                                     class="badge rounded-pill bg-light text-muted small border shadow-sm px-3"
                                     style="display: none;">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Applicable Offers Display -->
+                        <div id="offerSection" class="mb-4" style="display: none;">
+                            <div class="alert alert-success bg-success bg-opacity-10 border border-success border-opacity-25 d-flex align-items-start gap-3 rounded-3">
+                                <i class="fas fa-gift fs-5 text-success mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold text-success mb-2">
+                                        <i class="fas fa-star me-1"></i>Special Offer Available!
+                                    </h6>
+                                    <p class="mb-1 small text-success">
+                                        Get <strong id="offerAmount">₹30</strong> discount on this order!
+                                    </p>
+                                    <small class="text-success opacity-75" id="offerDescription"></small>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -462,10 +492,95 @@
         </div>
     </div>
 </form>
+
+<!-- Available Offers Modal -->
+<div class="modal fade" id="offersModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-gradient border-0 px-4 py-4" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);">
+                <h5 class="modal-title fw-bold text-white">
+                    <i class="fas fa-gift me-2"></i>Available Offers & Promotions
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0" id="offersModalContent">
+                <div class="text-center p-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading offers...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 px-4 py-3 bg-light">
+                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
+    // Load Available Offers Modal
+    const offersModal = document.getElementById('offersModal');
+    if (offersModal) {
+        offersModal.addEventListener('show.bs.modal', function() {
+            const modalContent = document.getElementById('offersModalContent');
+            
+            fetch('/api/get-all-offers')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.offers && data.offers.length > 0) {
+                        let html = '<div class="p-4">';
+                        
+                        data.offers.forEach((offer, index) => {
+                            html += `
+                                <div class="mb-3 p-3 border rounded-3" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-left: 4px solid #0284c7;">
+                                    <div class="d-flex justify-content-between align-items-start gap-3">
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold text-dark mb-1">
+                                                <i class="fas fa-arrow-right text-secondary me-2"></i>
+                                                Order Amount: <span class="text-primary">₹${offer.min_amount.toFixed(0)} - ₹${offer.max_amount.toFixed(0)}</span>
+                                            </div>
+                                            <div class="small text-muted">
+                                                ${offer.description ? offer.description : 'Get a special discount on this order range'}
+                                            </div>
+                                        </div>
+                                        <div class="text-end flex-shrink-0">
+                                            <div class="badge bg-success fs-6 py-2 px-3">
+                                                <i class="fas fa-tag me-1"></i>
+                                                GET ₹${offer.offer_amount.toFixed(0)} OFF
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += '</div>';
+                        modalContent.innerHTML = html;
+                    } else {
+                        modalContent.innerHTML = `
+                            <div class="text-center p-5">
+                                <i class="fas fa-box fs-1 text-muted opacity-25 mb-3"></i>
+                                <h6 class="text-muted fw-bold">No Active Offers</h6>
+                                <p class="small text-muted">Check back later for exciting promotions!</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading offers:', error);
+                    modalContent.innerHTML = `
+                        <div class="text-center p-5">
+                            <i class="fas fa-exclamation-circle fs-1 text-danger opacity-25 mb-3"></i>
+                            <p class="text-danger">Failed to load offers</p>
+                        </div>
+                    `;
+                });
+        });
+    }
+
     // Receipt Type Toggle & Auto-generation
     const typeManual = document.getElementById('typeManual');
     const typeStandard = document.getElementById('typeStandard');
@@ -553,6 +668,16 @@
         insuredAmountInput.addEventListener('input', calculateAmount);
     }
 
+    // Check offers when received amount is manually changed
+    if (receivedAmountInput) {
+        receivedAmountInput.addEventListener('input', function() {
+            const amount = parseFloat(this.value) || 0;
+            if (amount > 0) {
+                checkApplicableOffers(amount);
+            }
+        });
+    }
+
     // Pincode Lookup (Receiver)
     const pincodeInput = document.getElementById('receiver_pincode');
     if (pincodeInput) {
@@ -598,6 +723,34 @@
                     .catch(err => console.error('Sender pincode lookup failed:', err));
             }
         });
+    }
+
+    function checkApplicableOffers(amount) {
+        const offerSection = document.getElementById('offerSection');
+        const offerAmountDisplay = document.getElementById('offerAmount');
+        const offerDescriptionDisplay = document.getElementById('offerDescription');
+
+        if (!offerSection) return;
+
+        fetch(`/api/check-offer?amount=${amount}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.applicable) {
+                    offerAmountDisplay.textContent = '₹' + data.offer_amount.toFixed(0);
+                    if (data.description) {
+                        offerDescriptionDisplay.textContent = data.description;
+                    } else {
+                        offerDescriptionDisplay.textContent = `Order amount ₹${amount.toFixed(0)}: Get ₹${data.offer_amount.toFixed(0)} discount`;
+                    }
+                    offerSection.style.display = 'block';
+                } else {
+                    offerSection.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error checking offers:', error);
+                offerSection.style.display = 'none';
+            });
     }
 
     function calculateAmount() {
@@ -660,6 +813,9 @@
                             rateIndicator.innerHTML = '<i class="fas fa-building me-1"></i>Priority Client Rate';
                         }
                     }
+
+                    // Check for applicable offers
+                    checkApplicableOffers(data.total_amount);
                 })
                 .catch(error => {
                     console.error('Error calculating amount:', error);

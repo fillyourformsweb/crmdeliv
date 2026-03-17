@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Offer - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-primary fw-bold mb-1">Pricing & Promotions</h5>
+        <h1 class="display-5 fw-black text-dark mb-2">Add New Offer</h1>
+        <p class="text-muted fs-5 mb-0">Create a new promotional offer for walk-in customers.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('offers') }}" class="luxury-btn btn btn-light border px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to Offers
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center page-reveal">
+    <div class="col-lg-8">
+        <form method="POST">
+            <div class="card luxury-card border-0 shadow-sm overflow-hidden mb-5">
+                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-plus-circle me-2 text-primary opacity-50"></i>Offer Details</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-12 bg-info bg-opacity-10 border border-info border-opacity-25 rounded-3 p-3">
+                            <small class="text-info fw-bold"><i class="fas fa-info-circle me-2"></i>About Offers</small>
+                            <p class="small text-info mb-0">
+                                Define amount ranges where customers get automatic discounts. 
+                                For example: Orders between ₹200-500 get ₹30 discount.
+                            </p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Minimum Amount (₹) *</label>
+                            <input type="number" class="form-control luxury-input" name="min_amount"
+                                placeholder="e.g. 200" step="0.01" min="0" required>
+                            <small class="text-muted">Offer starts from this amount</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Maximum Amount (₹) *</label>
+                            <input type="number" class="form-control luxury-input" name="max_amount"
+                                placeholder="e.g. 500" step="0.01" min="0" required>
+                            <small class="text-muted">Offer ends before this amount</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Offer Amount (₹) *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-tag text-success"></i>
+                                </span>
+                                <input type="number" class="form-control luxury-input border-start-0" name="offer_amount"
+                                    placeholder="e.g. 30" step="0.01" min="0" required>
+                            </div>
+                            <small class="text-muted">Discount amount in rupees</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Description (Optional)</label>
+                            <input type="text" class="form-control luxury-input" name="description"
+                                placeholder="e.g. Flat ₹30 discount for this range">
+                            <small class="text-muted">Additional details visible to customers</small>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted fw-bold">Preview:</small>
+                                <div class="mt-2">
+                                    <span class="badge bg-success">Orders: ₹<span id="preview_min">200</span> - ₹<span id="preview_max">500</span></span>
+                                    <span class="badge bg-warning text-dark ms-2">GET ₹<span id="preview_offer">30</span> OFF</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light border-0 px-4 py-3 d-flex justify-content-between">
+                    <a href="{{ url_for('offers') }}" class="btn btn-light border px-4">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-check me-2"></i>Create Offer
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .luxury-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border-radius: 12px;
+    }
+    
+    .luxury-input {
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 10px 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .luxury-input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .page-reveal {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    // Live preview
+    document.querySelector('input[name="min_amount"]').addEventListener('input', function() {
+        document.getElementById('preview_min').textContent = this.value || '0';
+    });
+    
+    document.querySelector('input[name="max_amount"]').addEventListener('input', function() {
+        document.getElementById('preview_max').textContent = this.value || '0';
+    });
+    
+    document.querySelector('input[name="offer_amount"]').addEventListener('input', function() {
+        document.getElementById('preview_offer').textContent = this.value || '0';
+    });
+</script>
+{% endblock %}

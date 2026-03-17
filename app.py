@@ -34,7 +34,7 @@ from models import (
     db, init_db, User, Branch, Client, Order, ReceiptSetting,
     TrackingUpdate, ExcelUpload, ExcelData, SystemSettings,
     DefaultStatePrice, ClientStatePrice, NormalClientStatePrice, Notification, StaffReceiptAssignment, Receiver,
-    BillingPattern, SalesVisit, FollowUp, Meeting, ClientAddress, Courier
+    BillingPattern, SalesVisit, FollowUp, Meeting, ClientAddress, Courier, Offer
 )
 
 app = Flask(__name__)
@@ -908,6 +908,157 @@ def delete_courier(courier_id):
     db.session.commit()
     flash(f'Courier "{courier_name}" deleted successfully!', 'success')
     return redirect(url_for('couriers'))
+
+
+# ============== OFFER MANAGEMENT ==============
+
+@app.route('/offers')
+@login_required
+@manager_required
+def offers():
+    offers = Offer.query.order_by(Offer.min_amount.asc()).all()
+    return render_template('offers.html', offers=offers)
+
+
+@app.route('/offers/add', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_offer():
+    if request.method == 'POST':
+        min_amount = float(request.form.get('min_amount', 0))
+        max_amount = float(request.form.get('max_amount', 0))
+        offer_amount = float(request.form.get('offer_amount', 0))
+        
+        # Validate that min < max
+        if min_amount >= max_amount:
+            flash('Minimum amount must be less than maximum amount!', 'error')
+            return redirect(url_for('add_offer'))
+        
+        # Check for overlapping ranges
+        overlapping = Offer.query.filter(
+            Offer.is_active == True,
+            (
+                (Offer.min_amount <= min_amount) & (Offer.max_amount > min_amount) |
+                (Offer.min_amount < max_amount) & (Offer.max_amount >= max_amount) |
+                (Offer.min_amount >= min_amount) & (Offer.max_amount <= max_amount)
+            )
+        ).first()
+        
+        if overlapping:
+            flash('This amount range overlaps with an existing offer!', 'error')
+            return redirect(url_for('add_offer'))
+        
+        offer = Offer(
+            min_amount=min_amount,
+            max_amount=max_amount,
+            offer_amount=offer_amount,
+            description=request.form.get('description', ''),
+            is_active=True,
+            created_by=current_user.id
+        )
+        db.session.add(offer)
+        db.session.commit()
+        flash(f'Offer for ₹{min_amount}-{max_amount} added successfully!', 'success')
+        return redirect(url_for('offers'))
+    
+    return render_template('add_offer.html')
+
+
+@app.route('/offers/edit/<int:offer_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_offer(offer_id):
+    offer = Offer.query.get_or_404(offer_id)
+    
+    if request.method == 'POST':
+        min_amount = float(request.form.get('min_amount', 0))
+        max_amount = float(request.form.get('max_amount', 0))
+        offer_amount = float(request.form.get('offer_amount', 0))
+        
+        # Validate that min < max
+        if min_amount >= max_amount:
+            flash('Minimum amount must be less than maximum amount!', 'error')
+            return redirect(url_for('edit_offer', offer_id=offer_id))
+        
+        # Check for overlapping ranges (excluding current offer)
+        overlapping = Offer.query.filter(
+            Offer.id != offer_id,
+            Offer.is_active == True,
+            (
+                (Offer.min_amount <= min_amount) & (Offer.max_amount > min_amount) |
+                (Offer.min_amount < max_amount) & (Offer.max_amount >= max_amount) |
+                (Offer.min_amount >= min_amount) & (Offer.max_amount <= max_amount)
+            )
+        ).first()
+        
+        if overlapping:
+            flash('This amount range overlaps with another offer!', 'error')
+            return redirect(url_for('edit_offer', offer_id=offer_id))
+        
+        offer.min_amount = min_amount
+        offer.max_amount = max_amount
+        offer.offer_amount = offer_amount
+        offer.description = request.form.get('description', '')
+        offer.is_active = request.form.get('is_active') == 'on'
+        
+        db.session.commit()
+        flash(f'Offer updated successfully!', 'success')
+        return redirect(url_for('offers'))
+    
+    return render_template('edit_offer.html', offer=offer)
+
+
+@app.route('/offers/delete/<int:offer_id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_offer(offer_id):
+    offer = Offer.query.get_or_404(offer_id)
+    min_amt = offer.min_amount
+    max_amt = offer.max_amount
+    db.session.delete(offer)
+    db.session.commit()
+    flash(f'Offer for ₹{min_amt}-{max_amt} deleted successfully!', 'success')
+    return redirect(url_for('offers'))
+
+
+@app.route('/api/check-offer')
+def check_offer():
+    """API endpoint to check applicable offer for a given amount"""
+    amount = request.args.get('amount', 0, type=float)
+    
+    offer = Offer.query.filter(
+        Offer.is_active == True,
+        Offer.min_amount <= amount,
+        Offer.max_amount > amount
+    ).first()
+    
+    if offer:
+        return jsonify({
+            'applicable': True,
+            'offer_amount': offer.offer_amount,
+            'description': offer.description
+        })
+    
+    return jsonify({'applicable': False, 'offer_amount': 0})
+
+
+@app.route('/api/get-all-offers')
+def get_all_offers():
+    """API endpoint to get all active offers"""
+    offers = Offer.query.filter_by(is_active=True).order_by(Offer.min_amount.asc()).all()
+    
+    offers_data = [
+        {
+            'id': offer.id,
+            'min_amount': offer.min_amount,
+            'max_amount': offer.max_amount,
+            'offer_amount': offer.offer_amount,
+            'description': offer.description
+        }
+        for offer in offers
+    ]
+    
+    return jsonify({'offers': offers_data})
 
 
 # ============== CLIENT MANAGEMENT ==============

@@ -514,6 +514,22 @@ class Courier(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+class Offer(db.Model):
+    __tablename__ = 'offers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    min_amount = db.Column(db.Float, nullable=False)  # Minimum order amount
+    max_amount = db.Column(db.Float, nullable=False)  # Maximum order amount
+    offer_amount = db.Column(db.Float, nullable=False)  # Discount amount in rupees
+    description = db.Column(db.String(200))  # e.g., "200-500 Rs offer 30 Rs"
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    creator = db.relationship('User', foreign_keys=[created_by])
+
+
 def init_db(app):
     import os
     # Ensure the instance folder exists so SQLite can create the DB file

@@ -241,6 +241,11 @@
                 <i class="fas fa-shield-alt"></i>
                 <span>Insurance Master</span>
             </a>
+            <a href="{{ url_for('offers') }}"
+                class="sidebar-link {{ 'active' if request.endpoint in ['offers', 'add_offer', 'edit_offer'] }}">
+                <i class="fas fa-gift"></i>
+                <span>Offers & Promotions</span>
+            </a>
             <a href="{{ url_for('default_prices') }}"
                 class="sidebar-link {{ 'active' if request.endpoint in ['default_prices', 'add_default_price', 'edit_default_price'] }}">
                 <i class="fas fa-tags"></i>
