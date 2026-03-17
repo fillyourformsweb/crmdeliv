@@ -29,8 +29,12 @@
                         <div class="col-12">
                             <label class="form-label small fw-bold text-uppercase text-muted">Destination State
                                 Name</label>
-                            <input type="text" class="form-control luxury-input" name="state"
-                                placeholder="e.g. Maharashtra" required>
+                            <select class="form-control form-select luxury-input" name="state" required>
+                                <option value="">-- Select State --</option>
+                                {% for state in states %}
+                                <option value="{{ state }}">{{ state }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
 
                         <div class="col-md-4">

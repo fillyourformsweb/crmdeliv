@@ -2623,6 +2623,15 @@ def default_prices():
 @login_required
 @admin_required
 def add_default_price():
+    # List of Indian states
+    indian_states = [
+        'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+        'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+        'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+        'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
+        'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
+    ]
+    
     if request.method == 'POST':
         state = request.form.get('state')
         if DefaultStatePrice.query.filter_by(state=state).first():
@@ -2643,14 +2652,28 @@ def add_default_price():
         db.session.commit()
         flash(f'Prices for {state} added successfully!', 'success')
         return redirect(url_for('default_prices'))
+    
+    # Get states that already have prices defined
+    existing_states = [price.state for price in DefaultStatePrice.query.all()]
+    # Filter to show only available states (not already in database)
+    available_states = [state for state in indian_states if state not in existing_states]
         
-    return render_template('add_default_price.html')
+    return render_template('add_default_price.html', states=available_states)
 
 
 @app.route('/default-prices/edit/<int:price_id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_default_price(price_id):
+    # List of Indian states
+    indian_states = [
+        'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+        'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+        'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+        'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
+        'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
+    ]
+    
     price = DefaultStatePrice.query.get_or_404(price_id)
     
     if request.method == 'POST':
@@ -2667,7 +2690,7 @@ def edit_default_price(price_id):
         flash(f'Prices for {price.state} updated successfully!', 'success')
         return redirect(url_for('default_prices'))
         
-    return render_template('edit_default_price.html', price=price)
+    return render_template('edit_default_price.html', price=price, states=indian_states)
 
 
 @app.route('/default-prices/delete/<int:price_id>', methods=['POST'])
