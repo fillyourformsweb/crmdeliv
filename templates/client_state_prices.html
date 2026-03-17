@@ -119,13 +119,13 @@
                             </div>
                             <div class="col-4">
                                 <div class="p-2 bg-light rounded-3 text-center"><small
-                                        class="text-muted d-block">2kg</small><span class="fw-bold">₹{{ price.price_2kg
+                                        class="text-muted d-block">2kg</small><span class="fw-bold text-success">₹{{ "%.2f"|format(price.price_1kg * 2)
                                         }}</span></div>
                             </div>
                             <div class="col-12">
                                 <div class="p-2 bg-primary bg-opacity-10 rounded-3 text-center"><small
                                         class="text-muted d-block">3kg Bulk</small><span
-                                        class="fw-black text-primary">₹{{ price.price_3kg }}</span></div>
+                                        class="fw-black text-success">₹{{ "%.2f"|format(price.price_1kg * 3) }}</span></div>
                             </div>
                         </div>
                     </div>
@@ -176,10 +176,8 @@
                                 s.price_500gm }}</td>
                             <td class="text-center fw-bold small">₹{{ s.custom_price_1kg if s.has_custom_price else
                                 s.price_1kg }}</td>
-                            <td class="text-center fw-bold small">₹{{ s.custom_price_2kg if s.has_custom_price else
-                                s.price_2kg }}</td>
-                            <td class="text-center fw-bold small">₹{{ s.custom_price_3kg if s.has_custom_price else
-                                s.price_3kg }}</td>
+                            <td class="text-center fw-bold small text-success">₹{{ "%.2f"|format((s.custom_price_1kg if s.has_custom_price else s.price_1kg) * 2) }}</td>
+                            <td class="text-center fw-bold small text-success">₹{{ "%.2f"|format((s.custom_price_1kg if s.has_custom_price else s.price_1kg) * 3) }}</td>
                             <td class="px-3 text-end">
                                 {% if s.has_custom_price %}
                                 {% set diff = s.custom_price_1kg - s.price_1kg %}

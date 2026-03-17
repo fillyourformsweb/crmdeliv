@@ -55,14 +55,12 @@
                                 value="{{ price.price_1kg }}" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold text-uppercase text-muted">2kg Parcel (₹)</label>
-                            <input type="number" step="0.01" class="form-control luxury-input" name="price_2kg"
-                                value="{{ price.price_2kg }}" required>
+                            <label class="form-label small fw-bold text-uppercase text-muted">Extra Per KG (₹)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_extra_per_kg"
+                                value="{{ price.price_extra_per_kg or 20 }}" required>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold text-uppercase text-muted">3kg Bulk (₹)</label>
-                            <input type="number" step="0.01" class="form-control luxury-input" name="price_3kg"
-                                value="{{ price.price_3kg }}" required>
+                        <div class="col-md-8">
+                            <small class="text-muted"><strong>Note:</strong> 2kg = 1kg × 2 = ₹{{ (price.price_1kg * 2)|int }} | 3kg = 1kg × 3 = ₹{{ (price.price_1kg * 3)|int }}</small>
                         </div>
                     </div>
                 </div>

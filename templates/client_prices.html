@@ -158,21 +158,43 @@
                                             <td><strong>{{ label }}</strong></td>
                                             <td>
                                                 {% if client_prices %}
-                                                    ₹{{ "%.2f"|format(client_prices[key]) }}
+                                                    {% if key == 'price_2kg' %}
+                                                        <span class="text-success">₹{{ "%.2f"|format(client_prices['price_1kg'] * 2) }}</span>
+                                                    {% elif key == 'price_3kg' %}
+                                                        <span class="text-success">₹{{ "%.2f"|format(client_prices['price_1kg'] * 3) }}</span>
+                                                    {% else %}
+                                                        ₹{{ "%.2f"|format(client_prices[key]) }}
+                                                    {% endif %}
                                                 {% else %}
                                                     <span class="text-muted">Not set</span>
                                                 {% endif %}
                                             </td>
                                             <td>
                                                 {% if default_prices %}
-                                                    ₹{{ "%.2f"|format(default_prices[key]) }}
+                                                    {% if key == 'price_2kg' %}
+                                                        <span class="text-success">₹{{ "%.2f"|format(default_prices['price_1kg'] * 2) }}</span>
+                                                    {% elif key == 'price_3kg' %}
+                                                        <span class="text-success">₹{{ "%.2f"|format(default_prices['price_1kg'] * 3) }}</span>
+                                                    {% else %}
+                                                        ₹{{ "%.2f"|format(default_prices[key]) }}
+                                                    {% endif %}
                                                 {% else %}
                                                     <span class="text-muted">No default for this state</span>
                                                 {% endif %}
                                             </td>
                                             <td>
                                                 {% if client_prices and default_prices %}
-                                                    {% set diff = client_prices[key] - default_prices[key] %}
+                                                    {% if key == 'price_2kg' %}
+                                                        {% set client_val = client_prices['price_1kg'] * 2 %}
+                                                        {% set default_val = default_prices['price_1kg'] * 2 %}
+                                                    {% elif key == 'price_3kg' %}
+                                                        {% set client_val = client_prices['price_1kg'] * 3 %}
+                                                        {% set default_val = default_prices['price_1kg'] * 3 %}
+                                                    {% else %}
+                                                        {% set client_val = client_prices[key] %}
+                                                        {% set default_val = default_prices[key] %}
+                                                    {% endif %}
+                                                    {% set diff = client_val - default_val %}
                                                     {% if diff > 0 %}
                                                         <span class="text-success">+₹{{ "%.2f"|format(diff) }}</span>
                                                     {% elif diff < 0 %}

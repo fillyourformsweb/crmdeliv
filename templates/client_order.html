@@ -66,12 +66,17 @@
                     <h5 class="fw-bold mb-0 text-dark">
                         <i class="fas fa-building me-2 text-primary opacity-50"></i>Client Selection
                     </h5>
-                    <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
-                        onclick="document.getElementById('aiScannerFile').click()">
-                        <i class="fas fa-magic me-1"></i> AI Scan Document
-                    </button>
-                    <input type="file" id="aiScannerFile" style="display: none;" accept="image/*,.pdf"
-                        onchange="handleAIScan(this)">
+                    <div class="d-flex gap-2">
+                        <button type="button" id="resetClientBtn" class="btn btn-sm btn-outline-secondary fw-bold">
+                            <i class="fas fa-undo me-1"></i> Reset Client
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
+                            onclick="document.getElementById('aiScannerFile').click()">
+                            <i class="fas fa-magic me-1"></i> AI Scan Document
+                        </button>
+                        <input type="file" id="aiScannerFile" style="display: none;" accept="image/*,.pdf"
+                            onchange="handleAIScan(this)">
+                    </div>
                 </div>
                 <div class="card-body p-4">
                     <div class="mb-4">
@@ -293,6 +298,35 @@
     const insuranceChargeEl = document.getElementById('insuranceCharge');
     const insuredAmountInput = document.getElementById('insured_amount');
     const totalAmountEl = document.getElementById('totalAmount');
+    const resetClientBtn = document.getElementById('resetClientBtn');
+
+    function resetClientSelection() {
+        // Clear client dropdown
+        clientSelect.value = '';
+        
+        // Hide client info section
+        if (clientInfo) clientInfo.style.display = 'none';
+        if (receiverSelectWrapper) receiverSelectWrapper.style.display = 'none';
+        
+        // Clear sender address dropdown
+        if (senderAddressSelect) senderAddressSelect.innerHTML = '<option value="">Primary Address</option>';
+        
+        // Clear receiver dropdown
+        if (receiverSelect) receiverSelect.innerHTML = '<option value="">Select Saved Receiver...</option>';
+        
+        // Clear client details display
+        document.getElementById('clientName').textContent = '';
+        document.getElementById('clientPhone').textContent = '';
+        document.getElementById('clientEmail').textContent = '';
+        document.getElementById('clientPincode').textContent = '';
+    }
+
+    if (resetClientBtn) {
+        resetClientBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            resetClientSelection();
+        });
+    }
 
     // Populate state dropdown from API (same as walk-in order)
     fetch('/api/states')
@@ -380,6 +414,7 @@
     const typeManual = document.getElementById('typeManual');
     const typeStandard = document.getElementById('typeStandard');
     const receiptInput = document.getElementById('receiptNumberInput');
+    const shippingModeSelect = document.querySelector('select[name="receipt_mode"]');
 
     function updateReceiptField() {
         if (typeStandard.checked) {
@@ -402,8 +437,28 @@
         radio.addEventListener('change', updateReceiptField);
     });
 
+    // Auto-detect shipping mode based on first digit of manual tracking number
+    if (receiptInput) {
+        receiptInput.addEventListener('input', function () {
+            if (typeManual.checked && this.value.length > 0) {
+                const firstDigit = this.value.charAt(0);
+                const modeMap = {
+                    '1': 'standard',
+                    '2': 'prime',
+                    '5': 'parcel',
+                    '3': 'state_express',
+                    '8': 'road_express'
+                };
+
+                if (modeMap[firstDigit] && shippingModeSelect) {
+                    shippingModeSelect.value = modeMap[firstDigit];
+                    calculateAmount();
+                }
+            }
+        });
+    }
+
     // Link Shipping Mode to Receipt Generation
-    const shippingModeSelect = document.querySelector('select[name="receipt_mode"]');
     if (shippingModeSelect) {
         shippingModeSelect.addEventListener('change', function () {
             if (this.value && this.value !== 'standard') {

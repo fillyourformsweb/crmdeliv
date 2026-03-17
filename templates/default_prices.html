@@ -59,9 +59,9 @@
                                 <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_100gm) }}</td>
                                 <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_250gm) }}</td>
                                 <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_500gm) }}</td>
-                                <td class="text-center fw-black text-primary">₹{{ "%.2f"|format(price.price_1kg) }}</td>
-                                <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_2kg) }}</td>
-                                <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_3kg) }}</td>
+                                <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_1kg) }}</td>
+                                <td class="text-center fw-bold text-success">₹{{ "%.2f"|format(price.price_1kg * 2) }}</td>
+                                <td class="text-center fw-bold text-success">₹{{ "%.2f"|format(price.price_1kg * 3) }}</td>
                                 {% if current_user.role == 'admin' %}
                                 <td class="px-4 text-end">
                                     <div class="btn-group">

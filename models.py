@@ -382,6 +382,7 @@ class DefaultStatePrice(db.Model):
     price_1kg = db.Column(db.Float, default=0)
     price_2kg = db.Column(db.Float, default=0)
     price_3kg = db.Column(db.Float, default=0)
+    price_extra_per_kg = db.Column(db.Float, default=20)  # Extra charge per kg for weight > 3kg
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
@@ -397,6 +398,7 @@ class ClientStatePrice(db.Model):
     price_1kg = db.Column(db.Float, default=0)
     price_2kg = db.Column(db.Float, default=0)
     price_3kg = db.Column(db.Float, default=0)
+    price_extra_per_kg = db.Column(db.Float, default=20)  # Extra charge per kg for weight > 3kg
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
@@ -411,6 +413,7 @@ class NormalClientStatePrice(db.Model):
     price_1kg = db.Column(db.Float, default=0)
     price_2kg = db.Column(db.Float, default=0)
     price_3kg = db.Column(db.Float, default=0)
+    price_extra_per_kg = db.Column(db.Float, default=20)  # Extra charge per kg for weight > 3kg
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 

@@ -9,8 +9,14 @@ from io import BytesIO
 import qrcode
 import base64
 import json
-import fitz  # PyMuPDF
-import google.generativeai as genai
+try:
+    import fitz  # PyMuPDF
+except ImportError:
+    fitz = None
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
 from PIL import Image
 import requests
 
@@ -35,7 +41,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Configure Gemini
-if app.config.get('GEMINI_API_KEY'):
+if genai and app.config.get('GEMINI_API_KEY'):
     genai.configure(api_key=app.config['GEMINI_API_KEY'])
 
 
@@ -315,19 +321,25 @@ def get_next_receipt_number(user=None):
 
 def calculate_from_state_price(weight, price_obj):
     amount = 0
-    # tiered pricing
-    if weight <= 0.1: amount = price_obj.price_100gm
-    elif weight <= 0.25: amount = price_obj.price_250gm
-    elif weight <= 0.5: amount = price_obj.price_500gm
-    elif weight <= 1.0: amount = price_obj.price_1kg
-    elif weight <= 2.0: amount = price_obj.price_2kg
-    elif weight <= 3.0: amount = price_obj.price_3kg
+    # tiered pricing based on weight brackets
+    if weight <= 0.1:  # 100g
+        amount = price_obj.price_100gm
+    elif weight <= 0.25:  # 250g
+        amount = price_obj.price_250gm
+    elif weight <= 0.5:  # 500g
+        amount = price_obj.price_500gm
+    elif weight <= 1.0:  # 1kg
+        amount = price_obj.price_1kg
+    elif weight <= 2.0:  # 2kg = 1kg price × 2
+        amount = price_obj.price_1kg * 2
+    elif weight <= 3.0:  # 3kg = 1kg price × 3
+        amount = price_obj.price_1kg * 3
     else:
-        # For weights > 3kg, use 3kg price + extra per kg if we can estimate, 
-        # but for now let's just use 3kg as base and add 10/kg for simplicity
-        base_3kg = price_obj.price_3kg or 150
+        # For weights > 3kg: (1kg price × 3) + extra per kg
+        base_3kg = price_obj.price_1kg * 3
         extra_weight = weight - 3.0
-        amount = base_3kg + (extra_weight * 20) # Conservative estimate
+        extra_per_kg = getattr(price_obj, 'price_extra_per_kg', 20) or 20
+        amount = base_3kg + (extra_weight * extra_per_kg)
 
     if amount == 0:
         return None
@@ -2624,7 +2636,8 @@ def add_default_price():
             price_500gm=float(request.form.get('price_500gm', 0)),
             price_1kg=float(request.form.get('price_1kg', 0)),
             price_2kg=float(request.form.get('price_2kg', 0)),
-            price_3kg=float(request.form.get('price_3kg', 0))
+            price_3kg=float(request.form.get('price_3kg', 0)),
+            price_extra_per_kg=float(request.form.get('price_extra_per_kg', 20))
         )
         db.session.add(price)
         db.session.commit()
@@ -2648,6 +2661,7 @@ def edit_default_price(price_id):
         price.price_1kg = float(request.form.get('price_1kg', 0))
         price.price_2kg = float(request.form.get('price_2kg', 0))
         price.price_3kg = float(request.form.get('price_3kg', 0))
+        price.price_extra_per_kg = float(request.form.get('price_extra_per_kg', 20))
         
         db.session.commit()
         flash(f'Prices for {price.state} updated successfully!', 'success')
@@ -2693,7 +2707,8 @@ def add_normal_client_price():
             price_500gm=float(request.form.get('price_500gm', 0)),
             price_1kg=float(request.form.get('price_1kg', 0)),
             price_2kg=float(request.form.get('price_2kg', 0)),
-            price_3kg=float(request.form.get('price_3kg', 0))
+            price_3kg=float(request.form.get('price_3kg', 0)),
+            price_extra_per_kg=float(request.form.get('price_extra_per_kg', 20))
         )
         db.session.add(price)
         db.session.commit()
@@ -2717,6 +2732,7 @@ def edit_normal_client_price(price_id):
         price.price_1kg = float(request.form.get('price_1kg', 0))
         price.price_2kg = float(request.form.get('price_2kg', 0))
         price.price_3kg = float(request.form.get('price_3kg', 0))
+        price.price_extra_per_kg = float(request.form.get('price_extra_per_kg', 20))
         
         db.session.commit()
         flash(f'Default client prices for {price.state} updated successfully!', 'success')
@@ -2799,6 +2815,7 @@ def set_client_prices(client_id):
         custom.price_1kg = float(request.form.get('price_1kg', 0))
         custom.price_2kg = float(request.form.get('price_2kg', 0))
         custom.price_3kg = float(request.form.get('price_3kg', 0))
+        custom.price_extra_per_kg = float(request.form.get('price_extra_per_kg', 20))
         
         db.session.commit()
         flash(f'Custom prices for {state} updated successfully!', 'success')
@@ -3687,6 +3704,9 @@ def scan_document():
     if not (file and (file.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.pdf')))):
         return jsonify({'error': 'Unsupported file format. Please upload an image or PDF.'}), 400
 
+    if not genai:
+        return jsonify({'error': 'Google Generative AI is not configured. Please contact admin.'}), 400
+
     try:
         # Load Gemini model
         model = genai.GenerativeModel('gemini-flash-latest')
@@ -3696,6 +3716,9 @@ def scan_document():
         
         if file.filename.lower().endswith('.pdf'):
             # Convert PDF to Image (first page)
+            if not fitz:
+                return jsonify({'error': 'PyMuPDF is not installed. PDF support is unavailable. Please upload an image instead.'}), 400
+            
             pdf_data = file.read()
             doc = fitz.open(stream=pdf_data, filetype="pdf")
             page = doc.load_page(0)
