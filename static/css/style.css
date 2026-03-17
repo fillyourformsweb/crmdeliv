@@ -1554,8 +1554,9 @@ body {
     }
     
     /* Ensure tables scroll smoothly on mobile */
-    .luxury-table {
+    .luxury-table, .table {
         min-width: 800px; /* Force minimum width to trigger scroll instead of squishing */
+        white-space: nowrap; /* Do not squish text vertically */
     }
     
     .table-responsive {
@@ -1563,5 +1564,22 @@ body {
         box-shadow: inset -10px 0 20px -10px rgba(0,0,0,0.05); /* subtle scroll hint */
         -webkit-overflow-scrolling: touch;
         overflow-x: auto;
+        display: block;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    /* Optimize scaling for compact headers on mobile */
+    .page-content-wrapper .display-4 {
+        font-size: 2.2rem;
+    }
+    
+    /* Reclaim screen space on mobile by shrinking pad */
+    .luxury-card {
+        padding: 1rem !important;
+    }
+    
+    .luxury-card .card-body {
+        padding: 0.5rem !important;
     }
 }
