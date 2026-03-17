@@ -897,7 +897,8 @@ nav.luxury-navbar.navbar {
     backdrop-filter: blur(20px) saturate(200%) !important;
     -webkit-backdrop-filter: blur(20px) saturate(200%) !important;
     border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
-    height: 74px !important;
+    min-height: 74px !important;
+    height: auto !important;
     box-shadow: 0 10px 40px -20px rgba(0, 0, 0, 0.4) !important;
     padding: 0 1.5rem !important;
     display: flex;
