@@ -72,6 +72,9 @@
                             <p class="mb-1 text-primary fw-bold">{{ order.receiver_phone }}</p>
                             <p class="text-muted small mb-0">{{ order.receiver_address }}, {{ order.receiver_city }}, {{
                                 order.receiver_state }} - {{ order.receiver_pincode }}</p>
+                            {% if order.receiver_landmark %}
+                            <p class="text-muted small mb-0"><i class="fas fa-map-pin me-1"></i> Landmark: {{ order.receiver_landmark }}</p>
+                            {% endif %}
                             {% if order.receiver_saved and order.receiver_saved.bill_pattern %}
                             <div class="mt-2 small text-muted">
                                 <i class="fas fa-barcode me-1"></i>Bill Pattern: <strong>{{

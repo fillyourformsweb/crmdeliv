@@ -500,6 +500,8 @@ def customers():
                 'phone': order.customer_phone,
                 'email': order.customer_email,
                 'address': order.customer_address,
+                'city': order.customer_city,
+                'state': order.customer_state,
                 'total_orders': 1,
                 'last_order_date': order.created_at,
                 'total_spent': order.total_amount or 0
@@ -507,12 +509,17 @@ def customers():
         else:
             customers_dict[key]['total_orders'] += 1
             customers_dict[key]['total_spent'] += (order.total_amount or 0)
+            if order.customer_city: customers_dict[key]['city'] = order.customer_city
+            if order.customer_state: customers_dict[key]['state'] = order.customer_state
             if order.created_at > customers_dict[key]['last_order_date']:
                 customers_dict[key]['last_order_date'] = order.created_at
     
-    customers_list = sorted(customers_dict.values(), key=lambda x: x['last_order_date'], reverse=True)
+    customers_list = sorted(customers_dict.values(), key=lambda x: x['total_spent'], reverse=True)
     
-    return render_template('customers.html', customers=customers_list)
+    cities = sorted(list(set(c['city'] for c in customers_list if c.get('city'))))
+    states = sorted(list(set(c['state'] for c in customers_list if c.get('state'))))
+    
+    return render_template('customers.html', customers=customers_list, cities=cities, states=states)
 
 
 @app.route('/customer/profile')
@@ -1110,6 +1117,7 @@ def walkin_order():
             receiver_city=request.form.get('receiver_city'),
             receiver_state=request.form.get('receiver_state'),
             receiver_pincode=request.form.get('receiver_pincode'),
+            receiver_landmark=request.form.get('receiver_landmark'),
             package_description=request.form.get('package_description'),
             weight=float(request.form.get('weight') or 0),
             number_of_boxes=int(request.form.get('number_of_boxes') or 1),
@@ -1304,6 +1312,7 @@ def client_order():
             receiver_city=request.form.get('receiver_city'),
             receiver_state=request.form.get('receiver_state'),
             receiver_pincode=request.form.get('receiver_pincode'),
+            receiver_landmark=request.form.get('receiver_landmark'),
             package_description=request.form.get('package_description'),
             weight=float(request.form.get('weight') or 0),
             number_of_boxes=int(request.form.get('number_of_boxes') or 1),

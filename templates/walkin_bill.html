@@ -225,6 +225,9 @@
                 <div class="small fw-bold">Receiver: {{ order.receiver_name }}</div>
                 <div class="small">Dest: {{ order.receiver_city }}{% if order.receiver_state %}, {{ order.receiver_state
                     }}{% endif %}</div>
+                {% if order.receiver_landmark %}
+                <div class="small fw-bold mt-1 text-primary">Landmark: {{ order.receiver_landmark }}</div>
+                {% endif %}
             </div>
         </div>
 

@@ -46,17 +46,62 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-user-friends me-2"></i>Customer Directory</h5>
-                <div class="input-group w-25">
-                    <input type="text" id="customerSearch" class="form-control form-control-sm"
-                        placeholder="Search customers...">
-                    <button class="btn btn-primary btn-sm"><i class="fas fa-search"></i></button>
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-user-friends me-2"></i>Customer Directory</h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                            <i class="fas fa-filter me-1"></i> Advanced Filters
+                        </button>
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <input type="text" id="customerSearch" class="form-control" placeholder="Search name/phone/email...">
+                            <span class="input-group-text bg-primary text-white border-primary"><i class="fas fa-search"></i></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collapse" id="filterCollapse">
+                    <div class="p-3 bg-light rounded-3 border mb-3">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Sort By</label>
+                                <select id="sortField" class="form-select form-select-sm">
+                                    <option value="total_spent" selected>Total Value (Highest First)</option>
+                                    <option value="last_order_date">Last Order (Recent First)</option>
+                                    <option value="total_orders">Order Count (Highest First)</option>
+                                    <option value="name">Name (A-Z)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Filter by City</label>
+                                <select id="cityFilter" class="form-select form-select-sm">
+                                    <option value="">All Cities</option>
+                                    {% for city in cities %}
+                                    <option value="{{ city }}">{{ city }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Filter by State</label>
+                                <select id="stateFilter" class="form-select form-select-sm">
+                                    <option value="">All States</option>
+                                    {% for state in states %}
+                                    <option value="{{ state }}">{{ state }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button id="resetFilters" class="btn btn-secondary btn-sm w-100">
+                                    <i class="fas fa-undo me-1"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="customerTable">
                         <thead class="bg-light">
                             <tr>
                                 <th class="ps-4">Customer Details</th>
@@ -67,28 +112,37 @@
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="customerTableBody">
                             {% for customer in customers %}
-                            <tr>
+                            <tr class="customer-row" 
+                                data-name="{{ customer.name|lower }}"
+                                data-phone="{{ customer.phone }}"
+                                data-email="{{ customer.email|lower if customer.email else '' }}"
+                                data-address="{{ customer.address|lower if customer.address else '' }}"
+                                data-city="{{ customer.city or '' }}"
+                                data-state="{{ customer.state or '' }}"
+                                data-total-orders="{{ customer.total_orders }}"
+                                data-total-spent="{{ customer.total_spent }}"
+                                data-last-order-date="{{ customer.last_order_date.isoformat() }}">
                                 <td class="ps-4">
                                     <div class="d-flex align-items-center">
                                         <div class="avatar-sm bg-primary-subtle text-primary rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                            style="width: 40px; height: 40px;">
+                                            style="width: 40px; height: 40px; min-width: 40px;">
                                             <span class="fw-bold">{{ customer.name[0]|upper }}</span>
                                         </div>
                                         <div>
                                             <h6 class="mb-0 fw-bold text-dark">{{ customer.name }}</h6>
-                                            <small class="text-muted">{{ customer.address or 'No address provided'
-                                                }}</small>
+                                            <small class="text-muted">{{ customer.address or 'No address provided' }}</small>
+                                            {% if customer.city %}
+                                            <div class="mt-1"><span class="badge bg-secondary-subtle text-secondary pill-sm">{{ customer.city }}{% if customer.state %}, {{ customer.state }}{% endif %}</span></div>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="small">
-                                        <div class="mb-1"><i class="fas fa-phone-alt me-2 text-muted"></i>{{
-                                            customer.phone }}</div>
-                                        <div><i class="fas fa-envelope me-2 text-muted"></i>{{ customer.email or 'N/A'
-                                            }}</div>
+                                        <div class="mb-1"><i class="fas fa-phone-alt me-2 text-muted"></i>{{ customer.phone }}</div>
+                                        <div><i class="fas fa-envelope me-2 text-muted"></i>{{ customer.email or 'N/A' }}</div>
                                     </div>
                                 </td>
                                 <td>
@@ -100,17 +154,14 @@
                                     <div class="fw-bold text-dark">₹{{ "%.2f"|format(customer.total_spent) }}</div>
                                 </td>
                                 <td>
-                                    <div class="small text-muted">{{ customer.last_order_date.strftime('%d %b, %Y') }}
-                                    </div>
+                                    <div class="small text-muted">{{ customer.last_order_date.strftime('%d %b, %Y') }}</div>
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
                                         <a href="{{ url_for('customer_profile', name=customer.name, phone=customer.phone) }}"
-                                            class="btn btn-outline-primary" title="View Profile"><i
-                                                class="fas fa-eye"></i></a>
+                                            class="btn btn-outline-primary" title="View Profile"><i class="fas fa-eye"></i></a>
                                         <a href="{{ url_for('walkin_order', name=customer.name, phone=customer.phone, email=customer.email, address=customer.address) }}"
-                                            class="btn btn-outline-success" title="New Order"><i
-                                                class="fas fa-plus"></i></a>
+                                            class="btn btn-outline-success" title="New Order"><i class="fas fa-plus"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -119,8 +170,7 @@
                                 <td colspan="6" class="text-center py-5">
                                     <i class="fas fa-users-slash display-4 text-muted mb-3 d-block opacity-25"></i>
                                     <p class="text-muted">No individual customers found in your records.</p>
-                                    <a href="{{ url_for('walkin_order') }}" class="btn btn-primary btn-sm">Create First
-                                        Order</a>
+                                    <a href="{{ url_for('walkin_order') }}" class="btn btn-primary btn-sm">Create First Order</a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -131,18 +181,78 @@
         </div>
     </div>
 </div>
+
+<style>
+    .pill-sm { font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 50rem; }
+    #customerTableBody tr { transition: all 0.2s ease; }
+    #customerTableBody tr:hover { background-color: rgba(79, 70, 229, 0.02); }
+</style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.getElementById('customerSearch').addEventListener('keyup', function () {
-        let value = this.value.toLowerCase();
-        let rows = document.querySelectorAll('tbody tr');
+    const searchInput = document.getElementById('customerSearch');
+    const sortFieldSelect = document.getElementById('sortField');
+    const cityFilterSelect = document.getElementById('cityFilter');
+    const stateFilterSelect = document.getElementById('stateFilter');
+    const resetBtn = document.getElementById('resetFilters');
+    const tableBody = document.getElementById('customerTableBody');
+    const originalRows = Array.from(tableBody.querySelectorAll('.customer-row'));
 
-        rows.forEach(row => {
-            let text = row.innerText.toLowerCase();
-            row.style.display = text.includes(value) ? '' : 'none';
+    function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const sortField = sortFieldSelect.value;
+        const cityFilter = cityFilterSelect.value;
+        const stateFilter = stateFilterSelect.value;
+
+        let filteredRows = originalRows.filter(row => {
+            const name = row.dataset.name;
+            const phone = row.dataset.phone;
+            const email = row.dataset.email;
+            const address = row.dataset.address;
+            const city = row.dataset.city;
+            const state = row.dataset.state;
+
+            const matchesSearch = name.includes(searchTerm) || phone.includes(searchTerm) || email.includes(searchTerm) || address.includes(searchTerm);
+            const matchesCity = cityFilter === "" || city === cityFilter;
+            const matchesState = stateFilter === "" || state === stateFilter;
+
+            return matchesSearch && matchesCity && matchesState;
         });
+
+        // Sort
+        filteredRows.sort((a, b) => {
+            let valA = a.dataset[sortField.replace(/_/g, '-')];
+            let valB = b.dataset[sortField.replace(/_/g, '-')];
+
+            if (sortField === 'name') {
+                return valA.localeCompare(valB);
+            } else if (sortField === 'last_order_date') {
+                return new Date(valB) - new Date(valA); // Newest first
+            } else {
+                return parseFloat(valB) - parseFloat(valA); // Highest first
+            }
+        });
+
+        // Clear and Append
+        tableBody.innerHTML = '';
+        if (filteredRows.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-5 text-muted">No customers match your criteria.</td></tr>';
+        } else {
+            filteredRows.forEach(row => tableBody.appendChild(row));
+        }
+    }
+
+    [searchInput, sortFieldSelect, cityFilterSelect, stateFilterSelect].forEach(el => {
+        el.addEventListener('input', applyFilters);
+    });
+
+    resetBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        sortFieldSelect.value = 'total_spent';
+        cityFilterSelect.value = '';
+        stateFilterSelect.value = '';
+        applyFilters();
     });
 </script>
 {% endblock %}

@@ -88,16 +88,21 @@
                         <textarea name="receiver_address" class="form-control"
                             rows="2">{{ order.receiver_address or '' }}</textarea>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Landmark</label>
+                        <input type="text" name="receiver_landmark" class="form-control"
+                            value="{{ order.receiver_landmark or '' }}" placeholder="E.g. Near Bus Stand">
+                    </div>
                     <div class="row">
                         <div class="col-md-4 mb-3">
-                            <label class="form-label">City</label>
+                            <label class="form-label">City *</label>
                             <input type="text" name="receiver_city" class="form-control"
-                                value="{{ order.receiver_city or '' }}">
+                                value="{{ order.receiver_city or '' }}" required>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label class="form-label">State</label>
+                            <label class="form-label">State *</label>
                             <input type="text" name="receiver_state" class="form-control"
-                                value="{{ order.receiver_state or '' }}">
+                                value="{{ order.receiver_state or '' }}" required>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Pincode</label>
