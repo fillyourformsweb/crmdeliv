@@ -900,11 +900,23 @@ nav.luxury-navbar.navbar {
     min-height: 74px !important;
     height: auto !important;
     box-shadow: 0 10px 40px -20px rgba(0, 0, 0, 0.4) !important;
-    padding: 0 1.5rem !important;
+    padding: 0.5rem 1.5rem !important;
     display: flex;
     align-items: center;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1050;
+    z-index: 1050 !important;
+    position: relative;
+}
+
+.luxury-navbar .dropdown {
+    position: relative;
+    z-index: 1060;
+}
+
+.luxury-navbar .dropdown-menu {
+    z-index: 9999 !important;
+    position: absolute;
+    transform-origin: top right;
 }
 
 .brand-text span.fw-black {
@@ -943,9 +955,11 @@ nav.luxury-navbar.navbar {
     align-items: center;
     gap: 12px;
     text-decoration: none !important;
-    padding: 6px 12px;
+    padding: 4px 12px;
     border-radius: 50rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.05); /* Make the button bounds clear */
+    margin: 0;
 }
 
 .nav-profile-trigger:hover {
@@ -961,17 +975,18 @@ nav.luxury-navbar.navbar {
 }
 
 .avatar-circle {
-    width: 42px;
-    height: 42px;
-    background: #0f172a !important;
-    border: none !important;
+    width: 38px;
+    height: 38px;
+    background: #1e293b !important;
+    border: 2px solid rgba(255,255,255,0.1) !important;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white !important;
-    font-size: 1.1rem;
+    font-size: 1rem;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .user-name {
@@ -1582,5 +1597,17 @@ body {
     
     .luxury-card .card-body {
         padding: 0.5rem !important;
+    }
+    
+    /* Ensure navbar always stays above the dashboard cards */
+    .luxury-navbar {
+        position: sticky !important;
+        top: 0;
+        z-index: 99999 !important;
+    }
+    
+    .main-content-wrapper, .hero-welcome-box, .page-content-wrapper {
+        z-index: 1 !important;
+        position: relative;
     }
 }
