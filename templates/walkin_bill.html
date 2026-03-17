@@ -218,7 +218,7 @@
             <div class="grid-cell">
                 <div class="fw-bold mb-1">Bill To (Sender):</div>
                 <div class="fw-bold">{{ order.customer_name }}</div>
-                <div class="small">Address: {{ order.customer_address }}</div>
+                <div class="small">Address: {{ order.customer_address }}{% if order.customer_pincode %} - {{ order.customer_pincode }}{% endif %}</div>
                 <div class="small mt-2">Contact: {{ order.customer_phone }}</div>
                 <div class="small">Email: {{ order.customer_email or 'N/A' }}</div>
                 <hr class="my-1" style="border-top: 1px dashed #333;">

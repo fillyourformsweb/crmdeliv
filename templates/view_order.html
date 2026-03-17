@@ -56,7 +56,7 @@
                             {% endif %}
                             <h4 class="fw-black mb-1 text-dark">{{ order.customer_name }}</h4>
                             <p class="mb-1 text-primary fw-bold">{{ order.customer_phone }}</p>
-                            <p class="text-muted small mb-0">{{ order.customer_address }}</p>
+                            <p class="text-muted small mb-0">{{ order.customer_address }}{% if order.customer_pincode %} - {{ order.customer_pincode }}{% endif %}</p>
                         </div>
                     </div>
                     <div class="col-md-6">

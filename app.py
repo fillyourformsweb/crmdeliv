@@ -1103,6 +1103,7 @@ def walkin_order():
             customer_phone=request.form.get('customer_phone'),
             customer_email=request.form.get('customer_email'),
             customer_address=request.form.get('customer_address'),
+            customer_pincode=request.form.get('customer_pincode'),
             receiver_name=request.form.get('receiver_name'),
             receiver_phone=request.form.get('receiver_phone'),
             receiver_address=request.form.get('receiver_address'),
@@ -1296,6 +1297,7 @@ def client_order():
             customer_phone=client.phone if client else request.form.get('customer_phone'),
             customer_email=client.email if client else request.form.get('customer_email'),
             customer_address=client.address if client else request.form.get('customer_address'),
+            customer_pincode=client.pincode if client else request.form.get('customer_pincode'),
             receiver_name=request.form.get('receiver_name'),
             receiver_phone=request.form.get('receiver_phone'),
             receiver_address=request.form.get('receiver_address'),
@@ -1412,6 +1414,7 @@ def edit_order(id):
         order.customer_phone = request.form.get('customer_phone')
         order.customer_email = request.form.get('customer_email')
         order.customer_address = request.form.get('customer_address')
+        order.customer_pincode = request.form.get('customer_pincode')
         order.receiver_name = request.form.get('receiver_name')
         order.receiver_phone = request.form.get('receiver_phone')
         order.receiver_address = request.form.get('receiver_address')
@@ -3706,6 +3709,7 @@ def scan_document():
         - from_name
         - from_phone
         - from_address
+        - from_pincode
         - to_name
         - to_phone
         - to_address

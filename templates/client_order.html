@@ -82,6 +82,7 @@
                             {% for client in clients %}
                             <option value="{{ client.id }}" data-name="{{ client.name }}"
                                 data-phone="{{ client.phone }}" data-email="{{ client.email or '' }}"
+                                data-pincode="{{ client.pincode or '' }}"
                                 data-address="{{ client.address or '' }}"
                                 data-pattern="{{ client.billing_pattern_id or '' }}"
                                 data-receivers='{{ client.receivers|map(attribute="id")|list|tojson }}'
@@ -108,15 +109,20 @@
                                     Person</div>
                                 <div class="fw-bold text-dark" id="clientName"></div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Phone
                                 </div>
                                 <div class="fw-bold text-dark" id="clientPhone"></div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Email
                                 </div>
                                 <div class="fw-bold text-dark text-truncate" id="clientEmail"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Pincode
+                                </div>
+                                <div class="fw-bold text-dark" id="clientPincode"></div>
                             </div>
                         </div>
                     </div>
@@ -309,6 +315,7 @@
             document.getElementById('clientName').textContent = option.dataset.name;
             document.getElementById('clientPhone').textContent = option.dataset.phone;
             document.getElementById('clientEmail').textContent = option.dataset.email || 'N/A';
+            document.getElementById('clientPincode').textContent = option.dataset.pincode || 'N/A';
 
             // Populate Receivers
             receiverSelect.innerHTML = '<option value="">Select Saved Receiver (or enter new)...</option>';
@@ -448,6 +455,11 @@
             const response = await fetch('/api/scan-document', { method: 'POST', body: formData });
             const data = await response.json();
             if (data.error) { alert(data.error); return; }
+            if (data.from_name && !document.querySelector('select[name="client_id"]').value) document.querySelector('input[name="customer_name"]').value = data.from_name;
+            if (data.from_phone && !document.querySelector('select[name="client_id"]').value) document.querySelector('input[name="customer_phone"]').value = data.from_phone;
+            if (data.from_address && !document.querySelector('select[name="client_id"]').value) document.querySelector('textarea[name="customer_address"]').value = data.from_address;
+            if (data.from_pincode && !document.querySelector('select[name="client_id"]').value) document.querySelector('input[name="customer_pincode"]').value = data.from_pincode;
+            
             if (data.to_name) document.querySelector('input[name="receiver_name"]').value = data.to_name;
             if (data.to_phone) document.querySelector('input[name="receiver_phone"]').value = data.to_phone;
             if (data.to_address) document.querySelector('textarea[name="receiver_address"]').value = data.to_address;

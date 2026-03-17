@@ -52,10 +52,18 @@
                         <input type="email" name="customer_email" class="form-control"
                             value="{{ order.customer_email or '' }}">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Address</label>
-                        <textarea name="customer_address" class="form-control"
-                            rows="2">{{ order.customer_address or '' }}</textarea>
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Address</label>
+                            <textarea name="customer_address" class="form-control"
+                                rows="2">{{ order.customer_address or '' }}</textarea>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Pincode</label>
+                            <input type="text" name="customer_pincode" class="form-control"
+                                value="{{ order.customer_pincode or '' }}" pattern="[0-9]{6}" minlength="6"
+                                maxlength="6" inputmode="numeric">
+                        </div>
                     </div>
                 </div>
             </div>
