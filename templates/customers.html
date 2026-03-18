@@ -68,6 +68,7 @@
                                 <select id="sortField" class="form-select form-select-sm">
                                     <option value="last_order_date" selected>Last Order (Recent First)</option>
                                     <option value="total_spent">Total Value (Highest First)</option>
+                                    <option value="highest_order_amount">Highest Order Amount (Highest First)</option>
                                     <option value="total_orders">Order Count (Highest First)</option>
                                     <option value="name">Name (A-Z)</option>
                                 </select>
@@ -123,6 +124,7 @@
                                 data-state="{{ customer.state or '' }}"
                                 data-total-orders="{{ customer.total_orders }}"
                                 data-total-spent="{{ customer.total_spent }}"
+                                data-highest-order-amount="{{ customer.highest_order_amount }}"
                                 data-last-order-date="{{ customer.last_order_date.isoformat() }}">
                                 <td class="ps-4">
                                     <div class="d-flex align-items-center">

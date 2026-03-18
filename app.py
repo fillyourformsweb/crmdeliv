@@ -516,11 +516,15 @@ def customers():
                 'state': order.customer_state,
                 'total_orders': 1,
                 'last_order_date': order.created_at,
-                'total_spent': order.total_amount or 0
+                'total_spent': order.total_amount or 0,
+                'highest_order_amount': order.total_amount or 0
             }
         else:
             customers_dict[key]['total_orders'] += 1
             customers_dict[key]['total_spent'] += (order.total_amount or 0)
+            # Update highest order amount
+            if order.total_amount and order.total_amount > customers_dict[key]['highest_order_amount']:
+                customers_dict[key]['highest_order_amount'] = order.total_amount
             if order.customer_city: customers_dict[key]['city'] = order.customer_city
             if order.customer_state: customers_dict[key]['state'] = order.customer_state
             if order.created_at > customers_dict[key]['last_order_date']:
@@ -1269,6 +1273,8 @@ def edit_client_address(id):
 @login_required
 @staff_required
 def orders():
+    from sqlalchemy import case
+    
     status_filter = request.args.get('status', '')
     order_type_filter = request.args.get('order_type', '')
     search = request.args.get('search', '')
@@ -1288,7 +1294,18 @@ def orders():
             (Order.customer_phone.contains(search))
         )
     
-    orders = query.order_by(Order.created_at.desc()).all()
+    # Define status priority: pending -> confirmed/in_transit -> delivered -> cancelled
+    status_priority = case(
+        (Order.status == 'pending', 1),
+        (Order.status == 'confirmed', 2),
+        (Order.status == 'in_transit', 2),
+        (Order.status == 'delivered', 3),
+        (Order.status == 'cancelled', 4),
+        else_=5
+    )
+    
+    # Order by status priority first, then by created_at descending
+    orders = query.order_by(status_priority, Order.created_at.desc()).all()
     delivery_personnel = User.query.filter_by(role='delivery', is_active=True).all()
     
     return render_template('orders.html', 
