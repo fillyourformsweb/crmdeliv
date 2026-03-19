@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Logs - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="page-content-wrapper w-100">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-7">
+            <h5 class="text-indigo fw-bold mb-1" style="color: var(--luxury-blue) !important;">System Monitoring</h5>
+            <h1 class="display-4 fw-black text-dark mb-2">Audit Logs</h1>
+            <p class="text-muted fs-5 mb-0">Complete history of all system changes and user activities.</p>
+        </div>
+        <div class="col-md-5 text-md-end mt-3 mt-md-0">
+            <div class="d-flex justify-content-md-end gap-3">
+                <a href="{{ url_for('audit_logs_report') }}" class="luxury-btn btn btn-primary border-0"
+                    style="background: var(--primary-gradient);">
+                    <i class="fas fa-chart-pie me-1"></i> View Report
+                </a>
+                <a href="{{ url_for('export_audit_logs') }}" class="luxury-btn btn btn-success border-0">
+                    <i class="fas fa-download me-1"></i> Export CSV
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Filter Card -->
+    <div class="luxury-card mb-4">
+        <div class="card-body p-4">
+            <form method="GET" class="row g-3 align-items-end">
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-muted">Action</label>
+                    <select name="action" class="form-select luxury-input">
+                        <option value="">All Actions</option>
+                        <option value="CREATE" {{ 'selected' if action_filter=='CREATE' }}>Create</option>
+                        <option value="UPDATE" {{ 'selected' if action_filter=='UPDATE' }}>Update</option>
+                        <option value="DELETE" {{ 'selected' if action_filter=='DELETE' }}>Delete</option>
+                        <option value="PAYMENT" {{ 'selected' if action_filter=='PAYMENT' }}>Payment</option>
+                        <option value="STATUS_CHANGE" {{ 'selected' if action_filter=='STATUS_CHANGE' }}>Status Change</option>
+                        <option value="VERIFY" {{ 'selected' if action_filter=='VERIFY' }}>Verify</option>
+                        <option value="ASSIGN" {{ 'selected' if action_filter=='ASSIGN' }}>Assign</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-muted">Entity Type</label>
+                    <select name="entity_type" class="form-select luxury-input">
+                        <option value="">All Types</option>
+                        <option value="Order" {{ 'selected' if entity_filter=='Order' }}>Order</option>
+                        <option value="Client" {{ 'selected' if entity_filter=='Client' }}>Client</option>
+                        <option value="User" {{ 'selected' if entity_filter=='User' }}>User</option>
+                        <option value="Branch" {{ 'selected' if entity_filter=='Branch' }}>Branch</option>
+                        <option value="Pricing" {{ 'selected' if entity_filter=='Pricing' }}>Pricing</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-muted">User</label>
+                    <input type="text" name="username" class="form-control luxury-input"
+                        placeholder="Username..." value="{{ user_filter }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-muted">Date</label>
+                    <input type="date" name="date" class="form-control luxury-input" value="{{ search_date }}">
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="luxury-btn btn btn-primary flex-grow-1">
+                        <i class="fas fa-filter me-1"></i> Filter
+                    </button>
+                    <a href="{{ url_for('audit_logs') }}" class="luxury-btn btn btn-light border">
+                        <i class="fas fa-redo me-1"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Audit Logs Table -->
+    <div class="luxury-card">
+        <div class="table-responsive">
+            <table class="table luxury-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>User</th>
+                        <th>Branch</th>
+                        <th>Action</th>
+                        <th>Entity Type</th>
+                        <th>Entity Name</th>
+                        <th>Client</th>
+                        <th>Changes</th>
+                        <th>Due</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>
+                            <div class="small fw-semibold">{{ log.created_at.strftime('%d %b, %Y') }}</div>
+                            <div class="text-muted xsmall">{{ log.created_at.strftime('%H:%M:%S') }}</div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark">{{ log.username }}</div>
+                        </td>
+                        <td>
+                            {% if log.branch_name %}
+                            <span class="luxury-badge bg-info-subtle text-info border border-info-subtle">
+                                {{ log.branch_name }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% set action_colors = {
+                                'CREATE': 'success',
+                                'UPDATE': 'warning',
+                                'DELETE': 'danger',
+                                'PAYMENT': 'primary',
+                                'VERIFY': 'info',
+                                'STATUS_CHANGE': 'warning',
+                                'ASSIGN': 'secondary'
+                            } %}
+                            <span class="luxury-badge bg-{{ action_colors.get(log.action, 'secondary') }}-subtle text-{{ action_colors.get(log.action, 'secondary') }} border border-{{ action_colors.get(log.action, 'secondary') }}-subtle">
+                                {{ log.action|replace('_', ' ') }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="small fw-semibold text-dark">{{ log.entity_type }}</span>
+                        </td>
+                        <td>
+                            {% if log.entity_name %}
+                            <span class="small fw-semibold text-primary">{{ log.entity_name }}</span>
+                            {% elif log.receipt_number %}
+                            <span class="small fw-semibold text-primary">{{ log.receipt_number }}</span>
+                            {% else %}
+                            <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if log.client_name %}
+                            <span class="small text-dark">{{ log.client_name }}</span>
+                            {% else %}
+                            <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="small text-dark" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">
+                                {{ log.changes or '-' }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if log.due_amount and log.due_amount > 0 %}
+                            <span class="luxury-badge bg-danger-subtle text-danger border border-danger-subtle">
+                                ₹{{ "%.2f"|format(log.due_amount) }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('audit_log_detail', log_id=log.id) }}"
+                                class="btn btn-light btn-sm rounded-circle border p-2" title="View Details">
+                                <i class="fas fa-eye text-primary"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="10" class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="fas fa-log fa-3x text-muted opacity-25"></i>
+                            </div>
+                            <h5 class="text-muted fw-normal">No audit logs found</h5>
+                            <a href="{{ url_for('audit_logs') }}" class="btn btn-link">Clear all filters</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        {% if pagination.total > 50 %}
+        <div class="card-footer bg-light d-flex justify-content-between align-items-center py-3 px-4">
+            <div class="text-muted small">
+                Showing <strong>{{ ((pagination.page - 1) * 50) + 1 }}</strong> to <strong>{{ min(pagination.page * 50, pagination.total) }}</strong> of <strong>{{ pagination.total }}</strong> logs
+            </div>
+            <nav>
+                <ul class="pagination mb-0">
+                    {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if action_filter %}&action={{ action_filter }}{% endif %}{% if entity_filter %}&entity_type={{ entity_filter }}{% endif %}{% if user_filter %}&username={{ user_filter }}{% endif %}{% if search_date %}&date={{ search_date }}{% endif %}">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ pagination.prev_num }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if entity_filter %}&entity_type={{ entity_filter }}{% endif %}{% if user_filter %}&username={{ user_filter }}{% endif %}{% if search_date %}&date={{ search_date }}{% endif %}">
+                            <i class="fas fa-angle-left"></i> Previous
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in pagination.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num == pagination.page %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_num }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if entity_filter %}&entity_type={{ entity_filter }}{% endif %}{% if user_filter %}&username={{ user_filter }}{% endif %}{% if search_date %}&date={{ search_date }}{% endif %}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ pagination.next_num }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if entity_filter %}&entity_type={{ entity_filter }}{% endif %}{% if user_filter %}&username={{ user_filter }}{% endif %}{% if search_date %}&date={{ search_date }}{% endif %}">
+                            Next <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ pagination.pages }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if entity_filter %}&entity_type={{ entity_filter }}{% endif %}{% if user_filter %}&username={{ user_filter }}{% endif %}{% if search_date %}&date={{ search_date }}{% endif %}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.table-responsive {
+    font-size: 0.95rem;
+}
+
+.xsmall {
+    font-size: 0.75rem;
+}
+</style>
+{% endblock %}

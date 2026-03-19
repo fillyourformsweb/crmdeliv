@@ -34,7 +34,7 @@ from models import (
     db, init_db, User, Branch, Client, Order, ReceiptSetting,
     TrackingUpdate, ExcelUpload, ExcelData, SystemSettings,
     DefaultStatePrice, ClientStatePrice, NormalClientStatePrice, Notification, StaffReceiptAssignment, Receiver,
-    BillingPattern, SalesVisit, FollowUp, Meeting, ClientAddress, Courier, Offer
+    BillingPattern, SalesVisit, FollowUp, Meeting, ClientAddress, Courier, Offer, AuditLog
 )
 
 app = Flask(__name__)
@@ -664,6 +664,176 @@ def admin_dashboard():
                          daily_revenue=daily_revenue,
                          status_dist=status_dist,
                          days_filter=days_filter)
+
+
+@app.route('/audit-logs')
+@login_required
+@admin_required
+def audit_logs():
+    """View all audit logs - Admin only"""
+    from models import AuditLog
+    
+    page = request.args.get('page', 1, type=int)
+    action_filter = request.args.get('action', '')
+    entity_filter = request.args.get('entity_type', '')
+    user_filter = request.args.get('username', '')
+    branch_filter = request.args.get('branch', '')
+    client_filter = request.args.get('client', '')
+    search_date = request.args.get('date', '')
+    
+    query = AuditLog.query
+    
+    if action_filter:
+        query = query.filter_by(action=action_filter)
+    if entity_filter:
+        query = query.filter_by(entity_type=entity_filter)
+    if user_filter:
+        query = query.filter(AuditLog.username.contains(user_filter))
+    if branch_filter:
+        query = query.filter_by(branch_name=branch_filter)
+    if client_filter:
+        query = query.filter(AuditLog.client_name.contains(client_filter))
+    if search_date:
+        from datetime import datetime, timedelta
+        try:
+            search_dt = datetime.strptime(search_date, '%Y-%m-%d')
+            next_day = search_dt + timedelta(days=1)
+            query = query.filter(AuditLog.created_at >= search_dt, AuditLog.created_at < next_day)
+        except:
+            pass
+    
+    pagination = query.order_by(AuditLog.created_at.desc()).paginate(
+        page=page, per_page=50, error_out=False
+    )
+    logs = pagination.items
+    
+    return render_template('audit_logs.html',
+                         logs=logs,
+                         pagination=pagination,
+                         action_filter=action_filter,
+                         entity_filter=entity_filter,
+                         user_filter=user_filter,
+                         branch_filter=branch_filter,
+                         client_filter=client_filter,
+                         search_date=search_date)
+
+
+@app.route('/audit-logs/<int:log_id>')
+@login_required
+@admin_required
+def audit_log_detail(log_id):
+    """View detailed audit log entry - Admin only"""
+    from models import AuditLog
+    
+    log = AuditLog.query.get_or_404(log_id)
+    return render_template('audit_log_detail.html', log=log)
+
+
+@app.route('/audit-logs/report')
+@login_required
+@admin_required
+def audit_logs_report():
+    """Generate audit logs report - Admin only"""
+    from models import AuditLog
+    from sqlalchemy import func
+    
+    # Default to last 30 days
+    from datetime import datetime, timedelta
+    start_date = datetime.utcnow() - timedelta(days=30)
+    
+    # Activity by user
+    user_activity = db.session.query(
+        AuditLog.username,
+        func.count(AuditLog.id).label('action_count')
+    ).filter(AuditLog.created_at >= start_date).group_by(AuditLog.username).order_by(
+        func.count(AuditLog.id).desc()
+    ).all()
+    
+    # Activity by entity type
+    entity_activity = db.session.query(
+        AuditLog.entity_type,
+        func.count(AuditLog.id).label('action_count')
+    ).filter(AuditLog.created_at >= start_date).group_by(AuditLog.entity_type).order_by(
+        func.count(AuditLog.id).desc()
+    ).all()
+    
+    # Activity by action
+    action_activity = db.session.query(
+        AuditLog.action,
+        func.count(AuditLog.id).label('action_count')
+    ).filter(AuditLog.created_at >= start_date).group_by(AuditLog.action).order_by(
+        func.count(AuditLog.id).desc()
+    ).all()
+    
+    # Clients with most activity
+    client_activity = db.session.query(
+        AuditLog.client_name,
+        func.count(AuditLog.id).label('action_count'),
+        func.sum(AuditLog.due_amount).label('total_due')
+    ).filter(AuditLog.created_at >= start_date, AuditLog.client_name.isnot(None)).group_by(
+        AuditLog.client_name
+    ).order_by(func.count(AuditLog.id).desc()).limit(20).all()
+    
+    # Due alerts
+    due_alerts = db.session.query(AuditLog).filter(
+        AuditLog.due_amount.isnot(None),
+        AuditLog.due_amount > 0,
+        AuditLog.created_at >= start_date
+    ).order_by(AuditLog.due_amount.desc()).limit(30).all()
+    
+    return render_template('audit_logs_report.html',
+                         user_activity=user_activity,
+                         entity_activity=entity_activity,
+                         action_activity=action_activity,
+                         client_activity=client_activity,
+                         due_alerts=due_alerts)
+
+
+@app.route('/api/audit-logs/export')
+@login_required
+@admin_required
+def export_audit_logs():
+    """Export audit logs as CSV - Admin only"""
+    from models import AuditLog
+    import csv
+    from io import StringIO, BytesIO
+    
+    # Get logs from last 90 days
+    from datetime import datetime, timedelta
+    start_date = datetime.utcnow() - timedelta(days=90)
+    
+    logs = AuditLog.query.filter(AuditLog.created_at >= start_date).order_by(
+        AuditLog.created_at.desc()
+    ).all()
+    
+    # Create CSV
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        'Date', 'User', 'Branch', 'Action', 'Entity Type', 'Entity Name',
+        'Client', 'Receipt Number', 'Changes', 'Due Amount', 'IP Address'
+    ])
+    
+    for log in logs:
+        writer.writerow([
+            log.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            log.username,
+            log.branch_name or '',
+            log.action,
+            log.entity_type,
+            log.entity_name or '',
+            log.client_name or '',
+            log.receipt_number or '',
+            log.changes or '',
+            log.due_amount or '',
+            log.ip_address or ''
+        ])
+    
+    # Return as download
+    response = app.make_response(output.getvalue().encode('utf-8-sig'))
+    response.headers["Content-Disposition"] = "attachment; filename=audit_logs.csv"
+    response.headers["Content-Type"] = "text/csv; charset=utf-8-sig"
+    return response
 
 
 @app.route('/api/search/suggestions')

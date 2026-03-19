@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Logs Report - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="page-content-wrapper w-100">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-7">
+            <a href="{{ url_for('audit_logs') }}" class="btn btn-light border mb-3">
+                <i class="fas fa-arrow-left me-2"></i> Back to Audit Logs
+            </a>
+            <h1 class="display-4 fw-black text-dark mb-2">Audit Activity Report</h1>
+            <p class="text-muted fs-5 mb-0">System activity summary for the last 30 days.</p>
+        </div>
+        <div class="col-md-5 text-md-end mt-3 mt-md-0">
+            <a href="{{ url_for('export_audit_logs') }}" class="luxury-btn btn btn-success border-0">
+                <i class="fas fa-download me-1"></i> Export CSV
+            </a>
+        </div>
+    </div>
+
+    <!-- Key Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="luxury-card text-center py-4">
+                <div class="fs-3 fw-bold text-primary mb-2">{{ user_activity|length }}</div>
+                <div class="text-muted small">Active Users</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="luxury-card text-center py-4">
+                <div class="fs-3 fw-bold text-success mb-2">{{ entity_activity|length }}</div>
+                <div class="text-muted small">Entity Types Changed</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="luxury-card text-center py-4">
+                <div class="fs-3 fw-bold text-warning mb-2">{{ action_activity|length }}</div>
+                <div class="text-muted small">Action Types</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="luxury-card text-center py-4">
+                <div class="fs-3 fw-bold text-danger mb-2">{{ due_alerts|length }}</div>
+                <div class="text-muted small">Outstanding Dues</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- User Activity -->
+        <div class="col-md-6 mb-4">
+            <div class="luxury-card">
+                <div class="card-header border-bottom pb-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users text-primary me-2"></i> Activity by User
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if user_activity %}
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        {% for activity in user_activity %}
+                        <div class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
+                            <div>
+                                <div class="fw-bold">{{ activity.username }}</div>
+                                <small class="text-muted">{{ activity.action_count }} actions</small>
+                            </div>
+                            <div class="luxury-badge bg-primary-subtle text-primary border border-primary-subtle">
+                                {{ activity.action_count }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No activity found</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Entity Type Activity -->
+        <div class="col-md-6 mb-4">
+            <div class="luxury-card">
+                <div class="card-header border-bottom pb-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cube text-info me-2"></i> Activity by Entity Type
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if entity_activity %}
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        {% for activity in entity_activity %}
+                        <div class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
+                            <div>
+                                <div class="fw-bold">{{ activity.entity_type }}</div>
+                                <small class="text-muted">{{ activity.action_count }} changes</small>
+                            </div>
+                            <div class="luxury-badge bg-info-subtle text-info border border-info-subtle">
+                                {{ activity.action_count }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No activity found</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Action Type Activity -->
+        <div class="col-md-6 mb-4">
+            <div class="luxury-card">
+                <div class="card-header border-bottom pb-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exchange-alt text-warning me-2"></i> Activity by Action Type
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if action_activity %}
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        {% for activity in action_activity %}
+                        <div class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
+                            <div>
+                                <div class="fw-bold">{{ activity.action|replace('_', ' ') }}</div>
+                                <small class="text-muted">{{ activity.action_count }} records</small>
+                            </div>
+                            <div class="luxury-badge bg-warning-subtle text-warning border border-warning-subtle">
+                                {{ activity.action_count }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No activity found</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Activity -->
+        <div class="col-md-6 mb-4">
+            <div class="luxury-card">
+                <div class="card-header border-bottom pb-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-building text-success me-2"></i> Top Active Clients
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if client_activity %}
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        {% for activity in client_activity %}
+                        <div class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
+                            <div>
+                                <div class="fw-bold">{{ activity.client_name }}</div>
+                                <small class="text-muted">{{ activity.action_count }} changes</small>
+                                {% if activity.total_due %}
+                                <div class="small text-danger fw-semibold mt-1">
+                                    Due: ₹{{ "%.2f"|format(activity.total_due) }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="luxury-badge bg-success-subtle text-success border border-success-subtle">
+                                {{ activity.action_count }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No activity found</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Outstanding Due Alerts -->
+    <div class="row">
+        <div class="col-12">
+            <div class="luxury-card">
+                <div class="card-header border-bottom pb-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle text-danger me-2"></i> Outstanding Due Alerts
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if due_alerts %}
+                    <div class="table-responsive">
+                        <table class="table luxury-table mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>User</th>
+                                    <th>Client</th>
+                                    <th>Receipt #</th>
+                                    <th>Action</th>
+                                    <th>Outstanding Due</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for alert in due_alerts %}
+                                <tr>
+                                    <td>
+                                        <small class="fw-semibold">{{ alert.created_at.strftime('%d %b, %Y') }}</small>
+                                        <br><small class="text-muted">{{ alert.created_at.strftime('%H:%M:%S') }}</small>
+                                    </td>
+                                    <td>
+                                        <small class="fw-semibold">{{ alert.username }}</small>
+                                    </td>
+                                    <td>
+                                        <small class="text-dark">{{ alert.client_name or '-' }}</small>
+                                    </td>
+                                    <td>
+                                        {% if alert.receipt_number %}
+                                        <a href="{{ url_for('order_details', id=alert.order_id) if alert.order_id else '#' }}" class="fw-bold text-primary text-decoration-none">
+                                            {{ alert.receipt_number }}
+                                        </a>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% set action_colors = {
+                                            'CREATE': 'success',
+                                            'UPDATE': 'warning',
+                                            'DELETE': 'danger',
+                                            'PAYMENT': 'primary'
+                                        } %}
+                                        <span class="luxury-badge bg-{{ action_colors.get(alert.action, 'secondary') }}-subtle text-{{ action_colors.get(alert.action, 'secondary') }} border border-{{ action_colors.get(alert.action, 'secondary') }}-subtle">
+                                            {{ alert.action|replace('_', ' ') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="luxury-badge bg-danger-subtle text-danger border border-danger-subtle fw-bold">
+                                            ₹{{ "%.2f"|format(alert.due_amount) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('audit_log_detail', log_id=alert.id) }}" class="btn btn-light btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center">
+                        <p class="text-muted mb-0">No outstanding dues found in the last 30 days</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

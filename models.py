@@ -540,6 +540,36 @@ class Offer(db.Model):
     creator = db.relationship('User', foreign_keys=[created_by])
 
 
+class AuditLog(db.Model):
+    __tablename__ = 'audit_logs'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    username = db.Column(db.String(80), nullable=False)
+    branch_id = db.Column(db.Integer, db.ForeignKey('branches.id'), nullable=True)
+    branch_name = db.Column(db.String(100))
+    action = db.Column(db.String(100), nullable=False)  # CREATE, UPDATE, DELETE, PAYMENT, VERIFY, STATUS_CHANGE
+    entity_type = db.Column(db.String(50), nullable=False)  # Order, Client, User, Branch, etc.
+    entity_id = db.Column(db.Integer)
+    entity_name = db.Column(db.String(200))  # e.g., receipt_number, client_name
+    old_value = db.Column(db.Text)  # JSON string of old values
+    new_value = db.Column(db.Text)  # JSON string of new values
+    changes = db.Column(db.Text)  # Description of what changed
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=True)
+    client_name = db.Column(db.String(100))
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=True)
+    receipt_number = db.Column(db.String(50))
+    due_amount = db.Column(db.Float)  # Track due amounts for alerts
+    ip_address = db.Column(db.String(50))
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    
+    user = db.relationship('User', backref='audit_logs')
+    branch = db.relationship('Branch', backref='audit_logs')
+    client = db.relationship('Client', backref='audit_logs')
+    order = db.relationship('Order', backref='audit_logs')
+
+
 def init_db(app):
     import os
     # Ensure the instance folder exists so SQLite can create the DB file
