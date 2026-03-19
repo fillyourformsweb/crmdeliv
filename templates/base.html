@@ -13,6 +13,34 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        .search-suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border-radius: 0.75rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .suggestion-item {
+            padding: 0.75rem 1rem;
+            display: block;
+            color: #1e293b;
+            text-decoration: none;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover { background: #f8fafc; color: #0d6efd; padding-left: 1.25rem; }
+        .suggestion-type { font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -90,8 +118,9 @@
                 <h6><i class="fas fa-search-location me-2"></i>Logistics Search</h6>
                 <form action="{{ url_for('tracking') }}" method="GET">
                     <div class="position-relative">
-                        <input type="text" name="receipt_number" class="sidebar-track-input"
-                            placeholder="Tracking Number..." required>
+                        <input type="text" id="sidebarSearch" name="receipt_number" class="sidebar-track-input autocomplete-search"
+                            placeholder="Tracking / Client..." required autocomplete="off">
+                        <div class="search-suggestions-container d-none"></div>
                         <button type="submit"
                             class="position-absolute end-0 top-0 h-100 border-0 bg-transparent text-white pe-3 opacity-75">
                             <i class="fas fa-arrow-right"></i>
@@ -111,7 +140,7 @@
 
                 <div class="sidebar-section-content" id="mainOpsContent">
                     {% if current_user.role != 'admin' %}
-                    <a href="{{ url_for('dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'dashboard' }}">
+                    <a href="{{ url_for('dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint in ['dashboard', 'staff_dashboard'] }}">
                         <i class="fas fa-chart-line"></i>
                         <span>Dashboard</span>
                     </a>
@@ -195,7 +224,7 @@
                 </div>
             </div>
 
-            {% if current_user.role in ['admin', 'manager'] %}
+            {% if current_user.role in ['admin', 'manager', 'staff'] %}
 
             <!-- Finance & Analytics - Collapsible -->
             <div class="sidebar-section-group">
@@ -468,6 +497,50 @@
             }
         });
 
+        // 5. Global Search Suggestions Logic (Improved)
+        function initAutocomplete() {
+            document.querySelectorAll('.autocomplete-search').forEach(input => {
+                const container = input.parentElement.querySelector('.search-suggestions-container');
+                let timeout;
+
+                input.addEventListener('input', () => {
+                    clearTimeout(timeout);
+                    const query = input.value.trim();
+                    
+                    if (query.length < 1) {
+                        container?.classList.add('d-none');
+                        return;
+                    }
+
+                    timeout = setTimeout(() => {
+                        fetch(`/api/search/suggestions?q=${encodeURIComponent(query)}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data && data.length > 0) {
+                                    container.innerHTML = data.map(item => `
+                                        <a href="${item.url}" class="suggestion-item">
+                                            <div class="suggestion-type">${item.type}</div>
+                                            <div>${item.label}</div>
+                                        </a>
+                                    `).join('');
+                                    container.classList.remove('d-none');
+                                } else {
+                                    container.classList.add('d-none');
+                                }
+                            });
+                    }, 200); // Faster 200ms debounce
+                });
+
+                // Close on click outside
+                document.addEventListener('click', (e) => {
+                    if (!input.contains(e.target) && !container?.contains(e.target)) {
+                        container?.classList.add('d-none');
+                    }
+                });
+            });
+        }
+
+        initAutocomplete();
 
     </script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>

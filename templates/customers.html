@@ -53,9 +53,9 @@
                         <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
                             <i class="fas fa-filter me-1"></i> Advanced Filters
                         </button>
-                        <div class="input-group input-group-sm" style="width: 250px;">
-                            <input type="text" id="customerSearch" class="form-control" placeholder="Search name/phone/email...">
-                            <span class="input-group-text bg-primary text-white border-primary"><i class="fas fa-search"></i></span>
+                        <div class="position-relative" style="width: 250px;">
+                            <input type="text" id="customerSearch" class="form-control autocomplete-search" placeholder="Quick Search..." autocomplete="off">
+                            <div class="search-suggestions-container d-none"></div>
                         </div>
                     </div>
                 </div>

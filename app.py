@@ -426,8 +426,8 @@ def login():
                 flash('Your account is deactivated. Contact admin.', 'error')
                 return render_template('login.html')
             
-            if user.role not in ['admin', 'manager', 'customer']:
-                flash('Login access is restricted to Administrators and Managers.', 'error')
+            if user.role not in ['admin', 'manager', 'staff', 'delivery', 'customer']:
+                flash('Access restricted for this role.', 'error')
                 return render_template('login.html')
             
             login_user(user, remember=True)
@@ -459,6 +459,8 @@ def dashboard():
         return redirect(url_for('customer_dashboard'))
     if current_user.role == 'admin':
         return redirect(url_for('admin_dashboard'))
+    if current_user.role == 'staff' or current_user.role == 'manager':
+        return redirect(url_for('staff_dashboard'))
     # Get statistics
     total_orders = Order.query.count()
     pending_orders = Order.query.filter_by(status='pending').count()
@@ -481,6 +483,67 @@ def dashboard():
                          delivery_personnel=delivery_personnel)
 
 
+@app.route('/staff-dashboard')
+@login_required
+@staff_required
+def staff_dashboard():
+    from sqlalchemy import func, desc
+    from datetime import datetime, timedelta
+    
+    # Filters
+    date_from = request.args.get('date_from')
+    date_to = request.args.get('date_to')
+    branch_id = request.args.get('branch_id', type=int)
+    
+    query = Order.query
+    
+    if date_from:
+        query = query.filter(Order.created_at >= datetime.strptime(date_from, '%Y-%m-%d'))
+    if date_to:
+        query = query.filter(Order.created_at <= datetime.strptime(date_to, '%Y-%m-%d') + timedelta(days=1))
+    if branch_id:
+        query = query.filter_by(branch_id=branch_id)
+    
+    # Basic Stats
+    total_orders = query.count()
+    total_revenue = query.with_entities(func.sum(Order.total_amount)).scalar() or 0
+    pending_orders = query.filter_by(status='pending').count()
+    
+    # Top Clients (by order count)
+    top_clients = db.session.query(
+        Client.name, 
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('total_spent')
+    ).join(Order).group_by(Client.id).order_by(desc('order_count')).limit(5).all()
+    
+    # Client Due Report (Unpaid orders)
+    client_dues = db.session.query(
+        Client.name,
+        func.sum(Order.total_amount - Order.received_amount).label('due_amount')
+    ).join(Order).filter(Order.payment_status != 'paid').group_by(Client.id).having(func.sum(Order.total_amount - Order.received_amount) > 0).all()
+    
+    # Branch-wise (Center-wise) Analysis
+    branch_stats = db.session.query(
+        Branch.name,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('revenue')
+    ).join(Order).group_by(Branch.id).all()
+
+    branches = Branch.query.all()
+    
+    return render_template('staff_dashboard.html',
+                         total_orders=total_orders,
+                         total_revenue=total_revenue,
+                         pending_orders=pending_orders,
+                         top_clients=top_clients,
+                         client_dues=client_dues,
+                         branch_stats=branch_stats,
+                         branches=branches,
+                         date_from=date_from,
+                         date_to=date_to,
+                         selected_branch=branch_id)
+
+
 @app.route('/admin-dashboard')
 @login_required
 @admin_required
@@ -498,6 +561,9 @@ def admin_dashboard():
     
     # Filter by date for dynamic stats
     recent_shipments = Order.query.filter(Order.created_at >= start_date).count()
+
+
+
     recent_revenue = db.session.query(func.sum(Order.total_amount)).filter(Order.created_at >= start_date).scalar() or 0
     
     # Top Customers
@@ -598,6 +664,62 @@ def admin_dashboard():
                          daily_revenue=daily_revenue,
                          status_dist=status_dist,
                          days_filter=days_filter)
+
+
+@app.route('/api/search/suggestions')
+@login_required
+def search_suggestions():
+    query = request.args.get('q', '').strip()
+    if not query or len(query) < 1:
+        return jsonify([])
+    
+    # Search Orders (by Tracking Number)
+    orders = Order.query.filter(
+        Order.receipt_number.ilike(f'%{query}%')
+    ).limit(3).all()
+    
+    # Search Individual Customers (from orders, distinct by phone/name)
+    individuals = db.session.query(
+        Order.customer_name, 
+        Order.customer_phone
+    ).filter(
+        (Order.order_type == 'walkin') & 
+        ((Order.customer_name.ilike(f'%{query}%')) | (Order.customer_phone.ilike(f'%{query}%')))
+    ).distinct().limit(3).all()
+    
+    # Search Corporate Clients
+    clients = Client.query.filter(
+        (Client.name.ilike(f'%{query}%')) | 
+        (Client.company_name.ilike(f'%{query}%'))
+    ).limit(3).all()
+    
+    suggestions = []
+    
+    for o in orders:
+        suggestions.append({
+            'type': 'Shipment',
+            'label': f'📦 {o.receipt_number} - {o.customer_name}',
+            'value': o.receipt_number,
+            'url': url_for('order_details', id=o.id) if current_user.role != 'customer' else url_for('tracking', receipt=o.receipt_number)
+        })
+        
+    for name, phone in individuals:
+        suggestions.append({
+            'type': 'Individual',
+            'label': f'👤 {name} ({phone})',
+            'value': name,
+            'url': url_for('customers') + f'?search={name}'
+        })
+        
+    for c in clients:
+        suggestions.append({
+            'type': 'Corporate',
+            'label': f'🏢 {c.name}',
+            'value': c.name,
+            'url': url_for('clients', search=c.name)
+        })
+        
+    return jsonify(suggestions)
 
 
 @app.route('/customer/dashboard')

@@ -30,8 +30,11 @@
             <form method="GET" class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <label class="form-label small fw-bold text-muted">Search Shipments</label>
-                    <input type="text" name="search" class="form-control luxury-input"
-                        placeholder="Name, Phone, Receipt..." value="{{ search }}">
+                    <div class="position-relative">
+                        <input type="text" name="search" class="form-control luxury-input autocomplete-search"
+                            placeholder="Type to search auto..." value="{{ search }}" autocomplete="off">
+                        <div class="search-suggestions-container d-none"></div>
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small fw-bold text-muted">Status</label>
@@ -53,11 +56,8 @@
                     </select>
                 </div>
                 <div class="col-md-5 d-flex gap-2">
-                    <button type="submit" class="luxury-btn btn btn-primary flex-grow-1">
-                        <i class="fas fa-filter me-1"></i> Apply Filters
-                    </button>
-                    <a href="{{ url_for('orders') }}" class="luxury-btn btn btn-light border">
-                        <i class="fas fa-undo me-1"></i> Reset
+                    <a href="{{ url_for('orders') }}" class="luxury-btn btn btn-light border w-100">
+                        <i class="fas fa-undo me-1"></i> Reset All Filters
                     </a>
                 </div>
             </form>
@@ -177,4 +177,26 @@
         </div>
     </div>
 </div>
+
+{% block extra_js %}
+<script>
+    const filterForm = document.querySelector('form');
+    let searchTimeout;
+
+    document.querySelectorAll('.luxury-input').forEach(input => {
+        const eventType = (input.type === 'text' || input.tagName === 'INPUT') ? 'input' : 'change';
+        
+        input.addEventListener(eventType, () => {
+            if (input.type === 'text' || input.tagName === 'INPUT') {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    filterForm.submit();
+                }, 500); // 500ms debounce
+            } else {
+                filterForm.submit();
+            }
+        });
+    });
+</script>
+{% endblock %}
 {% endblock %}
