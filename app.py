@@ -583,7 +583,7 @@ def staff_dashboard():
     # Basic Stats
     total_orders = query.count()
     total_revenue = query.with_entities(func.sum(Order.total_amount)).scalar() or 0
-    pending_orders = query.filter_by(status='pending').count()
+    at_destination_orders = query.filter_by(status='at_destination').count()
     
     # Top Clients (by order count)
     top_clients = db.session.query(
@@ -610,7 +610,7 @@ def staff_dashboard():
     return render_template('staff_dashboard.html',
                          total_orders=total_orders,
                          total_revenue=total_revenue,
-                         pending_orders=pending_orders,
+                         at_destination_orders=at_destination_orders,
                          top_clients=top_clients,
                          client_dues=client_dues,
                          branch_stats=branch_stats,
@@ -1774,7 +1774,7 @@ def orders():
     
     # Define status priority: pending -> confirmed/in_transit -> delivered -> cancelled
     status_priority = case(
-        (Order.status == 'pending', 1),
+        (Order.status == 'at_destination', 1),
         (Order.status == 'confirmed', 2),
         (Order.status == 'in_transit', 2),
         (Order.status == 'delivered', 3),
@@ -1859,7 +1859,7 @@ def walkin_order():
             handling_tags=','.join(all_tags),
             branch_id=current_user.branch_id,
             created_by=current_user.id,
-            status='pending',
+            status='at_destination',
             payment_mode=request.form.get('payment_mode'),
             # International Booking Fields
             is_international=True if request.form.get('is_international') == 'on' else False,
@@ -4019,7 +4019,7 @@ def api_report_overview():
             'customer_type': o.order_type,
             'amount': o.total_amount or 0,
             'payment_status': o.payment_status.title() if o.payment_status else 'Pending',
-            'status': o.status.title()
+            'status': 'At Destination' if o.status == 'pending' else o.status.title()
         } for o in orders[:10]]
     })
 

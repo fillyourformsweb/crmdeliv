@@ -517,7 +517,7 @@
                                     <td class="text-muted small">{{ client.email }}</td>
                                     <td>
                                         <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
-                                            {{ client.pending_orders }} pending
+                                            {{ client.pending_orders }} at destination
                                         </span>
                                     </td>
                                     <td class="fw-bold" style="background: linear-gradient(135deg, #fee2e2, #fecaca); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.1rem;">
@@ -805,7 +805,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const statusCtx = document.getElementById('statusChart');
     if (statusCtx) {
         const statusData = {{ status_dist | tojson }};
-        const statusLabels = statusData.map(s => s.status.charAt(0).toUpperCase() + s.status.slice(1).replace('_', ' '));
+        const statusLabels = statusData.map(s => s.status === 'pending' ? 'At Destination' : s.status.charAt(0).toUpperCase() + s.status.slice(1).replace('_', ' '));
         const statusCounts = statusData.map(s => s.count);
         
         new Chart(statusCtx, {
