@@ -34,26 +34,12 @@
                         <label class="form-label fw-bold text-uppercase small text-muted">New Status</label>
                         <div class="select-wrapper position-relative">
                             <select name="status" class="form-select luxury-input form-select-lg fw-bold" required>
-                                <option value="" disabled selected>Select Status Update...</option>
                                 {% for value, label in valid_transitions.items() %}
-                                <option value="{{ value }}" {% if order.status==value %}selected{% endif %}>{{ label }}
-                                </option>
+                                <option value="{{ value }}">{{ label }}</option>
                                 {% endfor %}
-                                {% if not valid_transitions and current_user.role != 'admin' %}
-                                <option value="" disabled>No further updates available (Terminal Status)</option>
-                                {% endif %}
-                                {% if current_user.role == 'admin' %}
-                                <optgroup label="Admin Override">
-                                    <option value="pending">Reset to Pending</option>
-                                    <option value="in_transit">Force In Transit</option>
-                                    <option value="delivered">Force Delivered</option>
-                                    <option value="cancelled">Force Cancelled</option>
-                                </optgroup>
-                                {% endif %}
                             </select>
                         </div>
-                        <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i>Choose the most accurate
-                            status for the current situation.</div>
+                        <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i>Select the shipment status.</div>
                     </div>
 
                     <div class="mb-4">
