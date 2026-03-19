@@ -311,7 +311,6 @@
             </div>
 
             {% endif %}
-            {% endif %}
 
         </div>
     </aside>
@@ -347,6 +346,7 @@
     </nav>
 
     {% else %}
+    <!-- Guest Navigation (Not Authenticated) -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-0 fixed-top">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold" href="{{ url_for('tracking') }}">
