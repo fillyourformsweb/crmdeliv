@@ -257,7 +257,7 @@ class Order(db.Model):
     difference_reason = db.Column(db.String(200))
     
     # Status
-    status = db.Column(db.String(30), default='pending')  # pending, confirmed, in_transit, delivered, cancelled
+    status = db.Column(db.String(30), default='at_destination')  # at_destination, confirmed, in_transit, delivered, cancelled
     payment_status = db.Column(db.String(20), default='unpaid')  # unpaid, partial, paid
     payment_mode = db.Column(db.String(20))  # cash, card, upi, credit
     
