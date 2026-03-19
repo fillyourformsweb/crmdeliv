@@ -1826,33 +1826,13 @@ def edit_order(id):
 def update_order_status(id):
     order = Order.query.get_or_404(id)
     
-    # Define valid transitions
-    valid_transitions = {}
-    
-    if order.status == 'pending':
-        valid_transitions = {
-            'confirmed': 'Confirmed',
-            'in_transit': 'In Transit (On the way)'
-        }
-    elif order.status == 'confirmed':
-         valid_transitions = {
-            'in_transit': 'In Transit (On the way)'
-        }
-    elif order.status == 'in_transit':
-         valid_transitions = {
-            'at_destination': 'At Destination (Arrived at City)'
-        }
-    elif order.status == 'at_destination':
-         valid_transitions = {
-            'out_for_delivery': 'Out for Delivery',
-            'delivered': 'Delivered (Successfully Handed Over)',
-            'rto': 'RTO (Returning to Origin)'
-        }
-    elif order.status == 'out_for_delivery':
-         valid_transitions = {
-            'delivered': 'Delivered (Successfully Handed Over)',
-            'rto': 'RTO (Returning to Origin)'
-        }
+    # Only show 4 status options for all orders
+    valid_transitions = {
+        'in_transit': 'In Transit',
+        'at_destination': 'At Destination',
+        'delivered': 'Delivered',
+        'rto': 'RTO / Returns'
+    }
     
     if request.method == 'GET':
         return render_template('update_status.html', order=order, valid_transitions=valid_transitions)
