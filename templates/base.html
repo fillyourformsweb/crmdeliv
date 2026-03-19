@@ -102,138 +102,179 @@
         </div>
 
         <div class="sidebar-nav pt-2">
-            <div class="sidebar-heading">Main Operations</div>
+            <!-- Main Operations - Collapsible -->
+            <div class="sidebar-section-group">
+                <div class="sidebar-heading sidebar-heading-toggle" id="mainOpsToggle" data-section="main-ops">
+                    Main Operations
+                    <i class="fas fa-chevron-down ms-auto sidebar-toggle-icon"></i>
+                </div>
 
-            {% if current_user.role == 'customer' %}
-            <a href="{{ url_for('customer_dashboard') }}"
-                class="sidebar-link {{ 'active' if request.endpoint == 'customer_dashboard' }}">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>My Dashboard</span>
-            </a>
-            <a href="{{ url_for('tracking') }}" class="sidebar-link {{ 'active' if request.endpoint == 'tracking' }}">
-                <i class="fas fa-location-arrow"></i>
-                <span>Live Tracking</span>
-            </a>
-            {% else %}
-            <a href="{{ url_for('dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'dashboard' }}">
-                <i class="fas fa-chart-line"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="{{ url_for('orders') }}"
-                class="sidebar-link {{ 'active' if request.endpoint in ['orders', 'walkin_order', 'client_order', 'order_details', 'edit_order'] }}">
-                <i class="fas fa-boxes"></i>
-                <span>Orders</span>
-            </a>
+                <div class="sidebar-section-content" id="mainOpsContent">
+                    {% if current_user.role != 'admin' %}
+                    <a href="{{ url_for('dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'dashboard' }}">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    {% endif %}
+                    {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'admin_dashboard' }}">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Admin Analytics</span>
+                    </a>
+                    {% endif %}
+                    <a href="{{ url_for('orders') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint in ['orders', 'walkin_order', 'client_order', 'order_details', 'edit_order'] }}">
+                        <i class="fas fa-boxes"></i>
+                        <span>Orders</span>
+                    </a>
 
-            <a href="{{ url_for('clients') }}"
-                class="sidebar-link {{ 'active' if request.endpoint in ['clients', 'add_client', 'edit_client', 'view_client_prices', 'set_client_prices'] }}">
-                <i class="fas fa-building"></i>
-                <span>Corporate</span>
-            </a>
-            <a href="{{ url_for('customers') }}" class="sidebar-link {{ 'active' if request.endpoint == 'customers' }}">
-                <i class="fas fa-user-friends"></i>
-                <span>Individuals</span>
-            </a>
-            <a href="{{ url_for('excel_upload') }}"
-                class="sidebar-link {{ 'active' if request.endpoint in ['excel_upload', 'upload_confirmation'] }}">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <span>Bulk Import</span>
-            </a>
+                    <a href="{{ url_for('clients') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint in ['clients', 'add_client', 'edit_client', 'view_client_prices', 'set_client_prices'] }}">
+                        <i class="fas fa-building"></i>
+                        <span>Corporate</span>
+                    </a>
+                    <a href="{{ url_for('customers') }}" class="sidebar-link {{ 'active' if request.endpoint == 'customers' }}">
+                        <i class="fas fa-user-friends"></i>
+                        <span>Individuals</span>
+                    </a>
+                    <a href="{{ url_for('excel_upload') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint in ['excel_upload', 'upload_confirmation'] }}">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Bulk Import</span>
+                    </a>
+                </div>
+            </div>
 
-            <div class="sidebar-heading mt-4">Shipment Tracking</div>
-            <a href="{{ url_for('orders', status='in_transit') }}"
-                class="sidebar-link {{ 'active' if request.args.get('status') == 'in_transit' }}">
-                <i class="fas fa-shipping-fast"></i>
-                <span>In Transit</span>
-            </a>
-            <a href="{{ url_for('orders', status='at_destination') }}"
-                class="sidebar-link {{ 'active' if request.args.get('status') == 'at_destination' }}">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>At Destination</span>
-            </a>
-            <a href="{{ url_for('orders', status='delivered') }}"
-                class="sidebar-link {{ 'active' if request.args.get('status') == 'delivered' }}">
-                <i class="fas fa-check-circle"></i>
-                <span>Delivered</span>
-            </a>
-            <a href="{{ url_for('orders', status='rto') }}"
-                class="sidebar-link {{ 'active' if request.args.get('status') == 'rto' }}">
-                <i class="fas fa-undo"></i>
-                <span>RTO / Returns</span>
-            </a>
+            <!-- Shipment Tracking - Collapsible -->
+            <div class="sidebar-section-group">
+                <div class="sidebar-heading sidebar-heading-toggle mt-4" id="shipmentToggle" data-section="shipment">
+                    Shipment Tracking
+                    <i class="fas fa-chevron-down ms-auto sidebar-toggle-icon"></i>
+                </div>
+                <div class="sidebar-section-content" id="shipmentContent">
+                    <a href="{{ url_for('orders', status='in_transit') }}"
+                        class="sidebar-link {{ 'active' if request.args.get('status') == 'in_transit' }}">
+                        <i class="fas fa-shipping-fast"></i>
+                        <span>In Transit</span>
+                    </a>
+                    <a href="{{ url_for('orders', status='at_destination') }}"
+                        class="sidebar-link {{ 'active' if request.args.get('status') == 'at_destination' }}">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>At Destination</span>
+                    </a>
+                    <a href="{{ url_for('orders', status='delivered') }}"
+                        class="sidebar-link {{ 'active' if request.args.get('status') == 'delivered' }}">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Delivered</span>
+                    </a>
+                    <a href="{{ url_for('orders', status='rto') }}"
+                        class="sidebar-link {{ 'active' if request.args.get('status') == 'rto' }}">
+                        <i class="fas fa-undo"></i>
+                        <span>RTO / Returns</span>
+                    </a>
+                </div>
+            </div>
 
-            <div class="sidebar-heading mt-4">Marketing &amp; Sales</div>
-            <a href="{{ url_for('marketing_insights') }}"
-                class="sidebar-link {{ 'active' if request.endpoint == 'marketing_insights' }}">
-                <i class="fas fa-bullseye"></i>
-                <span>Insights</span>
-            </a>
-            <a href="{{ url_for('marketing_visits') }}"
-                class="sidebar-link {{ 'active' if request.endpoint in ['marketing_visits', 'marketing_visit_new', 'marketing_visit_detail', 'marketing_visit_edit'] }}">
-                <i class="fas fa-shoe-prints"></i>
-                <span>Sales Visits</span>
-            </a>
+            <!-- Marketing & Sales - Collapsible -->
+            <div class="sidebar-section-group">
+                <div class="sidebar-heading sidebar-heading-toggle mt-4" id="marketingToggle" data-section="marketing">
+                    Marketing &amp; Sales
+                    <i class="fas fa-chevron-down ms-auto sidebar-toggle-icon"></i>
+                </div>
+                <div class="sidebar-section-content" id="marketingContent">
+                    <a href="{{ url_for('marketing_insights') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint == 'marketing_insights' }}">
+                        <i class="fas fa-bullseye"></i>
+                        <span>Insights</span>
+                    </a>
+                    <a href="{{ url_for('marketing_visits') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint in ['marketing_visits', 'marketing_visit_new', 'marketing_visit_detail', 'marketing_visit_edit'] }}">
+                        <i class="fas fa-shoe-prints"></i>
+                        <span>Sales Visits</span>
+                    </a>
+                </div>
+            </div>
 
             {% if current_user.role in ['admin', 'manager'] %}
 
-            <div class="sidebar-heading mt-4">Finance &amp; Analytics</div>
-            <a href="{{ url_for('detailed_reports') }}"
-                class="sidebar-link {{ 'active' if request.endpoint == 'detailed_reports' }}">
-                <i class="fas fa-chart-pie"></i>
-                <span>Analytics Suite</span>
-            </a>
-            <a href="{{ url_for('due_amount_report') }}"
-                class="sidebar-link {{ 'active' if request.endpoint == 'due_amount_report' }}">
-                <i class="fas fa-file-invoice-dollar"></i>
-                <span>Due Reports</span>
-            </a>
-            <a href="{{ url_for('client_due_report') }}"
-                class="sidebar-link {{ 'active' if request.endpoint in ['client_due_report', 'client_orders_due', 'print_consolidated_bill'] }}">
-                <i class="fas fa-receipt"></i>
-                <span>Client Due Report</span>
-            </a>
+            <!-- Finance & Analytics - Collapsible -->
+            <div class="sidebar-section-group">
+                <div class="sidebar-heading sidebar-heading-toggle mt-4" id="financeToggle" data-section="finance">
+                    Finance &amp; Analytics
+                    <i class="fas fa-chevron-down ms-auto sidebar-toggle-icon"></i>
+                </div>
+                <div class="sidebar-section-content" id="financeContent">
+                    <a href="{{ url_for('detailed_reports') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint == 'detailed_reports' }}">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Analytics Suite</span>
+                    </a>
+                    <a href="{{ url_for('due_amount_report') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint == 'due_amount_report' }}">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Due Reports</span>
+                    </a>
+                    <a href="{{ url_for('client_due_report') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint in ['client_due_report', 'client_orders_due', 'print_consolidated_bill'] }}">
+                        <i class="fas fa-receipt"></i>
+                        <span>Client Due Report</span>
+                    </a>
+                </div>
+            </div>
 
 
 
 
 
 
-            <div class="sidebar-heading mt-4">Branch Management</div>
+            <!-- Branch Management - Collapsible -->
+            <div class="sidebar-section-group">
+                <div class="sidebar-heading sidebar-heading-toggle mt-4" id="branchToggle" data-section="branch">
+                    Branch Management
+                    <i class="fas fa-chevron-down ms-auto sidebar-toggle-icon"></i>
+                </div>
+                <div class="sidebar-section-content" id="branchContent">
+                    <a href="{{ url_for('staff_management') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint == 'staff_management' }}">
+                        <i class="fas fa-users-cog"></i>
+                        <span>User Manage</span>
+                    </a>
+                    <a href="{{ url_for('delivery_personnel') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint == 'delivery_personnel' }}">
+                        <i class="fas fa-motorcycle"></i>
+                        <span>Dispatchers</span>
+                    </a>
+                    <a href="{{ url_for('couriers') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint in ['couriers', 'add_courier', 'edit_courier'] }}">
+                        <i class="fas fa-truck"></i>
+                        <span>Couriers</span>
+                    </a>
+                    <a href="{{ url_for('admin_receipts') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint == 'admin_receipts' }}">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>Tracking Control</span>
+                    </a>
+                    {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('branches') }}" class="sidebar-link {{ 'active' if request.endpoint == 'branches' }}">
+                        <i class="fas fa-network-wired"></i>
+                        <span>Branchs</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
 
 
-            <a href="{{ url_for('staff_management') }}"
-                class="sidebar-link {{ 'active' if request.endpoint == 'staff_management' }}">
-                <i class="fas fa-users-cog"></i>
-                <span>User Manage</span>
-            </a>
-            <a href="{{ url_for('delivery_personnel') }}"
-                class="sidebar-link {{ 'active' if request.endpoint == 'delivery_personnel' }}">
-                <i class="fas fa-motorcycle"></i>
-                <span>Dispatchers</span>
-            </a>
-            <a href="{{ url_for('couriers') }}"
-                class="sidebar-link {{ 'active' if request.endpoint in ['couriers', 'add_courier', 'edit_courier'] }}">
-                <i class="fas fa-truck"></i>
-                <span>Couriers</span>
-            </a>
-            <a href="{{ url_for('admin_receipts') }}"
-                class="sidebar-link {{ 'active' if request.endpoint == 'admin_receipts' }}">
-                <i class="fas fa-file-invoice"></i>
-                <span>Tracking Control</span>
-            </a>
-            {% if current_user.role == 'admin' %}
-            <a href="{{ url_for('branches') }}" class="sidebar-link {{ 'active' if request.endpoint == 'branches' }}">
-                <i class="fas fa-network-wired"></i>
-                <span>Branchs</span>
-            </a>
-            {% endif %}
 
 
 
 
-
-
-            <div class="sidebar-heading mt-4">Pricing Control</div>
+            <!-- Pricing Control - Collapsible -->
+            <div class="sidebar-section-group">
+                <div class="sidebar-heading sidebar-heading-toggle mt-4" id="pricingToggle" data-section="pricing">
+                    Pricing Control
+                    <i class="fas fa-chevron-down ms-auto sidebar-toggle-icon"></i>
+                </div>
+                <div class="sidebar-section-content" id="pricingContent">
 
 
             <a href="{{ url_for('insurance_settings') }}"
@@ -266,7 +307,8 @@
                 <i class="fas fa-globe"></i>
                 <span>Public View</span>
             </a>
-
+                </div>
+            </div>
 
             {% endif %}
             {% endif %}
@@ -276,10 +318,17 @@
 
     <!-- Mobile Bottom Navigation -->
     <nav class="mobile-bottom-nav">
+        {% if current_user.role != 'admin' %}
         <a href="{{ url_for('dashboard') }}" class="bottom-nav-link {{ 'active' if request.endpoint == 'dashboard' }}">
             <i class="fas fa-chart-line"></i>
             <span>Stats</span>
         </a>
+        {% else %}
+        <a href="{{ url_for('admin_dashboard') }}" class="bottom-nav-link {{ 'active' if request.endpoint == 'admin_dashboard' }}">
+            <i class="fas fa-chart-bar"></i>
+            <span>Analytics</span>
+        </a>
+        {% endif %}
         <a href="{{ url_for('orders') }}" class="bottom-nav-link {{ 'active' if request.endpoint == 'orders' }}">
             <i class="fas fa-boxes"></i>
             <span>Orders</span>
@@ -356,6 +405,30 @@
                 overlay.classList.remove('active');
             });
         }
+
+        // 2. Collapsible Sidebar Sections
+        const sectionToggles = document.querySelectorAll('.sidebar-heading-toggle');
+        sectionToggles.forEach(toggle => {
+            const sectionId = toggle.getAttribute('data-section');
+            const content = document.getElementById(sectionId + 'Content');
+            const isCollapsed = localStorage.getItem(`sidebarSection_${sectionId}`) === 'collapsed';
+            
+            // Set initial state
+            if (isCollapsed) {
+                toggle.classList.add('collapsed');
+                if (content) content.classList.add('collapsed');
+            }
+            
+            // Add click handler
+            toggle.addEventListener('click', () => {
+                const isCurrentlyCollapsed = toggle.classList.contains('collapsed');
+                toggle.classList.toggle('collapsed');
+                if (content) content.classList.toggle('collapsed');
+                
+                // Save state
+                localStorage.setItem(`sidebarSection_${sectionId}`, isCurrentlyCollapsed ? 'expanded' : 'collapsed');
+            });
+        });
 
         // 2. Event Listeners for Persistence & Mobile handling
         document.querySelectorAll('.sidebar-link').forEach(link => {
