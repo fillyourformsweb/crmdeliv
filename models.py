@@ -385,7 +385,8 @@ class DefaultStatePrice(db.Model):
     __tablename__ = 'default_state_prices'
     
     id = db.Column(db.Integer, primary_key=True)
-    state = db.Column(db.String(100), unique=True, nullable=False)
+    state = db.Column(db.String(100), nullable=False)
+    shipping_mode = db.Column(db.String(50), default='standard', nullable=False)  # standard, prime, parcel, state_express, road_express, air
     price_100gm = db.Column(db.Float, default=0)
     price_250gm = db.Column(db.Float, default=0)
     price_500gm = db.Column(db.Float, default=0)
@@ -393,7 +394,17 @@ class DefaultStatePrice(db.Model):
     price_2kg = db.Column(db.Float, default=0)
     price_3kg = db.Column(db.Float, default=0)
     price_extra_per_kg = db.Column(db.Float, default=20)  # Extra charge per kg for weight > 3kg
+    # Air cargo pricing (> 3kg tiers)
+    price_3_10kg = db.Column(db.Float, default=0)  # 3-10 kg tier
+    price_10_25kg = db.Column(db.Float, default=0)  # 10-25 kg tier
+    price_25_50kg = db.Column(db.Float, default=0)  # 25-50 kg tier
+    price_50_100kg = db.Column(db.Float, default=0)  # 50-100 kg tier
+    price_100plus_kg = db.Column(db.Float, default=0)  # 100+ kg tier
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (
+        db.UniqueConstraint('state', 'shipping_mode', name='uq_default_state_mode'),
+    )
 
 
 class ClientStatePrice(db.Model):
@@ -402,6 +413,7 @@ class ClientStatePrice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
     state = db.Column(db.String(100), nullable=False)
+    shipping_mode = db.Column(db.String(50), default='standard', nullable=False)  # standard, prime, parcel, state_express, road_express, air
     price_100gm = db.Column(db.Float, default=0)
     price_250gm = db.Column(db.Float, default=0)
     price_500gm = db.Column(db.Float, default=0)
@@ -409,14 +421,25 @@ class ClientStatePrice(db.Model):
     price_2kg = db.Column(db.Float, default=0)
     price_3kg = db.Column(db.Float, default=0)
     price_extra_per_kg = db.Column(db.Float, default=20)  # Extra charge per kg for weight > 3kg
+    # Air cargo pricing (> 3kg tiers)
+    price_3_10kg = db.Column(db.Float, default=0)  # 3-10 kg tier
+    price_10_25kg = db.Column(db.Float, default=0)  # 10-25 kg tier
+    price_25_50kg = db.Column(db.Float, default=0)  # 25-50 kg tier
+    price_50_100kg = db.Column(db.Float, default=0)  # 50-100 kg tier
+    price_100plus_kg = db.Column(db.Float, default=0)  # 100+ kg tier
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (
+        db.UniqueConstraint('client_id', 'state', 'shipping_mode', name='uq_client_state_mode'),
+    )
 
 
 class NormalClientStatePrice(db.Model):
     __tablename__ = 'normal_client_state_prices'
     
     id = db.Column(db.Integer, primary_key=True)
-    state = db.Column(db.String(100), unique=True, nullable=False)
+    state = db.Column(db.String(100), nullable=False)
+    shipping_mode = db.Column(db.String(50), default='standard', nullable=False)  # standard, prime, parcel, state_express, road_express, air
     price_100gm = db.Column(db.Float, default=0)
     price_250gm = db.Column(db.Float, default=0)
     price_500gm = db.Column(db.Float, default=0)
@@ -430,6 +453,10 @@ class NormalClientStatePrice(db.Model):
     price_50_100kg = db.Column(db.Float, default=0)  # 50-100 kg tier
     price_100plus_kg = db.Column(db.Float, default=0)  # 100+ kg tier
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (
+        db.UniqueConstraint('state', 'shipping_mode', name='uq_normal_state_mode'),
+    )
 
 
 class SystemSettings(db.Model):

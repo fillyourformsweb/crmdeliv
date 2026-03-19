@@ -336,9 +336,14 @@
                 <span>Normal Client Prices</span>
             </a>
             <a href="{{ url_for('clients') }}"
-                class="sidebar-link {{ 'active' if request.endpoint in ['clients', 'view_client_prices', 'set_client_prices'] }}">
+                class="sidebar-link {{ 'active' if request.endpoint in ['clients', 'view_client_prices', 'set_client_prices', 'set_client_air_prices'] }}">
                 <i class="fas fa-hand-holding-usd"></i>
                 <span>Client Prices</span>
+            </a>
+            <a href="{{ url_for('set_walking_air_prices') }}"
+                class="sidebar-link {{ 'active' if request.endpoint in ['set_walking_air_prices'] }}">
+                <i class="fas fa-plane"></i>
+                <span>Air Shipping Rates</span>
             </a>
             <a href="{{ url_for('public_prices') }}"
                 class="sidebar-link {{ 'active' if request.endpoint == 'public_prices' }}">

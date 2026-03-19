@@ -319,27 +319,59 @@ def get_next_receipt_number(user=None):
     return f"{prefix}{base}{(seq + 1):06d}{suffix}"
 
 
-def calculate_from_state_price(weight, price_obj):
+def calculate_from_state_price(weight, price_obj, shipping_mode='standard'):
     amount = 0
-    # tiered pricing based on weight brackets
-    if weight <= 0.1:  # 100g
-        amount = price_obj.price_100gm
-    elif weight <= 0.25:  # 250g
-        amount = price_obj.price_250gm
-    elif weight <= 0.5:  # 500g
-        amount = price_obj.price_500gm
-    elif weight <= 1.0:  # 1kg
-        amount = price_obj.price_1kg
-    elif weight <= 2.0:  # 2kg = 1kg price × 2
-        amount = price_obj.price_1kg * 2
-    elif weight <= 3.0:  # 3kg = 1kg price × 3
-        amount = price_obj.price_1kg * 3
+    
+    # Check if this is air cargo (>3kg with special tiers)
+    is_air = getattr(price_obj, 'shipping_mode', 'standard').lower() == 'air'
+    
+    if is_air:
+        # Air cargo pricing for weights > 3kg
+        if weight > 3.0:
+            if weight <= 10.0:  # 3-10 kg
+                amount = getattr(price_obj, 'price_3_10kg', 0) or 0
+            elif weight <= 25.0:  # 10-25 kg
+                amount = getattr(price_obj, 'price_10_25kg', 0) or 0
+            elif weight <= 50.0:  # 25-50 kg
+                amount = getattr(price_obj, 'price_25_50kg', 0) or 0
+            elif weight <= 100.0:  # 50-100 kg
+                amount = getattr(price_obj, 'price_50_100kg', 0) or 0
+            else:  # 100+ kg
+                amount = getattr(price_obj, 'price_100plus_kg', 0) or 0
+        else:
+            # For air cargo <= 3kg, use standard tiers
+            if weight <= 0.1:  # 100g
+                amount = getattr(price_obj, 'price_100gm', 0) or 0
+            elif weight <= 0.25:  # 250g
+                amount = getattr(price_obj, 'price_250gm', 0) or 0
+            elif weight <= 0.5:  # 500g
+                amount = getattr(price_obj, 'price_500gm', 0) or 0
+            elif weight <= 1.0:  # 1kg
+                amount = getattr(price_obj, 'price_1kg', 0) or 0
+            elif weight <= 2.0:  # 2kg
+                amount = (getattr(price_obj, 'price_1kg', 0) or 0) * 2
+            elif weight <= 3.0:  # 3kg
+                amount = (getattr(price_obj, 'price_1kg', 0) or 0) * 3
     else:
-        # For weights > 3kg: (1kg price × 3) + extra per kg
-        base_3kg = price_obj.price_1kg * 3
-        extra_weight = weight - 3.0
-        extra_per_kg = getattr(price_obj, 'price_extra_per_kg', 20) or 20
-        amount = base_3kg + (extra_weight * extra_per_kg)
+        # Standard/other shipping mode pricing
+        if weight <= 0.1:  # 100g
+            amount = price_obj.price_100gm
+        elif weight <= 0.25:  # 250g
+            amount = price_obj.price_250gm
+        elif weight <= 0.5:  # 500g
+            amount = price_obj.price_500gm
+        elif weight <= 1.0:  # 1kg
+            amount = price_obj.price_1kg
+        elif weight <= 2.0:  # 2kg = 1kg price × 2
+            amount = price_obj.price_1kg * 2
+        elif weight <= 3.0:  # 3kg = 1kg price × 3
+            amount = price_obj.price_1kg * 3
+        else:
+            # For weights > 3kg: (1kg price × 3) + extra per kg
+            base_3kg = price_obj.price_1kg * 3
+            extra_weight = weight - 3.0
+            extra_per_kg = getattr(price_obj, 'price_extra_per_kg', 20) or 20
+            amount = base_3kg + (extra_weight * extra_per_kg)
 
     if amount == 0:
         return None
@@ -347,8 +379,9 @@ def calculate_from_state_price(weight, price_obj):
     return amount, 0, 0, 0, amount
 
 
-def calculate_order_amount(weight, billing_pattern_id=None, state=None, client_id=None, insured_amount=0):
+def calculate_order_amount(weight, billing_pattern_id=None, state=None, client_id=None, insured_amount=0, shipping_mode='standard'):
     state_clean = state.strip().lower() if state else None
+    shipping_mode_clean = shipping_mode.strip().lower() if shipping_mode else 'standard'
     
     # Get insurance percentage from settings
     insurance_setting = SystemSettings.query.filter_by(key='insurance_percentage').first()
@@ -359,7 +392,8 @@ def calculate_order_amount(weight, billing_pattern_id=None, state=None, client_i
     if client_id and state_clean:
         client_price = ClientStatePrice.query.filter(
             ClientStatePrice.client_id == client_id,
-            db.func.lower(ClientStatePrice.state) == state_clean
+            db.func.lower(ClientStatePrice.state) == state_clean,
+            db.func.lower(ClientStatePrice.shipping_mode) == shipping_mode_clean
         ).first()
         if client_price:
             result = calculate_from_state_price(weight, client_price)
@@ -368,11 +402,26 @@ def calculate_order_amount(weight, billing_pattern_id=None, state=None, client_i
                 res_list = list(result)
                 res_list[4] += insurance_charge # Add to total
                 return (*tuple(res_list), 'client', insurance_charge)
+        
+        # Fallback to standard mode if specific shipping mode not found
+        if shipping_mode_clean != 'standard':
+            client_price = ClientStatePrice.query.filter(
+                ClientStatePrice.client_id == client_id,
+                db.func.lower(ClientStatePrice.state) == state_clean,
+                db.func.lower(ClientStatePrice.shipping_mode) == 'standard'
+            ).first()
+            if client_price:
+                result = calculate_from_state_price(weight, client_price)
+                if result:
+                    res_list = list(result)
+                    res_list[4] += insurance_charge
+                    return (*tuple(res_list), 'client', insurance_charge)
 
     # 2. Check for Normal Client State Price (Default for all clients)
-    if client_id and state_clean:
+    if state_clean:
         normal_client_price = NormalClientStatePrice.query.filter(
-            db.func.lower(NormalClientStatePrice.state) == state_clean
+            db.func.lower(NormalClientStatePrice.state) == state_clean,
+            db.func.lower(NormalClientStatePrice.shipping_mode) == shipping_mode_clean
         ).first()
         if normal_client_price:
             result = calculate_from_state_price(weight, normal_client_price)
@@ -380,11 +429,25 @@ def calculate_order_amount(weight, billing_pattern_id=None, state=None, client_i
                 res_list = list(result)
                 res_list[4] += insurance_charge # Add to total
                 return (*tuple(res_list), 'normal_client', insurance_charge)
+        
+        # Fallback to standard mode if specific shipping mode not found
+        if shipping_mode_clean != 'standard':
+            normal_client_price = NormalClientStatePrice.query.filter(
+                db.func.lower(NormalClientStatePrice.state) == state_clean,
+                db.func.lower(NormalClientStatePrice.shipping_mode) == 'standard'
+            ).first()
+            if normal_client_price:
+                result = calculate_from_state_price(weight, normal_client_price)
+                if result:
+                    res_list = list(result)
+                    res_list[4] += insurance_charge
+                    return (*tuple(res_list), 'normal_client', insurance_charge)
 
     # 3. Check for Default State Price
     if state_clean:
         default_price = DefaultStatePrice.query.filter(
-            db.func.lower(DefaultStatePrice.state) == state_clean
+            db.func.lower(DefaultStatePrice.state) == state_clean,
+            db.func.lower(DefaultStatePrice.shipping_mode) == shipping_mode_clean
         ).first()
         if default_price:
             result = calculate_from_state_price(weight, default_price)
@@ -392,6 +455,19 @@ def calculate_order_amount(weight, billing_pattern_id=None, state=None, client_i
                 res_list = list(result)
                 res_list[4] += insurance_charge # Add to total
                 return (*tuple(res_list), 'state', insurance_charge)
+        
+        # Fallback to standard mode if specific shipping mode not found
+        if shipping_mode_clean != 'standard':
+            default_price = DefaultStatePrice.query.filter(
+                db.func.lower(DefaultStatePrice.state) == state_clean,
+                db.func.lower(DefaultStatePrice.shipping_mode) == 'standard'
+            ).first()
+            if default_price:
+                result = calculate_from_state_price(weight, default_price)
+                if result:
+                    res_list = list(result)
+                    res_list[4] += insurance_charge
+                    return (*tuple(res_list), 'state', insurance_charge)
 
     # 3. No Rate Found
     return 0.0, 0, 0, 0, insurance_charge, 'none', insurance_charge
@@ -1805,7 +1881,7 @@ def walkin_order():
         
         if order.weight:
             base, weight_charge, additional, discount, total, _, ins_charge = calculate_order_amount(
-                order.weight, state=order.receiver_state, insured_amount=order.insured_amount
+                order.weight, state=order.receiver_state, insured_amount=order.insured_amount, shipping_mode=order.receipt_mode
             )
             order.base_amount = base
             order.weight_charges = weight_charge
@@ -2027,7 +2103,7 @@ def client_order():
         # Determine total amount (client orders usually have fixed pricing elsewhere or manual)
         # For now, we use state pricing if available
         base, weight_charge, additional, discount, total, _, ins_charge = calculate_order_amount(
-            order.weight, None, state=order.receiver_state, client_id=order.client_id, insured_amount=order.insured_amount
+            order.weight, None, state=order.receiver_state, client_id=order.client_id, insured_amount=order.insured_amount, shipping_mode=order.receipt_mode
         )
         order.base_amount = base
         order.weight_charges = weight_charge
@@ -2150,7 +2226,7 @@ def edit_order(id):
         # Recalculate amounts
         if order.weight:
             base, weight_charge, additional, discount, total, _ = calculate_order_amount(
-                order.weight, None, state=order.receiver_state, client_id=order.client_id
+                order.weight, None, state=order.receiver_state, client_id=order.client_id, shipping_mode=order.receipt_mode
             )
             # Only update if we actually got a calculated total (from state pricing)
             if total > 0:
@@ -2778,8 +2854,9 @@ def api_orders():
             
             # Calculate amounts
             if order.weight:
+                shipping_mode = data.get('receipt_mode', 'standard')
                 base, weight_charge, additional, discount, total, _ = calculate_order_amount(
-                    order.weight, state=order.receiver_state
+                    order.weight, state=order.receiver_state, shipping_mode=shipping_mode
                 )
                 order.base_amount = base
                 order.weight_charges = weight_charge
@@ -3190,10 +3267,11 @@ def api_calculate_amount():
     state = request.json.get('state')
     client_id = request.json.get('client_id')
     insured_amount = float(request.json.get('insured_amount', 0))
+    shipping_mode = request.json.get('shipping_mode', 'standard')
     
     if weight or insured_amount:
         base, weight_charge, additional, discount, total, rate_type, ins_charge = calculate_order_amount(
-            weight, None, state=state, client_id=client_id, insured_amount=insured_amount
+            weight, None, state=state, client_id=client_id, insured_amount=insured_amount, shipping_mode=shipping_mode
         )
         return jsonify({
             'base_amount': base,
@@ -3558,6 +3636,126 @@ def delete_client_price(client_id, price_id):
     db.session.commit()
     flash(f'Custom pricing for {state_name} removed.', 'success')
     return redirect(url_for('view_client_prices', client_id=client_id))
+
+
+# ============== AIR SHIPPING MODE PRICING ==============
+
+@app.route('/client-air-prices/<int:client_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def set_client_air_prices(client_id):
+    """Set air shipping mode prices for a specific client"""
+    client = Client.query.get_or_404(client_id)
+    selected_state = request.args.get('state')
+    
+    if request.method == 'POST':
+        state = request.form.get('state')
+        if not state:
+            flash('State is required.', 'error')
+            return redirect(url_for('set_client_air_prices', client_id=client_id))
+            
+        # Get or create air pricing for this client-state combo
+        custom = ClientStatePrice.query.filter_by(
+            client_id=client_id, 
+            state=state, 
+            shipping_mode='air'
+        ).first()
+        if not custom:
+            custom = ClientStatePrice(client_id=client_id, state=state, shipping_mode='air')
+            db.session.add(custom)
+            
+        # Standard brackets (up to 3kg)
+        custom.price_100gm = float(request.form.get('price_100gm', 0))
+        custom.price_250gm = float(request.form.get('price_250gm', 0))
+        custom.price_500gm = float(request.form.get('price_500gm', 0))
+        custom.price_1kg = float(request.form.get('price_1kg', 0))
+        custom.price_2kg = float(request.form.get('price_2kg', 0))
+        custom.price_3kg = float(request.form.get('price_3kg', 0))
+        
+        # Air cargo weight tiers (> 3kg)
+        custom.price_3_10kg = float(request.form.get('price_3_10kg', 0))
+        custom.price_10_25kg = float(request.form.get('price_10_25kg', 0))
+        custom.price_25_50kg = float(request.form.get('price_25_50kg', 0))
+        custom.price_50_100kg = float(request.form.get('price_50_100kg', 0))
+        custom.price_100plus_kg = float(request.form.get('price_100plus_kg', 0))
+        
+        db.session.commit()
+        flash(f'Air shipping prices for {state} updated successfully!', 'success')
+        return redirect(url_for('set_client_air_prices', client_id=client_id))
+        
+    all_states = [s.state for s in DefaultStatePrice.query.distinct(DefaultStatePrice.state).all()]
+    
+    # Pre-fill data if state is selected
+    existing_price = None
+    if selected_state:
+        existing_price = ClientStatePrice.query.filter_by(
+            client_id=client_id, 
+            state=selected_state, 
+            shipping_mode='air'
+        ).first()
+        
+    return render_template('set_client_air_prices.html', 
+                         client=client, 
+                         states=all_states, 
+                         selected_state=selected_state,
+                         existing_price=existing_price)
+
+
+@app.route('/walking-air-prices', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def set_walking_air_prices():
+    """Set air shipping mode prices for walking customers (normal client)"""
+    selected_state = request.args.get('state')
+    
+    if request.method == 'POST':
+        state = request.form.get('state')
+        if not state:
+            flash('State is required.', 'error')
+            return redirect(url_for('set_walking_air_prices'))
+            
+        # Get or create air pricing for walking customers
+        custom = NormalClientStatePrice.query.filter_by(
+            state=state, 
+            shipping_mode='air'
+        ).first()
+        if not custom:
+            custom = NormalClientStatePrice(state=state, shipping_mode='air')
+            db.session.add(custom)
+            
+        # Standard brackets (up to 3kg)
+        custom.price_100gm = float(request.form.get('price_100gm', 0))
+        custom.price_250gm = float(request.form.get('price_250gm', 0))
+        custom.price_500gm = float(request.form.get('price_500gm', 0))
+        custom.price_1kg = float(request.form.get('price_1kg', 0))
+        custom.price_2kg = float(request.form.get('price_2kg', 0))
+        custom.price_3kg = float(request.form.get('price_3kg', 0))
+        
+        # Air cargo weight tiers (> 3kg)
+        custom.price_3_10kg = float(request.form.get('price_3_10kg', 0))
+        custom.price_10_25kg = float(request.form.get('price_10_25kg', 0))
+        custom.price_25_50kg = float(request.form.get('price_25_50kg', 0))
+        custom.price_50_100kg = float(request.form.get('price_50_100kg', 0))
+        custom.price_100plus_kg = float(request.form.get('price_100plus_kg', 0))
+        
+        db.session.commit()
+        flash(f'Air shipping prices for {state} (walking customers) updated successfully!', 'success')
+        return redirect(url_for('set_walking_air_prices'))
+        
+    all_states = [s.state for s in NormalClientStatePrice.query.distinct(NormalClientStatePrice.state).filter_by(shipping_mode='standard').all()]
+    
+    # Pre-fill data if state is selected
+    existing_price = None
+    if selected_state:
+        existing_price = NormalClientStatePrice.query.filter_by(
+            state=selected_state, 
+            shipping_mode='air'
+        ).first()
+        
+    return render_template('set_walking_air_prices.html', 
+                         states=all_states, 
+                         selected_state=selected_state,
+                         existing_price=existing_price)
 
 
 # ============== ADVANCED REPORTS ==============
