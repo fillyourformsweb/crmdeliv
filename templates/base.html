@@ -125,7 +125,7 @@
                     <a href="{{ url_for('orders') }}"
                         class="sidebar-link {{ 'active' if request.endpoint in ['orders', 'walkin_order', 'client_order', 'order_details', 'edit_order'] }}">
                         <i class="fas fa-boxes"></i>
-                        <span>Orders</span>
+                        <span>Booking</span>
                     </a>
 
                     <a href="{{ url_for('clients') }}"
@@ -219,6 +219,11 @@
                         <i class="fas fa-receipt"></i>
                         <span>Client Due Report</span>
                     </a>
+                    <a href="{{ url_for('bill_order') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint in ['bill_order', 'order_bill', 'api_search_orders_for_billing'] }}">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>Bill Order</span>
+                    </a>
                 </div>
             </div>
 
@@ -271,7 +276,7 @@
             <!-- Pricing Control - Collapsible -->
             <div class="sidebar-section-group">
                 <div class="sidebar-heading sidebar-heading-toggle mt-4" id="pricingToggle" data-section="pricing">
-                    Pricing Control
+                    Rate Calculate
                     <i class="fas fa-chevron-down ms-auto sidebar-toggle-icon"></i>
                 </div>
                 <div class="sidebar-section-content" id="pricingContent">

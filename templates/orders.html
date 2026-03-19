@@ -175,6 +175,79 @@
                 </tbody>
             </table>
         </div>
+        
+        <!-- Pagination Controls -->
+        {% if pagination.total > 20 %}
+        <div class="card-footer bg-light d-flex justify-content-between align-items-center py-3 px-4">
+            <div class="text-muted small">
+                Showing <strong>{{ ((pagination.page - 1) * 20) + 1 }}</strong> to <strong>{{ min(pagination.page * 20, pagination.total) }}</strong> of <strong>{{ pagination.total }}</strong> orders
+            </div>
+            <nav>
+                <ul class="pagination mb-0">
+                    {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{{ '&status=' + status_filter if status_filter else '' }}{{ '&order_type=' + order_type_filter if order_type_filter else '' }}{{ '&search=' + search if search else '' }}">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ pagination.prev_num }}{{ '&status=' + status_filter if status_filter else '' }}{{ '&order_type=' + order_type_filter if order_type_filter else '' }}{{ '&search=' + search if search else '' }}">
+                            <i class="fas fa-angle-left"></i> Previous
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-angle-double-left"></i></span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-angle-left"></i> Previous</span>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Page numbers -->
+                    {% for page_num in pagination.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num == pagination.page %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_num }}{{ '&status=' + status_filter if status_filter else '' }}{{ '&order_type=' + order_type_filter if order_type_filter else '' }}{{ '&search=' + search if search else '' }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ pagination.next_num }}{{ '&status=' + status_filter if status_filter else '' }}{{ '&order_type=' + order_type_filter if order_type_filter else '' }}{{ '&search=' + search if search else '' }}">
+                            Next <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ pagination.pages }}{{ '&status=' + status_filter if status_filter else '' }}{{ '&order_type=' + order_type_filter if order_type_filter else '' }}{{ '&search=' + search if search else '' }}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Next <i class="fas fa-angle-right"></i></span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-angle-double-right"></i></span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

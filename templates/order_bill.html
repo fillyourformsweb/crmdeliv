@@ -1,0 +1,601 @@
+{% extends "base.html" %}
+
+{% block title %}Order Bill - {{ order.receipt_number }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        .luxury-navbar,
+        .luxury-sidebar,
+        .btn-no-print,
+        .action-bar,
+        .payment-section {
+            display: none !important;
+        }
+
+        .main-content-wrapper {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .bill-container {
+            box-shadow: none !important;
+            border: 1px solid #000 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        body {
+            background: white !important;
+        }
+    }
+
+    .bill-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border: 1px solid #333;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .invoice-header {
+        text-align: center;
+        border-bottom: 2px solid #000;
+        padding: 8px 5px;
+        color: #d32f2f;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 1.1rem;
+    }
+
+    .bill-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-bottom: 1px solid #333;
+    }
+
+    .grid-cell {
+        padding: 12px;
+        border-right: 1px solid #333;
+    }
+
+    .grid-cell:last-child {
+        border-right: none;
+    }
+
+    .label-small {
+        font-size: 0.75rem;
+        color: #666;
+        display: block;
+        margin-bottom: 3px;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .cell-content {
+        font-size: 0.95rem;
+        color: #333;
+    }
+
+    .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+        border: 1px solid #333;
+        padding: 8px;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    .invoice-table th {
+        background: #f5f5f5;
+        font-weight: bold;
+    }
+
+    .text-left {
+        text-align: left !important;
+    }
+
+    .total-row {
+        font-weight: bold;
+        background: #f5f5f5;
+    }
+
+    .totals-area {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid #333;
+        margin-bottom: 20px;
+    }
+
+    .terms-box {
+        padding: 10px;
+        border-right: 1px solid #333;
+        font-size: 0.7rem;
+        line-height: 1.3;
+    }
+
+    .terms-box ul {
+        margin: 0;
+        padding-left: 15px;
+    }
+
+    .calculations-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .calc-row {
+        display: contents;
+    }
+
+    .calc-label {
+        padding: 8px 10px;
+        border-bottom: 1px solid #333;
+        border-right: 1px solid #333;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .calc-value {
+        padding: 8px 10px;
+        border-bottom: 1px solid #333;
+        text-align: right;
+        font-size: 0.8rem;
+    }
+
+    .action-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .payment-section {
+        background: #f8f9fa;
+        border: 2px solid #667eea;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .payment-section h5 {
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .payment-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .info-block {
+        background: white;
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+    }
+
+    .info-label {
+        font-size: 0.8rem;
+        color: #666;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .due-value {
+        color: #e74c3c;
+    }
+
+    .paid-value {
+        color: #27ae60;
+    }
+
+    .payment-control {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .payment-input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+
+    .btn-mark-paid {
+        background: #27ae60;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-mark-paid:hover {
+        background: #229954;
+        transform: translateY(-2px);
+    }
+
+    .btn-mark-paid:disabled {
+        background: #bdc3c7;
+        cursor: not-allowed;
+    }
+
+    .logo-section {
+        text-align: center;
+        padding: 15px;
+    }
+
+    .logo-section img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-paid {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-unpaid {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .status-partial {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .success-alert {
+        display: none;
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .success-alert.show {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page-reveal">
+    <div style="max-width: 950px; margin: 0 auto;">
+        <!-- Success Alert -->
+        <div id="successAlert" class="success-alert">
+            <i class="fas fa-check-circle me-2"></i><span id="successMessage"></span>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar btn-no-print">
+            <div>
+                <a href="{{ url_for('bill_order') }}" class="btn btn-light rounded-pill px-4">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Search
+                </a>
+            </div>
+            <div class="btn-group">
+                <button onclick="window.print()" class="btn btn-primary rounded-pill px-4">
+                    <i class="fas fa-print me-2"></i>Print Bill
+                </button>
+                <button onclick="downloadPDF()" class="btn btn-luxury rounded-pill px-4">
+                    <i class="fas fa-file-pdf me-2"></i>Export PDF
+                </button>
+                <button onclick="shareWhatsApp()" class="btn rounded-pill px-4" style="background-color: #25D366; color: white; border: none;">
+                    <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                </button>
+            </div>
+        </div>
+
+        <!-- Payment Control Section -->
+        <div class="payment-section btn-no-print">
+            <h5>
+                <i class="fas fa-credit-card me-2"></i>Payment Status
+            </h5>
+            <div class="payment-info">
+                <div class="info-block">
+                    <div class="info-label">Order Amount</div>
+                    <div class="info-value">₹{{ "%.2f"|format(total_amount) }}</div>
+                </div>
+                <div class="info-block">
+                    <div class="info-label">Amount Received</div>
+                    <div class="info-value paid-value">₹{{ "%.2f"|format(received_amount) }}</div>
+                </div>
+                <div class="info-block">
+                    <div class="info-label">Due Amount</div>
+                    <div class="info-value {% if due_amount > 0 %}due-value{% else %}paid-value{% endif %}">
+                        ₹{{ "%.2f"|format(due_amount) }}
+                    </div>
+                </div>
+                <div class="info-block">
+                    <div class="info-label">Status</div>
+                    <div>
+                        {% if due_amount == 0 %}
+                        <span class="status-badge status-paid">PAID</span>
+                        {% elif received_amount > 0 %}
+                        <span class="status-badge status-partial">PARTIAL</span>
+                        {% else %}
+                        <span class="status-badge status-unpaid">UNPAID</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if due_amount > 0 %}
+            <div class="payment-control">
+                <input type="number" id="paymentAmount" class="payment-input" placeholder="Amount to collect..." 
+                       value="{{ due_amount }}" min="0" max="{{ due_amount }}" step="0.01">
+                <button class="btn-mark-paid" onclick="markAsPaid()">
+                    <i class="fas fa-check me-2"></i>Mark as Paid
+                </button>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Bill Container -->
+        <div class="bill-container">
+            <!-- Logo Section -->
+            <div class="logo-section">
+                {% if is_gst %}
+                <img src="{{ url_for('static', filename='bill/Letterhead_page-0002.jpg.jpeg') }}" alt="Company Letterhead" style="max-height: 80px;">
+                {% else %}
+                <img src="{{ url_for('static', filename='bill/not gst.png') }}" alt="Company Letterhead" style="max-height: 80px;">
+                {% endif %}
+            </div>
+
+            <!-- Invoice Header -->
+            <div class="invoice-header">COURIER SERVICE INVOICE</div>
+
+            <!-- Bill Details Grid -->
+            <div class="bill-grid">
+                <div class="grid-cell" style="border-bottom: 1px solid #333;">
+                    <span class="label-small">Receipt/Tracking No.:</span>
+                    <div class="cell-content fw-bold">{{ order.receipt_number }}</div>
+                </div>
+                <div class="grid-cell" style="border-bottom: 1px solid #333;">
+                    <span class="label-small">Invoice Date:</span>
+                    <div class="cell-content">{{ now.strftime('%d/%m/%Y') }}</div>
+                </div>
+            </div>
+
+            <div class="bill-grid">
+                <div class="grid-cell">
+                    <span class="label-small">Bill To:</span>
+                    {% if client %}
+                    <div class="cell-content fw-bold">{{ client.name }}</div>
+                    {% if client.company_name %}
+                    <div class="cell-content small">{{ client.company_name }}</div>
+                    {% endif %}
+                    <div class="cell-content small">{{ client.address or 'N/A' }}</div>
+                    <div class="cell-content small">{{ client.phone }}</div>
+                    {% if client.gst_number %}
+                    <div class="cell-content small">GST: {{ client.gst_number }}</div>
+                    {% endif %}
+                    {% else %}
+                    <div class="cell-content fw-bold">{{ order.receiver_name }}</div>
+                    <div class="cell-content small">{{ order.receiver_address or 'N/A' }}</div>
+                    {% endif %}
+                </div>
+                <div class="grid-cell">
+                    <span class="label-small">Company Details:</span>
+                    <div class="cell-content fw-bold">M/S FILL YOUR FORMS</div>
+                    <div class="cell-content small">746/891, University Chauarah,<br>Old Katra, Prayagraj, UP 211002</div>
+                    <div class="cell-content small">Contact: 9532631383; 9161712113</div>
+                    <div class="cell-content small">Email: courier@fillyourforms.com</div>
+                </div>
+            </div>
+
+            <!-- Order Details Table -->
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">S.No.</th>
+                        <th>Date</th>
+                        <th>Receipt No.</th>
+                        <th>Receiver</th>
+                        <th>Destination</th>
+                        <th>Weight (kg)</th>
+                        {% if is_gst %}<th>HSN/SAC</th>{% endif %}
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>{{ order.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ order.receipt_number }}</td>
+                        <td class="text-left text-uppercase">{{ order.receiver_name or 'N/A' }}</td>
+                        <td class="text-left">
+                            {{ order.receiver_city or '' }}
+                            {% if order.receiver_state %}, {{ order.receiver_state }}{% endif %}
+                        </td>
+                        <td>{{ "%.2f"|format(order.weight or 0) }}</td>
+                        {% if is_gst %}<td>996511</td>{% endif %}
+                        <td>{{ "%.2f"|format(total_amount) }}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="{% if is_gst %}7{% else %}6{% endif %}" class="text-end">TOTAL</td>
+                        <td>{{ "%.2f"|format(total_amount) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Payments and Calculations -->
+            <div class="totals-area">
+                <div class="terms-box">
+                    <div class="fw-bold mb-2">Terms & Conditions</div>
+                    <ul>
+                        <li>Condition of goods not checked.</li>
+                        <li>No liability for fragile items.</li>
+                        <li>Claims within 24 hours only.</li>
+                        <li>Payment due within 15 days.</li>
+                    </ul>
+                </div>
+                <div class="calculations-box">
+                    {% if is_gst %}
+                    <div class="calc-row">
+                        <div class="calc-label">Taxable Value</div>
+                        <div class="calc-value">₹{{ "%.2f"|format(taxable_value) }}</div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="calc-label">CGST (9%)</div>
+                        <div class="calc-value">₹{{ "%.2f"|format(cgst_amount) }}</div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="calc-label">SGST (9%)</div>
+                        <div class="calc-value">₹{{ "%.2f"|format(sgst_amount) }}</div>
+                    </div>
+                    {% endif %}
+                    <div class="calc-row">
+                        <div class="calc-label">Total Amount</div>
+                        <div class="calc-value fw-bold">₹{{ "%.2f"|format(total_amount) }}</div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="calc-label">Amount Received</div>
+                        <div class="calc-value" style="color: #27ae60; font-weight: bold;">₹{{ "%.2f"|format(received_amount) }}</div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="calc-label">Amount Due</div>
+                        <div class="calc-value" style="color: #e74c3c; font-weight: bold;">₹{{ "%.2f"|format(due_amount) }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signature Section -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #333; margin-top: 20px; padding-top: 40px;">
+                <div style="text-align: center; padding: 20px;">
+                    <div style="border-top: 1px solid #333; margin-top: 30px; padding-top: 5px;">
+                        <strong>Authorized Signature</strong>
+                    </div>
+                </div>
+                <div style="text-align: center; padding: 20px;">
+                    <div style="border-top: 1px solid #333; margin-top: 30px; padding-top: 5px;">
+                        <strong>Client Signature</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function markAsPaid() {
+        const amount = parseFloat(document.getElementById('paymentAmount').value);
+        const orderTotal = {{ total_amount }};
+
+        if (isNaN(amount) || amount <= 0) {
+            alert('Please enter a valid amount');
+            return;
+        }
+
+        if (amount > orderTotal) {
+            alert('Amount cannot exceed order total');
+            return;
+        }
+
+        const button = event.target;
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+
+        fetch(`/order/{{ order.id }}/mark-paid`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ amount: amount })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                const successAlert = document.getElementById('successAlert');
+                document.getElementById('successMessage').textContent = data.message;
+                successAlert.classList.add('show');
+
+                // Update the display
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            } else {
+                alert('Error: ' + data.error);
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-check me-2"></i>Mark as Paid';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-check me-2"></i>Mark as Paid';
+        });
+    }
+
+    function downloadPDF() {
+        const element = document.querySelector('.bill-container');
+        const opt = {
+            margin: 5,
+            filename: 'order_bill_{{ order.receipt_number }}.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+
+    function shareWhatsApp() {
+        const text = `Order Bill\nReceipt: {{ order.receipt_number }}\nAmount: ₹{{ "%.2f"|format(total_amount) }}\nDue: ₹{{ "%.2f"|format(due_amount) }}\n\nPlease process this payment.`;
+        const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
+    }
+</script>
+{% endblock %}

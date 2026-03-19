@@ -1161,8 +1161,27 @@ def get_all_offers():
 @login_required
 @staff_required
 def clients():
-    clients = Client.query.all()
-    return render_template('clients.html', clients=clients)
+    search_query = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
+    
+    # Build query
+    query = Client.query
+    
+    # Apply search filter
+    if search_query:
+        query = query.filter(
+            db.or_(
+                Client.name.ilike(f'%{search_query}%'),
+                Client.company_name.ilike(f'%{search_query}%'),
+                Client.phone.ilike(f'%{search_query}%'),
+                Client.alt_phone.ilike(f'%{search_query}%'),
+                Client.email.ilike(f'%{search_query}%')
+            )
+        )
+    
+    paginate = query.paginate(page=page, per_page=10)
+    clients = paginate.items
+    return render_template('clients.html', clients=clients, paginate=paginate, search_query=search_query)
 
 
 @app.route('/client/add', methods=['GET', 'POST'])
@@ -1368,6 +1387,7 @@ def orders():
     status_filter = request.args.get('status', '')
     order_type_filter = request.args.get('order_type', '')
     search = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
     
     query = Order.query
     
@@ -1394,16 +1414,21 @@ def orders():
         else_=5
     )
     
-    # Order by status priority first, then by created_at descending
-    orders = query.order_by(status_priority, Order.created_at.desc()).all()
+    # Paginate with 20 orders per page
+    pagination = query.order_by(status_priority, Order.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    orders = pagination.items
     delivery_personnel = User.query.filter_by(role='delivery', is_active=True).all()
     
     return render_template('orders.html', 
-                         orders=orders, 
+                         orders=orders,
+                         pagination=pagination,
                          delivery_personnel=delivery_personnel,
                          status_filter=status_filter,
                          order_type_filter=order_type_filter,
-                         search=search)
+                         search=search,
+                         min=min)
 
 
 @app.route('/order/walkin', methods=['GET', 'POST'])
@@ -1551,6 +1576,36 @@ def walkin_bill(id):
         return redirect(url_for('order_details', id=id))
     is_gst = request.args.get('gst', 'no').lower() == 'yes'  # Get GST parameter
     return render_template('walkin_bill.html', order=order, is_gst=is_gst)
+
+
+@app.route('/api/order/bill', methods=['POST'])
+@login_required
+def bill_order():
+    data = request.get_json()
+    order_id = data.get('order_id')
+    amount = float(data.get('amount', 0))
+    
+    order = Order.query.get(order_id)
+    if not order:
+        return jsonify({'success': False, 'message': 'Order not found'}), 404
+    
+    # Update order as paid
+    order.received_amount = amount
+    order.payment_status = 'paid'
+    order.payment_mode = 'manual'  # Mark as manually billed
+    
+    # Create tracking update
+    tracking = TrackingUpdate(
+        order_id=order.id,
+        status='Billed',
+        description=f'Order billed for ₹{amount:.2f} and marked as PAID',
+        updated_by=current_user.id
+    )
+    
+    db.session.add(tracking)
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Order billed successfully'})
 
 
 @app.route('/api/order/payment', methods=['POST'])
@@ -3978,6 +4033,138 @@ def adjustable_bill(client_id):
                          sgst_amount=sgst_amount,
                          now=datetime.now())
 
+
+@app.route('/order/<int:order_id>/bill')
+@login_required
+@staff_required
+def order_bill(order_id):
+    """Display bill for a single order"""
+    order = Order.query.get_or_404(order_id)
+    
+    # Get GST parameter if present
+    is_gst = request.args.get('gst', 'no').lower() == 'yes'
+    
+    # Get client info if order belongs to a client
+    client = None
+    if order.client_id:
+        client = Client.query.get(order.client_id)
+    
+    # Calculate totals for this single order
+    total_amount = order.total_amount or 0
+    received_amount = order.received_amount or 0
+    due_amount = total_amount - received_amount
+    
+    # Calculate GST if needed
+    if is_gst:
+        taxable_value = total_amount / 1.18
+        cgst_amount = taxable_value * 0.09
+        sgst_amount = taxable_value * 0.09
+    else:
+        taxable_value = 0
+        cgst_amount = 0
+        sgst_amount = 0
+    
+    return render_template('order_bill.html',
+                         order=order,
+                         client=client,
+                         total_amount=total_amount,
+                         received_amount=received_amount,
+                         due_amount=due_amount,
+                         is_gst=is_gst,
+                         taxable_value=taxable_value,
+                         cgst_amount=cgst_amount,
+                         sgst_amount=sgst_amount,
+                         now=datetime.now())
+
+
+@app.route('/order/<int:order_id>/mark-paid', methods=['POST'])
+@login_required
+@staff_required
+def mark_order_paid(order_id):
+    """Mark an order as fully paid"""
+    try:
+        order = Order.query.get_or_404(order_id)
+        
+        # Get the amount to mark as received
+        amount = request.json.get('amount', order.total_amount or 0)
+        
+        # Update the received amount
+        order.received_amount = amount
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Order marked as paid. Amount: ₹{amount}',
+            'received_amount': order.received_amount,
+            'due_amount': (order.total_amount or 0) - (order.received_amount or 0)
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/search-orders-for-billing')
+@login_required
+@staff_required
+def api_search_orders_for_billing():
+    """Search orders for billing"""
+    try:
+        query = request.args.get('query', '').strip()
+        order_type = request.args.get('type', 'all')  # all, client, walkin
+        payment_status = request.args.get('status', 'all')  # all, unpaid, partial, paid
+        
+        orders_query = Order.query
+        
+        # Filter by search query (receipt number or receiver name)
+        if query:
+            orders_query = orders_query.filter(
+                (Order.receipt_number.ilike(f'%{query}%')) |
+                (Order.receiver_name.ilike(f'%{query}%'))
+            )
+        
+        # Filter by order type
+        if order_type != 'all':
+            orders_query = orders_query.filter_by(order_type=order_type)
+        
+        # Filter by payment status
+        if payment_status == 'unpaid':
+            orders_query = orders_query.filter((Order.received_amount == None) | (Order.received_amount == 0))
+        elif payment_status == 'partial':
+            orders_query = orders_query.filter(
+                Order.received_amount.isnot(None),
+                Order.received_amount > 0,
+                Order.received_amount < Order.total_amount
+            )
+        elif payment_status == 'paid':
+            orders_query = orders_query.filter(Order.received_amount == Order.total_amount)
+        
+        orders = orders_query.order_by(Order.created_at.desc()).limit(50).all()
+        
+        results = []
+        for order in orders:
+            due = (order.total_amount or 0) - (order.received_amount or 0)
+            status = 'paid' if due == 0 else ('unpaid' if order.received_amount == None or order.received_amount == 0 else 'partial')
+            
+            results.append({
+                'id': order.id,
+                'receipt_number': order.receipt_number,
+                'receiver_name': order.receiver_name,
+                'receiver_city': order.receiver_city,
+                'date': order.created_at.strftime('%Y-%m-%d'),
+                'amount': float(order.total_amount or 0),
+                'received': float(order.received_amount or 0),
+                'due': float(due),
+                'status': status,
+                'order_type': order.order_type
+            })
+        
+        return jsonify({
+            'success': True,
+            'orders': results,
+            'count': len(results)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ============== ADMIN EXPORT ==============

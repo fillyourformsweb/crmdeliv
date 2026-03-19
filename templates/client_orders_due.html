@@ -260,15 +260,61 @@
                     </span>
                 </td>
                 <td class="px-4">
-                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick='showPaymentModal(${JSON.stringify(o).replace(/'/g, "&apos;")})'>
-                        <i class="fas fa-rupee-sign me-1"></i>Receive
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-success rounded-pill px-3" title="Quickly bill and mark as paid" onclick='billOrder(${o.id}, "${o.receipt_number}", ${o.total_amount})'>
+                            <i class="fas fa-file-invoice-dollar me-1"></i>Bill
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick='showPaymentModal(${JSON.stringify(o).replace(/'/g, "&apos;")})'>
+                            <i class="fas fa-rupee-sign me-1"></i>Receive
+                        </button>
+                    </div>
                 </td>
             </tr>
         `).join('');
     }
 
-    const pModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    function billOrder(orderId, receiptNo, totalAmount) {
+        if (!confirm(`Bill order ${receiptNo} for ₹${totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}?\n\nThis will mark it as PAID.`)) {
+            return;
+        }
+
+        const btn = event.target.closest('button');
+        const originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Billing...';
+
+        fetch('/api/order/bill', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                order_id: orderId,
+                amount: totalAmount
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const successMsg = document.createElement('div');
+                    successMsg.className = 'alert alert-success position-fixed top-3 end-3 shadow-lg';
+                    successMsg.style.zIndex = '9999';
+                    successMsg.innerHTML = `<i class="fas fa-check-circle me-2"></i>Order ${receiptNo} billed & marked as PAID`;
+                    document.body.appendChild(successMsg);
+                    setTimeout(() => successMsg.remove(), 3000);
+                    
+                    loadOrders(); // Reload to update the table
+                } else {
+                    alert('Error: ' + data.message);
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                }
+            })
+            .catch(err => {
+                alert('Something went wrong. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            });
+    }
 
     function showPaymentModal(order) {
         document.getElementById('modalOrderId').value = order.id;

@@ -17,6 +17,38 @@
             </a>
         </div>
     </div>
+    
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <form method="GET" action="{{ url_for('clients') }}" class="d-flex gap-2">
+            <div class="flex-grow-1 position-relative">
+                <input type="text" name="search" class="form-control form-control-lg luxury-input" 
+                    placeholder="Search by client name, company, phone..." 
+                    value="{{ search_query or '' }}">
+                <i class="fas fa-search position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); color: #999; pointer-events: none;"></i>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg fw-bold" style="min-width: 120px;">
+                <i class="fas fa-search me-1"></i> Search
+            </button>
+            {% if search_query %}
+            <a href="{{ url_for('clients') }}" class="btn btn-outline-secondary btn-lg fw-bold" style="min-width: 120px;">
+                <i class="fas fa-times me-1"></i> Clear
+            </a>
+            {% endif %}
+        </form>
+    </div>
+    
+    {% if search_query %}
+    <div class="alert alert-info bg-info-subtle border-info border-opacity-25 mb-4">
+        <i class="fas fa-info-circle me-2"></i>
+        Search results for: <strong>"{{ search_query }}"</strong>
+        {% if paginate.total == 0 %}
+        — No clients found
+        {% else %}
+        — Found {{ paginate.total }} client(s)
+        {% endif %}
+    </div>
+    {% endif %}
 
     <div class="luxury-card">
         <div class="table-responsive">
@@ -89,6 +121,91 @@
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
+        
+        <!-- Pagination Controls -->
+        {% if paginate and paginate.pages > 1 %}
+        <div class="d-flex justify-content-center align-items-center py-4 border-top">
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0 gap-1">
+                    <!-- First Page -->
+                    {% if paginate.page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link rounded-circle" href="{{ url_for('clients', page=1, search=search_query or '') }}" title="First">
+                            <i class="fas fa-chevron-left"></i><i class="fas fa-chevron-left ms-0"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link rounded-circle">
+                            <i class="fas fa-chevron-left"></i><i class="fas fa-chevron-left ms-0"></i>
+                        </span>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Previous Page -->
+                    {% if paginate.prev_num %}
+                    <li class="page-item">
+                        <a class="page-link rounded" href="{{ url_for('clients', page=paginate.prev_num, search=search_query or '') }}">
+                            <i class="fas fa-chevron-left me-1"></i> Previous
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link rounded"><i class="fas fa-chevron-left me-1"></i> Previous</span>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Page Numbers -->
+                    {% for page_num in paginate.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num == paginate.page %}
+                            <li class="page-item active">
+                                <span class="page-link rounded-circle fw-bold" style="min-width: 40px; text-align: center;">
+                                    {{ page_num }}
+                                </span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link rounded-circle" href="{{ url_for('clients', page=page_num, search=search_query or '') }}" style="min-width: 40px; text-align: center;">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <!-- Next Page -->
+                    {% if paginate.next_num %}
+                    <li class="page-item">
+                        <a class="page-link rounded" href="{{ url_for('clients', page=paginate.next_num, search=search_query or '') }}">
+                            Next <i class="fas fa-chevron-right ms-1"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link rounded">Next <i class="fas fa-chevron-right ms-1"></i></span>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Last Page -->
+                    {% if paginate.page < paginate.pages %}
+                    <li class="page-item">
+                        <a class="page-link rounded-circle" href="{{ url_for('clients', page=paginate.pages, search=search_query or '') }}" title="Last">
+                            <i class="fas fa-chevron-right"></i><i class="fas fa-chevron-right ms-0"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link rounded-circle">
+                            <i class="fas fa-chevron-right"></i><i class="fas fa-chevron-right ms-0"></i>
+                        </span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        <div class="text-center text-muted py-2 small">
+            Showing page {{ paginate.page }} of {{ paginate.pages }} ({{ paginate.total }} total clients)
+        </div>
+        {% endif %}
 {% endblock %}
