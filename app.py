@@ -457,6 +457,8 @@ def logout():
 def dashboard():
     if current_user.role == 'customer':
         return redirect(url_for('customer_dashboard'))
+    if current_user.role == 'admin':
+        return redirect(url_for('admin_dashboard'))
     # Get statistics
     total_orders = Order.query.count()
     pending_orders = Order.query.filter_by(status='pending').count()
@@ -477,6 +479,112 @@ def dashboard():
                          recent_orders=recent_orders,
                          total_staff=total_staff,
                          delivery_personnel=delivery_personnel)
+
+
+@app.route('/admin-dashboard')
+@login_required
+@admin_required
+def admin_dashboard():
+    from sqlalchemy import func, desc
+    from datetime import datetime, timedelta, timezone
+    
+    # Get date filter from query parameters
+    days_filter = request.args.get('days', 30, type=int)
+    start_date = datetime.now(timezone.utc) - timedelta(days=days_filter)
+    
+    # Total Shipments and Revenue
+    total_shipments = Order.query.count()
+    total_revenue = db.session.query(func.sum(Order.total_amount)).scalar() or 0
+    
+    # Filter by date for dynamic stats
+    recent_shipments = Order.query.filter(Order.created_at >= start_date).count()
+    recent_revenue = db.session.query(func.sum(Order.total_amount)).filter(Order.created_at >= start_date).scalar() or 0
+    
+    # Top Customers
+    top_customers = db.session.query(
+        Order.customer_name,
+        Order.customer_phone,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('total_spent')
+    ).filter(Order.created_at >= start_date).group_by(
+        Order.customer_name, Order.customer_phone
+    ).order_by(desc('total_spent')).limit(10).all()
+    
+    # Top Clients
+    top_clients = db.session.query(
+        Client.name,
+        Client.company_name,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('total_spent')
+    ).join(Order, Order.client_id == Client.id).filter(
+        Order.created_at >= start_date
+    ).group_by(Client.id, Client.name, Client.company_name).order_by(desc('total_spent')).limit(10).all()
+    
+    # Branch wise Statistics
+    branch_stats = db.session.query(
+        Branch.name,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('total_amount')
+    ).join(Order, Order.branch_id == Branch.id).filter(
+        Order.created_at >= start_date
+    ).group_by(Branch.id, Branch.name).order_by(desc('order_count')).all()
+    
+    # Staff Orders (date wise - last 7 days)
+    staff_stats = db.session.query(
+        User.username,
+        func.count(Order.id).label('orders_created'),
+        func.sum(Order.total_amount).label('total_value')
+    ).join(Order, Order.created_by == User.id).filter(
+        Order.created_at >= (datetime.now(timezone.utc) - timedelta(days=7)),
+        User.role.in_(['staff', 'manager'])
+    ).group_by(User.id, User.username).order_by(desc('orders_created')).limit(10).all()
+    
+    # Client Due Report (unpaid invoices)
+    due_clients = db.session.query(
+        Client.name,
+        Client.company_name,
+        Client.email,
+        Client.id,
+        func.count(Order.id).label('pending_orders'),
+        func.sum(Order.total_amount).label('total_due')
+    ).join(Order, Order.client_id == Client.id).filter(
+        Order.payment_status.in_(['unpaid', 'partial'])
+    ).group_by(Client.id, Client.name, Client.company_name, Client.email).order_by(desc('total_due')).limit(10).all()
+    
+    # Daily Revenue (last 7 days)
+    daily_revenue_rows = db.session.query(
+        func.date(Order.created_at).label('order_date'),
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('daily_total')
+    ).filter(Order.created_at >= (datetime.now(timezone.utc) - timedelta(days=7))).group_by(
+        func.date(Order.created_at)
+    ).order_by('order_date').all()
+    
+    # Convert to dict for JSON serialization
+    daily_revenue = [{'order_date': str(row.order_date), 'order_count': row.order_count, 'daily_total': float(row.daily_total) if row.daily_total else 0} for row in daily_revenue_rows]
+    
+    # Status Distribution
+    status_dist_rows = db.session.query(
+        Order.status,
+        func.count(Order.id).label('count')
+    ).filter(Order.created_at >= start_date).group_by(Order.status).all()
+    
+    # Convert to dict for JSON serialization
+    status_dist = [{'status': row.status, 'count': row.count} for row in status_dist_rows]
+    
+    return render_template('admin_dashboard.html',
+                         total_shipments=total_shipments,
+                         total_revenue=total_revenue,
+                         recent_shipments=recent_shipments,
+                         recent_revenue=recent_revenue,
+                         top_customers=top_customers,
+                         top_clients=top_clients,
+                         branch_stats=branch_stats,
+                         staff_stats=staff_stats,
+                         due_clients=due_clients,
+                         daily_revenue=daily_revenue,
+                         status_dist=status_dist,
+                         days_filter=days_filter)
 
 
 @app.route('/customer/dashboard')
