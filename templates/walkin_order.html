@@ -151,23 +151,151 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-lg-5">
-            <!-- Available Offers Section -->
-            <div class="card luxury-card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #fff5e6 0%, #fffbf0 100%); border: 2px solid #ffc107;">
-                <div class="card-body p-4 text-center">
-                    <div class="mb-3">
-                        <i class="fas fa-gift fs-3 text-warning"></i>
+            <!-- Payment Mode Section - Always Visible -->
+            <div class="card luxury-card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="fas fa-credit-card me-2 text-info opacity-50"></i>Payment Mode
+                    </h5>
+                    <p class="small text-muted mb-0">Select how the customer will pay</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Payment Mode *</label>
+                            <select name="payment_mode" class="form-select luxury-input" required>
+                                <option value="cash" selected>Cash Payment</option>
+                                <option value="upi">UPI / Scanner</option>
+                                <option value="online">Online Transfer</option>
+                                <option value="card">Card Payment</option>
+                                <option value="credit">Credit / To-Pay</option>
+                            </select>
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle me-1"></i>The payment mode will be recorded and can be updated later.
+                            </small>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-success fw-bold" id="checkOfferBtn" style="display: none;" title="Check if any offer applies to this amount">
+                                    <i class="fas fa-gift me-1"></i> Check Offer
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-warning fw-bold" data-bs-toggle="modal" data-bs-target="#offersModal" title="View all available offers">
+                                    <i class="fas fa-eye me-1"></i> View Offers
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <h6 class="fw-bold text-dark mb-2">View Available Offers</h6>
-                    <p class="small text-muted mb-3">Check special discounts & promotions</p>
-                    <button type="button" class="btn btn-warning btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#offersModal">
-                        <i class="fas fa-eye me-2"></i>Browse Offers
-                    </button>
+                    
+                    <!-- Auto-Offer Display (Hidden until checked) -->
+                    <div id="autoOfferDisplay" style="display: none; margin-top: 20px; padding: 15px; background: linear-gradient(135deg, #d4edda 0%, #e8f5e9 100%); border: 2px solid #28a745; border-radius: 8px;">
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <i class="fas fa-star text-warning" style="font-size: 24px;"></i>
+                        </div>
+                        <h6 class="fw-bold text-success text-center mb-2">
+                            <i class="fas fa-check-circle me-1"></i>Special Offer Available!
+                        </h6>
+                        <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
+                            <div class="small text-muted mb-1" id="offerRangeText">Order Amount: ₹200 - ₹500</div>
+                            <div class="fw-bold text-success" style="font-size: 18px;" id="offerValueText">GET ₹30 OFF</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-success fw-bold flex-grow-1" id="acceptOfferBtn">
+                                <i class="fas fa-check me-1"></i> Accept Offer
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary fw-bold" id="viewOtherOffersBtn">
+                                <i class="fas fa-eye me-1"></i> Other Offers
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <!-- International Booking Section -->
+            <div class="card luxury-card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="fas fa-globe me-2 text-danger opacity-50"></i>International Booking
+                    </h5>
+                    <p class="small text-muted mb-0">Enable for cross-border shipments</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="form-check form-switch mb-4">
+                        <input class="form-check-input" type="checkbox" name="is_international" id="isInternational">
+                        <label class="form-check-label fw-bold text-dark" for="isInternational">
+                            This is an International Shipment
+                        </label>
+                    </div>
+
+                    <!-- International Details (Hidden by default) -->
+                    <div id="internationalDetails" style="display: none;">
+                        <div class="alert alert-info bg-info-subtle border-info border-opacity-25 rounded-3 mb-4">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="fas fa-exclamation-circle text-info mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold text-info mb-1">International Shipping Requirements</h6>
+                                    <small class="text-info opacity-75">Shipping mode is mandatory for international orders. All customs details must be filled.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Destination Country *</label>
+                            <input type="text" name="destination_country" id="destinationCountry" class="form-control luxury-input" placeholder="e.g., United States, UK, Canada">
+                            <small class="text-muted">Enter the country where the package will be delivered</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">HS Code / Product Code</label>
+                            <input type="text" name="hs_code" class="form-control luxury-input" placeholder="e.g., 6204620000">
+                            <small class="text-muted">Harmonized System code for customs declaration</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Product Description for Customs *</label>
+                            <textarea name="customs_description" class="form-control luxury-input" rows="2" placeholder="Detailed description of contents for customs clearance..."></textarea>
+                            <small class="text-muted">Required for customs declaration</small>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Product Value (USD) *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">$</span>
+                                    <input type="number" name="product_value_usd" class="form-control luxury-input" step="0.01" min="0" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Currency of Invoice</label>
+                                <select name="invoice_currency" class="form-select luxury-input">
+                                    <option value="USD" selected>USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                    <option value="AUD">AUD ($)</option>
+                                    <option value="CAD">CAD ($)</option>
+                                    <option value="INR">INR (₹)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">International Shipping Notes</label>
+                            <textarea name="international_notes" class="form-control luxury-input" rows="3" placeholder="Any special instructions, warnings, or customs notes..."></textarea>
+                            <small class="text-muted">Add any handling requirements, restrictions, or special notes for customs</small>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" name="requires_signature" id="requiresSignatureIntl">
+                            <label class="form-check-label text-dark" for="requiresSignatureIntl">
+                                <strong>Requires Signature on Delivery</strong>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
             <!-- Package & Billing Section -->
             <div class="card luxury-card border-0 shadow-sm mb-4">
                 <div class="card-body p-4">
@@ -209,18 +337,6 @@
                     </div>
 
                     <div id="billingSection" style="display: none;">
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-12">
-                                <label class="form-label small fw-bold text-uppercase text-muted">Payment Mode *</label>
-                                <select name="payment_mode" class="form-select luxury-input" required>
-                                    <option value="cash" selected>Cash</option>
-                                    <option value="upi">UPI / Scanner</option>
-                                    <option value="online">Online Transfer</option>
-                                    <option value="card">Card Payment</option>
-                                    <option value="credit">Credit / To-Pay</option>
-                                </select>
-                            </div>
-                        </div>
                         <div class="mb-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">Amount Received *</label>
                             <div class="input-group">
@@ -893,6 +1009,190 @@
             scanBtn.innerHTML = originalBtnContent;
             input.value = ''; // Reset file input
         }
+    }
+
+    // International Booking Toggle & Validation
+    const internationalCheckbox = document.getElementById('isInternational');
+    const internationalDetails = document.getElementById('internationalDetails');
+    const shippingModeSelectField = document.querySelector('select[name="receipt_mode"]');
+    
+    if (internationalCheckbox) {
+        internationalCheckbox.addEventListener('change', function() {
+            const isInternational = this.checked;
+            
+            // Toggle visibility of international details
+            if (internationalDetails) {
+                internationalDetails.style.display = isInternational ? 'block' : 'none';
+            }
+            
+            // Make shipping mode required when international is enabled
+            if (shippingModeSelectField) {
+                shippingModeSelectField.required = isInternational;
+                // Add visual feedback
+                if (isInternational) {
+                    shippingModeSelectField.classList.add('border-danger');
+                } else {
+                    shippingModeSelectField.classList.remove('border-danger');
+                }
+            }
+            
+            // Make international fields required when enabled
+            const intlFields = document.querySelectorAll('[id*="destination"], [name="customs_description"], [name="product_value_usd"]');
+            intlFields.forEach(field => {
+                field.required = isInternational;
+            });
+            
+            // Add form validation messaging
+            if (isInternational) {
+                console.log('✓ International booking enabled - Shipping mode is now required');
+            }
+        });
+    }
+    
+    // Validate international shipping on form submit
+    const orderForm = document.getElementById('orderForm');
+    if (orderForm) {
+        orderForm.addEventListener('submit', function(e) {
+            const isIntl = internationalCheckbox && internationalCheckbox.checked;
+            
+            if (isIntl) {
+                // Check shipping mode is selected
+                if (!shippingModeSelectField || !shippingModeSelectField.value) {
+                    e.preventDefault();
+                    alert('Please select a Shipping Mode for international shipments');
+                    shippingModeSelectField.focus();
+                    return false;
+                }
+                
+                // Check required international fields
+                const destCountry = document.getElementById('destinationCountry');
+                const customsDesc = document.querySelector('[name="customs_description"]');
+                const productValue = document.querySelector('[name="product_value_usd"]');
+                
+                if (destCountry && !destCountry.value.trim()) {
+                    e.preventDefault();
+                    alert('Please enter the Destination Country');
+                    destCountry.focus();
+                    return false;
+                }
+                
+                if (customsDesc && !customsDesc.value.trim()) {
+                    e.preventDefault();
+                    alert('Please provide Product Description for Customs');
+                    customsDesc.focus();
+                    return false;
+                }
+                
+                if (productValue && !productValue.value) {
+                    e.preventDefault();
+                    alert('Please enter the Product Value');
+                    productValue.focus();
+                    return false;
+                }
+            }
+        });
+    }
+
+    // Auto Offer Detection & Display
+    const checkOfferBtn = document.getElementById('checkOfferBtn');
+    const autoOfferDisplay = document.getElementById('autoOfferDisplay');
+    const acceptOfferBtn = document.getElementById('acceptOfferBtn');
+    const viewOtherOffersBtn = document.getElementById('viewOtherOffersBtn');
+    let currentApplicableOffer = null;
+
+    if (receivedAmountInput) {
+        receivedAmountInput.addEventListener('input', function() {
+            const amount = parseFloat(this.value) || 0;
+            if (amount > 0) {
+                // Show the check offer button
+                if (checkOfferBtn) {
+                    checkOfferBtn.style.display = 'inline-block';
+                }
+            } else {
+                // Hide when amount is empty
+                if (checkOfferBtn) {
+                    checkOfferBtn.style.display = 'none';
+                }
+                if (autoOfferDisplay) {
+                    autoOfferDisplay.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // Check Offer Button Click Handler
+    if (checkOfferBtn) {
+        checkOfferBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const amount = parseFloat(receivedAmountInput.value) || 0;
+            
+            if (amount <= 0) {
+                alert('Please enter a valid amount first');
+                return;
+            }
+
+            // Fetch all offers and check if amount matches any
+            fetch('/api/get-all-offers')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.offers && data.offers.length > 0) {
+                        // Find offer that matches the amount
+                        const matchingOffer = data.offers.find(offer => 
+                            amount >= offer.min_amount && amount <= offer.max_amount
+                        );
+
+                        if (matchingOffer) {
+                            currentApplicableOffer = matchingOffer;
+                            console.log('✓ Matching offer found:', matchingOffer);
+                            
+                            // Display the auto-offer box
+                            document.getElementById('offerRangeText').textContent = 
+                                `Order Amount: ₹${matchingOffer.min_amount.toFixed(0)} - ₹${matchingOffer.max_amount.toFixed(0)}`;
+                            document.getElementById('offerValueText').textContent = 
+                                `GET ₹${matchingOffer.offer_amount.toFixed(0)} OFF`;
+                            
+                            if (autoOfferDisplay) {
+                                autoOfferDisplay.style.display = 'block';
+                            }
+                        } else {
+                            alert('No applicable offer for this amount. You can view all offers below.');
+                            if (autoOfferDisplay) {
+                                autoOfferDisplay.style.display = 'none';
+                            }
+                        }
+                    } else {
+                        alert('No offers available at the moment');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking offers:', error);
+                    alert('Failed to check offers');
+                });
+        });
+    }
+
+    // Accept Offer Button Handler
+    if (acceptOfferBtn) {
+        acceptOfferBtn.addEventListener('click', function() {
+            if (currentApplicableOffer) {
+                alert(`✓ Offer accepted! You get ₹${currentApplicableOffer.offer_amount.toFixed(0)} discount on this order.`);
+                // Store offer in form if needed
+                // The discount can be applied during order creation
+            }
+        });
+    }
+
+    // View Other Offers Button Handler
+    if (viewOtherOffersBtn) {
+        viewOtherOffersBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Trigger the modal to show all offers
+            const offersModal = document.getElementById('offersModal');
+            if (offersModal) {
+                const modal = new bootstrap.Modal(offersModal);
+                modal.show();
+            }
+        });
     }
 
     // Initial load

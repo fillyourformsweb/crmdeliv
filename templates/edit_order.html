@@ -192,10 +192,11 @@
                             <label class="form-label">Payment Mode</label>
                             <select name="payment_mode" class="form-select">
                                 <option value="">Select Mode</option>
-                                <option value="cash" {{ 'selected' if order.payment_mode=='cash' }}>Cash</option>
-                                <option value="card" {{ 'selected' if order.payment_mode=='card' }}>Card</option>
-                                <option value="upi" {{ 'selected' if order.payment_mode=='upi' }}>UPI</option>
-                                <option value="credit" {{ 'selected' if order.payment_mode=='credit' }}>Credit</option>
+                                <option value="cash" {{ 'selected' if order.payment_mode=='cash' }}>Cash Payment</option>
+                                <option value="upi" {{ 'selected' if order.payment_mode=='upi' }}>UPI / Scanner</option>
+                                <option value="online" {{ 'selected' if order.payment_mode=='online' }}>Online Transfer</option>
+                                <option value="card" {{ 'selected' if order.payment_mode=='card' }}>Card Payment</option>
+                                <option value="credit" {{ 'selected' if order.payment_mode=='credit' }}>Credit / To-Pay</option>
                             </select>
                         </div>
                     </div>
@@ -219,6 +220,69 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <i class="fas fa-globe"></i> International Booking
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="is_international" id="editIsInternational"
+                            {{ 'checked' if order.is_international else '' }}>
+                        <label class="form-check-label fw-bold" for="editIsInternational">
+                            This is an International Shipment
+                        </label>
+                    </div>
+                    
+                    <div id="editInternationalFields" style="display: {{ 'block' if order.is_international else 'none' }};">
+                        <div class="mb-3">
+                            <label class="form-label">Destination Country</label>
+                            <input type="text" name="destination_country" class="form-control"
+                                value="{{ order.destination_country or '' }}" placeholder="e.g., United States">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">HS Code</label>
+                            <input type="text" name="hs_code" class="form-control"
+                                value="{{ order.hs_code or '' }}" placeholder="e.g., 6204620000">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Customs Description</label>
+                            <textarea name="customs_description" class="form-control"
+                                rows="2">{{ order.customs_description or '' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Product Value (USD)</label>
+                                <input type="number" name="product_value_usd" class="form-control" step="0.01"
+                                    value="{{ order.product_value_usd or '' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Currency</label>
+                                <select name="invoice_currency" class="form-select">
+                                    <option value="USD" {{ 'selected' if order.invoice_currency=='USD' else '' }}>USD ($)</option>
+                                    <option value="EUR" {{ 'selected' if order.invoice_currency=='EUR' else '' }}>EUR (€)</option>
+                                    <option value="GBP" {{ 'selected' if order.invoice_currency=='GBP' else '' }}>GBP (£)</option>
+                                    <option value="AUD" {{ 'selected' if order.invoice_currency=='AUD' else '' }}>AUD ($)</option>
+                                    <option value="CAD" {{ 'selected' if order.invoice_currency=='CAD' else '' }}>CAD ($)</option>
+                                    <option value="INR" {{ 'selected' if order.invoice_currency=='INR' else '' }}>INR (₹)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">International Notes</label>
+                            <textarea name="international_notes" class="form-control"
+                                rows="2">{{ order.international_notes or '' }}</textarea>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="requires_signature_intl" id="editRequiresSig"
+                                {{ 'checked' if order.requires_signature_intl else '' }}>
+                            <label class="form-check-label" for="editRequiresSig">
+                                Requires Signature on Delivery
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -229,4 +293,16 @@
         <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-secondary btn-lg">Cancel</a>
     </div>
 </form>
+
+<script>
+    // Toggle international booking fields
+    const editIsIntl = document.getElementById('editIsInternational');
+    const editIntlFields = document.getElementById('editInternationalFields');
+    
+    if (editIsIntl) {
+        editIsIntl.addEventListener('change', function() {
+            editIntlFields.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+</script>
 {% endblock %}
