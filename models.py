@@ -261,6 +261,16 @@ class Order(db.Model):
     payment_status = db.Column(db.String(20), default='unpaid')  # unpaid, partial, paid
     payment_mode = db.Column(db.String(20))  # cash, card, upi, credit
     
+    # International Booking Fields
+    is_international = db.Column(db.Boolean, default=False)
+    destination_country = db.Column(db.String(100))
+    hs_code = db.Column(db.String(50))
+    customs_description = db.Column(db.Text)
+    product_value_usd = db.Column(db.Float)
+    invoice_currency = db.Column(db.String(10), default='USD')
+    international_notes = db.Column(db.Text)
+    requires_signature_intl = db.Column(db.Boolean, default=False)
+    
     # Extra Tracking Info
     order_number = db.Column(db.String(50))
     order_date = db.Column(db.String(20))

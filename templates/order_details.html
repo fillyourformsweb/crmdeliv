@@ -136,6 +136,50 @@
                 </div>
             </div>
 
+            {% if order.is_international %}
+            <div class="luxury-card mb-4 border-start border-4" style="border-color: #ff6b6b !important; background: linear-gradient(135deg, #fff5e6 0%, #fffbf0 100%);">
+                <div class="card-header border-0 py-3 px-4" style="background: #fff5e6;">
+                    <h6 class="mb-0 fw-bold text-danger"><i class="fas fa-globe me-2"></i>International Shipment Details</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="small text-muted text-uppercase fw-bold opacity-50 d-block">Destination Country</label>
+                            <div class="fw-bold text-dark">{{ order.destination_country or 'N/A' }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="small text-muted text-uppercase fw-bold opacity-50 d-block">HS Code</label>
+                            <div class="text-dark font-monospace">{{ order.hs_code or 'N/A' }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="small text-muted text-uppercase fw-bold opacity-50 d-block">Product Value</label>
+                            <div class="fw-bold text-primary fs-5">{{ order.invoice_currency }} {{ "%.2f"|format(order.product_value_usd or 0) }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="small text-muted text-uppercase fw-bold opacity-50 d-block">Currency</label>
+                            <div class="text-dark">{{ order.invoice_currency }}</div>
+                        </div>
+                    </div>
+                    <hr class="my-3">
+                    <div class="mb-3">
+                        <label class="small text-muted text-uppercase fw-bold opacity-50 d-block mb-1">Customs Description</label>
+                        <p class="text-dark small mb-0">{{ order.customs_description or 'N/A' }}</p>
+                    </div>
+                    {% if order.international_notes %}
+                    <div class="mb-3">
+                        <label class="small text-muted text-uppercase fw-bold opacity-50 d-block mb-1">Special Notes</label>
+                        <p class="text-dark small mb-0">{{ order.international_notes }}</p>
+                    </div>
+                    {% endif %}
+                    {% if order.requires_signature_intl %}
+                    <div class="alert alert-danger bg-danger-subtle border-danger border-opacity-25 mb-0">
+                        <i class="fas fa-signature me-2"></i><strong>Signature Required on Delivery</strong>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
             <div class="luxury-card mb-4 border-start border-4 border-warning">
                 <div class="card-body p-4">
                     <div class="row align-items-center">

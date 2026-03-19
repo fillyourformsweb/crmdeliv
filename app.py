@@ -1454,7 +1454,16 @@ def walkin_order():
             branch_id=current_user.branch_id,
             created_by=current_user.id,
             status='pending',
-            payment_mode=request.form.get('payment_mode')
+            payment_mode=request.form.get('payment_mode'),
+            # International Booking Fields
+            is_international=True if request.form.get('is_international') == 'on' else False,
+            destination_country=request.form.get('destination_country'),
+            hs_code=request.form.get('hs_code'),
+            customs_description=request.form.get('customs_description'),
+            product_value_usd=float(request.form.get('product_value_usd') or 0),
+            invoice_currency=request.form.get('invoice_currency', 'USD'),
+            international_notes=request.form.get('international_notes'),
+            requires_signature_intl=True if request.form.get('requires_signature') == 'on' else False
         )
         
         received_amount = float(request.form.get('received_amount') or 0)
@@ -1767,6 +1776,16 @@ def edit_order(id):
         order.payment_status = request.form.get('payment_status')
         order.payment_mode = request.form.get('payment_mode')
         order.internal_notes = request.form.get('internal_notes')
+        
+        # International Booking Fields
+        order.is_international = True if request.form.get('is_international') == 'on' else False
+        order.destination_country = request.form.get('destination_country')
+        order.hs_code = request.form.get('hs_code')
+        order.customs_description = request.form.get('customs_description')
+        order.product_value_usd = float(request.form.get('product_value_usd') or 0)
+        order.invoice_currency = request.form.get('invoice_currency', 'USD')
+        order.international_notes = request.form.get('international_notes')
+        order.requires_signature_intl = True if request.form.get('requires_signature_intl') == 'on' else False
         
         # Recalculate amounts
         if order.weight:
