@@ -686,17 +686,11 @@ def delete_branch(id):
 
 @app.route('/staff')
 @login_required
-@manager_required
+@admin_required
 def staff_management():
-    if current_user.role == 'admin':
-        staff = User.query.filter(User.role.in_(['staff', 'delivery', 'manager'])).all()
-        branches = Branch.query.filter_by(is_active=True).all()
-    else:
-        staff = User.query.filter(
-            User.role.in_(['staff', 'delivery']),
-            User.branch_id == current_user.branch_id
-        ).all()
-        branches = Branch.query.filter_by(id=current_user.branch_id).all()
+    # Admins can see all staff including other admins
+    staff = User.query.filter(User.role.in_(['admin', 'staff', 'delivery', 'manager'])).all()
+    branches = Branch.query.filter_by(is_active=True).all()
     return render_template('staff_management.html', staff=staff, branches=branches)
 
 
@@ -704,12 +698,9 @@ def staff_management():
 
 @app.route('/staff/add', methods=['GET', 'POST'])
 @login_required
-@manager_required
+@admin_required
 def add_staff():
-    if current_user.role == 'admin':
-        branches = Branch.query.filter_by(is_active=True).all()
-    else:
-        branches = Branch.query.filter_by(id=current_user.branch_id).all()
+    branches = Branch.query.filter_by(is_active=True).all()
     
     if request.method == 'POST':
         username = request.form.get('username')
@@ -723,16 +714,11 @@ def add_staff():
             flash('Email already exists.', 'error')
             return render_template('add_staff.html', branches=branches)
         
-        # Branch assignment logic
-        assigned_branch_id = request.form.get('branch_id')
-        if current_user.role != 'admin':
-            assigned_branch_id = current_user.branch_id
-        
         user = User(
             username=username,
             email=email,
             role=request.form.get('role'),
-            branch_id=assigned_branch_id or None,
+            branch_id=request.form.get('branch_id') or None,
             phone=request.form.get('phone'),
             address=request.form.get('address')
         )
@@ -749,29 +735,16 @@ def add_staff():
 
 @app.route('/staff/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
-@manager_required
+@admin_required
 def edit_staff(id):
     user = User.query.get_or_404(id)
-    
-    # Permission check for Managers
-    if current_user.role != 'admin' and user.branch_id != current_user.branch_id:
-        flash('Permission denied. You can only edit staff from your own branch.', 'error')
-        return redirect(url_for('staff_management'))
-
-    if current_user.role == 'admin':
-        branches = Branch.query.filter_by(is_active=True).all()
-    else:
-        branches = Branch.query.filter_by(id=current_user.branch_id).all()
+    branches = Branch.query.filter_by(is_active=True).all()
     
     if request.method == 'POST':
         user.username = request.form.get('username')
         user.email = request.form.get('email')
-        
-        # Only admins can change roles
-        if current_user.role == 'admin':
-            user.role = request.form.get('role')
-            user.branch_id = request.form.get('branch_id') or None
-        
+        user.role = request.form.get('role')
+        user.branch_id = request.form.get('branch_id') or None
         user.phone = request.form.get('phone')
         user.address = request.form.get('address')
         user.is_active = request.form.get('is_active') == 'on'
@@ -789,22 +762,18 @@ def edit_staff(id):
 
 @app.route('/staff/delete/<int:id>')
 @login_required
-@manager_required
+@admin_required
 def delete_staff(id):
     user = User.query.get_or_404(id)
-    
-    # Permission check for Managers
-    if current_user.role != 'admin' and (user.branch_id != current_user.branch_id or user.role == 'manager'):
-        flash('Permission denied. You can only delete staff from your own branch.', 'error')
-        return redirect(url_for('staff_management'))
 
     if user.role == 'admin':
         flash('Cannot delete admin user.', 'error')
         return redirect(url_for('staff_management'))
     
+    username = user.username
     db.session.delete(user)
     db.session.commit()
-    flash('Staff member deleted successfully!', 'success')
+    flash(f'Staff member "{username}" deleted successfully!', 'success')
     return redirect(url_for('staff_management'))
 
 
