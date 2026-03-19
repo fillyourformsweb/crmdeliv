@@ -540,7 +540,7 @@ def admin_dashboard():
     ).group_by(User.id, User.username).order_by(desc('orders_created')).limit(10).all()
     
     # Client Due Report (unpaid invoices)
-    due_clients = db.session.query(
+    due_clients_rows = db.session.query(
         Client.name,
         Client.company_name,
         Client.email,
@@ -550,6 +550,19 @@ def admin_dashboard():
     ).join(Order, Order.client_id == Client.id).filter(
         Order.payment_status.in_(['unpaid', 'partial'])
     ).group_by(Client.id, Client.name, Client.company_name, Client.email).order_by(desc('total_due')).limit(10).all()
+    
+    # Convert to dict for template
+    due_clients = [
+        {
+            'name': row[0],
+            'company_name': row[1],
+            'email': row[2],
+            'id': row[3],
+            'pending_orders': row[4],
+            'total_due': float(row[5]) if row[5] else 0
+        }
+        for row in due_clients_rows
+    ]
     
     # Daily Revenue (last 7 days)
     daily_revenue_rows = db.session.query(

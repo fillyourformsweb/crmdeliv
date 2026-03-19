@@ -4,7 +4,7 @@
 from app import app, db
 from models import Order, User
 from sqlalchemy import func
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 print("Testing admin_dashboard queries...")
 
@@ -16,7 +16,7 @@ try:
         
         print("\n1. Testing total_shipments query...")
         total_shipments = Order.query.count()
-        print(f"   ✓ Total Shipments: {total_shipments}")
+        print(f"   SUCCESS: Total Shipments: {total_shipments}")
         
         print("\n2. Testing total_revenue query...")
         total_revenue = db.session.query(func.sum(Order.total_amount)).scalar() or 0
