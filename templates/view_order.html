@@ -6,7 +6,14 @@
 <div class="row mb-5 align-items-center">
     <div class="col-md-8">
         <h5 class="text-primary fw-bold mb-1">Logistics Record</h5>
-        <h1 class="display-5 fw-black text-dark mb-2">Order #{{ order.receipt_number }}</h1>
+        <h1 class="display-5 fw-black text-dark mb-2">
+            Order #{{ order.receipt_number }}
+            {% if order.created_by_user and order.created_by_user.role == 'marketing_manager' %}
+            <span class="badge bg-warning-subtle text-warning border border-warning border-opacity-25" style="font-size: 0.5em; vertical-align: super;">
+                <i class="fas fa-user-tie"></i> Marketing Manager
+            </span>
+            {% endif %}
+        </h1>
         <p class="text-muted fs-5 mb-0">Comprehensive tracking and billing history for this shipment.</p>
     </div>
     <div class="col-md-4 text-md-end">
@@ -127,6 +134,20 @@
             <div class="card-body p-4 position-relative">
                 <i class="fas fa-quote-right position-absolute top-0 end-0 m-4 fs-1 opacity-10"></i>
                 <h5 class="fw-bold mb-4 opacity-75">Billing Summary</h5>
+                {% if order.price_list_type and order.price_list_type != 'default' %}
+                <div class="d-flex justify-content-between mb-2 pb-2 border-bottom border-secondary-subtle">
+                    <span class="opacity-50">Price List</span>
+                    <span class="fw-bold text-info">
+                        {% if order.price_list_type == 'normal_client' %}
+                        Normal Client Price
+                        {% elif order.price_list_type == 'price_master' %}
+                        Price Master
+                        {% else %}
+                        {{ order.price_list_type }}
+                        {% endif %}
+                    </span>
+                </div>
+                {% endif %}
                 <div class="d-flex justify-content-between mb-2">
                     <span class="opacity-50">Calculated Amount</span>
                     <span class="fw-bold">₹{{ "%.2f"|format(order.calculated_amount or order.total_amount) }}</span>

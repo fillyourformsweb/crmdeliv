@@ -273,6 +273,46 @@
                             </div>
                         </div>
                     </div>
+
+                    {% if is_marketing_manager %}
+                    <!-- Price List Selection for Marketing Manager -->
+                    <div class="card bg-light-info border-info mb-4" style="border-left: 4px solid #0dcaf0;">
+                        <div class="card-body p-3">
+                            <h6 class="fw-bold text-info mb-3">
+                                <i class="fas fa-list me-2"></i> Select Price List
+                            </h6>
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <div class="form-check custom-radio">
+                                        <input class="form-check-input" type="radio" name="price_list_type" id="priceListDefault" value="default" checked>
+                                        <label class="form-check-label fw-bold" for="priceListDefault">
+                                            <i class="fas fa-cube me-1"></i> Standard Pricing
+                                        </label>
+                                        <small class="d-block text-muted mt-1 ms-4">Default pricing based on weight and destination</small>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check custom-radio">
+                                        <input class="form-check-input" type="radio" name="price_list_type" id="priceListNormal" value="normal_client">
+                                        <label class="form-check-label fw-bold" for="priceListNormal">
+                                            <i class="fas fa-user me-1"></i> Normal Client Price
+                                        </label>
+                                        <small class="d-block text-muted mt-1 ms-4">Standard client pricing structure</small>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check custom-radio">
+                                        <input class="form-check-input" type="radio" name="price_list_type" id="priceListMaster" value="price_master">
+                                        <label class="form-check-label fw-bold" for="priceListMaster">
+                                            <i class="fas fa-crown me-1"></i> Price Master
+                                        </label>
+                                        <small class="d-block text-muted mt-1 ms-4">Premium pricing with special rates</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                     <div class="row g-3 mb-4" style="margin-top: 0;">
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-uppercase text-muted">Weight (kg)</label>

@@ -121,6 +121,26 @@ def marketing_manager_required(f):
     return decorated_function
 
 
+def branch_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.role != 'branch':
+            flash('Branch access required.', 'error')
+            return redirect(url_for('dashboard'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def delivery_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.role not in ['delivery', 'delivery_pickup']:
+            flash('Delivery personnel access required.', 'error')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -512,8 +532,13 @@ def login():
                 flash('Your account is deactivated. Contact admin.', 'error')
                 return render_template('login.html')
             
-            if user.role not in ['admin', 'manager', 'operation_manager', 'marketing_manager', 'staff', 'delivery', 'customer']:
+            if user.role not in ['admin', 'manager', 'operation_manager', 'marketing_manager', 'staff', 'delivery', 'delivery_pickup', 'branch', 'customer']:
                 flash('Access restricted for this role.', 'error')
+                return render_template('login.html')
+            
+            # Check if branch user has a branch assigned
+            if user.role == 'branch' and not user.branch_id:
+                flash('Your account is not assigned to any branch. Please contact your administrator.', 'error')
                 return render_template('login.html')
             
             login_user(user, remember=True)
@@ -547,7 +572,13 @@ def dashboard():
         return redirect(url_for('admin_dashboard'))
     if current_user.role == 'marketing_manager':
         return redirect(url_for('marketing_manager_dashboard'))
-    if current_user.role == 'staff' or current_user.role == 'manager':
+    if current_user.role == 'manager':
+        return redirect(url_for('manager_dashboard'))
+    if current_user.role == 'branch':
+        return redirect(url_for('branch_dashboard'))
+    if current_user.role in ['delivery', 'delivery_pickup']:
+        return redirect(url_for('delivery_dashboard'))
+    if current_user.role == 'staff':
         return redirect(url_for('staff_dashboard'))
     # Get statistics
     total_orders = Order.query.count()
@@ -569,6 +600,87 @@ def dashboard():
                          recent_orders=recent_orders,
                          total_staff=total_staff,
                          delivery_personnel=delivery_personnel)
+
+
+@app.route('/manager-dashboard')
+@login_required
+@manager_required
+def manager_dashboard():
+    """Manager dashboard with 15-day history, offers, and promotions"""
+    from sqlalchemy import func, desc
+    from datetime import datetime, timedelta
+    
+    # Get date range (default 15 days)
+    date_from = request.args.get('date_from')
+    date_to = request.args.get('date_to')
+    
+    if not date_from:
+        date_from = (datetime.now() - timedelta(days=15)).strftime('%Y-%m-%d')
+    if not date_to:
+        date_to = datetime.now().strftime('%Y-%m-%d')
+    
+    query = Order.query.filter(
+        Order.created_at >= datetime.strptime(date_from, '%Y-%m-%d'),
+        Order.created_at <= datetime.strptime(date_to, '%Y-%m-%d') + timedelta(days=1)
+    )
+    
+    # Basic Stats
+    total_orders = query.count()
+    total_revenue = query.with_entities(func.sum(Order.total_amount)).scalar() or 0
+    total_received = query.with_entities(func.sum(Order.received_amount)).scalar() or 0
+    pending_amount = total_revenue - total_received
+    at_destination_orders = query.filter_by(status='at_destination').count()
+    in_transit = query.filter_by(status='in_transit').count()
+    delivered = query.filter_by(status='delivered').count()
+    pending = query.filter_by(status='pending').count()
+    
+    # Top Clients (by order count)
+    top_clients = db.session.query(
+        Client.name, 
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('total_spent'),
+        func.sum(Order.received_amount).label('total_received')
+    ).join(Order).filter(
+        Order.created_at >= datetime.strptime(date_from, '%Y-%m-%d'),
+        Order.created_at <= datetime.strptime(date_to, '%Y-%m-%d') + timedelta(days=1)
+    ).group_by(Client.id).order_by(desc('order_count')).limit(10).all()
+    
+    # Client Due Report (Unpaid orders)
+    client_dues = db.session.query(
+        Client.name,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount - Order.received_amount).label('due_amount')
+    ).join(Order).filter(
+        Order.payment_status != 'paid',
+        Order.created_at >= datetime.strptime(date_from, '%Y-%m-%d'),
+        Order.created_at <= datetime.strptime(date_to, '%Y-%m-%d') + timedelta(days=1)
+    ).group_by(Client.id).having(func.sum(Order.total_amount - Order.received_amount) > 0).all()
+    
+    # Get all offers and promotions
+    offers = Offer.query.all()
+    
+    # Recent orders
+    recent_orders = query.order_by(Order.created_at.desc()).limit(10).all()
+    
+    branches = Branch.query.all()
+    
+    return render_template('manager_dashboard.html',
+                         user=current_user,
+                         total_orders=total_orders,
+                         total_revenue=total_revenue,
+                         total_received=total_received,
+                         pending_amount=pending_amount,
+                         at_destination_orders=at_destination_orders,
+                         in_transit=in_transit,
+                         delivered=delivered,
+                         pending=pending,
+                         top_clients=top_clients,
+                         client_dues=client_dues,
+                         offers=offers,
+                         recent_orders=recent_orders,
+                         branches=branches,
+                         date_from=date_from,
+                         date_to=date_to)
 
 
 @app.route('/staff-dashboard')
@@ -630,6 +742,84 @@ def staff_dashboard():
                          date_from=date_from,
                          date_to=date_to,
                          selected_branch=branch_id)
+
+
+@app.route('/branch-dashboard')
+@login_required
+@branch_required
+def branch_dashboard():
+    """Branch user dashboard - shows only their branch data"""
+    from sqlalchemy import func, desc
+    from datetime import datetime, timedelta
+    
+    # Get branch info
+    branch = current_user.branch
+    if not branch:
+        flash('Branch configuration error. Please contact admin.', 'error')
+        return redirect(url_for('login'))
+    
+    # Filters
+    date_from = request.args.get('date_from')
+    date_to = request.args.get('date_to')
+    
+    query = Order.query.filter_by(branch_id=branch.id)
+    
+    if date_from:
+        query = query.filter(Order.created_at >= datetime.strptime(date_from, '%Y-%m-%d'))
+    if date_to:
+        query = query.filter(Order.created_at <= datetime.strptime(date_to, '%Y-%m-%d') + timedelta(days=1))
+    
+    # Basic Stats
+    total_orders = query.count()
+    total_revenue = query.with_entities(func.sum(Order.total_amount)).scalar() or 0
+    at_destination_orders = query.filter_by(status='at_destination').count()
+    in_transit_orders = query.filter_by(status='in_transit').count()
+    delivered_orders = query.filter_by(status='delivered').count()
+    
+    # Recent orders
+    recent_orders = query.order_by(Order.created_at.desc()).limit(10).all()
+    
+    return render_template('branch_dashboard.html',
+                         branch=branch,
+                         total_orders=total_orders,
+                         total_revenue=total_revenue,
+                         at_destination_orders=at_destination_orders,
+                         in_transit_orders=in_transit_orders,
+                         delivered_orders=delivered_orders,
+                         recent_orders=recent_orders,
+                         date_from=date_from,
+                         date_to=date_to)
+
+
+@app.route('/delivery-dashboard')
+@login_required
+@delivery_required
+def delivery_dashboard():
+    """Delivery personnel dashboard"""
+    from sqlalchemy import func, desc
+    from datetime import datetime, timedelta
+    
+    # Get assigned orders for this delivery person
+    assigned_orders = Order.query.filter_by(delivery_person_id=current_user.id).all()
+    
+    # Count by status
+    pending_pickups = len([o for o in assigned_orders if o.status == 'pending'])
+    in_transit_count = len([o for o in assigned_orders if o.status == 'in_transit'])
+    delivered_count = len([o for o in assigned_orders if o.status == 'delivered'])
+    
+    # Get reschedule requests
+    reschedules = db.session.query(Order).filter(
+        Order.delivery_person_id == current_user.id,
+        Order.reschedule_reason.isnot(None)
+    ).all()
+    
+    return render_template('delivery_dashboard.html',
+                         user=current_user,
+                         assigned_orders=assigned_orders,
+                         pending_pickups=pending_pickups,
+                         in_transit_count=in_transit_count,
+                         delivered_count=delivered_count,
+                         reschedules=reschedules)
 
 
 @app.route('/admin-dashboard')
@@ -1308,9 +1498,13 @@ def operations_bulk_import():
 
 @app.route('/operations/shipment-tracking')
 @login_required
-@manager_required
 def operations_shipment_tracking():
     """View shipment tracking for all orders with detailed status updates"""
+    # Check user role
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
     from datetime import datetime, timedelta, timezone
     
     page = request.args.get('page', 1, type=int)
@@ -1321,6 +1515,10 @@ def operations_shipment_tracking():
     date_to = request.args.get('date_to', '')
     
     query = Order.query
+    
+    # Branch users can only see their own branch's orders
+    if current_user.role == 'branch':
+        query = query.filter_by(branch_id=current_user.branch_id)
     
     # Apply filters
     if status_filter and status_filter != 'all':
@@ -1821,14 +2019,328 @@ def customer_dashboard():
     
     return render_template('customer_portal.html', orders=my_orders)
 
+
+@app.route('/client-portal')
+@login_required
+def client_portal():
+    """Client portal - profile, booking, order history, tracking"""
+    if current_user.role not in ['customer', 'client']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Get client's orders
+    my_orders = Order.query.filter(
+        (Order.customer_phone == current_user.phone) | 
+        (Order.customer_email == current_user.email)
+    ).order_by(Order.created_at.desc()).all()
+    
+    # Get parcel types for booking
+    parcel_types = [
+        {'id': 'small', 'name': 'Small Parcel', 'weight': '0-250g', 'icon': 'fa-cube'},
+        {'id': 'medium', 'name': 'Medium Parcel', 'weight': '250g-1kg', 'icon': 'fa-box'},
+        {'id': 'large', 'name': 'Large Parcel', 'weight': '1kg-5kg', 'icon': 'fa-boxes'},
+        {'id': 'extra_large', 'name': 'Extra Large Parcel', 'weight': '5kg-10kg', 'icon': 'fa-cube'},
+        {'id': 'bulk', 'name': 'Bulk/Multiple', 'weight': '10kg+', 'icon': 'fa-dolly'},
+    ]
+    
+    return render_template('client_portal.html', 
+                         user=current_user, 
+                         orders=my_orders,
+                         parcel_types=parcel_types)
+
+
+@app.route('/api/client/update-profile', methods=['POST'])
+@login_required
+def api_client_update_profile():
+    """Update client profile"""
+    try:
+        current_user.email = request.form.get('email', current_user.email)
+        current_user.phone = request.form.get('phone', current_user.phone)
+        current_user.address = request.form.get('address', current_user.address)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Profile updated successfully!'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+
+@app.route('/api/client/book', methods=['POST'])
+@login_required
+def api_client_book():
+    """Client booking endpoint"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        required = ['receiver_name', 'receiver_phone', 'receiver_address', 'receiver_city', 'receiver_state', 'receiver_pincode', 'weight']
+        for field in required:
+            if not data.get(field):
+                return jsonify({'success': False, 'message': f'{field} is required'}), 400
+        
+        # Validate pincode
+        pincode = data.get('receiver_pincode')
+        if not pincode or len(pincode) != 6 or not pincode.isdigit():
+            return jsonify({'success': False, 'message': 'Invalid pincode. Must be 6 digits.'}), 400
+        
+        # Generate receipt number
+        receipt_number, assignment_id = generate_receipt_number(current_user)
+        
+        # Create order
+        order = Order(
+            receipt_number=receipt_number,
+            assignment_id=assignment_id,
+            order_type='client',
+            receipt_type='standard',
+            receipt_mode=data.get('shipping_mode', 'standard'),
+            customer_name=current_user.username,
+            customer_phone=current_user.phone,
+            customer_email=current_user.email,
+            customer_address=current_user.address,
+            receiver_name=data.get('receiver_name'),
+            receiver_phone=data.get('receiver_phone'),
+            receiver_address=data.get('receiver_address'),
+            receiver_city=data.get('receiver_city'),
+            receiver_state=data.get('receiver_state'),
+            receiver_pincode=data.get('receiver_pincode'),
+            receiver_landmark=data.get('receiver_landmark', ''),
+            package_description=data.get('package_description', ''),
+            weight=float(data.get('weight', 0)),
+            number_of_boxes=int(data.get('number_of_boxes', 1)),
+            special_instructions=data.get('special_instructions', ''),
+            status='pending',
+            payment_mode=data.get('payment_mode', 'cash'),
+            created_by=current_user.id
+        )
+        
+        # Calculate charges
+        if order.weight:
+            base, weight_charge, additional, discount, total, _, ins_charge = calculate_order_amount(
+                order.weight, 
+                state=order.receiver_state, 
+                shipping_mode=order.receipt_mode
+            )
+            order.base_amount = base
+            order.weight_charges = weight_charge
+            order.additional_charges = additional
+            order.discount = discount
+            order.total_amount = total
+            order.insurance_charge = ins_charge
+        
+        db.session.add(order)
+        db.session.commit()
+        
+        # Create tracking update
+        tracking = TrackingUpdate(
+            order_id=order.id,
+            status='Order Booked',
+            description='Your shipment has been booked successfully',
+            updated_by=current_user.id
+        )
+        db.session.add(tracking)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Order booked successfully!',
+            'order': {
+                'id': order.id,
+                'receipt_number': order.receipt_number,
+                'total_amount': order.total_amount,
+                'status': order.status
+            }
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+
+@app.route('/api/client/my-orders', methods=['GET'])
+@login_required
+def api_my_orders():
+    """Get logged-in client's orders"""
+    try:
+        orders = Order.query.filter(
+            (Order.customer_phone == current_user.phone) | 
+            (Order.customer_email == current_user.email)
+        ).order_by(Order.created_at.desc()).all()
+        
+        return jsonify({
+            'success': True,
+            'orders': [{
+                'id': o.id,
+                'receipt_number': o.receipt_number,
+                'receiver': o.receiver_name,
+                'city': o.receiver_city,
+                'status': o.status,
+                'amount': o.total_amount,
+                'created_at': o.created_at.strftime('%d-%m-%Y %H:%M')
+            } for o in orders]
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+
+# ============== DELIVERY PERSONNEL API ==============
+
+@app.route('/api/delivery/reschedule', methods=['POST'])
+@login_required
+@delivery_required
+def api_delivery_reschedule():
+    """Request reschedule for order"""
+    try:
+        data = request.get_json()
+        order_id = data.get('order_id')
+        reason = data.get('reason')
+        requested_date = data.get('requested_date')
+        
+        order = Order.query.get_or_404(order_id)
+        
+        # Verify ownership
+        if order.delivery_person_id != current_user.id:
+            return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        
+        order.reschedule_reason = reason
+        order.reschedule_status = 'pending'
+        if requested_date:
+            order.reschedule_requested_date = datetime.strptime(requested_date, '%Y-%m-%d')
+        order.pickup_attempts = (order.pickup_attempts or 0) + 1
+        order.last_pickup_attempt = datetime.utcnow()
+        
+        db.session.commit()
+        
+        # Create notification
+        tracking = TrackingUpdate(
+            order_id=order.id,
+            status='Reschedule Requested',
+            description=f'Reschedule requested: {reason}',
+            updated_by=current_user.id
+        )
+        db.session.add(tracking)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Reschedule request submitted'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+
+@app.route('/api/delivery/mark-delivered', methods=['POST'])
+@login_required
+@delivery_required
+def api_delivery_mark_delivered():
+    """Mark order as delivered"""
+    try:
+        data = request.get_json()
+        order_id = data.get('order_id')
+        notes = data.get('notes', '')
+        
+        order = Order.query.get_or_404(order_id)
+        
+        # Verify ownership
+        if order.delivery_person_id != current_user.id:
+            return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        
+        order.status = 'delivered'
+        order.delivered_at = datetime.utcnow()
+        order.reschedule_status = None
+        order.internal_notes = notes
+        
+        db.session.commit()
+        
+        # Create tracking update
+        tracking = TrackingUpdate(
+            order_id=order.id,
+            status='Delivered',
+            description=f'Delivered successfully. {notes}',
+            updated_by=current_user.id
+        )
+        db.session.add(tracking)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Order marked as delivered'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+
+@app.route('/api/delivery/cancel-booking', methods=['POST'])
+@login_required
+@delivery_required
+def api_delivery_cancel_booking():
+    """Cancel booking with reason"""
+    try:
+        data = request.get_json()
+        order_id = data.get('order_id')
+        reason = data.get('reason')
+        
+        order = Order.query.get_or_404(order_id)
+        
+        # Verify ownership
+        if order.delivery_person_id != current_user.id:
+            return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        
+        order.status = 'cancelled'
+        order.reschedule_reason = reason
+        order.reschedule_status = 'cancelled'
+        
+        db.session.commit()
+        
+        # Create tracking update
+        tracking = TrackingUpdate(
+            order_id=order.id,
+            status='Cancelled',
+            description=f'Order cancelled: {reason}',
+            updated_by=current_user.id
+        )
+        db.session.add(tracking)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Order cancelled'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+
+@app.route('/api/delivery/profile', methods=['GET', 'POST'])
+@login_required
+@delivery_required
+def api_delivery_profile():
+    """Get/Update delivery personnel profile"""
+    if request.method == 'GET':
+        return jsonify({
+            'success': True,
+            'profile': {
+                'username': current_user.username,
+                'email': current_user.email,
+                'phone': current_user.phone,
+                'address': current_user.address,
+                'role': current_user.role
+            }
+        })
+    else:
+        try:
+            current_user.email = request.form.get('email', current_user.email)
+            current_user.phone = request.form.get('phone', current_user.phone)
+            current_user.address = request.form.get('address', current_user.address)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Profile updated successfully'})
+        except Exception as e:
+            return jsonify({'success': False, 'message': str(e)}), 400
+
+
 @app.route('/customers')
 @login_required
-@staff_required
 def customers():
+    # staff_required allows: admin, manager, operation_manager, staff
+    # branch users should also be able to view customers
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
     # Get unique walk-in customers from orders
     # In a real app, we might have a dedicated Customer table
     # Here we aggregate from the Order table
-    walkin_orders = Order.query.filter_by(order_type='walkin').all()
+    if current_user.role == 'branch':
+        # Branch users only see their own branch's customers
+        walkin_orders = Order.query.filter_by(order_type='walkin', branch_id=current_user.branch_id).all()
+    else:
+        walkin_orders = Order.query.filter_by(order_type='walkin').all()
     
     customers_dict = {}
     for order in walkin_orders:
@@ -1926,29 +2438,44 @@ def add_branch():
         db.session.add(branch)
         db.session.flush() # Get branch.id
 
-        # Create Branch Admin (Manager)
-        admin_username = request.form.get('admin_username')
-        admin_email = request.form.get('admin_email')
-        admin_password = request.form.get('admin_password')
+        # Create Branch Admin (Manager) - Optional
+        admin_username = request.form.get('admin_username', '').strip()
+        admin_email = request.form.get('admin_email', '').strip()
+        admin_password = request.form.get('admin_password', '').strip()
 
-        if User.query.filter_by(username=admin_username).first() or User.query.filter_by(email=admin_email).first():
-            db.session.rollback()
-            flash('Admin username or email already exists.', 'error')
-            return redirect(url_for('add_branch'))
+        # Only create admin if all fields are provided
+        if admin_username or admin_email or admin_password:
+            if not (admin_username and admin_email and admin_password):
+                db.session.rollback()
+                flash('If creating a branch admin, please fill in username, email, and password.', 'error')
+                return redirect(url_for('add_branch'))
+            
+            if User.query.filter_by(username=admin_username).first():
+                db.session.rollback()
+                flash(f'Username "{admin_username}" already exists. Choose a different username.', 'error')
+                return redirect(url_for('add_branch'))
+            
+            if User.query.filter_by(email=admin_email).first():
+                db.session.rollback()
+                flash(f'Email "{admin_email}" already exists. Choose a different email.', 'error')
+                return redirect(url_for('add_branch'))
 
-        branch_admin = User(
-            username=admin_username,
-            email=admin_email,
-            role='manager',
-            branch_id=branch.id,
-            phone=branch.phone,
-            address=branch.address
-        )
-        branch_admin.set_password(admin_password)
-        db.session.add(branch_admin)
+            branch_admin = User(
+                username=admin_username,
+                email=admin_email,
+                role='manager',
+                branch_id=branch.id,
+                phone=branch.phone,
+                address=branch.address
+            )
+            branch_admin.set_password(admin_password)
+            db.session.add(branch_admin)
+            db.session.commit()
+            flash(f'Branch "{branch.name}" and Manager "{admin_username}" created successfully!', 'success')
+        else:
+            db.session.commit()
+            flash(f'Branch "{branch.name}" created successfully! You can add a manager later.', 'success')
         
-        db.session.commit()
-        flash(f'Branch and Admin User "{admin_username}" created successfully!', 'success')
         return redirect(url_for('branches'))
     
     return render_template('add_branch.html')
@@ -2016,7 +2543,7 @@ def delete_branch(id):
 @admin_required
 def staff_management():
     # Admins can see all staff including other admins
-    staff = User.query.filter(User.role.in_(['admin', 'staff', 'delivery', 'manager', 'operation_manager'])).all()
+    staff = User.query.filter(User.role.in_(['admin', 'staff', 'delivery', 'manager', 'operation_manager', 'branch', 'marketing_manager'])).all()
     branches = Branch.query.filter_by(is_active=True).all()
     return render_template('staff_management.html', staff=staff, branches=branches)
 
@@ -2032,6 +2559,20 @@ def add_staff():
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        role = request.form.get('role')
+        branch_id = request.form.get('branch_id') or None
+        
+        # Validate password length
+        if len(password) < 8:
+            flash('Password must be at least 8 characters long.', 'error')
+            return render_template('add_staff.html', branches=branches)
+        
+        # Validate password confirmation
+        if password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return render_template('add_staff.html', branches=branches)
         
         if User.query.filter_by(username=username).first():
             flash('Username already exists.', 'error')
@@ -2041,15 +2582,20 @@ def add_staff():
             flash('Email already exists.', 'error')
             return render_template('add_staff.html', branches=branches)
         
+        # Validate that branch users have a branch assigned
+        if role == 'branch' and not branch_id:
+            flash('Branch users must be assigned to a branch.', 'error')
+            return render_template('add_staff.html', branches=branches)
+        
         user = User(
             username=username,
             email=email,
-            role=request.form.get('role'),
-            branch_id=request.form.get('branch_id') or None,
+            role=role,
+            branch_id=branch_id,
             phone=request.form.get('phone'),
             address=request.form.get('address')
         )
-        user.set_password(request.form.get('password'))
+        user.set_password(password)
         
         db.session.add(user)
         db.session.commit()
@@ -2068,10 +2614,18 @@ def edit_staff(id):
     branches = Branch.query.filter_by(is_active=True).all()
     
     if request.method == 'POST':
+        role = request.form.get('role')
+        branch_id = request.form.get('branch_id') or None
+        
+        # Validate that branch users have a branch assigned
+        if role == 'branch' and not branch_id:
+            flash('Branch users must be assigned to a branch.', 'error')
+            return render_template('edit_staff.html', user=user, branches=branches)
+        
         user.username = request.form.get('username')
         user.email = request.form.get('email')
-        user.role = request.form.get('role')
-        user.branch_id = request.form.get('branch_id') or None
+        user.role = role
+        user.branch_id = branch_id
         user.phone = request.form.get('phone')
         user.address = request.form.get('address')
         user.is_active = request.form.get('is_active') == 'on'
@@ -2639,8 +3193,12 @@ def orders():
 
 @app.route('/order/walkin', methods=['GET', 'POST'])
 @login_required
-@staff_required
 def walkin_order():
+    # Allow staff, managers, and branch users to access
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'marketing_manager', 'branch']:
+        flash('Access denied. Only staff, managers, and branch users can create walk-in orders.', 'error')
+        return redirect(url_for('dashboard'))
+    
     if request.method == 'POST':
         # ... POST logic
         receipt_type = request.form.get('receipt_type', 'standard')
@@ -2672,11 +3230,17 @@ def walkin_order():
             flash('Invalid Pincode. It must be exactly 6 digits.', 'danger')
             return redirect(url_for('walkin_order'))
         
+        # Get price_list_type from form (required for marketing managers)
+        price_list_type = request.form.get('price_list_type', 'default')
+        if not price_list_type:
+            price_list_type = 'default'
+        
         order = Order(
             receipt_number=receipt_number,
             receipt_type=receipt_type,
             assignment_id=assignment_id,
             order_type='walkin',
+            price_list_type=price_list_type,
             receipt_mode=request.form.get('receipt_mode'),
             customer_name=request.form.get('customer_name'),
             customer_phone=request.form.get('customer_phone'),
@@ -2768,7 +3332,11 @@ def walkin_order():
         'address': request.args.get('address', '')
     }
     
-    return render_template('walkin_order.html', prefill=prefill)
+    # Check if user is marketing manager
+    is_marketing_manager = current_user.role == 'marketing_manager'
+    
+    return render_template('walkin_order.html', prefill=prefill, is_marketing_manager=is_marketing_manager)
+
 
 
 
@@ -4203,17 +4771,24 @@ def export_report():
 
 @app.route('/default-prices')
 @login_required
-@manager_required
-
 def default_prices():
+    # Allow managers and branch users to view prices
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
     prices = DefaultStatePrice.query.all()
     return render_template('default_prices.html', prices=prices)
 
 
 @app.route('/default-prices/add', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def add_default_price():
+    # Allow admins, managers, and branch users to add prices
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
     # List of Indian states
     indian_states = [
         'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
@@ -4254,8 +4829,12 @@ def add_default_price():
 
 @app.route('/default-prices/edit/<int:price_id>', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def edit_default_price(price_id):
+    # Allow admins, managers, and branch users to edit prices
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
     # List of Indian states
     indian_states = [
         'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
@@ -4298,16 +4877,23 @@ def delete_default_price(price_id):
 
 @app.route('/normal-client-prices')
 @login_required
-@manager_required
 def normal_client_prices():
+    # Allow managers and branch users to view prices
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
     prices = NormalClientStatePrice.query.all()
     return render_template('normal_client_prices.html', prices=prices)
 
 
 @app.route('/normal-client-price/add', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def add_normal_client_price():
+    # Allow managers and branch users to add prices
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
     if request.method == 'POST':
         state = request.form.get('state')
         if NormalClientStatePrice.query.filter_by(state=state).first():
@@ -4339,8 +4925,11 @@ def add_normal_client_price():
 
 @app.route('/normal-client-price/edit/<int:price_id>', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def edit_normal_client_price(price_id):
+    # Allow managers and branch users to edit prices
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
     price = NormalClientStatePrice.query.get_or_404(price_id)
     
     if request.method == 'POST':

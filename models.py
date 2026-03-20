@@ -243,6 +243,7 @@ class Order(db.Model):
     number_of_boxes = db.Column(db.Integer, default=1)
     
     # Pricing
+    price_list_type = db.Column(db.String(50), default='default')  # default, normal_client, price_master
     base_amount = db.Column(db.Float, default=0)
     weight_charges = db.Column(db.Float, default=0)
     additional_charges = db.Column(db.Float, default=0)
@@ -299,6 +300,13 @@ class Order(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     delivered_at = db.Column(db.DateTime)
+    
+    # Reschedule/Pickup Management
+    reschedule_reason = db.Column(db.String(200))
+    reschedule_requested_date = db.Column(db.DateTime)
+    reschedule_status = db.Column(db.String(50))  # pending, scheduled, cancelled
+    pickup_attempts = db.Column(db.Integer, default=0)
+    last_pickup_attempt = db.Column(db.DateTime)
     
     # Excel verification
     excel_verified = db.Column(db.Boolean, default=False)

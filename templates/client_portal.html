@@ -1,0 +1,518 @@
+{% extends "base.html" %}
+
+{% block title %}Client Portal - My Bookings{% endblock %}
+
+{% block extra_css %}
+<style>
+    .nav-tabs .nav-link {
+        border: none;
+        color: #6c757d;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        border-bottom-color: #0d6efd;
+        background: transparent;
+    }
+    .parcel-type {
+        cursor: pointer;
+        padding: 1.5rem;
+        border: 2px solid #e9ecef;
+        border-radius: 1rem;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    .parcel-type:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.1);
+    }
+    .parcel-type.selected {
+        border-color: #0d6efd;
+        background-color: #e7f1ff;
+    }
+    .modal-order-confirmation {
+        animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    .order-card {
+        border-left: 4px solid #0d6efd;
+        transition: all 0.3s ease;
+    }
+    .order-card:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+    }
+    .status-badge {
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+    }
+    .status-pending { background-color: #fff3cd; color: #856404; }
+    .status-in-transit { background-color: #cfe2ff; color: #084298; }
+    .status-delivered { background-color: #d1e7dd; color: #0f5132; }
+    .status-returned { background-color: #f8d7da; color: #842029; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="fw-bold mb-1">
+                <i class="fas fa-user-circle me-2 text-primary"></i>Client Portal
+            </h2>
+            <p class="text-muted">Manage your profile, book shipments, and track deliveries</p>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs mb-4 border-bottom" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab">
+                <i class="fas fa-user me-2"></i>My Profile
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="booking-tab" data-bs-toggle="tab" href="#booking" role="tab">
+                <i class="fas fa-plus-circle me-2"></i>New Booking
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="history-tab" data-bs-toggle="tab" href="#history" role="tab">
+                <i class="fas fa-history me-2"></i>Order History
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tracking-tab" data-bs-toggle="tab" href="#tracking" role="tab">
+                <i class="fas fa-map-location-dot me-2"></i>Track Shipments
+            </a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Profile Tab -->
+        <div class="tab-pane fade show active" id="profile" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold mb-4">
+                                <i class="fas fa-user-circle me-2 text-primary"></i>Personal Information
+                            </h5>
+                            <form id="profileForm" class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Name</label>
+                                    <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                                    <small class="text-muted">Cannot be changed</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Email</label>
+                                    <input type="email" class="form-control" name="email" id="email" value="{{ user.email or '' }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Phone</label>
+                                    <input type="text" class="form-control" name="phone" id="phone" value="{{ user.phone or '' }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Address</label>
+                                    <input type="text" class="form-control" name="address" id="address" value="{{ user.address or '' }}">
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-primary" onclick="updateProfile()">
+                                        <i class="fas fa-save me-2"></i>Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold mb-3">Account Statistics</h5>
+                            <div class="mb-3">
+                                <p class="text-muted small mb-1">Total Bookings</p>
+                                <h3 class="fw-bold text-primary">{{ orders|length }}</h3>
+                            </div>
+                            <div class="mb-3">
+                                <p class="text-muted small mb-1">Total Spent</p>
+                                <h3 class="fw-bold text-success">
+                                    ₹{{ "{:,.0f}".format(orders|map(attribute='total_amount')|sum) }}
+                                </h3>
+                            </div>
+                            <div>
+                                <p class="text-muted small mb-1">Recent Order</p>
+                                {% if orders %}
+                                <p class="fw-bold">{{ orders[0].receipt_number }}</p>
+                                {% else %}
+                                <p class="text-muted">No orders yet</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Tab -->
+        <div class="tab-pane fade" id="booking" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold mb-4">
+                        <i class="fas fa-box me-2 text-primary"></i>Select Parcel Type
+                    </h5>
+
+                    <div class="row g-3 mb-4" id="parcelTypes">
+                        {% for ptype in parcel_types %}
+                        <div class="col-md-4">
+                            <div class="parcel-type" onclick="selectParcelType('{{ ptype.id }}')">
+                                <i class="fas {{ ptype.icon }} fa-3x text-primary mb-3"></i>
+                                <h6 class="fw-bold">{{ ptype.name }}</h6>
+                                <small class="text-muted">{{ ptype.weight }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Booking Form -->
+                    <div id="bookingForm" style="display: none;">
+                        <hr class="my-4">
+                        <h5 class="fw-bold mb-3">Booking Details</h5>
+                        <form id="myBookingForm" class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Receiver Name *</label>
+                                <input type="text" class="form-control" name="receiver_name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Receiver Phone *</label>
+                                <input type="text" class="form-control" name="receiver_phone" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Receiver Address *</label>
+                                <input type="text" class="form-control" name="receiver_address" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">City *</label>
+                                <input type="text" class="form-control" name="receiver_city" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">State *</label>
+                                <input type="text" class="form-control" name="receiver_state" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Pincode *</label>
+                                <input type="text" class="form-control" name="receiver_pincode" maxlength="6" required placeholder="6 digits">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Weight (grams) *</label>
+                                <input type="number" class="form-control" name="weight" required min="10">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Number of Boxes</label>
+                                <input type="number" class="form-control" name="number_of_boxes" value="1" min="1">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Shipping Mode</label>
+                                <select class="form-select" name="shipping_mode">
+                                    <option value="standard">Standard</option>
+                                    <option value="express">Express</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Payment Mode</label>
+                                <select class="form-select" name="payment_mode">
+                                    <option value="cash">Cash on Delivery</option>
+                                    <option value="prepaid">Prepaid</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Landmark (Optional)</label>
+                                <input type="text" class="form-control" name="receiver_landmark" placeholder="e.g., Near Market, Next to Hospital">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Package Description</label>
+                                <textarea class="form-control" name="package_description" rows="2" placeholder="e.g., Books, Clothes, Electronics"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Special Instructions</label>
+                                <textarea class="form-control" name="special_instructions" rows="2" placeholder="Any special handling instructions?"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane me-2"></i>Book Now
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-lg ms-2" onclick="cancelBooking()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="selectMessage" class="alert alert-info" style="display: block;">
+                        <i class="fas fa-info-circle me-2"></i>Select a parcel type above to proceed with booking
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order History Tab -->
+        <div class="tab-pane fade" id="history" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold mb-4">
+                        <i class="fas fa-history me-2 text-primary"></i>Order History
+                    </h5>
+
+                    {% if orders %}
+                    <div class="row g-3" id="ordersList">
+                        {% for order in orders %}
+                        <div class="col-12">
+                            <div class="card order-card border-0 mb-3">
+                                <div class="card-body p-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-3">
+                                            <h6 class="fw-bold mb-1">{{ order.receipt_number }}</h6>
+                                            <small class="text-muted">{{ order.created_at.strftime('%d-%m-%Y %H:%M') }}</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <small class="text-muted">To:</small>
+                                            <h6 class="fw-bold mb-1">{{ order.receiver_name }}</h6>
+                                            <small class="text-muted">{{ order.receiver_city }}, {{ order.receiver_state }}</small>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <small class="text-muted">Amount</small>
+                                            <h6 class="fw-bold">₹{{ "{:,.0f}".format(order.total_amount or 0) }}</h6>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <span class="status-badge status-{{ order.status }}">{{ order.status|title }}</span>
+                                        </div>
+                                        <div class="col-md-2 text-end">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewOrderDetails({{ order.id }})">
+                                                <i class="fas fa-eye me-1"></i>View
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-inbox me-2"></i>No orders yet. <a href="#booking" onclick="switchTab('booking')">Create your first booking</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tracking Tab -->
+        <div class="tab-pane fade" id="tracking" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold mb-4">
+                        <i class="fas fa-map-location-dot me-2 text-primary"></i>Track Your Shipments
+                    </h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Search by Consignment No.</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="trackingSearch" placeholder="Enter receipt number">
+                                <button class="btn btn-primary" onclick="searchTracking()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="trackingResults" class="mt-4"></div>
+
+                    {% if orders %}
+                    <hr class="my-4">
+                    <h6 class="fw-bold mb-3">Your Recent Shipments</h6>
+                    <div class="row g-3">
+                        {% for order in orders[:5] %}
+                        <div class="col-md-6">
+                            <div class="card border-0" style="background-color: #f8f9fa;">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-2">{{ order.receipt_number }}</h6>
+                                    <div class="mb-2">
+                                        <i class="fas fa-map-pin text-primary me-2"></i>
+                                        <small>{{ order.receiver_city }}, {{ order.receiver_state }}</small>
+                                    </div>
+                                    <div class="mb-2">
+                                        <i class="fas fa-box text-success me-2"></i>
+                                        <small>Weight: {{ order.weight }}g</small>
+                                    </div>
+                                    <div class="progress mb-2" style="height: 5px;">
+                                        <div class="progress-bar" style="width: {% if order.status == 'delivered' %}100{% elif order.status == 'in_transit' %}66{% elif order.status == 'pending' %}33{% else %}50{% endif %}%"></div>
+                                    </div>
+                                    <small class="text-muted">Status: <strong>{{ order.status|title }}</strong></small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg modal-order-confirmation">
+            <div class="modal-body p-5 text-center">
+                <div style="font-size: 4rem; color: #28a745; margin-bottom: 1rem;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Order Confirmed!</h4>
+                <p class="text-muted mb-3">Thank you for your booking. Your shipment has been confirmed.</p>
+                
+                <div class="alert alert-light border rounded-3 p-3 mb-3">
+                    <p class="text-muted small mb-1">Consignment Number</p>
+                    <h5 class="fw-bold" id="confirmReceiptNumber">--</h5>
+                </div>
+
+                <div class="alert alert-light border rounded-3 p-3 mb-3">
+                    <p class="text-muted small mb-1">Total Amount</p>
+                    <h5 class="fw-bold text-success" id="confirmAmount">₹0</h5>
+                </div>
+
+                <div class="text-start round border p-3 rounded-3" style="background-color: #f8f9fa;">
+                    <p class="text-muted small mb-2"><i class="fas fa-info-circle me-2"></i>What's Next?</p>
+                    <ul class="small mb-0" style="list-style: none; padding: 0;">
+                        <li class="mb-1">✓ Your shipment has been registered</li>
+                        <li class="mb-1">✓ Pickup will be scheduled shortly</li>
+                        <li>✓ You can track your shipment anytime</li>
+                    </ul>
+                </div>
+
+                <div class="mt-4">
+                    <button type="button" class="btn btn-primary btn-lg" data-bs-dismiss="modal">
+                        <i class="fas fa-arrow-right me-2"></i>Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedParcelType = null;
+
+function selectParcelType(type) {
+    selectedParcelType = type;
+    document.querySelectorAll('.parcel-type').forEach(el => el.classList.remove('selected'));
+    event.target.closest('.parcel-type').classList.add('selected');
+    document.getElementById('bookingForm').style.display = 'block';
+    document.getElementById('selectMessage').style.display = 'none';
+}
+
+function cancelBooking() {
+    selectedParcelType = null;
+    document.querySelectorAll('.parcel-type').forEach(el => el.classList.remove('selected'));
+    document.getElementById('bookingForm').style.display = 'none';
+    document.getElementById('selectMessage').style.display = 'block';
+    document.getElementById('myBookingForm').reset();
+}
+
+document.getElementById('myBookingForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(document.getElementById('myBookingForm'));
+    const data = Object.fromEntries(formData);
+
+    try {
+        const response = await fetch('/api/client/book', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            document.getElementById('confirmReceiptNumber').textContent = result.order.receipt_number;
+            document.getElementById('confirmAmount').textContent = '₹' + result.order.total_amount;
+            
+            const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            modal.show();
+            
+            document.getElementById('confirmationModal').addEventListener('hidden.bs.modal', () => {
+                cancelBooking();
+                location.reload();
+            }, { once: true });
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        alert('Booking failed: ' + error.message);
+    }
+});
+
+function updateProfile() {
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const address = document.getElementById('address').value;
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('phone', phone);
+    formData.append('address', address);
+
+    fetch('/api/client/update-profile', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    });
+}
+
+function switchTab(tab) {
+    const tabButton = document.querySelector(`#${tab}-tab`);
+    if (tabButton) {
+        const bsTab = new bootstrap.Tab(tabButton);
+        bsTab.show();
+    }
+}
+
+function viewOrderDetails(orderId) {
+    alert('Order Details - #' + orderId + '\n(Detailed view coming soon)');
+}
+
+function searchTracking() {
+    const searchValue = document.getElementById('trackingSearch').value;
+    if (!searchValue) {
+        alert('Please enter a consignment number');
+        return;
+    }
+    alert('Searching for: ' + searchValue + '\n(Tracking search coming soon)');
+}
+</script>
+{% endblock %}

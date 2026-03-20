@@ -70,6 +70,20 @@
             <h5 class="mb-0">Quick Navigation</h5>
         </div>
         <div class="card-body">
+            <!-- Featured Booking Button -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <a href="{{ url_for('walkin_order') }}" class="btn btn-lg btn-danger w-100 d-flex align-items-center justify-content-center gap-3" style="padding: 1.5rem;">
+                        <i class="fas fa-plus-circle fa-2x"></i>
+                        <div class="text-start">
+                            <div style="font-size: 1.1rem; font-weight: bold;">📅 Book Walk-in Order</div>
+                            <small class="opacity-75">Create new customer shipment with price list selection</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Other Quick Links -->
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <a href="{{ url_for('marketing_manager_pitch_followup') }}" class="btn btn-outline-primary w-100">

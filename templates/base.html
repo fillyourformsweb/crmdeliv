@@ -192,6 +192,13 @@
                         <i class="fas fa-chart-pie"></i>
                         <span>Dashboard</span>
                     </a>
+                    <!-- Featured Booking Link -->
+                    <a href="{{ url_for('walkin_order') }}"
+                        class="sidebar-link {{ 'active' if request.endpoint == 'walkin_order' }} fw-bold"
+                        style="background: linear-gradient(135deg, #ff4757 0%, #ee5a6f 100%); color: white; border-radius: 8px; margin: 8px 0;">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>📅 Book Order</span>
+                    </a>
                     <a href="{{ url_for('marketing_manager_pitch_followup') }}"
                         class="sidebar-link {{ 'active' if request.endpoint == 'marketing_manager_pitch_followup' }}">
                         <i class="fas fa-arrow-right"></i>

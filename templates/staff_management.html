@@ -52,9 +52,23 @@
                                 class="luxury-badge bg-danger-subtle text-danger border border-danger-subtle">ADMIN</span>
                             {% elif user.role == 'manager' %}
                             <span class="luxury-badge bg-info-subtle text-info border border-info-subtle">MANAGER</span>
+                            {% elif user.role == 'operation_manager' %}
+                            <span class="luxury-badge bg-info-subtle text-info border border-info-subtle">OPERATION MANAGER</span>
                             {% elif user.role == 'staff' %}
                             <span
                                 class="luxury-badge bg-primary-subtle text-primary border border-primary-subtle">STAFF</span>
+                            {% elif user.role == 'branch' %}
+                            <span class="luxury-badge bg-warning-subtle text-warning border border-warning-subtle">BRANCH</span>
+                            {% elif user.role == 'delivery' %}
+                            <span class="luxury-badge bg-success-subtle text-success border border-success-subtle">DELIVERY</span>
+                            {% elif user.role == 'delivery_pickup' %}
+                            <span class="luxury-badge bg-success-subtle text-success border border-success-subtle">DELIVERY & PICKUP</span>
+                            {% elif user.role == 'marketing_manager' %}
+                            <span class="luxury-badge bg-secondary-subtle text-secondary border border-secondary-subtle">MARKETING MANAGER</span>
+                            {% elif user.role == 'customer' %}
+                            <span class="luxury-badge bg-light-subtle text-dark border border-light-subtle">CUSTOMER</span>
+                            {% elif user.role == 'client' %}
+                            <span class="luxury-badge bg-light-subtle text-dark border border-light-subtle">CLIENT</span>
                             {% else %}
                             <span class="luxury-badge bg-dark-subtle text-dark border border-dark-subtle">{{
                                 user.role|upper }}</span>

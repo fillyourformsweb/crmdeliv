@@ -82,11 +82,18 @@
                 </thead>
                 <tbody>
                     {% for order in orders %}
-                    <tr>
+                    <!-- Row highlight for marketing manager bookings -->
+                    <tr {% if order.created_by_user and order.created_by_user.role == 'marketing_manager' %}style="background-color: #fef3f2; border-left: 4px solid #fd7e14;"{% endif %}>
                         <td>
                             <a href="{{ url_for('order_details', id=order.id) }}" class="fw-bold text-decoration-none">
                                 {{ order.receipt_number }}
                             </a>
+                            {% if order.created_by_user and order.created_by_user.role == 'marketing_manager' %}
+                            <br>
+                            <span class="badge bg-warning-subtle text-warning border border-warning border-opacity-25" style="font-size: 0.65rem;">
+                                <i class="fas fa-user-tie"></i> Marketing
+                            </span>
+                            {% endif %}
                         </td>
                         <td>
                             {% if order.order_type == 'client' %}
@@ -109,6 +116,15 @@
                         </td>
                         <td>
                             <div class="fw-bold text-dark">₹{{ "%.2f"|format(order.total_amount or 0) }}</div>
+                            {% if order.price_list_type and order.price_list_type != 'default' %}
+                            <div class="small text-muted">
+                                {% if order.price_list_type == 'normal_client' %}
+                                (Client Price)
+                                {% elif order.price_list_type == 'price_master' %}
+                                (Price Master)
+                                {% endif %}
+                            </div>
+                            {% endif %}
                         </td>
                         <td>
                             <span class="luxury-badge bg-{{ 

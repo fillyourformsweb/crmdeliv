@@ -72,9 +72,16 @@
                     </thead>
                     <tbody>
                         {% for order in walkin_orders %}
-                        <tr>
+                        <!-- Row highlight for marketing manager bookings -->
+                        <tr {% if order.created_by_user and order.created_by_user.role == 'marketing_manager' %}style="background-color: #fef3f2; border-left: 4px solid #fd7e14;"{% endif %}>
                             <td>
                                 <strong class="text-primary">{{ order.receipt_number }}</strong>
+                                {% if order.created_by_user and order.created_by_user.role == 'marketing_manager' %}
+                                <br>
+                                <span class="badge bg-warning-subtle text-warning border border-warning border-opacity-25" style="font-size: 0.65rem;">
+                                    <i class="fas fa-user-tie"></i> Marketing
+                                </span>
+                                {% endif %}
                             </td>
                             <td>
                                 <small>
@@ -99,6 +106,16 @@
                             </td>
                             <td>
                                 <strong class="text-success">₹{{ order.total_amount or 0 }}</strong>
+                                {% if order.price_list_type and order.price_list_type != 'default' %}
+                                <br>
+                                <small class="text-muted">
+                                    {% if order.price_list_type == 'normal_client' %}
+                                    (Client Price)
+                                    {% elif order.price_list_type == 'price_master' %}
+                                    (Price Master)
+                                    {% endif %}
+                                </small>
+                                {% endif %}
                             </td>
                             <td>
                                 {% set status_color = {
