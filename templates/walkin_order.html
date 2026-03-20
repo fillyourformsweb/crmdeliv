@@ -152,65 +152,6 @@
                 </div>
             </div>
 
-            <!-- Payment Mode Section - Always Visible -->
-            <div class="card luxury-card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent border-0 px-4 pt-4">
-                    <h5 class="fw-bold mb-0 text-dark">
-                        <i class="fas fa-credit-card me-2 text-info opacity-50"></i>Payment Mode
-                    </h5>
-                    <p class="small text-muted mb-0">Select how the customer will pay</p>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Payment Mode *</label>
-                            <select name="payment_mode" class="form-select luxury-input" required>
-                                <option value="cash" selected>Cash Payment</option>
-                                <option value="upi">UPI / Scanner</option>
-                                <option value="online">Online Transfer</option>
-                                <option value="card">Card Payment</option>
-                                <option value="credit">Credit / To-Pay</option>
-                            </select>
-                            <small class="text-muted d-block mt-2">
-                                <i class="fas fa-info-circle me-1"></i>The payment mode will be recorded and can be updated later.
-                            </small>
-                        </div>
-                        <div class="col-12 mt-3">
-                            <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-sm btn-outline-success fw-bold" id="checkOfferBtn" style="display: none;" title="Check if any offer applies to this amount">
-                                    <i class="fas fa-gift me-1"></i> Check Offer
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-warning fw-bold" data-bs-toggle="modal" data-bs-target="#offersModal" title="View all available offers">
-                                    <i class="fas fa-eye me-1"></i> View Offers
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Auto-Offer Display (Hidden until checked) -->
-                    <div id="autoOfferDisplay" style="display: none; margin-top: 20px; padding: 15px; background: linear-gradient(135deg, #d4edda 0%, #e8f5e9 100%); border: 2px solid #28a745; border-radius: 8px;">
-                        <div style="text-align: center; margin-bottom: 15px;">
-                            <i class="fas fa-star text-warning" style="font-size: 24px;"></i>
-                        </div>
-                        <h6 class="fw-bold text-success text-center mb-2">
-                            <i class="fas fa-check-circle me-1"></i>Special Offer Available!
-                        </h6>
-                        <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
-                            <div class="small text-muted mb-1" id="offerRangeText">Order Amount: ₹200 - ₹500</div>
-                            <div class="fw-bold text-success" style="font-size: 18px;" id="offerValueText">GET ₹30 OFF</div>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-sm btn-success fw-bold flex-grow-1" id="acceptOfferBtn">
-                                <i class="fas fa-check me-1"></i> Accept Offer
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary fw-bold" id="viewOtherOffersBtn">
-                                <i class="fas fa-eye me-1"></i> Other Offers
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- International Booking Section -->
             <div class="card luxury-card border-0 shadow-sm mb-4">
                 <div class="card-header bg-transparent border-0 px-4 pt-4">
@@ -299,19 +240,40 @@
             <!-- Package & Billing Section -->
             <div class="card luxury-card border-0 shadow-sm mb-4">
                 <div class="card-body p-4">
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold text-uppercase text-muted">Shipping Mode *</label>
-                        <select name="receipt_mode" class="form-select luxury-input" required>
-                            <option value="">Select Shipping Mode</option>
-                            <option value="standard">Standard Delivery</option>
-                            <option value="prime">Prime Express</option>
-                            <option value="parcel">Parcel Service</option>
-                            <option value="state_express">State Express</option>
-                            <option value="road_express">Road Express</option>
-                            <option value="air">Air</option>
-                        </select>
-                    </div>
                     <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Shipping Mode *</label>
+                            <select name="receipt_mode" class="form-select luxury-input" required>
+                                <option value="">Select Shipping Mode</option>
+                                <option value="standard">Standard Delivery</option>
+                                <option value="prime">Prime Express</option>
+                                <option value="parcel">Parcel Service</option>
+                                <option value="state_express">State Express</option>
+                                <option value="road_express">Road Express</option>
+                                <option value="air">Air</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Payment Mode *</label>
+                            <select name="payment_mode" class="form-select luxury-input" required>
+                                <option value="" selected>Select Mode</option>
+                                <option value="cash">Cash Payment</option>
+                                <option value="upi">UPI / Scanner</option>
+                                <option value="online">Online Transfer</option>
+                                <option value="card">Card Payment</option>
+                                <option value="credit">Credit / To-Pay</option>
+                            </select>
+                            <div class="d-flex gap-2 mt-2">
+                                <button type="button" class="btn btn-xs btn-outline-success fw-bold" id="checkOfferBtn" style="display: none; font-size: 0.75rem; padding: 0.35rem 0.75rem;" title="Check if any offer applies to this amount">
+                                    <i class="fas fa-gift me-1"></i> Check Offer
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-warning fw-bold" data-bs-toggle="modal" data-bs-target="#offersModal" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;" title="View all available offers">
+                                    <i class="fas fa-eye me-1"></i> View Offers
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-4" style="margin-top: 0;">
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-uppercase text-muted">Weight (kg)</label>
                             <div class="input-group">
@@ -1190,7 +1152,7 @@
             // Trigger the modal to show all offers
             const offersModal = document.getElementById('offersModal');
             if (offersModal) {
-                const modal = new bootstrap.Modal(offersModal);
+                const modal = bootstrap.Modal.getInstance(offersModal) || new bootstrap.Modal(offersModal);
                 modal.show();
             }
         });

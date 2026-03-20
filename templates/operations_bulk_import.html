@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Bulk Import Orders{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h1><i class="fas fa-upload"></i> Bulk Import Orders</h1>
+            <p class="text-muted">Import multiple orders from an Excel file at once</p>
+
+            <!-- Instructions Card -->
+            <div class="alert alert-info mb-4">
+                <h5 class="alert-heading">How to Use Bulk Import</h5>
+                <ol class="mb-0">
+                    <li>Prepare an Excel file with your order data</li>
+                    <li>Ensure required columns are present (customer_name, receiver_name, receiver_pincode, etc.)</li>
+                    <li>Upload the file below</li>
+                    <li>The system will automatically create orders and generate receipt numbers</li>
+                </ol>
+            </div>
+
+            <!-- Excel Template Instructions -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0">Required Excel Columns</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check text-success"></i> Required Fields</h6>
+                            <ul class="small">
+                                <li><code>customer_name</code> - Sender/Customer name</li>
+                                <li><code>customer_phone</code> - Sender phone number</li>
+                                <li><code>receiver_name</code> - Recipient name</li>
+                                <li><code>receiver_pincode</code> - Recipient pincode (6 digits)</li>
+                                <li><code>receiver_state</code> - Delivery state</li>
+                                <li><code>receiver_address</code> - Recipient address</li>
+                                <li><code>weight</code> - Package weight in kg</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-info text-info"></i> Optional Fields</h6>
+                            <ul class="small">
+                                <li><code>order_type</code> - walkin or client (default: walkin)</li>
+                                <li><code>customer_email</code> - Sender email</li>
+                                <li><code>customer_address</code> - Sender address</li>
+                                <li><code>receiver_phone</code> - Recipient phone</li>
+                                <li><code>receiver_city</code> - Recipient city</li>
+                                <li><code>package_description</code> - What's being shipped</li>
+                                <li><code>number_of_boxes</code> - Number of boxes (default: 1)</li>
+                                <li><code>receipt_mode</code> - standard/prime/express (default: standard)</li>
+                                <li><code>special_instructions</code> - Special handling notes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0">Upload Excel File</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="file" class="form-label">Select Excel File (.xlsx, .xls)</label>
+                            <input type="file" class="form-control form-control-lg" id="file" name="file" 
+                                   accept=".xlsx,.xls,.csv" required>
+                            <small class="text-muted">
+                                Maximum file size: 10MB. Supported formats: Excel (.xlsx), CSV
+                            </small>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-upload"></i> Import Orders
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sample Data Table -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0">Sample Excel Format</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0 table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>customer_name</th>
+                                    <th>customer_phone</th>
+                                    <th>receiver_name</th>
+                                    <th>receiver_phone</th>
+                                    <th>receiver_address</th>
+                                    <th>receiver_city</th>
+                                    <th>receiver_state</th>
+                                    <th>receiver_pincode</th>
+                                    <th>weight</th>
+                                    <th>package_description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-light">
+                                    <td>John Doe</td>
+                                    <td>9876543210</td>
+                                    <td>Jane Smith</td>
+                                    <td>9876543211</td>
+                                    <td>123 Main St</td>
+                                    <td>Mumbai</td>
+                                    <td>Maharashtra</td>
+                                    <td>400001</td>
+                                    <td>0.5</td>
+                                    <td>Documents</td>
+                                </tr>
+                                <tr class="table-light">
+                                    <td>ABC Company</td>
+                                    <td>9876543212</td>
+                                    <td>Receiver Name</td>
+                                    <td>9876543213</td>
+                                    <td>456 Business Ave</td>
+                                    <td>Delhi</td>
+                                    <td>Delhi</td>
+                                    <td>110001</td>
+                                    <td>2.0</td>
+                                    <td>Electronics</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips & Best Practices -->
+            <div class="card shadow-sm mb-4 border-success">
+                <div class="card-header bg-success bg-opacity-10 border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Tips for Successful Import</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li><strong>Check Pincode Format:</strong> All pincodes must be exactly 6 digits</li>
+                        <li><strong>Required Data:</strong> Missing customer name, receiver name, or pincode will skip that row</li>
+                        <li><strong>Weight Format:</strong> Use decimal format (0.5, 1.0, 2.5, etc.)</li>
+                        <li><strong>States:</strong> Use the complete state name (e.g., "Maharashtra", not "MH")</li>
+                        <li><strong>Column Names:</strong> Column names are case-sensitive - use exactly as shown</li>
+                        <li><strong>Receipt Numbers:</strong> System automatically generates unique receipt numbers - don't include them in the file</li>
+                        <li><strong>Phone Numbers:</strong> Enter phone numbers without spaces or special characters</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="mb-4">
+                <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <a href="{{ url_for('excel_upload') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-history"></i> View Upload History
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ 'success' if category == 'success' else 'warning' if category == 'warning' else 'danger' }} position-fixed bottom-0 end-0 m-3" style="z-index: 1050;">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<style>
+    code {
+        background-color: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85em;
+    }
+</style>
+{% endblock %}

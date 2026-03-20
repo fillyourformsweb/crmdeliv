@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Operations Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-1">Operations Manager Dashboard</h1>
+            <p class="text-muted">Welcome, {{ current_user.username }}. Here's your operational overview.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('operations_profile') }}" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-user"></i> View Profile
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Cards Row 1 -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Total Orders</h6>
+                            <h3 class="mb-0">{{ total_orders }}</h3>
+                        </div>
+                        <i class="fas fa-box fa-2x text-primary opacity-50"></i>
+                    </div>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> 12% from last month</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title text-muted mb-1">In Transit</h6>
+                            <h3 class="mb-0">{{ in_transit_orders }}</h3>
+                        </div>
+                        <i class="fas fa-truck fa-2x text-warning opacity-50"></i>
+                    </div>
+                    <small class="text-info">{{ pending_orders }} pending confirmation</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Delivered</h6>
+                            <h3 class="mb-0">{{ delivered_orders }}</h3>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x text-success opacity-50"></i>
+                    </div>
+                    <small class="text-success">Finalized & completed</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Revenue Today</h6>
+                            <h3 class="mb-0">₹{{ "%.0f"|format(today_revenue) }}</h3>
+                        </div>
+                        <i class="fas fa-rupiah-sign fa-2x text-success opacity-50"></i>
+                    </div>
+                    <small class="text-muted">Total: ₹{{ "%.0f"|format(total_revenue) }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Quick Navigation</h5>
+                    <div class="row g-2">
+                        <div class="col-md-2">
+                            <a href="{{ url_for('operations_booking_history') }}" class="btn btn-outline-success w-100 text-start">
+                                <i class="fas fa-history"></i><br>
+                                <small>Booking History</small>
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{{ url_for('operations_branch_bookings') }}" class="btn btn-outline-info w-100 text-start">
+                                <i class="fas fa-sitemap"></i><br>
+                                <small>Branch Bookings</small>
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{{ url_for('operations_walk_in_orders') }}" class="btn btn-outline-warning w-100 text-start">
+                                <i class="fas fa-walking"></i><br>
+                                <small>Walk-in Orders</small>
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{{ url_for('operations_client_orders') }}" class="btn btn-outline-primary w-100 text-start">
+                                <i class="fas fa-users"></i><br>
+                                <small>Client Orders</small>
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{{ url_for('operations_crm_overview') }}" class="btn btn-outline-secondary w-100 text-start">
+                                <i class="fas fa-chart-line"></i><br>
+                                <small>CRM Overview</small>
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{{ url_for('staff_dashboard') }}" class="btn btn-outline-dark w-100 text-start">
+                                <i class="fas fa-analytics"></i><br>
+                                <small>Full Reports</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Type Distribution -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Order Distribution</h5>
+                    <div class="d-flex align-items-center justify-content-around py-3">
+                        <div class="text-center">
+                            <h4 class="text-warning">{{ walkin_count }}</h4>
+                            <p class="text-muted mb-0">Walk-in Orders</p>
+                        </div>
+                        <div style="border-left: 1px solid #ddd; height: 60px;" ></div>
+                        <div class="text-center">
+                            <h4 class="text-info">{{ client_count }}</h4>
+                            <p class="text-muted mb-0">Client Orders</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Top Branches (by revenue)</h5>
+                    <ul class="list-unstyled">
+                        {% for branch in branch_stats[:5] %}
+                        <li class="d-flex justify-content-between mb-2">
+                            <span>
+                                <i class="fas fa-location-dot text-muted"></i>
+                                {{ branch.name }}
+                            </span>
+                            <span>
+                                <strong>₹{{ "%.0f"|format(branch.revenue or 0) }}</strong>
+                                <small class="text-muted">({{ branch.order_count }} orders)</small>
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Completed Bookings -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-check-circle text-success"></i> Recently Finalized Bookings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_completed %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Receipt#</th>
+                                    <th>Customer Name</th>
+                                    <th>Receiver Details</th>
+                                    <th>Amount</th>
+                                    <th>Delivered Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_completed %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ order.receipt_number }}</strong>
+                                    </td>
+                                    <td>{{ order.customer_name }}</td>
+                                    <td>
+                                        <small>
+                                            <strong>{{ order.receiver_name }}</strong><br>
+                                            {{ order.receiver_city }}, {{ order.receiver_state }}
+                                        </small>
+                                    </td>
+                                    <td><strong>₹{{ order.total_amount or 0 }}</strong></td>
+                                    <td>{{ order.delivered_at.strftime('%Y-%m-%d %H:%M') if order.delivered_at else 'N/A' }}</td>
+                                    <td>
+                                        <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center py-4">No completed bookings yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 0.5rem;
+    }
+    .btn-outline-primary:hover,
+    .btn-outline-success:hover,
+    .btn-outline-warning:hover,
+    .btn-outline-info:hover,
+    .btn-outline-secondary:hover,
+    .btn-outline-dark:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}

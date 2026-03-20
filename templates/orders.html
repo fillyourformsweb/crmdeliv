@@ -31,9 +31,8 @@
                 <div class="col-md-3">
                     <label class="form-label small fw-bold text-muted">Search Shipments</label>
                     <div class="position-relative">
-                        <input type="text" name="search" class="form-control luxury-input autocomplete-search"
+                        <input type="text" name="search" class="form-control luxury-input"
                             placeholder="Type to search auto..." value="{{ search }}" autocomplete="off">
-                        <div class="search-suggestions-container d-none"></div>
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -253,20 +252,65 @@
 
 {% block extra_js %}
 <script>
-    const filterForm = document.querySelector('form');
-    let searchTimeout;
-
-    document.querySelectorAll('.luxury-input').forEach(input => {
-        const eventType = (input.type === 'text' || input.tagName === 'INPUT') ? 'input' : 'change';
+    // Strict isolation for orders page filter form
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterForm = document.querySelector('form[method="GET"]');
+        const searchInput = document.querySelector('input[name="search"]');
+        const statusSelect = document.querySelector('select[name="status"]');
+        const orderTypeSelect = document.querySelector('select[name="order_type"]');
         
-        input.addEventListener(eventType, () => {
-            if (input.type === 'text' || input.tagName === 'INPUT') {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
+        if (!filterForm) return;
+        
+        // Ensure form stays on orders page
+        filterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            filterForm.action = '/orders';
+            filterForm.method = 'GET';
+            filterForm.submit();
+        });
+        
+        // Disable autocomplete completely on search input
+        if (searchInput) {
+            searchInput.removeAttribute('data-autocomplete');
+            searchInput.setAttribute('autocomplete', 'off');
+            
+            // Prevent any global handlers from interfering
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    filterForm.action = '/orders';
+                    filterForm.method = 'GET';
                     filterForm.submit();
-                }, 500); // 500ms debounce
-            } else {
+                }
+            });
+            
+            searchInput.addEventListener('keyup', (e) => {
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+            });
+        }
+        
+        // Handle form changes with debounce
+        let searchTimeout;
+        const inputs = filterForm.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                filterForm.action = '/orders';
+                filterForm.method = 'GET';
                 filterForm.submit();
+            });
+            
+            if (input.type === 'text') {
+                input.addEventListener('input', () => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        filterForm.action = '/orders';
+                        filterForm.method = 'GET';
+                        filterForm.submit();
+                    }, 500);
+                });
             }
         });
     });

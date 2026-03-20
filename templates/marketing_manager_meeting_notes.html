@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Meeting Notes{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1><i class="fas fa-clipboard"></i> Meeting Notes</h1>
+    <p class="text-muted">Review and manage meeting notes from client interactions</p>
+
+    <!-- Meeting Notes Table -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0">Meeting Records ({{ pagination.total }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Contact</th>
+                            <th>Company</th>
+                            <th>Meeting Date</th>
+                            <th>Notes Preview</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for meeting in meetings %}
+                        <tr>
+                            <td>
+                                <strong>{{ meeting.visit.contact_name }}</strong>
+                                <div class="small text-muted">{{ meeting.visit.contact_phone }}</div>
+                            </td>
+                            <td>{{ meeting.visit.company_name }}</td>
+                            <td>
+                                <small>{{ meeting.scheduled_at.strftime('%b %d, %Y %H:%M') if meeting.scheduled_at else '-' }}</small>
+                            </td>
+                            <td>
+                                <div style="max-width: 300px;">
+                                    <small class="text-muted">{{ meeting.notes[:80] if meeting.notes else '-' }}</small>
+                                    {% if meeting.notes and meeting.notes|length > 80 %}
+                                        <small class="text-muted">...</small>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if meeting.status == 'completed' %}success{% elif meeting.status == 'rescheduled' %}warning{% elif meeting.status == 'scheduled' %}info{% else %}secondary{% endif %}">
+                                    {{ meeting.status.replace('_', ' ').title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('marketing_visit_detail', visit_id=meeting.visit_id) }}" 
+                                   class="btn btn-sm btn-outline-primary"
+                                   data-bs-toggle="tooltip" title="View full notes">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('marketing_manager_meeting_notes', page=pagination.prev_num) }}">
+                        Previous
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num == pagination.page %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('marketing_manager_meeting_notes', page=page_num) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('marketing_manager_meeting_notes', page=pagination.next_num) }}">
+                        Next
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- Display Full Note (if available) -->
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0">Sample Meeting Note</h5>
+                </div>
+                <div class="card-body">
+                    {% if meetings %}
+                        {% set latest_meeting = meetings[0] %}
+                        <h6>{{ latest_meeting.visit.contact_name }} - {{ latest_meeting.visit.company_name }}</h6>
+                        <p class="text-muted small">{{ latest_meeting.scheduled_at.strftime('%B %d, %Y at %H:%M') if latest_meeting.scheduled_at else 'Date not set' }}</p>
+                        <hr>
+                        <p>{{ latest_meeting.notes or 'No notes recorded' }}</p>
+                    {% else %}
+                        <p class="text-muted">No meeting notes available yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="mt-4">
+        <a href="{{ url_for('marketing_manager_dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
+{% endblock %}

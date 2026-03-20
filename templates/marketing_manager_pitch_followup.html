@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Pitch Follow-ups{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1><i class="fas fa-arrow-right"></i> Pitch Follow-ups</h1>
+    <p class="text-muted">Manage and track follow-up activities for sales pitches</p>
+
+    <!-- Filter -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Filter by Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All Follow-ups</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="done" {% if status_filter == 'done' %}selected{% endif %}>Done</option>
+                        <option value="skipped" {% if status_filter == 'skipped' %}selected{% endif %}>Skipped</option>
+                    </select>
+                </div>
+                <div class="col-md-8 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <a href="{{ url_for('marketing_manager_pitch_followup') }}" class="btn btn-outline-secondary">
+                        Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Follow-ups Table -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0">Follow-up List ({{ pagination.total }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Contact</th>
+                            <th>Company</th>
+                            <th>Follow-up Notes</th>
+                            <th>Scheduled Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for followup in followups %}
+                        <tr>
+                            <td>
+                                <strong>{{ followup.visit.contact_name }}</strong>
+                                <div class="small text-muted">{{ followup.visit.contact_phone }}</div>
+                            </td>
+                            <td>{{ followup.visit.company_name }}</td>
+                            <td>
+                                <small>{{ followup.notes[:60] }}{% if followup.notes|length > 60 %}...{% endif %}</small>
+                            </td>
+                            <td>
+                                {% if followup.follow_up_date %}
+                                    <span class="badge bg-info">
+                                        {{ followup.follow_up_date.strftime('%b %d, %H:%M') }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">No date set</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if followup.status == 'pending' %}warning{% elif followup.status == 'done' %}success{% else %}secondary{% endif %}">
+                                    {{ followup.status.title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('marketing_visit_detail', visit_id=followup.visit_id) }}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('marketing_manager_pitch_followup', page=pagination.prev_num, status=status_filter) }}">
+                        Previous
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num == pagination.page %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('marketing_manager_pitch_followup', page=page_num, status=status_filter) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('marketing_manager_pitch_followup', page=pagination.next_num, status=status_filter) }}">
+                        Next
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- Navigation -->
+    <div class="mt-4">
+        <a href="{{ url_for('marketing_manager_dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

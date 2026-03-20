@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Marketing Insights{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1><i class="fas fa-lightbulb"></i> Marketing Insights & Analytics</h1>
+    <p class="text-muted">Key metrics, trends, and conversion analysis</p>
+
+    <!-- Conversion Funnel -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0">Conversion Funnel</h5>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <h2 class="text-primary">{{ total }}</h2>
+                        <p class="text-muted">Total Visits</p>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar" role="progressbar" style="width: 100%">100%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <h2 class="text-info">{{ new }}</h2>
+                        <p class="text-muted">New Prospects</p>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-info" role="progressbar" 
+                                 style="width: {{ (new / total * 100) if total > 0 else 0 }}%">
+                                {{ "{:.0f}".format((new / total * 100)) if total > 0 else 0 }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <h2 class="text-warning">{{ follow_up }}</h2>
+                        <p class="text-muted">Follow-up Stage</p>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-warning" role="progressbar" 
+                                 style="width: {{ (follow_up / total * 100) if total > 0 else 0 }}%">
+                                {{ "{:.0f}".format((follow_up / total * 100)) if total > 0 else 0 }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <h2 class="text-success">{{ converted }}</h2>
+                        <p class="text-muted">Converted</p>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ (converted / total * 100) if total > 0 else 0 }}%">
+                                {{ "{:.0f}".format((converted / total * 100)) if total > 0 else 0 }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Breakdown -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0">Pipeline Status</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            {% for status, count in visits_by_status %}
+                            <tr>
+                                <td>
+                                    <strong>{{ status.replace('_', ' ').title() }}</strong>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-{% if status == 'new' %}primary{% elif status == 'follow_up' %}warning{% elif status == 'converted' %}success{% else %}danger{% endif %}">
+                                        {{ count }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <small class="text-muted">{{ "{:.1f}".format((count / total * 100)) if total > 0 else 0 }}%</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Lost Metrics -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0">Lost Opportunities Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h3 class="text-danger">{{ lost }}</h3>
+                            <p class="text-muted small">Lost Deals</p>
+                            <small class="text-muted">{{ "{:.1f}".format((lost / total * 100)) if total > 0 else 0 }}% Loss Rate</small>
+                        </div>
+                        <div class="vr"></div>
+                        <div class="col">
+                            <h3 class="text-success">{{ converted }}</h3>
+                            <p class="text-muted small">Successful Conversions</p>
+                            <small class="text-muted">{{ "{:.1f}".format((converted / total * 100)) if total > 0 else 0 }}% Success Rate</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Contacts by Activity -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0">Top Contacts by Follow-up Activity</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Contact Name</th>
+                            <th>Company</th>
+                            <th>Follow-ups</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contact in top_contacts %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td><strong>{{ contact.contact_name }}</strong></td>
+                            <td>{{ contact.company_name }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ contact.followup_count or 0 }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if contact.status == 'new' %}primary{% elif contact.status == 'follow_up' %}warning{% elif contact.status == 'converted' %}success{% else %}danger{% endif %}">
+                                    {{ contact.status.replace('_', ' ').title() }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Insights -->
+    <div class="alert alert-info mb-4">
+        <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Key Insights</h5>
+        <ul class="mb-0">
+            <li><strong>Overall Conversion Rate:</strong> {{ "{:.1f}".format((converted / total * 100)) if total > 0 else 0 }}% of prospects converted</li>
+            <li><strong>Pipeline Health:</strong> {{ follow_up }} prospects in active follow-up stage</li>
+            <li><strong>New Opportunities:</strong> {{ new }} new prospects waiting for initial contact</li>
+            <li><strong>Loss Analysis:</strong> {{ lost }} prospects lost in the pipeline</li>
+            <li><strong>Most Active:</strong> 
+                {% if top_contacts %}
+                    {{ top_contacts[0].contact_name }} with {{ top_contacts[0].followup_count }} follow-ups
+                {% else %}
+                    No data yet
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+
+    <!-- Navigation -->
+    <div class="mt-4">
+        <a href="{{ url_for('marketing_manager_dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    }
+</style>
+{% endblock %}

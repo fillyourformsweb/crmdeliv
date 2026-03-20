@@ -36,49 +36,49 @@
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">100gm Rate (₹)</label>
                             <input type="number" step="0.01" class="form-control luxury-input" name="price_100gm"
-                                value="{{ " %.2f"|format(price.price_100gm) }}" required>
+                                value="{{ price.price_100gm or '' }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">250gm Rate (₹)</label>
                             <input type="number" step="0.01" class="form-control luxury-input" name="price_250gm"
-                                value="{{ " %.2f"|format(price.price_250gm) }}" required>
+                                value="{{ price.price_250gm or '' }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">500gm Rate (₹)</label>
                             <input type="number" step="0.01" class="form-control luxury-input" name="price_500gm"
-                                value="{{ " %.2f"|format(price.price_500gm) }}" required>
+                                value="{{ price.price_500gm or '' }}" required>
                         </div>
 
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">1kg Standard (₹)</label>
                             <input type="number" step="0.01" class="form-control luxury-input" name="price_1kg"
-                                value="{{ " %.2f"|format(price.price_1kg) }}" required>
+                                value="{{ price.price_1kg or '' }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">3-10 kg Rate (₹/kg)</label>
                             <input type="number" step="0.01" class="form-control luxury-input" name="price_3_10kg"
-                                value="{{ " %.2f"|format(price.price_3_10kg or 0) }}" required>
+                                value="{{ price.price_3_10kg or '' }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">10-25 kg Rate (₹/kg)</label>
                             <input type="number" step="0.01" class="form-control luxury-input" name="price_10_25kg"
-                                value="{{ " %.2f"|format(price.price_10_25kg or 0) }}" required>
+                                value="{{ price.price_10_25kg or '' }}" required>
                         </div>
 
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">25-50 kg Rate (₹/kg)</label>
                             <input type="number" step="0.01" class="form-control luxury-input" name="price_25_50kg"
-                                value="{{ " %.2f"|format(price.price_25_50kg or 0) }}" required>
+                                value="{{ price.price_25_50kg or '' }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">50-100 kg Rate (₹/kg)</label>
                             <input type="number" step="0.01" class="form-control luxury-input" name="price_50_100kg"
-                                value="{{ " %.2f"|format(price.price_50_100kg or 0) }}" required>
+                                value="{{ price.price_50_100kg or '' }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">100+ kg Rate (₹/kg)</label>
                             <input type="number" step="0.01" class="form-control luxury-input" name="price_100plus_kg"
-                                value="{{ " %.2f"|format(price.price_100plus_kg or 0) }}" required>
+                                value="{{ price.price_100plus_kg or '' }}" required>
                         </div>
 
                         <div class="col-md-12">

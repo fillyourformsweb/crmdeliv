@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block title %}Shipment Tracking{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1><i class="fas fa-truck"></i> Shipment Tracking</h1>
+    <p class="text-muted">Track all orders and their delivery status in real-time</p>
+
+    <!-- Filter Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0">Filter & Search</h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label for="receipt" class="form-label">Receipt Number</label>
+                    <input type="text" class="form-control" id="receipt" name="receipt" 
+                           value="{{ search_receipt or '' }}" placeholder="Search receipt...">
+                </div>
+                <div class="col-md-3">
+                    <label for="customer" class="form-label">Customer Name</label>
+                    <input type="text" class="form-control" id="customer" name="customer" 
+                           value="{{ customer_filter or '' }}" placeholder="Search customer...">
+                </div>
+                <div class="col-md-2">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="all">All Statuses</option>
+                        {% for st in distinct_statuses %}
+                            <option value="{{ st }}" {% if st == status_filter %}selected{% endif %}>
+                                {{ st }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="date_from" class="form-label">From Date</label>
+                    <input type="date" class="form-control" id="date_from" name="date_from" 
+                           value="{{ date_from or '' }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="date_to" class="form-label">To Date</label>
+                    <input type="date" class="form-control" id="date_to" name="date_to" 
+                           value="{{ date_to or '' }}">
+                </div>
+                <div class="col-md-12 mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <a href="{{ url_for('operations_shipment_tracking') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-redo"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tracking Table -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0">Active Shipments ({{ pagination.total }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Receipt #</th>
+                            <th>Customer</th>
+                            <th>Receiver</th>
+                            <th>Destination</th>
+                            <th>Weight</th>
+                            <th>Status</th>
+                            <th>Last Update</th>
+                            <th>Created</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>
+                                <strong>{{ order.receipt_number }}</strong>
+                            </td>
+                            <td>
+                                <div class="small">{{ order.customer_name }}</div>
+                                {% if order.customer_phone %}
+                                    <small class="text-muted">{{ order.customer_phone }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="small">{{ order.receiver_name }}</div>
+                                {% if order.receiver_phone %}
+                                    <small class="text-muted">{{ order.receiver_phone }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="small">{{ order.receiver_city or order.receiver_address }}</div>
+                                <small class="text-muted">{{ order.receiver_state }} - {{ order.receiver_pincode }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ order.weight }} kg</strong>
+                                {% if order.number_of_boxes %}
+                                    <small class="text-muted d-block">({{ order.number_of_boxes }} box)</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% set status_badge = {
+                                    'at_destination': 'success',
+                                    'in_transit': 'info',
+                                    'pending': 'warning',
+                                    'delivered': 'success',
+                                    'cancelled': 'danger',
+                                    'failed_delivery': 'danger',
+                                    'return_initiated': 'warning'
+                                } %}
+                                <span class="badge bg-{{ status_badge.get(order.status, 'secondary') }}">
+                                    {{ order.status.replace('_', ' ').title() }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if order.tracking_updates and order.tracking_updates|length > 0 %}
+                                    <div class="small">
+                                        {{ order.tracking_updates[-1].created_at.strftime('%b %d, %H:%M') }}
+                                    </div>
+                                {% else %}
+                                    <small class="text-muted">No updates</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    {{ order.created_at.strftime('%b %d, %Y') }}
+                                </small>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('order_details', order_id=order.id) }}" 
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% if order.tracking_updates and order.tracking_updates|length > 0 %}
+                        <tr class="table-light">
+                            <td colspan="9">
+                                <div class="ms-3">
+                                    <strong class="d-block mb-2">Latest Updates:</strong>
+                                    <div class="timeline-mini">
+                                        {% for update in order.tracking_updates[-3:]|reverse %}
+                                        <div class="update-item mb-2">
+                                            <i class="fas fa-map-marker-alt text-primary"></i>
+                                            <span class="ms-2">
+                                                <strong>{{ update.status }}</strong>
+                                                {% if update.location %}<span class="text-muted"> - {{ update.location }}</span>{% endif %}
+                                            </span>
+                                            <small class="text-muted d-block ms-4">
+                                                {{ update.created_at.strftime('%b %d, %H:%M %p') }}
+                                                {% if update.updated_by %}
+                                                    by {{ update.updated_by_user.username if update.updated_by_user else 'System' }}
+                                                {% endif %}
+                                            </small>
+                                            {% if update.description %}
+                                                <small class="d-block ms-4 text-muted">{{ update.description }}</small>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center py-4 text-muted">
+                                No shipments found matching your criteria
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <nav aria-label="Page navigation" class="mb-4">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('operations_shipment_tracking', page=pagination.prev_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
+                        Previous
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_margin=1, right_margin=1) %}
+                {% if page_num %}
+                    {% if page_num == pagination.page %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('operations_shipment_tracking', page=page_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('operations_shipment_tracking', page=pagination.next_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
+                        Next
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- Navigation -->
+    <div class="mb-4">
+        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+    .timeline-mini {
+        border-left: 3px solid #dee2e6;
+        padding-left: 15px;
+    }
+    .update-item {
+        padding: 8px 0;
+    }
+    table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Client Reschedules{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1><i class="fas fa-calendar-check"></i> Client Meeting Reschedules</h1>
+    <p class="text-muted">Track and manage client meeting reschedules</p>
+
+    <!-- Reschedules Table -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0">Meeting Schedules ({{ pagination.total }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Contact</th>
+                            <th>Company</th>
+                            <th>Original Schedule</th>
+                            <th>Rescheduled To</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for meeting in meetings %}
+                        <tr>
+                            <td>
+                                <strong>{{ meeting.visit.contact_name }}</strong>
+                                <div class="small text-muted">{{ meeting.visit.contact_phone }}</div>
+                            </td>
+                            <td>{{ meeting.visit.company_name }}</td>
+                            <td>
+                                <small>
+                                    {{ meeting.scheduled_at.strftime('%b %d, %H:%M') if meeting.scheduled_at else '-' }}
+                                </small>
+                            </td>
+                            <td>
+                                {% if meeting.rescheduled_at %}
+                                    <span class="badge bg-warning">
+                                        {{ meeting.rescheduled_at.strftime('%b %d, %H:%M') }}
+                                    </span>
+                                {% else %}
+                                    <small class="text-muted">-</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ meeting.location or '-' }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if meeting.status == 'rescheduled' %}warning{% elif meeting.status == 'completed' %}success{% elif meeting.status == 'scheduled' %}info{% else %}secondary{% endif %}">
+                                    {{ meeting.status.replace('_', ' ').title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ meeting.notes[:30] if meeting.notes else '-' }}</small>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('marketing_visit_detail', visit_id=meeting.visit_id) }}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('marketing_manager_client_reschedule', page=pagination.prev_num) }}">
+                        Previous
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num == pagination.page %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('marketing_manager_client_reschedule', page=page_num) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('marketing_manager_client_reschedule', page=pagination.next_num) }}">
+                        Next
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h3>{{ pagination.total }}</h3>
+                    <p class="text-muted mb-0">Total Meetings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="text-warning">{{ meetings|selectattr('status', 'equalto', 'rescheduled')|list|length }}</h3>
+                    <p class="text-muted mb-0">Rescheduled</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="text-success">{{ meetings|selectattr('status', 'equalto', 'completed')|list|length }}</h3>
+                    <p class="text-muted mb-0">Completed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="mt-4">
+        <a href="{{ url_for('marketing_manager_dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

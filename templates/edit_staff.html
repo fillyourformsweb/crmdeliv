@@ -30,11 +30,16 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Role *</label>
                     <select name="role" class="form-select" required>
-                        <option value="staff" {{ 'selected' if user.role=='staff' else '' }}>Staff</option>
-                        <option value="delivery" {{ 'selected' if user.role=='delivery' else '' }}>Delivery Personnel
-                        </option>
-                        <option value="manager" {{ 'selected' if user.role=='manager' else '' }}>Manager</option>
                         <option value="admin" {{ 'selected' if user.role=='admin' else '' }}>Admin</option>
+                        <option value="manager" {{ 'selected' if user.role=='manager' else '' }}>Manager</option>
+                        <option value="operation_manager" {{ 'selected' if user.role=='operation_manager' else '' }}>Operation Manager</option>
+                        <option value="marketing_manager" {{ 'selected' if user.role=='marketing_manager' else '' }}>Marketing Manager</option>
+                        <option value="staff" {{ 'selected' if user.role=='staff' else '' }}>Staff</option>
+                        <option value="delivery" {{ 'selected' if user.role=='delivery' else '' }}>Delivery</option>
+                        <option value="delivery_pickup" {{ 'selected' if user.role=='delivery_pickup' else '' }}>Delivery & Pickup</option>
+                        <option value="marketing_office" {{ 'selected' if user.role=='marketing_office' else '' }}>Marketing Office</option>
+                        <option value="branch" {{ 'selected' if user.role=='branch' else '' }}>Branch</option>
+                        <option value="franchise" {{ 'selected' if user.role=='franchise' else '' }}>Franchise</option>
                     </select>
                 </div>
             </div>

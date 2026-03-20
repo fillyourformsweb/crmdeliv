@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}CRM Overview - Pricing & System Info{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>CRM System Overview</h1>
+            <p class="text-muted">Understand how our CRM system works and current pricing structure</p>
+        </div>
+    </div>
+
+    <!-- System Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-building fa-2x text-primary mb-2"></i>
+                    <h4>{{ total_branches }}</h4>
+                    <p class="text-muted mb-0">Active Branches</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x text-success mb-2"></i>
+                    <h4>{{ total_clients }}</h4>
+                    <p class="text-muted mb-0">Active Clients</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users-cog fa-2x text-info mb-2"></i>
+                    <h4>{{ total_staff }}</h4>
+                    <p class="text-muted mb-0">Staff Members</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-box fa-2x text-warning mb-2"></i>
+                    <h4>₹{{ "%.0f"|format(avg_order_value) }}</h4>
+                    <p class="text-muted mb-0">Avg Order Value</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How CRM Works -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> How Our CRM System Works</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-walking text-warning"></i> Walk-in Orders</h6>
+                            <p>Customers come directly and place orders. Prices are calculated based on destination state and weight. Quick processing with immediate receipt generation.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-briefcase text-info"></i> Client Orders</h6>
+                            <p>Corporate clients with pre-negotiated rates. Custom pricing can be set per state. Receives consolidated billing and account management.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-chart-line text-success"></i> Real-time Tracking</h6>
+                            <p>Every order gets a unique tracking number. Status updates throughout journey: pending → confirmed → in transit → delivered/RTO.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-file-invoice-dollar text-primary"></i> Billing Management</h6>
+                            <p>Automatic invoice generation. Payment tracking with received vs due amounts. Consolidated bills for corporate clients with GST support.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing Structure -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-tag"></i> Current Pricing Tiers</h5>
+                        <a href="{{ url_for('default_prices') }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i> Manage Prices
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>State</th>
+                                    <th>100gm</th>
+                                    <th>250gm</th>
+                                    <th>500gm</th>
+                                    <th>1kg</th>
+                                    <th>2kg</th>
+                                    <th>3kg</th>
+                                    <th>Extra/kg</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for price in default_prices[:10] %}
+                                <tr>
+                                    <td><strong>{{ price.state }}</strong></td>
+                                    <td>₹{{ price.price_100gm }}</td>
+                                    <td>₹{{ price.price_250gm }}</td>
+                                    <td>₹{{ price.price_500gm }}</td>
+                                    <td>₹{{ price.price_1kg }}</td>
+                                    <td>₹{{ price.price_2kg }}</td>
+                                    <td>₹{{ price.price_3kg }}</td>
+                                    <td>₹{{ price.price_extra_per_kg }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if default_prices|length > 10 %}
+                    <p class="text-muted text-center mt-2">
+                        <small>Showing 10 of {{ default_prices|length }} states</small>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Status Breakdown -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Order Status Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        {% for stat in status_breakdown %}
+                        <li class="d-flex justify-content-between mb-2">
+                            <span>
+                                {% if stat.status == 'pending' %}
+                                    <i class="fas fa-hourglass-start text-warning"></i>
+                                {% elif stat.status == 'in_transit' %}
+                                    <i class="fas fa-truck text-info"></i>
+                                {% elif stat.status == 'delivered' %}
+                                    <i class="fas fa-check-circle text-success"></i>
+                                {% elif stat.status == 'at_destination' %}
+                                    <i class="fas fa-map-marker text-primary"></i>
+                                {% else %}
+                                    <i class="fas fa-ban text-danger"></i>
+                                {% endif %}
+                                {{ stat.status | replace('_', ' ') | title }}
+                            </span>
+                            <strong>{{ stat.count }}</strong>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-cogs"></i> Quick Settings</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('insurance_settings') }}" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-shield-alt"></i> Insurance Settings
+                    </a>
+                    <a href="{{ url_for('receipt_settings') }}" class="btn btn-outline-secondary w-100 mb-2">
+                        <i class="fas fa-barcode"></i> Receipt Number Settings
+                    </a>
+                    <a href="{{ url_for('couriers') }}" class="btn btn-outline-info w-100 mb-2">
+                        <i class="fas fa-truck"></i> Courier Management
+                    </a>
+                    <a href="{{ url_for('offers') }}" class="btn btn-outline-success w-100">
+                        <i class="fas fa-tag"></i> Offers & Discounts
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-4">
+        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

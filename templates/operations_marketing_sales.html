@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}Marketing & Sales Analytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1><i class="fas fa-chart-line"></i> Marketing & Sales Analytics</h1>
+    <p class="text-muted">Track sales performance, conversion rates, and customer growth</p>
+
+    <!-- Date Range Selector -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-2">
+                <div class="col-auto">
+                    <label class="form-label">Time Period:</label>
+                </div>
+                <div class="col-auto">
+                    <a href="?days=7" class="btn btn-sm {% if days_filter == 7 %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                        Last 7 Days
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a href="?days=30" class="btn btn-sm {% if days_filter == 30 %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                        Last 30 Days
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a href="?days=90" class="btn btn-sm {% if days_filter == 90 %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                        Last 90 Days
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Key Metrics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1">Total Orders</p>
+                            <h2 class="mb-0">{{ total_orders }}</h2>
+                        </div>
+                        <i class="fas fa-box fa-2x text-primary opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1">Total Revenue</p>
+                            <h2 class="mb-0">₹{{ "{:,.2f}".format(total_revenue) }}</h2>
+                        </div>
+                        <i class="fas fa-rupee-sign fa-2x text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1">Avg Order Value</p>
+                            <h2 class="mb-0">₹{{ "{:,.0f}".format(total_revenue / total_orders) if total_orders > 0 else 0 }}</h2>
+                        </div>
+                        <i class="fas fa-calculator fa-2x text-info opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1">Client Conversion</p>
+                            <h2 class="mb-0">{{ "{:.1f}".format(conversion_rate) }}%</h2>
+                            <small class="text-muted">{{ total_client }} / {{ total_orders }} orders</small>
+                        </div>
+                        <i class="fas fa-users fa-2x text-warning opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Walk-in vs Client Orders -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0">Order Type Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h1 class="text-primary">{{ total_walkin }}</h1>
+                            <p class="text-muted mb-0">Walk-in Orders</p>
+                            <small class="text-muted">
+                                {{ "{:.1f}".format((total_walkin / total_orders * 100)) if total_orders > 0 else 0 }}%
+                            </small>
+                        </div>
+                        <div class="col">
+                            <div class="vr"></div>
+                        </div>
+                        <div class="col">
+                            <h1 class="text-success">{{ total_client }}</h1>
+                            <p class="text-muted mb-0">Corporate Orders</p>
+                            <small class="text-muted">
+                                {{ "{:.1f}".format((total_client / total_orders * 100)) if total_orders > 0 else 0 }}%
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue by Order Type -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0">Revenue by Order Type</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr class="text-muted">
+                                <th>Type</th>
+                                <th>Orders</th>
+                                <th>Revenue</th>
+                                <th>Avg/Order</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in order_type_data %}
+                            <tr>
+                                <td>
+                                    <strong>
+                                        {% if data.order_type == 'walkin' %}
+                                            Walk-in
+                                        {% elif data.order_type == 'client' %}
+                                            Corporate
+                                        {% else %}
+                                            {{ data.order_type.title() }}
+                                        {% endif %}
+                                    </strong>
+                                </td>
+                                <td>{{ data.count }}</td>
+                                <td>₹{{ "{:,.0f}".format(data.revenue or 0) }}</td>
+                                <td>₹{{ "{:,.0f}".format((data.revenue / data.count) if data.count > 0 else 0) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Performing States -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0"><i class="fas fa-map"></i> Top 15 States by Revenue</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>State</th>
+                            <th>Orders</th>
+                            <th>Revenue</th>
+                            <th>Avg Order Value</th>
+                            <th>% of Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set total_rev = top_states|map(attribute='revenue')|sum %}
+                        {% for state in top_states %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td><strong>{{ state.receiver_state }}</strong></td>
+                            <td>{{ state.order_count }}</td>
+                            <td><strong>₹{{ "{:,.0f}".format(state.revenue or 0) }}</strong></td>
+                            <td>₹{{ "{:,.0f}".format((state.revenue / state.order_count) if state.order_count > 0 else 0) }}</td>
+                            <td>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar" role="progressbar"
+                                         style="width: {{ (state.revenue / total_rev * 100) if total_rev > 0 else 0 }}%">
+                                        {{ "{:.1f}".format((state.revenue / total_rev * 100)) if total_rev > 0 else 0 }}%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Corporate Clients -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0"><i class="fas fa-building"></i> Top 15 Corporate Clients</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Client Name</th>
+                            <th>Company</th>
+                            <th>Orders</th>
+                            <th>Revenue</th>
+                            <th>Avg Order Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in top_clients %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td><strong>{{ client.name }}</strong></td>
+                            <td>
+                                {% if client.company_name %}
+                                    <small class="text-muted">{{ client.company_name }}</small>
+                                {% else %}
+                                    <small class="text-muted">-</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ client.order_count }}</td>
+                            <td><strong>₹{{ "{:,.0f}".format(client.revenue or 0) }}</strong></td>
+                            <td>₹{{ "{:,.0f}".format(client.avg_order_value or 0) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Order Trend -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0"><i class="fas fa-calendar"></i> Daily Order Trend</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Total Orders</th>
+                            <th>Walk-in</th>
+                            <th>Corporate</th>
+                            <th>% Corporate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day in daily_orders %}
+                        <tr>
+                            <td><strong>{{ day.date }}</strong></td>
+                            <td>{{ day.total_orders }}</td>
+                            <td>
+                                <span class="badge bg-light text-dark">
+                                    {{ day.walkin_count or 0 }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">
+                                    {{ day.client_count or 0 }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ "{:.1f}".format((day.client_count / day.total_orders * 100) if day.total_orders > 0 else 0) }}%
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="mb-4">
+        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    }
+</style>
+{% endblock %}

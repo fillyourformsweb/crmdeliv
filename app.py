@@ -95,7 +95,7 @@ def admin_required(f):
 def staff_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.role not in ['admin', 'manager', 'staff']:
+        if not current_user.is_authenticated or current_user.role not in ['admin', 'manager', 'operation_manager', 'staff']:
             flash('Staff access required.', 'error')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
@@ -104,8 +104,18 @@ def staff_required(f):
 def manager_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.role not in ['admin', 'manager']:
+        if not current_user.is_authenticated or current_user.role not in ['admin', 'manager', 'operation_manager']:
             flash('Admin or Manager access required.', 'error')
+            return redirect(url_for('dashboard'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def marketing_manager_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.role != 'marketing_manager':
+            flash('Marketing Manager access required.', 'error')
             return redirect(url_for('dashboard'))
         return f(*args, **kwargs)
     return decorated_function
@@ -502,7 +512,7 @@ def login():
                 flash('Your account is deactivated. Contact admin.', 'error')
                 return render_template('login.html')
             
-            if user.role not in ['admin', 'manager', 'staff', 'delivery', 'customer']:
+            if user.role not in ['admin', 'manager', 'operation_manager', 'marketing_manager', 'staff', 'delivery', 'customer']:
                 flash('Access restricted for this role.', 'error')
                 return render_template('login.html')
             
@@ -535,6 +545,8 @@ def dashboard():
         return redirect(url_for('customer_dashboard'))
     if current_user.role == 'admin':
         return redirect(url_for('admin_dashboard'))
+    if current_user.role == 'marketing_manager':
+        return redirect(url_for('marketing_manager_dashboard'))
     if current_user.role == 'staff' or current_user.role == 'manager':
         return redirect(url_for('staff_dashboard'))
     # Get statistics
@@ -740,6 +752,832 @@ def admin_dashboard():
                          daily_revenue=daily_revenue,
                          status_dist=status_dist,
                          days_filter=days_filter)
+
+
+# ============== OPERATION MANAGER ROUTES ==============
+
+@app.route('/operations/dashboard')
+@login_required
+@manager_required
+def operations_dashboard():
+    """Main Operations Manager Dashboard with KPIs and overview"""
+    from sqlalchemy import func, desc
+    from datetime import datetime, timedelta, timezone
+    
+    # Get statistics
+    total_orders = Order.query.count()
+    pending_orders = Order.query.filter_by(status='at_destination').count()
+    in_transit_orders = Order.query.filter_by(status='in_transit').count()
+    delivered_orders = Order.query.filter_by(status='delivered').count()
+    
+    # Revenue metrics
+    total_revenue = db.session.query(func.sum(Order.total_amount)).scalar() or 0
+    today_revenue = db.session.query(func.sum(Order.total_amount)).filter(
+        db.func.date(Order.created_at) == datetime.now(timezone.utc).date()
+    ).scalar() or 0
+    
+    # Branch-wise statistics
+    branch_stats = db.session.query(
+        Branch.name,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('revenue')
+    ).join(Order).group_by(Branch.id).all()
+    
+    # Recent completed bookings
+    recent_completed = Order.query.filter_by(status='delivered').order_by(
+        Order.delivered_at.desc()
+    ).limit(10).all()
+    
+    # Walk-in vs Client order ratio
+    walkin_count = Order.query.filter_by(order_type='walkin').count()
+    client_count = Order.query.filter_by(order_type='client').count()
+    
+    return render_template('operations_dashboard.html',
+                         total_orders=total_orders,
+                         pending_orders=pending_orders,
+                         in_transit_orders=in_transit_orders,
+                         delivered_orders=delivered_orders,
+                         total_revenue=total_revenue,
+                         today_revenue=today_revenue,
+                         branch_stats=branch_stats,
+                         recent_completed=recent_completed,
+                         walkin_count=walkin_count,
+                         client_count=client_count)
+
+
+@app.route('/operations/profile')
+@login_required
+@manager_required
+def operations_profile():
+    """Operation Manager's own profile page"""
+    user = current_user
+    
+    # Get user statistics
+    orders_created = Order.query.filter_by(created_by=user.id).count()
+    revenue_handled = db.session.query(func.sum(Order.total_amount)).filter(
+        Order.created_by == user.id
+    ).scalar() or 0
+    
+    return render_template('operations_profile.html',
+                         user=user,
+                         orders_created=orders_created,
+                         revenue_handled=revenue_handled)
+
+
+@app.route('/operations/crm-overview')
+@login_required
+@manager_required
+def operations_crm_overview():
+    """CRM Overview - How the system works and pricing information"""
+    from sqlalchemy import func
+    
+    # Get pricing overview
+    default_prices = DefaultStatePrice.query.all()
+    
+    # Get system statistics
+    total_clients = Client.query.filter_by(is_active=True).count()
+    total_staff = User.query.filter(User.role.in_(['staff', 'manager'])).count()
+    total_branches = Branch.query.filter_by(is_active=True).count()
+    
+    # Average order value
+    avg_order_value = db.session.query(func.avg(Order.total_amount)).scalar() or 0
+    
+    # Order status breakdown
+    status_breakdown = db.session.query(
+        Order.status,
+        func.count(Order.id).label('count')
+    ).group_by(Order.status).all()
+    
+    return render_template('operations_crm_overview.html',
+                         default_prices=default_prices,
+                         total_clients=total_clients,
+                         total_staff=total_staff,
+                         total_branches=total_branches,
+                         avg_order_value=avg_order_value,
+                         status_breakdown=status_breakdown)
+
+
+@app.route('/operations/booking-history')
+@login_required
+@manager_required
+def operations_booking_history():
+    """View completed bookings/orders history"""
+    page = request.args.get('page', 1, type=int)
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    query = Order.query.filter_by(status='delivered')
+    
+    if start_date:
+        query = query.filter(Order.delivered_at >= datetime.strptime(start_date, '%Y-%m-%d'))
+    if end_date:
+        query = query.filter(Order.delivered_at <= datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1))
+    
+    pagination = query.order_by(Order.delivered_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    
+    completed_orders = pagination.items
+    
+    # Statistics
+    total_completed = query.count()
+    total_revenue = db.session.query(func.sum(Order.total_amount)).filter(
+        Order.status == 'delivered'
+    ).scalar() or 0
+    
+    return render_template('operations_booking_history.html',
+                         completed_orders=completed_orders,
+                         pagination=pagination,
+                         total_completed=total_completed,
+                         total_revenue=total_revenue,
+                         start_date=start_date,
+                         end_date=end_date)
+
+
+@app.route('/operations/branch-bookings')
+@login_required
+@manager_required
+def operations_branch_bookings():
+    """View branch-wise completed bookings"""
+    if current_user.role == 'manager' and current_user.branch_id:
+        # Managers see only their branch
+        branches = [current_user.branch]
+    else:
+        # Admins see all branches
+        branches = Branch.query.filter_by(is_active=True).all()
+    
+    branch_id = request.args.get('branch_id', type=int)
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    # Filter branch if selected
+    if branch_id:
+        selected_branch = next((b for b in branches if b.id == branch_id), None)
+    else:
+        selected_branch = branches[0] if branches else None
+        branch_id = selected_branch.id if selected_branch else None
+    
+    # Get completed orders for selected branch
+    query = Order.query.filter(
+        Order.branch_id == branch_id,
+        Order.status == 'delivered'
+    )
+    
+    if start_date:
+        query = query.filter(Order.delivered_at >= datetime.strptime(start_date, '%Y-%m-%d'))
+    if end_date:
+        query = query.filter(Order.delivered_at <= datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1))
+    
+    branch_orders = query.order_by(Order.delivered_at.desc()).all()
+    
+    # Branch statistics
+    branch_total = sum(o.total_amount or 0 for o in branch_orders)
+    branch_finalized_count = len(branch_orders)
+    
+    return render_template('operations_branch_bookings.html',
+                         branches=branches,
+                         selected_branch=selected_branch,
+                         branch_orders=branch_orders,
+                         branch_total=branch_total,
+                         branch_finalized_count=branch_finalized_count,
+                         start_date=start_date,
+                         end_date=end_date)
+
+
+@app.route('/operations/walk-in-orders')
+@login_required
+@manager_required
+def operations_walk_in_orders():
+    """View all walk-in customer orders"""
+    page = request.args.get('page', 1, type=int)
+    status_filter = request.args.get('status', '')
+    search = request.args.get('search', '')
+    
+    query = Order.query.filter_by(order_type='walkin')
+    
+    if status_filter:
+        query = query.filter_by(status=status_filter)
+    if search:
+        query = query.filter(
+            (Order.receipt_number.ilike(f'%{search}%')) |
+            (Order.customer_name.ilike(f'%{search}%')) |
+            (Order.customer_phone.ilike(f'%{search}%'))
+        )
+    
+    pagination = query.order_by(Order.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    
+    walkin_orders = pagination.items
+    
+    # Statistics
+    total_walkin = Order.query.filter_by(order_type='walkin').count()
+    total_walkin_revenue = db.session.query(func.sum(Order.total_amount)).filter(
+        Order.order_type == 'walkin'
+    ).scalar() or 0
+    
+    return render_template('operations_walk_in_orders.html',
+                         walkin_orders=walkin_orders,
+                         pagination=pagination,
+                         total_walkin=total_walkin,
+                         total_walkin_revenue=total_walkin_revenue,
+                         status_filter=status_filter,
+                         search=search)
+
+
+@app.route('/operations/client-orders')
+@login_required
+@manager_required
+def operations_client_orders():
+    """View all client orders"""
+    page = request.args.get('page', 1, type=int)
+    client_id = request.args.get('client_id', type=int)
+    status_filter = request.args.get('status', '')
+    search = request.args.get('search', '')
+    
+    query = Order.query.filter_by(order_type='client')
+    
+    if client_id:
+        query = query.filter_by(client_id=client_id)
+    if status_filter:
+        query = query.filter_by(status=status_filter)
+    if search:
+        query = query.filter(
+            (Order.receipt_number.ilike(f'%{search}%')) |
+            (Order.customer_name.ilike(f'%{search}%')) |
+            (Order.receiver_name.ilike(f'%{search}%'))
+        )
+    
+    pagination = query.order_by(Order.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    
+    client_orders = pagination.items
+    
+    # Get all clients for filter
+    clients = Client.query.filter_by(is_active=True).all()
+    
+    # Statistics
+    total_client_orders = Order.query.filter_by(order_type='client').count()
+    total_client_revenue = db.session.query(func.sum(Order.total_amount)).filter(
+        Order.order_type == 'client'
+    ).scalar() or 0
+    
+    return render_template('operations_client_orders.html',
+                         client_orders=client_orders,
+                         pagination=pagination,
+                         clients=clients,
+                         selected_client_id=client_id,
+                         total_client_orders=total_client_orders,
+                         total_client_revenue=total_client_revenue,
+                         status_filter=status_filter,
+                         search=search)
+
+
+@app.route('/operations/audit-logs')
+@login_required
+@manager_required
+def operations_audit_logs():
+    """View audit logs - Read-only for managers"""
+    from models import AuditLog
+    
+    page = request.args.get('page', 1, type=int)
+    action_filter = request.args.get('action', '')
+    entity_filter = request.args.get('entity_type', '')
+    user_filter = request.args.get('username', '')
+    
+    query = AuditLog.query
+    
+    if action_filter:
+        query = query.filter_by(action=action_filter)
+    if entity_filter:
+        query = query.filter_by(entity_type=entity_filter)
+    if user_filter:
+        query = query.filter(AuditLog.username.ilike(f'%{user_filter}%'))
+    
+    pagination = query.order_by(AuditLog.created_at.desc()).paginate(
+        page=page, per_page=30, error_out=False
+    )
+    logs = pagination.items
+    
+    return render_template('operations_audit_logs.html',
+                         logs=logs,
+                         pagination=pagination,
+                         action_filter=action_filter,
+                         entity_filter=entity_filter,
+                         user_filter=user_filter)
+
+
+@app.route('/operations/analytics')
+@login_required
+@manager_required
+def operations_analytics():
+    """View operational analytics and trends"""
+    from sqlalchemy import func, desc
+    from datetime import datetime, timedelta, timezone
+    
+    # Date range for analytics
+    days_filter = request.args.get('days', 30, type=int)
+    start_date = datetime.now(timezone.utc) - timedelta(days=days_filter)
+    
+    # Total metrics for period
+    orders_in_period = Order.query.filter(Order.created_at >= start_date).count()
+    revenue_in_period = db.session.query(func.sum(Order.total_amount)).filter(
+        Order.created_at >= start_date
+    ).scalar() or 0
+    
+    # Orders by type in period
+    walkin_in_period = Order.query.filter(
+        Order.order_type == 'walkin',
+        Order.created_at >= start_date
+    ).count()
+    client_in_period = Order.query.filter(
+        Order.order_type == 'client',
+        Order.created_at >= start_date
+    ).count()
+    
+    # Orders by status
+    status_breakdown = db.session.query(
+        Order.status,
+        func.count(Order.id).label('count')
+    ).filter(Order.created_at >= start_date).group_by(Order.status).all()
+    
+    # Top states by revenue
+    top_states = db.session.query(
+        Order.receiver_state,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('revenue')
+    ).filter(Order.created_at >= start_date).group_by(
+        Order.receiver_state
+    ).order_by(desc('revenue')).limit(10).all()
+    
+    # Daily revenue trend
+    daily_revenue = db.session.query(
+        func.date(Order.created_at).label('date'),
+        func.count(Order.id).label('count'),
+        func.sum(Order.total_amount).label('revenue')
+    ).filter(Order.created_at >= start_date).group_by(
+        func.date(Order.created_at)
+    ).order_by('date').all()
+    
+    # Top clients
+    top_clients = db.session.query(
+        Client.name,
+        Client.company_name,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('revenue')
+    ).join(Order).filter(Order.created_at >= start_date).group_by(
+        Client.id
+    ).order_by(desc('revenue')).limit(10).all()
+    
+    # Average metrics
+    avg_order_value = revenue_in_period / orders_in_period if orders_in_period > 0 else 0
+    avg_weight = db.session.query(func.avg(Order.weight)).filter(
+        Order.created_at >= start_date
+    ).scalar() or 0
+    
+    return render_template('operations_analytics.html',
+                         orders_in_period=orders_in_period,
+                         revenue_in_period=revenue_in_period,
+                         walkin_in_period=walkin_in_period,
+                         client_in_period=client_in_period,
+                         status_breakdown=status_breakdown,
+                         top_states=top_states,
+                         daily_revenue=daily_revenue,
+                         top_clients=top_clients,
+                         avg_order_value=avg_order_value,
+                         avg_weight=avg_weight,
+                         days_filter=days_filter)
+
+
+@app.route('/operations/corporate-clients/7day')
+@login_required
+@manager_required
+def operations_corporate_clients_7day():
+    """View corporate client orders from last 7 days - Read-only for individuals"""
+    from datetime import datetime, timedelta, timezone
+    
+    seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    
+    # Get all client orders from last 7 days
+    orders = Order.query.filter(
+        Order.order_type == 'client',
+        Order.created_at >= seven_days_ago
+    ).order_by(Order.created_at.desc()).all()
+    
+    # Group by client
+    clients_data = {}
+    for order in orders:
+        if order.client_id not in clients_data:
+            client = Client.query.get(order.client_id)
+            clients_data[order.client_id] = {
+                'client': client,
+                'orders': [],
+                'total_amount': 0,
+                'total_count': 0
+            }
+        clients_data[order.client_id]['orders'].append(order)
+        clients_data[order.client_id]['total_amount'] += order.total_amount or 0
+        clients_data[order.client_id]['total_count'] += 1
+    
+    # Summary stats
+    total_orders_7day = len(orders)
+    total_revenue_7day = sum(o.total_amount or 0 for o in orders)
+    
+    return render_template('operations_corporate_clients_7day.html',
+                         clients_data=clients_data,
+                         total_orders_7day=total_orders_7day,
+                         total_revenue_7day=total_revenue_7day)
+
+
+@app.route('/operations/bulk-import', methods=['GET', 'POST'])
+@login_required
+@manager_required
+def operations_bulk_import():
+    """Bulk import orders from Excel file"""
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file selected.', 'error')
+            return redirect(request.url)
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            flash('No file selected.', 'error')
+            return redirect(request.url)
+        
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            
+            try:
+                df = pd.read_excel(filepath)
+                
+                imported_count = 0
+                skipped_rows = []
+                
+                for index, row in df.iterrows():
+                    try:
+                        # Validate required fields
+                        if pd.isna(row.get('customer_name')) or pd.isna(row.get('receiver_name')):
+                            skipped_rows.append((index + 2, 'Missing customer or receiver name'))
+                            continue
+                        
+                        receiver_pincode = str(row.get('receiver_pincode', '')).strip()
+                        if not receiver_pincode or len(receiver_pincode) != 6 or not receiver_pincode.isdigit():
+                            skipped_rows.append((index + 2, 'Invalid pincode'))
+                            continue
+                        
+                        # Generate receipt number
+                        receipt_number = generate_receipt_number(current_user)
+                        
+                        # Create order
+                        order = Order(
+                            receipt_number=receipt_number,
+                            order_type=str(row.get('order_type', 'walkin')).lower(),
+                            receipt_mode=str(row.get('receipt_mode', 'standard')),
+                            customer_name=str(row.get('customer_name')),
+                            customer_phone=str(row.get('customer_phone', '')),
+                            customer_email=str(row.get('customer_email', '')),
+                            customer_address=str(row.get('customer_address', '')),
+                            receiver_name=str(row.get('receiver_name')),
+                            receiver_phone=str(row.get('receiver_phone', '')),
+                            receiver_address=str(row.get('receiver_address', '')),
+                            receiver_city=str(row.get('receiver_city', '')),
+                            receiver_state=str(row.get('receiver_state', '')),
+                            receiver_pincode=receiver_pincode,
+                            package_description=str(row.get('package_description', '')),
+                            weight=float(row.get('weight', 0)),
+                            number_of_boxes=int(row.get('number_of_boxes', 1)),
+                            special_instructions=str(row.get('special_instructions', '')),
+                            created_by=current_user.id,
+                            branch_id=current_user.branch_id,
+                            status='at_destination',
+                            payment_status='unpaid'
+                        )
+                        
+                        # Calculate amount
+                        if order.weight:
+                            shipping_mode = str(row.get('receipt_mode', 'standard'))
+                            base, weight_charge, additional, discount, total, _ = calculate_order_amount(
+                                order.weight, state=order.receiver_state, shipping_mode=shipping_mode
+                            )
+                            order.base_amount = base
+                            order.weight_charges = weight_charge
+                            order.additional_charges = additional
+                            order.discount = discount
+                            order.total_amount = total
+                        
+                        order.generate_tracking_link()
+                        db.session.add(order)
+                        
+                        # Add tracking update
+                        tracking = TrackingUpdate(
+                            order_id=order.id,
+                            status='Order Created',
+                            description='Order created via bulk import',
+                            updated_by=current_user.id
+                        )
+                        db.session.add(tracking)
+                        
+                        imported_count += 1
+                    
+                    except Exception as e:
+                        skipped_rows.append((index + 2, str(e)))
+                        continue
+                
+                db.session.commit()
+                
+                flash(f'Bulk import successful! Imported {imported_count} orders.', 'success')
+                if skipped_rows:
+                    flash(f'Skipped {len(skipped_rows)} rows due to errors.', 'warning')
+                
+                return redirect(url_for('operations_bulk_import'))
+            
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error processing file: {str(e)}', 'error')
+        else:
+            flash('Invalid file type. Please upload Excel files only.', 'error')
+        
+        return redirect(request.url)
+    
+    return render_template('operations_bulk_import.html')
+
+
+@app.route('/operations/shipment-tracking')
+@login_required
+@manager_required
+def operations_shipment_tracking():
+    """View shipment tracking for all orders with detailed status updates"""
+    from datetime import datetime, timedelta, timezone
+    
+    page = request.args.get('page', 1, type=int)
+    status_filter = request.args.get('status', '')
+    search_receipt = request.args.get('receipt', '')
+    customer_filter = request.args.get('customer', '')
+    date_from = request.args.get('date_from', '')
+    date_to = request.args.get('date_to', '')
+    
+    query = Order.query
+    
+    # Apply filters
+    if status_filter and status_filter != 'all':
+        query = query.filter_by(status=status_filter)
+    if search_receipt:
+        query = query.filter(Order.receipt_number.contains(search_receipt))
+    if customer_filter:
+        query = query.filter(Order.customer_name.contains(customer_filter))
+    
+    if date_from:
+        try:
+            start_date = datetime.strptime(date_from, '%Y-%m-%d')
+            query = query.filter(Order.created_at >= start_date)
+        except:
+            pass
+    
+    if date_to:
+        try:
+            end_date = datetime.strptime(date_to, '%Y-%m-%d')
+            end_date = end_date.replace(hour=23, minute=59, second=59)
+            query = query.filter(Order.created_at <= end_date)
+        except:
+            pass
+    
+    pagination = query.order_by(Order.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    orders = pagination.items
+    
+    # Get unique statuses for filter dropdown
+    distinct_statuses = db.session.query(Order.status).distinct().all()
+    statuses = [s[0] for s in distinct_statuses if s[0]]
+    
+    return render_template('operations_shipment_tracking.html',
+                         orders=orders,
+                         pagination=pagination,
+                         status_filter=status_filter,
+                         search_receipt=search_receipt,
+                         customer_filter=customer_filter,
+                         date_from=date_from,
+                         date_to=date_to,
+                         distinct_statuses=statuses)
+
+
+@app.route('/operations/marketing-sales')
+@login_required
+@manager_required
+def operations_marketing_sales():
+    """View marketing and sales analytics"""
+    from sqlalchemy import func, desc
+    from datetime import datetime, timedelta, timezone
+    
+    days_filter = request.args.get('days', 30, type=int)
+    start_date = datetime.now(timezone.utc) - timedelta(days=days_filter)
+    
+    # Total metrics
+    total_orders = Order.query.filter(Order.created_at >= start_date).count()
+    total_revenue = db.session.query(func.sum(Order.total_amount)).filter(
+        Order.created_at >= start_date
+    ).scalar() or 0
+    total_walkin = Order.query.filter(
+        Order.order_type == 'walkin',
+        Order.created_at >= start_date
+    ).count()
+    total_client = Order.query.filter(
+        Order.order_type == 'client',
+        Order.created_at >= start_date
+    ).count()
+    
+    # Conversion: client orders as % of total
+    conversion_rate = (total_client / total_orders * 100) if total_orders > 0 else 0
+    
+    # Top performing states
+    top_states = db.session.query(
+        Order.receiver_state,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('revenue')
+    ).filter(Order.created_at >= start_date).group_by(
+        Order.receiver_state
+    ).order_by(desc('revenue')).limit(15).all()
+    
+    # Top performing clients (corporate)
+    top_clients = db.session.query(
+        Client.name,
+        Client.company_name,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('revenue'),
+        (func.sum(Order.total_amount) / func.count(Order.id)).label('avg_order_value')
+    ).join(Order).filter(Order.created_at >= start_date).group_by(
+        Client.id
+    ).order_by(desc('revenue')).limit(15).all()
+    
+    # Daily order trend
+    daily_orders = db.session.query(
+        func.date(Order.created_at).label('date'),
+        func.count(Order.id).label('total_orders'),
+        func.sum(case([(Order.order_type == 'walkin', 1)], else_=0)).label('walkin_count'),
+        func.sum(case([(Order.order_type == 'client', 1)], else_=0)).label('client_count')
+    ).filter(Order.created_at >= start_date).group_by(
+        func.date(Order.created_at)
+    ).order_by('date').all()
+    
+    # Order type breakdown
+    order_type_data = db.session.query(
+        Order.order_type,
+        func.count(Order.id).label('count'),
+        func.sum(Order.total_amount).label('revenue')
+    ).filter(Order.created_at >= start_date).group_by(Order.order_type).all()
+    
+    return render_template('operations_marketing_sales.html',
+                         total_orders=total_orders,
+                         total_revenue=total_revenue,
+                         total_walkin=total_walkin,
+                         total_client=total_client,
+                         conversion_rate=conversion_rate,
+                         top_states=top_states,
+                         top_clients=top_clients,
+                         daily_orders=daily_orders,
+                         order_type_data=order_type_data,
+                         days_filter=days_filter)
+
+
+@app.route('/operations/finance-due-report')
+@login_required
+@manager_required
+def operations_finance_due_report():
+    """View financial analytics and payment due report"""
+    from sqlalchemy import func, desc, case
+    from datetime import datetime, timedelta, timezone
+    
+    days_filter = request.args.get('days', 30, type=int)
+    start_date = datetime.now(timezone.utc) - timedelta(days=days_filter)
+    
+    # Financial overview for period
+    total_orders = Order.query.filter(Order.created_at >= start_date).count()
+    total_amount = db.session.query(func.sum(Order.total_amount)).filter(
+        Order.created_at >= start_date
+    ).scalar() or 0
+    total_received = db.session.query(func.sum(Order.received_amount)).filter(
+        Order.created_at >= start_date
+    ).scalar() or 0
+    total_due = total_amount - total_received
+    
+    # Payment status breakdown
+    payment_breakdown = db.session.query(
+        Order.payment_status,
+        func.count(Order.id).label('count'),
+        func.sum(Order.total_amount).label('amount'),
+        func.sum(Order.received_amount).label('received'),
+        func.sum(Order.total_amount - Order.received_amount).label('due')
+    ).filter(Order.created_at >= start_date).group_by(Order.payment_status).all()
+    
+    # Top clients with outstanding dues
+    top_due_clients = db.session.query(
+        Client.name,
+        Client.company_name,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('total_amount'),
+        func.sum(Order.received_amount).label('total_received'),
+        func.sum(Order.total_amount - Order.received_amount).label('total_due')
+    ).join(Order).filter(
+        Order.created_at >= start_date,
+        Order.total_amount > Order.received_amount
+    ).group_by(Client.id).order_by(desc('total_due')).limit(20).all()
+    
+    # Daily revenue trend with collections
+    daily_finance = db.session.query(
+        func.date(Order.created_at).label('date'),
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('invoiced'),
+        func.sum(Order.received_amount).label('collected'),
+        func.sum(Order.total_amount - Order.received_amount).label('outstanding')
+    ).filter(Order.created_at >= start_date).group_by(
+        func.date(Order.created_at)
+    ).order_by('date').all()
+    
+    # Payment mode breakdown
+    payment_mode_breakdown = db.session.query(
+        Order.payment_mode,
+        func.count(Order.id).label('count'),
+        func.sum(Order.received_amount).label('amount')
+    ).filter(Order.created_at >= start_date).group_by(Order.payment_mode).all()
+    
+    return render_template('operations_finance_due_report.html',
+                         total_orders=total_orders,
+                         total_amount=total_amount,
+                         total_received=total_received,
+                         total_due=total_due,
+                         payment_breakdown=payment_breakdown,
+                         top_due_clients=top_due_clients,
+                         daily_finance=daily_finance,
+                         payment_mode_breakdown=payment_mode_breakdown,
+                         days_filter=days_filter)
+
+
+@app.route('/operations/client-due-report')
+@login_required
+@manager_required
+def operations_client_due_report():
+    """View all clients with outstanding payment dues"""
+    from sqlalchemy import func, desc
+    
+    page = request.args.get('page', 1, type=int)
+    search_client = request.args.get('search', '')
+    min_due = request.args.get('min_due', 0, type=float)
+    
+    # Query clients with their total outstanding dues
+    query = db.session.query(
+        Client.id,
+        Client.name,
+        Client.company_name,
+        Client.phone,
+        Client.email,
+        func.count(Order.id).label('order_count'),
+        func.sum(Order.total_amount).label('total_billed'),
+        func.sum(Order.received_amount).label('total_paid'),
+        func.sum(Order.total_amount - Order.received_amount).label('total_due')
+    ).join(Order).group_by(Client.id)
+    
+    # Filter by search term
+    if search_client:
+        query = query.filter(
+            (Client.name.contains(search_client)) |
+            (Client.company_name.contains(search_client)) |
+            (Client.phone.contains(search_client))
+        )
+    
+    # Filter by minimum due amount
+    if min_due > 0:
+        query = query.having(
+            func.sum(Order.total_amount - Order.received_amount) >= min_due
+        )
+    
+    # Only show clients with outstanding dues
+    query = query.having(func.sum(Order.total_amount - Order.received_amount) > 0)
+    
+    pagination = query.order_by(desc('total_due')).paginate(
+        page=page, per_page=25, error_out=False
+    )
+    clients = pagination.items
+    
+    # Summary stats
+    total_outstanding = db.session.query(
+        func.sum(Order.total_amount - Order.received_amount)
+    ).filter(Order.total_amount > Order.received_amount).scalar() or 0
+    
+    total_clients_due = db.session.query(
+        func.count(func.distinct(Client.id))
+    ).join(Order).filter(Order.total_amount > Order.received_amount).scalar() or 0
+    
+    return render_template('operations_client_due_report.html',
+                         clients=clients,
+                         pagination=pagination,
+                         search_client=search_client,
+                         min_due=min_due,
+                         total_outstanding=total_outstanding,
+                         total_clients_due=total_clients_due)
 
 
 @app.route('/audit-logs')
@@ -1178,7 +2016,7 @@ def delete_branch(id):
 @admin_required
 def staff_management():
     # Admins can see all staff including other admins
-    staff = User.query.filter(User.role.in_(['admin', 'staff', 'delivery', 'manager'])).all()
+    staff = User.query.filter(User.role.in_(['admin', 'staff', 'delivery', 'manager', 'operation_manager'])).all()
     branches = Branch.query.filter_by(is_active=True).all()
     return render_template('staff_management.html', staff=staff, branches=branches)
 
@@ -4812,8 +5650,11 @@ def scan_document():
 
 @app.route('/marketing/insights')
 @login_required
-@staff_required
 def marketing_insights():
+    # Check if user has access
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'marketing_manager']:
+        flash('Access restricted for this page.', 'error')
+        return redirect(url_for('dashboard'))
     from sqlalchemy import func
     total_visits = SalesVisit.query.count()
     follow_ups_due = FollowUp.query.filter_by(status='pending').count()
@@ -4835,8 +5676,10 @@ def marketing_insights():
 
 @app.route('/marketing/insights/api/charts')
 @login_required
-@staff_required
 def marketing_charts_api():
+    # Check if user has access
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'marketing_manager']:
+        return jsonify({'error': 'Access denied'}), 403
     from sqlalchemy import func
     # Visits per day (last 30 days)
     thirty_days_ago = datetime.utcnow() - timedelta(days=30)
@@ -4868,8 +5711,11 @@ def marketing_charts_api():
 
 @app.route('/marketing/visits')
 @login_required
-@staff_required
 def marketing_visits():
+    # Check if user has access
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'marketing_manager']:
+        flash('Access restricted for this page.', 'error')
+        return redirect(url_for('dashboard'))
     status_filter = request.args.get('status', '')
     search = request.args.get('search', '')
     query = SalesVisit.query
@@ -4888,8 +5734,11 @@ def marketing_visits():
 
 @app.route('/marketing/visits/new', methods=['GET', 'POST'])
 @login_required
-@staff_required
 def marketing_visit_new():
+    # Check if user has access
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'marketing_manager']:
+        flash('Access restricted for this page.', 'error')
+        return redirect(url_for('dashboard'))
     if request.method == 'POST':
         visit = SalesVisit(
             contact_name=request.form.get('contact_name'),
@@ -4921,16 +5770,20 @@ def marketing_visit_new():
 
 @app.route('/marketing/visits/<int:visit_id>')
 @login_required
-@staff_required
 def marketing_visit_detail(visit_id):
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'marketing_manager']:
+        flash('Access restricted for this page.', 'error')
+        return redirect(url_for('dashboard'))
     visit = SalesVisit.query.get_or_404(visit_id)
     return render_template('marketing_visit_detail.html', visit=visit)
 
 
 @app.route('/marketing/visits/<int:visit_id>/edit', methods=['GET', 'POST'])
 @login_required
-@staff_required
 def marketing_visit_edit(visit_id):
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'marketing_manager']:
+        flash('Access restricted for this page.', 'error')
+        return redirect(url_for('dashboard'))
     visit = SalesVisit.query.get_or_404(visit_id)
     if request.method == 'POST':
         visit.contact_name = request.form.get('contact_name')
@@ -4958,8 +5811,10 @@ def marketing_visit_edit(visit_id):
 
 @app.route('/marketing/visits/<int:visit_id>/follow-up', methods=['POST'])
 @login_required
-@staff_required
 def marketing_add_followup(visit_id):
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'marketing_manager']:
+        flash('Access restricted for this page.', 'error')
+        return redirect(url_for('dashboard'))
     visit = SalesVisit.query.get_or_404(visit_id)
     notes = request.form.get('notes', '').strip()
     follow_up_date_str = request.form.get('follow_up_date')
@@ -4984,8 +5839,10 @@ def marketing_add_followup(visit_id):
 
 @app.route('/marketing/visits/<int:visit_id>/followup/<int:fu_id>/done', methods=['POST'])
 @login_required
-@staff_required
 def marketing_followup_done(visit_id, fu_id):
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'marketing_manager']:
+        flash('Access restricted for this page.', 'error')
+        return redirect(url_for('dashboard'))
     fu = FollowUp.query.get_or_404(fu_id)
     fu.status = 'done'
     db.session.commit()
@@ -4995,8 +5852,10 @@ def marketing_followup_done(visit_id, fu_id):
 
 @app.route('/marketing/visits/<int:visit_id>/meeting', methods=['POST'])
 @login_required
-@staff_required
 def marketing_schedule_meeting(visit_id):
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'marketing_manager']:
+        flash('Access restricted for this page.', 'error')
+        return redirect(url_for('dashboard'))
     visit = SalesVisit.query.get_or_404(visit_id)
     scheduled_str = request.form.get('scheduled_at')
     if not scheduled_str:
@@ -5027,8 +5886,10 @@ def marketing_schedule_meeting(visit_id):
 
 @app.route('/marketing/visits/<int:visit_id>/status', methods=['POST'])
 @login_required
-@staff_required
 def marketing_update_status(visit_id):
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'staff', 'marketing_manager']:
+        flash('Access restricted for this page.', 'error')
+        return redirect(url_for('dashboard'))
     visit = SalesVisit.query.get_or_404(visit_id)
     new_status = request.form.get('status')
     if new_status in ['new', 'follow_up', 'converted', 'lost']:
@@ -5036,6 +5897,148 @@ def marketing_update_status(visit_id):
         db.session.commit()
         flash(f'Status updated to {new_status.replace("_", " ").title()}.', 'success')
     return redirect(url_for('marketing_visit_detail', visit_id=visit_id))
+
+
+# ============== MARKETING MANAGER ROUTES ==============
+
+@app.route('/marketing-manager/dashboard')
+@login_required
+@marketing_manager_required
+def marketing_manager_dashboard():
+    """Marketing Manager Dashboard with key metrics and activities"""
+    from sqlalchemy import func
+    from datetime import datetime, timedelta, timezone
+    
+    # Key metrics for marketing manager
+    total_visits = SalesVisit.query.count()
+    new_visits = SalesVisit.query.filter_by(status='new').count()
+    follow_ups_pending = db.session.query(func.count(FollowUp.id)).filter(FollowUp.status == 'pending').scalar() or 0
+    conversions = SalesVisit.query.filter_by(status='converted').count()
+    
+    # Meetings today
+    today = datetime.now(timezone.utc).date()
+    meetings_today = db.session.query(Meeting).filter(
+        func.date(Meeting.scheduled_at) == today,
+        Meeting.status.in_(['scheduled', 'rescheduled'])
+    ).count()
+    
+    # Recent visits
+    recent_visits = SalesVisit.query.order_by(SalesVisit.created_at.desc()).limit(5).all()
+    
+    # Pending follow-ups
+    pending_followups = db.session.query(FollowUp).filter(FollowUp.status == 'pending').order_by(FollowUp.follow_up_date).limit(10).all()
+    
+    # Conversion rate
+    conversion_rate = (conversions / total_visits * 100) if total_visits > 0 else 0
+    
+    return render_template('marketing_manager_dashboard.html',
+                         total_visits=total_visits,
+                         new_visits=new_visits,
+                         follow_ups_pending=follow_ups_pending,
+                         conversions=conversions,
+                         conversion_rate=conversion_rate,
+                         meetings_today=meetings_today,
+                         recent_visits=recent_visits,
+                         pending_followups=pending_followups)
+
+
+@app.route('/marketing-manager/pitch-followup')
+@login_required
+@marketing_manager_required
+def marketing_manager_pitch_followup():
+    """Manage pitch follow-ups for marketing manager"""
+    page = request.args.get('page', 1, type=int)
+    status_filter = request.args.get('status', '')
+    
+    query = db.session.query(FollowUp).filter(FollowUp.status == 'pending')
+    
+    if status_filter and status_filter in ['pending', 'done', 'skipped']:
+        query = db.session.query(FollowUp).filter(FollowUp.status == status_filter)
+    
+    pagination = query.order_by(FollowUp.follow_up_date).paginate(page=page, per_page=20, error_out=False)
+    followups = pagination.items
+    
+    return render_template('marketing_manager_pitch_followup.html',
+                         followups=followups,
+                         pagination=pagination,
+                         status_filter=status_filter)
+
+
+@app.route('/marketing-manager/client-reschedule')
+@login_required
+@marketing_manager_required
+def marketing_manager_client_reschedule():
+    """View and manage client meeting reschedules"""
+    page = request.args.get('page', 1, type=int)
+    
+    # Get meetings that have been rescheduled
+    rescheduled_meetings = db.session.query(Meeting).filter(
+        Meeting.status.in_(['rescheduled', 'scheduled'])
+    ).order_by(Meeting.scheduled_at.desc()).paginate(page=page, per_page=20, error_out=False)
+    
+    meetings = rescheduled_meetings.items
+    
+    return render_template('marketing_manager_client_reschedule.html',
+                         meetings=meetings,
+                         pagination=rescheduled_meetings)
+
+
+@app.route('/marketing-manager/meeting-notes')
+@login_required
+@marketing_manager_required
+def marketing_manager_meeting_notes():
+    """View and manage meeting notes"""
+    page = request.args.get('page', 1, type=int)
+    
+    # Get meetings with notes
+    meetings = db.session.query(Meeting).filter(
+        Meeting.notes != None,
+        Meeting.notes != ''
+    ).order_by(Meeting.scheduled_at.desc()).paginate(page=page, per_page=20, error_out=False)
+    
+    return render_template('marketing_manager_meeting_notes.html',
+                         meetings=meetings,
+                         pagination=meetings)
+
+
+@app.route('/marketing-manager/insights')
+@login_required
+@marketing_manager_required
+def marketing_manager_insights():
+    """New insights and analytics for marketing manager"""
+    from sqlalchemy import func, desc
+    
+    # Visit trends
+    visits_by_status = db.session.query(
+        SalesVisit.status,
+        func.count(SalesVisit.id).label('count')
+    ).group_by(SalesVisit.status).all()
+    
+    # Top contacts by follow-up activity
+    top_contacts = db.session.query(
+        SalesVisit.contact_name,
+        SalesVisit.company_name,
+        func.count(FollowUp.id).label('followup_count'),
+        SalesVisit.status
+    ).join(FollowUp, SalesVisit.id == FollowUp.visit_id, isouter=True).group_by(
+        SalesVisit.id
+    ).order_by(desc('followup_count')).limit(15).all()
+    
+    # Conversion funnel
+    total = SalesVisit.query.count()
+    new = SalesVisit.query.filter_by(status='new').count()
+    follow_up = SalesVisit.query.filter_by(status='follow_up').count()
+    converted = SalesVisit.query.filter_by(status='converted').count()
+    lost = SalesVisit.query.filter_by(status='lost').count()
+    
+    return render_template('marketing_manager_insights.html',
+                         visits_by_status=visits_by_status,
+                         top_contacts=top_contacts,
+                         total=total,
+                         new=new,
+                         follow_up=follow_up,
+                         converted=converted,
+                         lost=lost)
 
 
 # ============== RUN APP ==============

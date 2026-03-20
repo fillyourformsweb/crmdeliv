@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Operations Manager{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-tie"></i> My Profile
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Profile Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Username</h6>
+                            <p><strong>{{ user.username }}</strong></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Email</h6>
+                            <p><strong>{{ user.email }}</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Role</h6>
+                            <p>
+                                <span class="badge bg-info">{{ user.role | capitalize }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Phone</h6>
+                            <p><strong>{{ user.phone or 'Not provided' }}</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Branch</h6>
+                            <p>
+                                {% if user.branch %}
+                                    <strong>{{ user.branch.name }}</strong> ({{ user.branch.code }})
+                                {% else %}
+                                    <span class="text-muted">No branch assigned</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Account Status</h6>
+                            <p>
+                                {% if user.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Performance Stats -->
+                    <h5 class="mb-3">Your Performance</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="card bg-light h-100">
+                                <div class="card-body text-center">
+                                    <h3 class="text-primary">{{ orders_created }}</h3>
+                                    <p class="text-muted mb-0">Orders Created</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light h-100">
+                                <div class="card-body text-center">
+                                    <h3 class="text-success">₹{{ "%.0f"|format(revenue_handled) }}</h3>
+                                    <p class="text-muted mb-0">Revenue Handled</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light h-100">
+                                <div class="card-body text-center">
+                                    <h3 class="text-info">{{ (revenue_handled / orders_created) | round(0, 'floor') if orders_created > 0 else 0 }}</h3>
+                                    <p class="text-muted mb-0">Avg Order Value</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Address Info -->
+                    <h5 class="mb-3">Address Information</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-muted">Residential Address</h6>
+                            <p><strong>{{ user.address or 'Not provided' }}</strong></p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Member Since -->
+                    <p class="text-muted text-center">
+                        <small>Member since {{ user.created_at.strftime('%B %d, %Y') }}</small>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="mt-4">
+                <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

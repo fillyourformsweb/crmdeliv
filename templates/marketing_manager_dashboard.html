@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Marketing Manager Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1><i class="fas fa-chart-pie"></i> Marketing Manager Dashboard</h1>
+    <p class="text-muted">Your pipeline overview and key metrics</p>
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1">Total Visits</p>
+                            <h2 class="mb-0">{{ total_visits }}</h2>
+                        </div>
+                        <i class="fas fa-users fa-2x text-primary opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1">Pending Follow-ups</p>
+                            <h2 class="mb-0 text-warning">{{ follow_ups_pending }}</h2>
+                        </div>
+                        <i class="fas fa-clock fa-2x text-warning opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1">Meetings Today</p>
+                            <h2 class="mb-0 text-info">{{ meetings_today }}</h2>
+                        </div>
+                        <i class="fas fa-calendar fa-2x text-info opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1">Conversions</p>
+                            <h2 class="mb-0 text-success">{{ conversions }}</h2>
+                            <small class="text-muted">{{ "{:.1f}".format(conversion_rate) }}% rate</small>
+                        </div>
+                        <i class="fas fa-handshake fa-2x text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0">Quick Navigation</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <a href="{{ url_for('marketing_manager_pitch_followup') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-arrow-right"></i> Pitch Follow-ups
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a href="{{ url_for('marketing_manager_client_reschedule') }}" class="btn btn-outline-info w-100">
+                        <i class="fas fa-calendar-check"></i> Client Reschedules
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a href="{{ url_for('marketing_manager_meeting_notes') }}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-clipboard"></i> Meeting Notes
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a href="{{ url_for('marketing_manager_insights') }}" class="btn btn-outline-success w-100">
+                        <i class="fas fa-lightbulb"></i> Insights
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a href="{{ url_for('marketing_visit_new') }}" class="btn btn-outline-warning w-100">
+                        <i class="fas fa-plus"></i> New Pitch
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a href="{{ url_for('marketing_visits') }}" class="btn btn-outline-dark w-100">
+                        <i class="fas fa-list"></i> All Visits
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Follow-ups -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0">Pending Follow-ups (Next 10)</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if pending_followups %}
+                    <div class="list-group list-group-flush">
+                        {% for followup in pending_followups %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        {{ followup.visit.contact_name }}
+                                        <small class="text-muted">({{ followup.visit.company_name }})</small>
+                                    </h6>
+                                    <p class="mb-1 small">{{ followup.notes[:50] }}...</p>
+                                    {% if followup.follow_up_date %}
+                                    <small class="text-danger">
+                                        <i class="fas fa-calendar"></i> 
+                                        {{ followup.follow_up_date.strftime('%b %d, %H:%M') }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                                <a href="{{ url_for('marketing_visit_detail', visit_id=followup.visit_id) }}" 
+                                   class="btn btn-sm btn-outline-primary">View</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center text-muted">
+                        <i class="fas fa-check-circle fa-3x opacity-50 mb-3"></i>
+                        <p>No pending follow-ups!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Visits -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0">Recent Visits</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_visits %}
+                    <table class="table table-hover mb-0">
+                        <tbody>
+                            {% for visit in recent_visits %}
+                            <tr>
+                                <td>
+                                    <strong>{{ visit.contact_name }}</strong>
+                                    <div class="small text-muted">{{ visit.company_name }}</div>
+                                </td>
+                                <td class="small">
+                                    <span class="badge bg-{% if visit.status == 'new' %}primary{% elif visit.status == 'follow_up' %}warning{% elif visit.status == 'converted' %}success{% else %}danger{% endif %}">
+                                        {{ visit.status.replace('_', ' ').title() }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('marketing_visit_detail', visit_id=visit.id) }}" 
+                                       class="btn btn-sm btn-outline-primary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    }
+</style>
+{% endblock %}

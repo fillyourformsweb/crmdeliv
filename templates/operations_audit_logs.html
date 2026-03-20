@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Logs - Operations Manager{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h1><i class="fas fa-list-check"></i> Audit Logs</h1>
+            <p class="text-muted">View system activity and changes (Read-only)</p>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-2">
+                <div class="col-md-3">
+                    <label class="form-label">Action</label>
+                    <select name="action" class="form-select">
+                        <option value="">All Actions</option>
+                        <option value="create" {% if action_filter == 'create' %}selected{% endif %}>Create</option>
+                        <option value="update" {% if action_filter == 'update' %}selected{% endif %}>Update</option>
+                        <option value="delete" {% if action_filter == 'delete' %}selected{% endif %}>Delete</option>
+                        <option value="view" {% if action_filter == 'view' %}selected{% endif %}>View</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Entity Type</label>
+                    <select name="entity_type" class="form-select">
+                        <option value="">All Types</option>
+                        <option value="Order" {% if entity_filter == 'Order' %}selected{% endif %}>Order</option>
+                        <option value="Client" {% if entity_filter == 'Client' %}selected{% endif %}>Client</option>
+                        <option value="User" {% if entity_filter == 'User' %}selected{% endif %}>User</option>
+                        <option value="Branch" {% if entity_filter == 'Branch' %}selected{% endif %}>Branch</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" placeholder="Filter by user..." value="{{ user_filter }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Audit Logs Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0"><i class="fas fa-history"></i> Activity Log</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if logs %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Entity Type</th>
+                            <th>Entity Name</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>
+                                <small>{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                            </td>
+                            <td>
+                                <small><strong>{{ log.username }}</strong></small>
+                            </td>
+                            <td>
+                                {% if log.action == 'create' %}
+                                    <span class="badge bg-success">Create</span>
+                                {% elif log.action == 'update' %}
+                                    <span class="badge bg-info">Update</span>
+                                {% elif log.action == 'delete' %}
+                                    <span class="badge bg-danger">Delete</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ log.action }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ log.entity_type or 'N/A' }}</small>
+                            </td>
+                            <td>
+                                <small><strong>{{ log.entity_name or 'N/A' }}</strong></small>
+                            </td>
+                            <td>
+                                <small>
+                                    {% if log.receipt_number %}
+                                        Receipt: {{ log.receipt_number }}<br>
+                                    {% endif %}
+                                    {% if log.changes %}
+                                        Changes: {{ log.changes[:50] }}...
+                                    {% endif %}
+                                </small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if pagination.pages > 1 %}
+            <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                <span class="text-muted">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+                <nav>
+                    <ul class="pagination mb-0">
+                        {% if pagination.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ pagination.prev_num }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if entity_filter %}&entity_type={{ entity_filter }}{% endif %}{% if user_filter %}&username={{ user_filter }}{% endif %}">
+                                Previous
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% if pagination.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ pagination.next_num }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if entity_filter %}&entity_type={{ entity_filter }}{% endif %}{% if user_filter %}&username={{ user_filter }}{% endif %}">
+                                Next
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="p-4 text-center text-muted">
+                <i class="fas fa-inbox fa-3x mb-3 opacity-50"></i>
+                <p>No audit logs found</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="alert alert-info mt-4">
+        <i class="fas fa-info-circle"></i> <strong>Read-Only Access:</strong> These logs are for monitoring purposes only. 
+        You can view all system activities but cannot make changes to the audit log data.
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-4">
+        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}
