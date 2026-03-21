@@ -572,6 +572,8 @@ def dashboard():
         return redirect(url_for('admin_dashboard'))
     if current_user.role == 'marketing_manager':
         return redirect(url_for('marketing_manager_dashboard'))
+    if current_user.role == 'operation_manager':
+        return redirect(url_for('operations_dashboard'))
     if current_user.role == 'manager':
         return redirect(url_for('manager_dashboard'))
     if current_user.role == 'branch':
@@ -2946,7 +2948,7 @@ def clients():
 
 @app.route('/client/add', methods=['GET', 'POST'])
 @login_required
-@staff_required
+@admin_required
 def add_client():
     if request.method == 'POST':
         client = Client(
@@ -2977,7 +2979,7 @@ def add_client():
 
 @app.route('/client/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
-@staff_required
+@admin_required
 def edit_client(id):
     client = Client.query.get_or_404(id)
     
@@ -3017,7 +3019,7 @@ def client_details(id):
 
 @app.route('/client/<int:client_id>/receiver/add', methods=['GET', 'POST'])
 @login_required
-@staff_required
+@admin_required
 def add_receiver(client_id):
     client = Client.query.get_or_404(client_id)
     if request.method == 'POST':
@@ -3053,7 +3055,7 @@ def add_receiver(client_id):
 
 @app.route('/receiver/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
-@staff_required
+@admin_required
 def edit_receiver(id):
     receiver = Receiver.query.get_or_404(id)
     if request.method == 'POST':
@@ -3170,7 +3172,7 @@ def orders():
         (Order.status == 'confirmed', 2),
         (Order.status == 'in_transit', 2),
         (Order.status == 'delivered', 3),
-        (Order.status == 'cancelled', 4),
+        (Order.status == 'cancelled', 4),  
         else_=5
     )
     

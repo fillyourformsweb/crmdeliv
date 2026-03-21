@@ -4,189 +4,399 @@
 
 {% block extra_css %}
 <style>
-    .stat-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    :root {
+        --primary: #0f172a;
+        --primary-light: #1e293b;
+        --accent: #0d6efd;
+        --accent-light: #cfe2ff;
+        --success: #198754;
+        --danger: #dc3545;
+        --warning: #ffc107;
+        --info: #0dcaf0;
+    }
+
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
         color: white;
-        padding: 1.5rem;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 1rem 1rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .dashboard-header p {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    .stat-card {
+        background: white;
         border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent) 0%, #0099ff 100%);
+    }
+
+    .stat-card:hover {
+        box-shadow: 0 10px 30px rgba(13, 110, 253, 0.15);
+        transform: translateY(-5px);
+    }
+
+    .stat-card.success::before {
+        background: linear-gradient(90deg, var(--success) 0%, #20c997 100%);
+    }
+
+    .stat-card.warning::before {
+        background: linear-gradient(90deg, var(--warning) 0%, #ff9800 100%);
+    }
+
+    .stat-card.danger::before {
+        background: linear-gradient(90deg, var(--danger) 0%, #ff6b6b 100%);
+    }
+
+    .stat-card.info::before {
+        background: linear-gradient(90deg, var(--info) 0%, #17a2b8 100%);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1.2;
+        color: var(--primary);
+        margin: 0.5rem 0;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        font-weight: 600;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        opacity: 0.15;
+        position: absolute;
+        right: 1.5rem;
+        top: 1.5rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .status-badge.pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-badge.transit {
+        background-color: #cfe2ff;
+        color: #084298;
+    }
+
+    .status-badge.destination {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-badge.delivered {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .luxury-card {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         transition: all 0.3s ease;
     }
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+
+    .luxury-card:hover {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
     }
-    .stat-card.success {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+
+    .card-header-luxury {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 1rem 1rem 0 0;
     }
-    .stat-card.warning {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+
+    .card-header-luxury h5 {
+        font-weight: 700;
+        color: var(--primary);
+        margin: 0;
+        font-size: 1.1rem;
     }
-    .stat-card.info {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    }
-    .stat-card.danger {
-        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    }
-    .card-table {
-        border: none;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 0.75rem;
-        margin-bottom: 1.5rem;
-    }
-    .card-table th {
-        background-color: #f8f9fa;
+
+    .nav-tabs-luxury {
         border-bottom: 2px solid #e9ecef;
-        font-weight: 600;
-        color: #495057;
     }
-    .rating-stars {
-        color: #ffc107;
-        font-size: 1.2rem;
-    }
-    .offer-badge {
-        display: inline-block;
-        background: #d4edff;
-        color: #0c5ff4;
-        padding: 0.5rem 1rem;
-        border-radius: 2rem;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-    .due-amount {
-        color: #dc3545;
-        font-weight: 600;
-    }
-    .nav-tabs .nav-link {
-        border: none;
+
+    .nav-tabs-luxury .nav-link {
         color: #6c757d;
+        border: none;
         padding: 1rem 1.5rem;
         font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
         border-bottom: 3px solid transparent;
+    }
+
+    .nav-tabs-luxury .nav-link:hover {
+        color: var(--accent);
+        border-bottom-color: var(--accent-light);
+    }
+
+    .nav-tabs-luxury .nav-link.active {
+        color: var(--accent);
+        background: none;
+        border-bottom-color: var(--accent);
+    }
+
+    .table-luxury {
+        border-collapse: collapse;
+        font-size: 0.95rem;
+    }
+
+    .table-luxury thead th {
+        background: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 700;
+        color: var(--primary);
+        padding: 1rem;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.3px;
+    }
+
+    .table-luxury tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid #e9ecef;
+        vertical-align: middle;
+    }
+
+    .table-luxury tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .btn-action {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        border-radius: 0.5rem;
         transition: all 0.3s ease;
     }
-    .nav-tabs .nav-link.active {
-        color: #667eea;
-        border-bottom-color: #667eea;
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+    }
+
+    .filter-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        border: 1px solid #e9ecef;
+        margin-bottom: 2rem;
+    }
+
+    .filter-item {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+    }
+
+    .metric-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .metric-mini {
+        background: white;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid #e9ecef;
+        text-align: center;
+    }
+
+    .metric-mini-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .metric-mini-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-top: 0.25rem;
+    }
+
+    .progress-ring {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        opacity: 0.3;
+        margin-bottom: 1rem;
     }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- Header Section -->
+<div class="dashboard-header">
+    <div class="container-fluid">
+        <div class="row align-items-center justify-content-between">
+            <div class="col-md-6">
+                <h1>Manager Dashboard</h1>
+                <p>Complete operational overview & analytics</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <form method="GET" class="d-flex gap-2 justify-content-md-end">
+                    <input type="date" name="date_from" class="form-control" style="max-width: 150px;" value="{{ date_from }}">
+                    <input type="date" name="date_to" class="form-control" style="max-width: 150px;" value="{{ date_to }}">
+                    <button type="submit" class="btn btn-light fw-bold">
+                        <i class="fas fa-filter me-2"></i>Filter
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h2 class="fw-bold mb-1">
-                <i class="fas fa-chart-line me-2 text-primary"></i>Manager Dashboard
-            </h2>
-            <p class="text-muted">15-Day Operations, Analytics & Management</p>
-        </div>
-        <div class="col-md-6 text-end">
-            <form class="d-flex gap-2 justify-content-end" method="get">
-                <input type="date" class="form-control" name="date_from" value="{{ date_from }}" style="max-width: 150px;">
-                <input type="date" class="form-control" name="date_to" value="{{ date_to }}" style="max-width: 150px;">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-filter me-1"></i>Filter
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Key Statistics -->
+    <!-- Key KPI Statistics -->
     <div class="row g-3 mb-4">
-        <div class="col-md-3">
+        <div class="col-md-6 col-lg-3">
             <div class="stat-card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-1 small">Total Orders</p>
-                        <h3 class="mb-0">{{ total_orders }}</h3>
-                    </div>
-                    <i class="fas fa-boxes fa-2x opacity-50"></i>
-                </div>
+                <div class="stat-icon"><i class="fas fa-boxes"></i></div>
+                <p class="stat-label">Total Orders</p>
+                <div class="stat-value">{{ total_orders }}</div>
+                <small class="text-muted">Last 15 days</small>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-6 col-lg-3">
             <div class="stat-card success">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-1 small">Total Revenue</p>
-                        <h3 class="mb-0">₹{{ "{:,.0f}".format(total_revenue) }}</h3>
-                    </div>
-                    <i class="fas fa-rupee-sign fa-2x opacity-50"></i>
-                </div>
+                <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                <p class="stat-label">Total Revenue</p>
+                <div class="stat-value">₹{{ "{:,.0f}".format(total_revenue) }}</div>
+                <small class="text-muted">Generated</small>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-6 col-lg-3">
             <div class="stat-card info">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-1 small">Received</p>
-                        <h3 class="mb-0">₹{{ "{:,.0f}".format(total_received) }}</h3>
-                    </div>
-                    <i class="fas fa-check-circle fa-2x opacity-50"></i>
-                </div>
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <p class="stat-label">Amount Received</p>
+                <div class="stat-value">₹{{ "{:,.0f}".format(total_received) }}</div>
+                <small class="text-muted">Collected</small>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-6 col-lg-3">
             <div class="stat-card warning">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-1 small">Pending</p>
-                        <h3 class="mb-0 due-amount">₹{{ "{:,.0f}".format(pending_amount) }}</h3>
+                <div class="stat-icon"><i class="fas fa-hourglass-end"></i></div>
+                <p class="stat-label">Pending Amount</p>
+                <div class="stat-value">₹{{ "{:,.0f}".format(pending_amount) }}</div>
+                <small class="text-muted">Outstanding</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Status Breakdown -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="luxury-card">
+                <div class="card-header-luxury">
+                    <h5><i class="fas fa-chart-bar me-2 text-primary"></i>Order Status Distribution</h5>
+                </div>
+                <div class="p-4">
+                    <div class="metric-row">
+                        <div class="metric-mini">
+                            <div class="metric-mini-value" style="color: var(--warning);">{{ pending }}</div>
+                            <div class="metric-mini-label">Pending</div>
+                        </div>
+                        <div class="metric-mini">
+                            <div class="metric-mini-value" style="color: var(--info);">{{ in_transit }}</div>
+                            <div class="metric-mini-label">In Transit</div>
+                        </div>
+                        <div class="metric-mini">
+                            <div class="metric-mini-value" style="color: #ff9800;">{{ at_destination_orders }}</div>
+                            <div class="metric-mini-label">At Destination</div>
+                        </div>
+                        <div class="metric-mini">
+                            <div class="metric-mini-value" style="color: var(--success);">{{ delivered }}</div>
+                            <div class="metric-mini-label">Delivered</div>
+                        </div>
                     </div>
-                    <i class="fas fa-hourglass-end fa-2x opacity-50"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Delivery Status -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3">
-                <h5 class="text-primary fw-bold">{{ pending }}</h5>
-                <small class="text-muted">Pending</small>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3">
-                <h5 class="text-info fw-bold">{{ in_transit }}</h5>
-                <small class="text-muted">In Transit</small>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3">
-                <h5 class="text-warning fw-bold">{{ at_destination_orders }}</h5>
-                <small class="text-muted">At Destination</small>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3">
-                <h5 class="text-success fw-bold">{{ delivered }}</h5>
-                <small class="text-muted">Delivered</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <ul class="nav nav-tabs mb-4 border-bottom" role="tablist">
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs-luxury mb-4" role="tablist">
         <li class="nav-item">
-            <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab">
-                <i class="fas fa-user me-2"></i>Profile
+            <a class="nav-link active" id="analytics-tab" data-bs-toggle="tab" href="#analytics">
+                <i class="fas fa-chart-line me-2"></i>Analytics & Insights
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="analytics-tab" data-bs-toggle="tab" href="#analytics" role="tab">
-                <i class="fas fa-chart-bar me-2"></i>Analytics
+            <a class="nav-link" id="clients-tab" data-bs-toggle="tab" href="#clients">
+                <i class="fas fa-star me-2"></i>Top Clients
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="offers-tab" data-bs-toggle="tab" href="#offers" role="tab">
-                <i class="fas fa-tag me-2"></i>Offers & Promotions
+            <a class="nav-link" id="dues-tab" data-bs-toggle="tab" href="#dues">
+                <i class="fas fa-file-invoice-dollar me-2"></i>Client Dues
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="recent-tab" data-bs-toggle="tab" href="#recent" role="tab">
+            <a class="nav-link" id="offers-tab" data-bs-toggle="tab" href="#offers">
+                <i class="fas fa-gift me-2"></i>Offers & Promotions
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="recent-tab" data-bs-toggle="tab" href="#recent">
                 <i class="fas fa-history me-2"></i>Recent Orders
             </a>
         </li>
@@ -194,66 +404,88 @@
 
     <!-- Tab Content -->
     <div class="tab-content">
-        <!-- Profile Tab -->
-        <div class="tab-pane fade show active" id="profile" role="tabpanel">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-4">
-                            <h5 class="card-title fw-bold mb-4">
-                                <i class="fas fa-user-circle me-2 text-primary"></i>Personal Information
-                            </h5>
-                            <form id="profileForm" class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Username</label>
-                                    <input type="text" class="form-control" value="{{ user.username }}" disabled>
+        <!-- Analytics Tab -->
+        <div class="tab-pane fade show active" id="analytics" role="tabpanel">
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <div class="luxury-card">
+                        <div class="card-header-luxury">
+                            <h5><i class="fas fa-percentage me-2 text-success"></i>Performance Summary</h5>
+                        </div>
+                        <div class="p-4">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold">Delivery Success Rate</span>
+                                    <span class="badge bg-success">
+                                        {% if total_orders > 0 %}
+                                            {{ "%.1f"|format(delivered * 100 / total_orders) }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </span>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Role</label>
-                                    <input type="text" class="form-control" value="MANAGER" disabled>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: {% if total_orders > 0 %}{{ delivered * 100 / total_orders }}{% else %}0{% endif %}%"></div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Email</label>
-                                    <input type="email" class="form-control" name="email" id="email" value="{{ user.email or '' }}">
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold">Revenue Collection Rate</span>
+                                    <span class="badge bg-info">
+                                        {% if total_revenue > 0 %}
+                                            {{ "%.1f"|format(total_received * 100 / total_revenue) }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </span>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Phone</label>
-                                    <input type="text" class="form-control" name="phone" id="phone" value="{{ user.phone or '' }}">
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-info" style="width: {% if total_revenue > 0 %}{{ total_received * 100 / total_revenue }}{% else %}0{% endif %}%"></div>
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label fw-bold">Address</label>
-                                    <textarea class="form-control" name="address" id="address" rows="2">{{ user.address or '' }}</textarea>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold">In-Transit Orders</span>
+                                    <span class="badge bg-warning text-dark">{{ "%.1f"|format(in_transit * 100 / total_orders if total_orders > 0 else 0) }}%</span>
                                 </div>
-                                <div class="col-12">
-                                    <button type="button" class="btn btn-primary" onclick="updateProfile()">
-                                        <i class="fas fa-save me-2"></i>Save Changes
-                                    </button>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-warning" style="width: {{ in_transit * 100 / total_orders if total_orders > 0 else 0 }}%"></div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-4">
-                            <h5 class="card-title fw-bold mb-3">Performance Metrics</h5>
-                            <div class="mb-3">
-                                <p class="text-muted small mb-1">Total Orders Managed</p>
-                                <h3 class="fw-bold text-primary">{{ total_orders }}</h3>
-                            </div>
-                            <div class="mb-3">
-                                <p class="text-muted small mb-1">Total Revenue</p>
-                                <h3 class="fw-bold text-success">₹{{ "{:,.0f}".format(total_revenue) }}</h3>
-                            </div>
-                            <div>
-                                <p class="text-muted small mb-1">Success Rate</p>
-                                <h3 class="fw-bold text-info">
-                                    {% if total_orders > 0 %}
-                                        {{ "%.1f"|format(delivered * 100 / total_orders) }}%
-                                    {% else %}
-                                        0%
-                                    {% endif %}
-                                </h3>
+                <div class="col-lg-6">
+                    <div class="luxury-card">
+                        <div class="card-header-luxury">
+                            <h5><i class="fas fa-info-circle me-2 text-info"></i>Key Metrics</h5>
+                        </div>
+                        <div class="p-4">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="p-3 rounded-2 bg-light">
+                                        <p class="text-muted small mb-1">Avg. Order Value</p>
+                                        <h4 class="fw-bold text-primary">
+                                            {% if total_orders > 0 %}
+                                                ₹{{ "{:,.0f}".format(total_revenue / total_orders) }}
+                                            {% else %}
+                                                ₹0
+                                            {% endif %}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 rounded-2 bg-light">
+                                        <p class="text-muted small mb-1">Avg. Per Order</p>
+                                        <h4 class="fw-bold text-success">
+                                            {% if total_orders > 0 %}
+                                                ₹{{ "{:,.0f}".format(total_received / total_orders) }}
+                                            {% else %}
+                                                ₹0
+                                            {% endif %}
+                                        </h4>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -261,206 +493,225 @@
             </div>
         </div>
 
-        <!-- Analytics Tab -->
-        <div class="tab-pane fade" id="analytics" role="tabpanel">
-            <div class="row">
-                <!-- Top Clients -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card card-table">
-                        <div class="card-header border-0 bg-light p-3">
-                            <h6 class="fw-bold mb-0">
-                                <i class="fas fa-star me-2 text-warning"></i>Top Clients (15 Days)
-                            </h6>
-                        </div>
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Client Name</th>
-                                    <th>Orders</th>
-                                    <th>Revenue</th>
-                                    <th>Rating</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if top_clients %}
-                                    {% for client in top_clients %}
-                                    <tr>
-                                        <td>
-                                            <strong>{{ client[0] }}</strong>
-                                        </td>
-                                        <td>{{ client[1] }}</td>
-                                        <td class="fw-bold">₹{{ "{:,.0f}".format(client[2] or 0) }}</td>
-                                        <td>
-                                            <div class="rating-stars">
-                                                <i class="fas fa-star" onclick="rateClient('{{ client[0] }}', 5)" style="cursor: pointer;"></i>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                {% else %}
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted">No data available</td>
-                                </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
+        <!-- Top Clients Tab -->
+        <div class="tab-pane fade" id="clients" role="tabpanel">
+            <div class="luxury-card">
+                <div class="card-header-luxury d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-crown me-2 text-warning"></i>Top Performing Clients (15 Days)</h5>
+                    <a href="{{ url_for('clients') }}" class="btn btn-sm btn-outline-primary">View All</a>
                 </div>
+                <div class="table-responsive">
+                    <table class="table table-luxury mb-0">
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th class="text-center">Orders</th>
+                                <th class="text-end">Total Revenue</th>
+                                <th class="text-end">Amount Received</th>
+                                <th class="text-center">Rating</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if top_clients %}
+                                {% for client in top_clients[:10] %}
+                                <tr>
+                                    <td><strong>{{ client[0] }}</strong></td>
+                                    <td class="text-center"><span class="badge bg-light text-dark">{{ client[1] }}</span></td>
+                                    <td class="text-end fw-bold">₹{{ "{:,.0f}".format(client[2] or 0) }}</td>
+                                    <td class="text-end fw-bold text-success">₹{{ "{:,.0f}".format(client[3] or 0) }}</td>
+                                    <td class="text-center">
+                                        <div style="color: #ffc107;">
+                                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><i class="far fa-star"></i>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary btn-action">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
+                                    <p>No client data available</p>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-                <!-- Client Dues -->
-                <div class="col-lg-6 mb-4">
-                    <div class="card card-table">
-                        <div class="card-header border-0 bg-light p-3">
-                            <h6 class="fw-bold mb-0">
-                                <i class="fas fa-exclamation-triangle me-2 text-danger"></i>Client Dues
-                            </h6>
-                        </div>
-                        <table class="table table-hover mb-0">
-                            <thead>
+        <!-- Client Dues Tab -->
+        <div class="tab-pane fade" id="dues" role="tabpanel">
+            <div class="luxury-card">
+                <div class="card-header-luxury d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-exclamation-triangle me-2 text-danger"></i>Outstanding Client Dues</h5>
+                    <a href="{{ url_for('client_due_report') }}" class="btn btn-sm btn-outline-danger">Detailed Report</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-luxury mb-0">
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th class="text-center">Pending Orders</th>
+                                <th class="text-end">Outstanding Amount</th>
+                                <th class="text-center">Days Overdue</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if client_dues %}
+                                {% for due in client_dues[:10] %}
                                 <tr>
-                                    <th>Client Name</th>
-                                    <th>Pending Orders</th>
-                                    <th>Due Amount</th>
-                                    <th>Action</th>
+                                    <td><strong>{{ due[0] }}</strong></td>
+                                    <td class="text-center"><span class="badge bg-warning text-dark">{{ due[1] }}</span></td>
+                                    <td class="text-end fw-bold text-danger">₹{{ "{:,.0f}".format(due[2] or 0) }}</td>
+                                    <td class="text-center"><span class="badge bg-light text-dark">30+</span></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-danger btn-action" title="Follow Up">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {% if client_dues %}
-                                    {% for due in client_dues %}
-                                    <tr>
-                                        <td><strong>{{ due[0] }}</strong></td>
-                                        <td><span class="badge bg-warning">{{ due[1] }}</span></td>
-                                        <td class="due-amount">₹{{ "{:,.0f}".format(due[2] or 0) }}</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-danger" onclick="followUp('{{ due[0] }}')">
-                                                <i class="fas fa-phone me-1"></i>Follow Up
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                {% else %}
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted">No dues</td>
-                                </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <div class="empty-state-icon"><i class="fas fa-check-circle"></i></div>
+                                    <p>All client dues cleared! Great job!</p>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
         <!-- Offers & Promotions Tab -->
         <div class="tab-pane fade" id="offers" role="tabpanel">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <a href="{{ url_for('add_offer') }}" class="btn btn-success">
-                        <i class="fas fa-plus me-2"></i>Create New Offer
-                    </a>
-                </div>
+            <div class="mb-3">
+                <a href="{{ url_for('add_offer') }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-plus-circle me-2"></i>Create New Offer
+                </a>
             </div>
-            <div class="card card-table">
-                <div class="card-header border-0 bg-light p-3">
-                    <h6 class="fw-bold mb-0">
-                        <i class="fas fa-tag me-2 text-primary"></i>Active Offers & Promotions
-                    </h6>
+            <div class="luxury-card">
+                <div class="card-header-luxury">
+                    <h5><i class="fas fa-gift me-2 text-primary"></i>Active Offers & Promotions</h5>
                 </div>
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Amount Range</th>
-                            <th>Offer</th>
-                            <th>Description</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if offers %}
-                            {% for offer in offers %}
+                <div class="table-responsive">
+                    <table class="table table-luxury mb-0">
+                        <thead>
                             <tr>
-                                <td>
-                                    <strong>₹{{ "{:,.0f}".format(offer.min_amount) }} - ₹{{ "{:,.0f}".format(offer.max_amount) }}</strong>
-                                </td>
-                                <td>
-                                    <span class="offer-badge">₹{{ "{:,.0f}".format(offer.offer_amount) }} OFF</span>
-                                </td>
-                                <td>{{ offer.description or 'No description' }}</td>
-                                <td>
-                                    {% if offer.is_active %}
-                                    <span class="badge bg-success">ACTIVE</span>
-                                    {% else %}
-                                    <span class="badge bg-secondary">INACTIVE</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a href="{{ url_for('edit_offer', id=offer.id) }}" class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-edit me-1"></i>Edit
-                                    </a>
-                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteOffer({{ offer.id }})">
-                                        <i class="fas fa-trash me-1"></i>Delete
-                                    </button>
+                                <th>Amount Range</th>
+                                <th>Offer</th>
+                                <th>Description</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if offers %}
+                                {% for offer in offers %}
+                                <tr>
+                                    <td><strong>₹{{ "{:,.0f}".format(offer.min_amount) }} - ₹{{ "{:,.0f}".format(offer.max_amount) }}</strong></td>
+                                    <td>
+                                        <span class="badge bg-success text-white">₹{{ "{:,.0f}".format(offer.offer_amount) }} OFF</span>
+                                    </td>
+                                    <td>{{ offer.description or 'Special promotion' }}</td>
+                                    <td class="text-center">
+                                        {% if offer.is_active %}
+                                        <span class="status-badge pending" style="background-color: #d1e7dd; color: #0f5132;">Active</span>
+                                        {% else %}
+                                        <span class="status-badge">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ url_for('edit_offer', id=offer.id) }}" class="btn btn-sm btn-outline-primary btn-action">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-danger btn-action" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <div class="empty-state-icon"><i class="fas fa-tag"></i></div>
+                                    <p>No active offers. <a href="{{ url_for('add_offer') }}">Create one</a></p>
                                 </td>
                             </tr>
-                            {% endfor %}
-                        {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">No offers available</td>
-                        </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <!-- Recent Orders Tab -->
         <div class="tab-pane fade" id="recent" role="tabpanel">
-            <div class="card card-table">
-                <div class="card-header border-0 bg-light p-3">
-                    <h6 class="fw-bold mb-0">
-                        <i class="fas fa-list me-2 text-info"></i>Recent Orders (Last 15 Days)
-                    </h6>
+            <div class="luxury-card">
+                <div class="card-header-luxury">
+                    <h5><i class="fas fa-list me-2 text-info"></i>Recent Orders (Last 15 Days)</h5>
                 </div>
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Receipt #</th>
-                            <th>Customer</th>
-                            <th>Receiver</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if recent_orders %}
-                            {% for order in recent_orders %}
+                <div class="table-responsive">
+                    <table class="table table-luxury mb-0">
+                        <thead>
                             <tr>
-                                <td><strong>{{ order.receipt_number }}</strong></td>
-                                <td>{{ order.customer_name }}</td>
-                                <td>{{ order.receiver_name }}</td>
-                                <td class="fw-bold">₹{{ "{:,.0f}".format(order.total_amount or 0) }}</td>
-                                <td>
-                                    <span class="badge bg-{{ 'success' if order.status == 'delivered' else 'warning' }}">
-                                        {{ order.status|upper }}
-                                    </span>
-                                </td>
-                                <td>{{ order.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary" onclick="viewOrder({{ order.id }})">
-                                        <i class="fas fa-eye me-1"></i>View
-                                    </button>
+                                <th>Receipt #</th>
+                                <th>Customer</th>
+                                <th>Receiver Location</th>
+                                <th class="text-end">Amount</th>
+                                <th class="text-center">Status</th>
+                                <th>Date</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if recent_orders %}
+                                {% for order in recent_orders[:15] %}
+                                <tr>
+                                    <td><strong class="text-primary">#{{ order.receipt_number }}</strong></td>
+                                    <td>{{ order.customer_name }}</td>
+                                    <td>{{ order.receiver_name }}</td>
+                                    <td class="text-end fw-bold">₹{{ "{:,.0f}".format(order.total_amount or 0) }}</td>
+                                    <td class="text-center">
+                                        {% if order.status == 'delivered' %}
+                                        <span class="status-badge delivered">Delivered</span>
+                                        {% elif order.status == 'in_transit' %}
+                                        <span class="status-badge transit">In Transit</span>
+                                        {% elif order.status == 'at_destination' %}
+                                        <span class="status-badge destination">At Destination</span>
+                                        {% else %}
+                                        <span class="status-badge pending">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><small class="text-muted">{{ order.created_at.strftime('%d-%m-%Y') }}</small></td>
+                                    <td class="text-center">
+                                        <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-sm btn-outline-primary btn-action">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="empty-state">
+                                    <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
+                                    <p>No recent orders</p>
                                 </td>
                             </tr>
-                            {% endfor %}
-                        {% else %}
-                        <tr>
-                            <td colspan="7" class="text-center text-muted">No recent orders</td>
-                        </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -470,48 +721,12 @@
 
 {% block extra_js %}
 <script>
-function updateProfile() {
-    const email = document.getElementById('email').value;
-    const phone = document.getElementById('phone').value;
-    const address = document.getElementById('address').value;
-    
-    const formData = new FormData();
-    formData.append('email', email);
-    formData.append('phone', phone);
-    formData.append('address', address);
-    
-    fetch('/api/user/profile', {
-        method: 'POST',
-        body: formData
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            alert('Profile updated successfully!');
-        } else {
-            alert('Error: ' + data.message);
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips if Bootstrap tooltips are needed
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-}
-
-function rateClient(clientName, rating) {
-    alert(`Rated ${clientName} with ${rating} stars`);
-    // You can implement star rating UI here
-}
-
-function followUp(clientName) {
-    alert(`Follow-up reminder for ${clientName}`);
-    // Implement follow-up logic
-}
-
-function viewOrder(orderId) {
-    window.location.href = `/order/${orderId}`;
-}
-
-function deleteOffer(offerId) {
-    if (confirm('Are you sure you want to delete this offer?')) {
-        window.location.href = `/offers/delete/${offerId}`;
-    }
-}
+});
 </script>
 {% endblock %}

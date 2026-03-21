@@ -139,7 +139,12 @@
                 </div>
 
                 <div class="sidebar-section-content" id="mainOpsContent">
-                    {% if current_user.role != 'admin' and current_user.role != 'operation_manager' %}
+                    {% if current_user.role == 'operation_manager' %}
+                    <a href="{{ url_for('manager_dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'manager_dashboard' }}">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Manager Dashboard</span>
+                    </a>
+                    {% elif current_user.role != 'admin' %}
                     <a href="{{ url_for('dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint in ['dashboard', 'staff_dashboard'] }}">
                         <i class="fas fa-chart-line"></i>
                         <span>Dashboard</span>
@@ -244,7 +249,7 @@
             </div>
             {% endif %}
 
-            {% if current_user.role in ['admin', 'manager', 'operation_manager'] %}
+            {% if current_user.role in ['admin',] and current_user.role != 'operation_manager' %}
             <!-- Operation Manager - Collapsible -->
             <div class="sidebar-section-group">
                 <div class="sidebar-heading sidebar-heading-toggle mt-4" id="operationManagerToggle" data-section="operation-manager">
@@ -257,6 +262,8 @@
                         <i class="fas fa-tasks"></i>
                         <span>Dashboard</span>
                     </a>
+                     {% endif %}
+                       {% if current_user.role in ['admin', 'manager'] and current_user.role != 'operation_manager' %}
                     <a href="{{ url_for('operations_shipment_tracking') }}"
                         class="sidebar-link {{ 'active' if request.endpoint == 'operations_shipment_tracking' }}">
                         <i class="fas fa-truck"></i>
@@ -371,6 +378,7 @@
 
 
             <!-- Branch Management - Collapsible -->
+            {% if current_user.role == 'admin' %}
             <div class="sidebar-section-group">
                 <div class="sidebar-heading sidebar-heading-toggle mt-4" id="branchToggle" data-section="branch">
                     Branch Management
@@ -397,14 +405,13 @@
                         <i class="fas fa-file-invoice"></i>
                         <span>Tracking Control</span>
                     </a>
-                    {% if current_user.role == 'admin' %}
                     <a href="{{ url_for('branches') }}" class="sidebar-link {{ 'active' if request.endpoint == 'branches' }}">
                         <i class="fas fa-network-wired"></i>
                         <span>Branchs</span>
                     </a>
-                    {% endif %}
                 </div>
             </div>
+            {% endif %}
 
 
 

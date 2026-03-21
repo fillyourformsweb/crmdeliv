@@ -16,9 +16,11 @@
                 <input type="text" class="form-control autocomplete-search" placeholder="Search Clients..." autocomplete="off">
                 <div class="search-suggestions-container d-none"></div>
             </div>
+            {% if current_user and current_user.role in ['admin', 'manager'] %}
             <a href="{{ url_for('add_client') }}" class="luxury-btn btn btn-primary">
                 <i class="fas fa-plus-circle me-1"></i> Add New Client
             </a>
+            {% endif %}
         </div>
     </div>
     
@@ -118,7 +120,9 @@
                                 <i class="fas fa-users-slash fa-3x text-muted opacity-25"></i>
                             </div>
                             <h5 class="text-muted fw-normal">No clients registered yet</h5>
+                            {% if current_user and current_user.role in ['admin', 'manager'] %}
                             <a href="{{ url_for('add_client') }}" class="btn btn-link">Add your first client</a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
