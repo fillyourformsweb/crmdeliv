@@ -3,91 +3,112 @@
 {% block title %}Marketing Manager Dashboard{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <!-- Header Section -->
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <div>
-            <h1 class="fw-black mb-0" style="letter-spacing: -1px; color: #0f172a;">
-                <i class="fas fa-chart-pie text-primary me-2"></i>Marketing Manager Dashboard
-            </h1>
-            <p class="text-muted fs-5 mb-0 opacity-75">Your pipeline overview and key performance metrics</p>
-        </div>
-        <div class="d-none d-md-block">
-            <span class="badge bg-primary-subtle text-primary p-2 px-3 rounded-pill fw-bold">
-                <i class="fas fa-calendar-alt me-2"></i>{{ now.strftime('%B %d, %Y') if now else 'Today' }}
-            </span>
-        </div>
-    </div>
-
-    <!-- KPI Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 luxury-card h-100" style="background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="stat-icon-pod bg-blue-light">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <span class="badge bg-blue-light rounded-pill">+{{ (total_visits * 0.1)|int if total_visits else 0 }}%</span>
-                    </div>
-                    <p class="text-muted fw-bold text-uppercase small mb-1 ls-1">Total Visits</p>
-                    <h2 class="fw-black mb-0 display-6">{{ total_visits }}</h2>
+<div class="dashboard-canvas">
+<div class="container-fluid px-0 py-0"> <!-- Full page width -->
+    <!-- Brand/Header Section -->
+    <div class="executive-header rounded-0 mb-5 p-5 shadow-lg">
+        <div class="d-flex align-items-center justify-content-between position-relative" style="z-index: 2;">
+            <div class="d-flex align-items-center gap-4">
+                <div class="brand-logo bg-white bg-opacity-10 p-4 rounded-4 shadow-sm text-white" style="backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1);">
+                    <i class="fas fa-chart-line fa-3x"></i>
+                </div>
+                <div>
+                    <h5 class="text-uppercase fw-900 mb-1 ls-1" style="letter-spacing: 2px; font-size: 0.85rem; color: rgba(255,255,255,0.8);">Growth & Analytics Suite</h5>
+                    <h1 class="display-3 fw-900 mb-0 text-white" style="letter-spacing: -2px;">
+                        Marketing <span class="opacity-75">Intelligence</span>
+                    </h1>
+                    <p class="fs-5 mb-0 text-white opacity-75">Strategy panel for pipeline oversight and performance metrics</p>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 luxury-card h-100" style="background: linear-gradient(135deg, #ffffff 0%, #fff4e0 100%);">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="stat-icon-pod bg-gold-light">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        {% if follow_ups_pending > 0 %}
-                        <span class="badge bg-gold-light rounded-pill">Urgent</span>
-                        {% endif %}
-                    </div>
-                    <p class="text-muted fw-bold text-uppercase small mb-1 ls-1">Pending Follow-ups</p>
-                    <h2 class="fw-black mb-0 display-6 text-warning">{{ follow_ups_pending }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 luxury-card h-100" style="background: linear-gradient(135deg, #ffffff 0%, #e0faff 100%);">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="stat-icon-pod bg-cyan-light">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                    </div>
-                    <p class="text-muted fw-bold text-uppercase small mb-1 ls-1">Meetings Today</p>
-                    <h2 class="fw-black mb-0 display-6 text-info">{{ meetings_today }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 luxury-card h-100" style="background: linear-gradient(135deg, #ffffff 0%, #f0fff4 100%);">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="stat-icon-pod bg-emerald-light">
-                            <i class="fas fa-handshake"></i>
-                        </div>
-                        <span class="badge bg-emerald-light rounded-pill">{{ "{:.1f}".format(conversion_rate) }}%</span>
-                    </div>
-                    <p class="text-muted fw-bold text-uppercase small mb-1 ls-1">Conversions</p>
-                    <h2 class="fw-black mb-0 display-6 text-success">{{ conversions }}</h2>
+            <div class="d-none d-lg-block text-end">
+                <div class="badge bg-white bg-opacity-10 text-white p-3 rounded-4 border border-white border-opacity-10 shadow-sm" style="backdrop-filter: blur(5px);">
+                    <i class="fas fa-calendar-alt text-white opacity-75 me-2"></i>
+                    <span class="fw-bold">{{ now.strftime('%B %d, %Y') if now else 'Today' }}</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Main Action Panel -->
-    <div class="row mb-4">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm luxury-card overflow-hidden h-100">
-                <div class="card-header bg-white py-3 border-bottom-0">
-                    <h5 class="fw-bold mb-0">Quick Actions</h5>
+    <div class="px-4"> <!-- Page padding inside fluid container -->
+        <!-- KPI Cards -->
+        <div class="row g-4 mb-5">
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 luxury-card h-100 shadow-sm">
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="stat-icon-pod bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 fw-bold">
+                                +{{ (total_visits * 0.1)|int if total_visits else 0 }}%
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-secondary fw-bold text-uppercase small mb-1 ls-1">Total Visits</p>
+                            <h2 class="fw-900 mb-0 display-4 text-dark">{{ total_visits }}</h2>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body p-4">
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 luxury-card h-100 shadow-sm">
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="stat-icon-pod bg-warning bg-opacity-10 text-warning">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            {% if follow_ups_pending > 0 %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2 fw-bold">Active</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <p class="text-secondary fw-bold text-uppercase small mb-1 ls-1">Pending Follow-ups</p>
+                            <h2 class="fw-900 mb-0 display-4 text-dark">{{ follow_ups_pending }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 luxury-card h-100 shadow-sm">
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="stat-icon-pod bg-info bg-opacity-10 text-info">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-secondary fw-bold text-uppercase small mb-1 ls-1">Meetings Today</p>
+                            <h2 class="fw-900 mb-0 display-4 text-dark">{{ meetings_today }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 luxury-card h-100 shadow-sm">
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="stat-icon-pod bg-success bg-opacity-10 text-success">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 fw-bold">{{ "{:.1f}".format(conversion_rate) }}%</span>
+                        </div>
+                        <div>
+                            <p class="text-secondary fw-bold text-uppercase small mb-1 ls-1">Total Conversions</p>
+                            <h2 class="fw-900 mb-0 display-4 text-dark">{{ conversions }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Action & Recent Data -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm luxury-card h-100">
+                    <div class="card-header bg-white py-4 px-4 border-0">
+                        <h4 class="fw-bold mb-0">Quick Operations</h4>
+                    </div>
+                    <div class="card-body p-4 pt-0">
                     <!-- Featured Booking Button -->
                     <div class="row g-3 mb-4">
                         <div class="col-12">
@@ -253,29 +274,42 @@
         </div>
     </div>
 </div>
+</div>
 
 <style>
     /* Professional Overrides */
-    .fw-black { font-weight: 900 !important; }
+    .fw-900 { font-weight: 900 !important; }
     .ls-1 { letter-spacing: 0.05rem; }
     .fw-600 { font-weight: 600; }
     
+    /* Sophisticated Page Background */
+    .dashboard-canvas {
+        background-color: #f8fafc;
+        background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+        background-size: 24px 24px;
+        min-height: 100vh;
+    }
+
     .luxury-card {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(0,0,0,0.05) !important;
-        border-radius: 1.25rem !important;
-        background: #ffffff;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid rgba(255, 255, 255, 0.8) !important;
+        border-radius: 1.5rem !important;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
     
     .luxury-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+        transform: translateY(-8px) scale(1.02);
+        background: #ffffff;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        border-color: #2563eb !important;
     }
     
     .luxury-link {
-        transition: all 0.2s ease;
-        border-radius: 0.75rem !important;
-        background: #f8fafc;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 1rem !important;
+        background: rgba(255, 255, 255, 0.8) !important;
         border: 1px solid #e2e8f0 !important;
     }
     
@@ -283,27 +317,30 @@
         background: #ffffff !important;
         border-color: #2563eb !important;
         color: #2563eb !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
     }
     
     .stat-icon-pod {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
+        width: 60px;
+        height: 60px;
+        border-radius: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.25rem;
+        font-size: 1.75rem;
+        box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
     }
 
-    /* Animation for the Book Order button */
     .btn-gradient-animate {
         background-size: 200% auto;
-        transition: 0.5s;
+        transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3) !important;
     }
     .btn-gradient-animate:hover {
         background-position: right center;
+        transform: scale(1.015);
+        box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.4) !important;
     }
 </style>
 {% endblock %}

@@ -60,16 +60,17 @@
 {% endblock %}
 
 {% block content %}
-<div class="col-12 page-reveal">
-    <div class="mb-3">
-        <h4 class="fw-black text-primary mb-0">ANALYTICS SUITE</h4>
-        <p class="text-muted small mb-2">Enterprise-grade logistics and financial reporting</p>
-        <div class="d-flex gap-2">
-            <button class="btn btn-luxury flex-fill" onclick="generateReport()" style="border-radius:10px;">
-                <i class="fas fa-file-pdf me-1"></i> Generate PDF
+<div class="dashboard-canvas">
+<div class="container-fluid px-4 pt-4">
+    <div class="mb-4">
+        <h1 class="fw-900 text-primary mb-1 display-5" style="letter-spacing: -1.5px;">ANALYTICS <span class="text-dark opacity-75">SUITE</span></h1>
+        <p class="text-muted fs-5 mb-3">Enterprise-grade logistics intelligence and financial reporting</p>
+        <div class="d-flex gap-3">
+            <button class="btn btn-luxury px-4 rounded-pill shadow-sm" onclick="generateReport()">
+                <i class="fas fa-file-pdf me-2"></i> Generate Executive PDF
             </button>
-            <button class="btn btn-primary flex-fill" onclick="exportReport()" style="border-radius:10px;">
-                <i class="fas fa-download me-1"></i> Export Dataset
+            <button class="btn btn-primary px-4 rounded-pill shadow-sm" onclick="exportReport()">
+                <i class="fas fa-cloud-download-alt me-2"></i> Export Dataset
             </button>
         </div>
     </div>
@@ -219,6 +220,7 @@
 
         <!-- More tabs can be implemented similarly... -->
     </div>
+</div>
 </div>
 {% endblock %}
 
