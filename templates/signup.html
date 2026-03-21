@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — CRM Delivery</title>
+    <title>Create Account — CRM Delivery</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
         rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -24,8 +24,7 @@
             background: #0f172a;
         }
 
-        /* ── Left Hero Panel ── */
-        .login-hero {
+        .signup-hero {
             flex: 1;
             display: none;
             flex-direction: column;
@@ -38,7 +37,7 @@
         }
 
         @media (min-width: 900px) {
-            .login-hero {
+            .signup-hero {
                 display: flex;
             }
         }
@@ -69,65 +68,14 @@
             animation-delay: -3s;
         }
 
-        .orb3 {
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, #f59e0b, #ef4444);
-            top: 40%;
-            left: 30%;
-            animation-delay: -6s;
-        }
-
         @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px) scale(1);
-            }
-
-            50% {
-                transform: translateY(-30px) scale(1.05);
-            }
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-30px) scale(1.05); }
         }
 
         .hero-content {
             position: relative;
             z-index: 2;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50px;
-            padding: 6px 16px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .hero-badge .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #10b981;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.4;
-            }
         }
 
         .hero-title {
@@ -146,39 +94,11 @@
             color: rgba(255, 255, 255, 0.6);
             line-height: 1.7;
             max-width: 380px;
-            margin-bottom: 2.5rem;
         }
 
-        .hero-features {
-            display: flex;
-            flex-direction: column;
-            gap: 0.9rem;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .feature-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            flex-shrink: 0;
-        }
-
-        /* ── Right Login Panel ── */
-        .login-panel {
+        .signup-panel {
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -189,12 +109,12 @@
         }
 
         @media (min-width: 900px) {
-            .login-panel {
+            .signup-panel {
                 border-left: 1px solid rgba(255, 255, 255, 0.08);
             }
         }
 
-        .login-logo {
+        .signup-logo {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -226,14 +146,14 @@
             font-weight: 500;
         }
 
-        .login-heading {
+        .signup-heading {
             font-size: 1.9rem;
             font-weight: 800;
             color: #fff;
             margin-bottom: 0.4rem;
         }
 
-        .login-sub {
+        .signup-sub {
             font-size: 0.88rem;
             color: rgba(255, 255, 255, 0.45);
             margin-bottom: 2rem;
@@ -268,7 +188,6 @@
                 opacity: 0;
                 transform: translateY(-6px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -327,28 +246,35 @@
             box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
         }
 
-        .field-input:focus~.field-icon {
+        .field-input:focus ~ .field-icon {
             color: #a78bfa;
         }
 
-        .toggle-pw {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            transition: color .2s;
-            background: none;
-            border: none;
-            font-size: 0.9rem;
+        .password-strength {
+            display: none;
+            font-size: 0.75rem;
+            margin-top: 6px;
+            padding: 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        .toggle-pw:hover {
-            color: rgba(255, 255, 255, 0.7);
+        .strength-weak {
+            color: #fca5a5;
+            display: block;
         }
 
-        .btn-login {
+        .strength-medium {
+            color: #fcd34d;
+            display: block;
+        }
+
+        .strength-strong {
+            color: #6ee7b7;
+            display: block;
+        }
+
+        .btn-signup {
             width: 100%;
             padding: 14px;
             border-radius: 12px;
@@ -363,35 +289,19 @@
             transition: opacity .2s, transform .15s;
             position: relative;
             overflow: hidden;
-            margin-top: 0.5rem;
+            margin-top: 1.5rem;
         }
 
-        .btn-login:hover {
+        .btn-signup:hover {
             opacity: 0.92;
             transform: translateY(-1px);
         }
 
-        .btn-login:active {
+        .btn-signup:active {
             transform: translateY(0);
         }
 
-        .btn-login .btn-shine {
-            position: absolute;
-            top: 0;
-            left: -100%;
-            height: 100%;
-            width: 60%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-            animation: shine 2.5s infinite;
-        }
-
-        @keyframes shine {
-            to {
-                left: 160%;
-            }
-        }
-
-        .login-hint {
+        .btn-signin-link {
             text-align: center;
             font-size: 0.75rem;
             color: rgba(255, 255, 255, 0.2);
@@ -399,57 +309,43 @@
             padding-top: 1.5rem;
             border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
+
+        .btn-signin-link a {
+            color: #7c3aed;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .btn-signin-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
 <body>
     <!-- Left Hero -->
-    <div class="login-hero">
+    <div class="signup-hero">
         <div class="hero-orb orb1"></div>
         <div class="hero-orb orb2"></div>
-        <div class="hero-orb orb3"></div>
         <div class="hero-content">
-            <div class="hero-badge"><span class="dot"></span> Live Operations Portal</div>
-            <h1 class="hero-title">CRM<br>Delivery<br>System</h1>
-            <p class="hero-sub">An end-to-end logistics management platform — orders, tracking, billing, and marketing
-                insights in one place.</p>
-            <div class="hero-features">
-                <div class="feature-item">
-                    <div class="feature-icon" style="background:rgba(124,58,237,0.25);color:#a78bfa;"><i
-                            class="fas fa-boxes"></i></div>
-                    Full order lifecycle management
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon" style="background:rgba(16,185,129,0.25);color:#6ee7b7;"><i
-                            class="fas fa-chart-line"></i></div>
-                    Real-time analytics &amp; reports
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon" style="background:rgba(37,99,235,0.25);color:#93c5fd;"><i
-                            class="fas fa-handshake"></i></div>
-                    Marketing insights &amp; pipeline
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon" style="background:rgba(245,158,11,0.25);color:#fcd34d;"><i
-                            class="fas fa-file-invoice"></i></div>
-                    Automated billing &amp; invoicing
-                </div>
-            </div>
+            <h1 class="hero-title">Join CRM<br>Delivery<br>Today</h1>
+            <p class="hero-sub">Create your account and start managing logistics operations efficiently.</p>
         </div>
     </div>
 
-    <!-- Right Login Panel -->
-    <div class="login-panel">
-        <div class="login-logo">
+    <!-- Right Signup Panel -->
+    <div class="signup-panel">
+        <div class="signup-logo">
             <div class="logo-icon"><i class="fas fa-truck-fast"></i></div>
             <div class="logo-text">
                 <span>CRM Delivery</span>
-                <span>Staff Portal</span>
+                <span>Create Account</span>
             </div>
         </div>
 
-        <h2 class="login-heading">Welcome back 👋</h2>
-        <p class="login-sub">Sign in to your account to continue</p>
+        <h2 class="signup-heading">Create Account 👤</h2>
+        <p class="signup-sub">Set up your account to get started</p>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -462,53 +358,86 @@
         {% endif %}
         {% endwith %}
 
-        <form method="POST" id="loginForm">
+        <form method="POST" id="signupForm">
             <div class="field-group">
                 <label class="field-label" for="username">Username</label>
                 <div class="field-wrap">
                     <i class="fas fa-user field-icon"></i>
                     <input type="text" id="username" name="username" class="field-input"
-                        placeholder="Enter your username" required autocomplete="username">
+                        placeholder="Choose a username" required minlength="3">
                 </div>
             </div>
+
+            <div class="field-group">
+                <label class="field-label" for="email">Email Address</label>
+                <div class="field-wrap">
+                    <i class="fas fa-envelope field-icon"></i>
+                    <input type="email" id="email" name="email" class="field-input"
+                        placeholder="Enter your email" required>
+                </div>
+                <small style="color: rgba(255, 255, 255, 0.4); margin-top: 4px; display: block;">We'll send a verification OTP to this email</small>
+            </div>
+
             <div class="field-group">
                 <label class="field-label" for="password">Password</label>
                 <div class="field-wrap">
                     <i class="fas fa-lock field-icon"></i>
                     <input type="password" id="password" name="password" class="field-input"
-                        placeholder="Enter your password" required autocomplete="current-password">
-                    <button type="button" class="toggle-pw" onclick="togglePw()" id="pwToggleBtn">
-                        <i class="fas fa-eye" id="pwEyeIcon"></i>
-                    </button>
+                        placeholder="Create a strong password" required minlength="6" onkeyup="checkPasswordStrength(this.value)">
+                </div>
+                <div class="password-strength" id="strengthIndicator"></div>
+            </div>
+
+            <div class="field-group">
+                <label class="field-label" for="confirm_password">Confirm Password</label>
+                <div class="field-wrap">
+                    <i class="fas fa-check-circle field-icon"></i>
+                    <input type="password" id="confirm_password" name="confirm_password" class="field-input"
+                        placeholder="Confirm your password" required minlength="6">
                 </div>
             </div>
 
-            <button type="submit" class="btn-login">
-                <span class="btn-shine"></span>
-                <i class="fas fa-sign-in-alt me-2"></i> Sign In
+            <button type="submit" class="btn-signup">
+                <i class="fas fa-user-plus me-2"></i> Create Account
             </button>
         </form>
 
-        <div class="login-hint">
-            <i class="fas fa-shield-alt me-1"></i>
-            Restricted to Administrators &amp; Managers only
-            <br><br>
-            <strong>New User?</strong> <a href="{{ url_for('signup') }}" style="color: #7c3aed; text-decoration: none; font-weight: 600;">Create Account</a>
+        <div class="btn-signin-link">
+            Already have an account?
+            <a href="{{ url_for('login') }}">Sign In</a>
         </div>
     </div>
 
     <script>
-        function togglePw() {
-            const pw = document.getElementById('password');
-            const icon = document.getElementById('pwEyeIcon');
-            if (pw.type === 'password') {
-                pw.type = 'text';
-                icon.className = 'fas fa-eye-slash';
-            } else {
-                pw.type = 'password';
-                icon.className = 'fas fa-eye';
+        function checkPasswordStrength(password) {
+            const indicator = document.getElementById('strengthIndicator');
+            let strength = 'weak';
+            
+            if (password.length >= 6) {
+                if (/[a-z]/.test(password) && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
+                    strength = 'strong';
+                } else if (/(a-z|A-Z|0-9)/.test(password)) {
+                    strength = 'medium';
+                }
             }
+            
+            indicator.style.display = 'block';
+            indicator.innerHTML = strength === 'weak' ? '<i class="fas fa-circle"></i> Weak' : 
+                                 strength === 'medium' ? '<i class="fas fa-circle"></i> Medium' : 
+                                 '<i class="fas fa-circle"></i> Strong';
+            indicator.className = `password-strength strength-${strength}`;
         }
+
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm_password').value;
+            
+            if (password !== confirm) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+                return false;
+            }
+        });
     </script>
 </body>
 

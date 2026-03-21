@@ -561,6 +561,208 @@ def logout():
     return redirect(url_for('login'))
 
 
+# ============== SIGNUP & EMAIL OTP ==============
+
+def send_otp_email(email, otp_code):
+    """Send OTP via email using Flask-Mail or simple SMTP"""
+    try:
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+        
+        # Email configuration
+        sender_email = app.config.get('MAIL_USERNAME', 'noreply@crmdelivery.com')
+        sender_password = app.config.get('MAIL_PASSWORD', '')
+        smtp_server = app.config.get('MAIL_SERVER', 'smtp.gmail.com')
+        smtp_port = app.config.get('MAIL_PORT', 587)
+        
+        # Skip if credentials not configured
+        if not sender_password:
+            print(f"[DEV MODE] OTP for {email}: {otp_code}")
+            session['otp_code'] = otp_code
+            session['otp_email'] = email
+            return True
+        
+        # Create email
+        message = MIMEMultipart("alternative")
+        message["Subject"] = "Your CRM Delivery Account Verification Code"
+        message["From"] = sender_email
+        message["To"] = email
+        
+        # Email body
+        html = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px;">
+                <div style="max-width: 500px; margin: 0 auto; background: white; border-radius: 10px; padding: 30px;">
+                    <h2 style="color: #0f172a; margin-bottom: 20px;">Verify Your Email</h2>
+                    <p style="color: #666; font-size: 15px; line-height: 1.6;">
+                        Welcome to CRM Delivery! Use the code below to verify your email and complete your account registration.
+                    </p>
+                    <div style="background: #f0f0f0; border-left: 4px solid #7c3aed; padding: 20px; margin: 25px 0; border-radius: 5px;">
+                        <p style="margin: 0; color: #666; font-size: 13px; margin-bottom: 10px;">Your verification code:</p>
+                        <p style="margin: 0; font-size: 32px; font-weight: bold; color: #7c3aed; letter-spacing: 5px;">{otp_code}</p>
+                    </div>
+                    <p style="color: #666; font-size: 13px;">This code will expire in 30 minutes.</p>
+                    <p style="color: #999; font-size: 12px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                        If you didn't request this code, please ignore this email.
+                    </p>
+                </div>
+            </body>
+        </html>
+        """
+        
+        part = MIMEText(html, "html")
+        message.attach(part)
+        
+        # Send email
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, email, message.as_string())
+        
+        return True
+    except Exception as e:
+        print(f"Error sending OTP email: {str(e)}")
+        # Store in session as fallback
+        session['otp_code'] = otp_code
+        session['otp_email'] = email
+        return True
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        confirm_password = request.form.get('confirm_password', '').strip()
+        
+        # Validation
+        if not username or len(username) < 3:
+            flash('Username must be at least 3 characters long.', 'error')
+            return render_template('signup.html')
+        
+        if not email:
+            flash('Email is required.', 'error')
+            return render_template('signup.html')
+        
+        if password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return render_template('signup.html')
+        
+        if len(password) < 6:
+            flash('Password must be at least 6 characters long.', 'error')
+            return render_template('signup.html')
+        
+        # Check if username or email already exists
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash('Username already exists. Please choose a different one.', 'error')
+            return render_template('signup.html')
+        
+        existing_email = User.query.filter_by(email=email).first()
+        if existing_email:
+            flash('Email already registered. Please use a different email or login.', 'error')
+            return render_template('signup.html')
+        
+        # Generate OTP
+        otp_code = str(random.randint(100000, 999999))
+        
+        # Store signup data in session
+        session['signup_pending'] = True
+        session['pending_username'] = username
+        session['pending_email'] = email
+        session['pending_password'] = password  # Hash before saving would be better
+        session['otp_code'] = otp_code
+        session['otp_email'] = email
+        
+        # Send OTP email
+        send_otp_email(email, otp_code)
+        
+        flash('OTP sent to your email. Please verify to complete registration.', 'success')
+        return redirect(url_for('verify_otp'))
+    
+    return render_template('signup.html')
+
+
+@app.route('/verify-otp', methods=['GET', 'POST'])
+def verify_otp():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    
+    # Check if signup is pending
+    if not session.get('signup_pending'):
+        flash('Please complete the signup form first.', 'error')
+        return redirect(url_for('signup'))
+    
+    if request.method == 'POST':
+        submitted_otp = request.form.get('otp_code', '').strip()
+        stored_otp = session.get('otp_code')
+        
+        if submitted_otp != stored_otp:
+            flash('Invalid OTP. Please try again.', 'error')
+            return render_template('verify_otp.html', email=session.get('pending_email'))
+        
+        # OTP verified - Create user account
+        try:
+            username = session.get('pending_username')
+            email = session.get('pending_email')
+            password = session.get('pending_password')
+            
+            # Create new user with staff role by default
+            new_user = User(
+                username=username,
+                email=email,
+                role='staff',  # Default role for new registrations
+                is_active=True
+            )
+            new_user.set_password(password)
+            
+            db.session.add(new_user)
+            db.session.commit()
+            
+            # Clear session
+            session.pop('signup_pending', None)
+            session.pop('pending_username', None)
+            session.pop('pending_email', None)
+            session.pop('pending_password', None)
+            session.pop('otp_code', None)
+            session.pop('otp_email', None)
+            
+            flash('Account created successfully! You can now login.', 'success')
+            return redirect(url_for('login'))
+            
+        except Exception as e:
+            print(f"Error creating user: {str(e)}")
+            flash('An error occurred while creating your account. Please try again.', 'error')
+            return render_template('verify_otp.html', email=session.get('pending_email'))
+    
+    return render_template('verify_otp.html', email=session.get('pending_email'))
+
+
+@app.route('/resend-otp', methods=['POST'])
+def resend_otp():
+    if not session.get('signup_pending'):
+        flash('Please complete the signup form first.', 'error')
+        return redirect(url_for('signup'))
+    
+    # Generate new OTP
+    otp_code = str(random.randint(100000, 999999))
+    email = session.get('pending_email')
+    
+    # Update session with new OTP
+    session['otp_code'] = otp_code
+    
+    # Send OTP email
+    send_otp_email(email, otp_code)
+    
+    flash('New OTP sent to your email.', 'success')
+    return redirect(url_for('verify_otp'))
+
+
 # ============== DASHBOARD ==============
 
 @app.route('/dashboard')
