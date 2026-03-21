@@ -14,7 +14,7 @@ try:
 except ImportError:
     fitz = None
 try:
-    import google.generativeai as genai
+    import google.genai as genai
 except ImportError:
     genai = None
 from PIL import Image

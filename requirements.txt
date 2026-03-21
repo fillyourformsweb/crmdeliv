@@ -13,5 +13,5 @@ WTForms
 email-validator
 gunicorn
 python-dotenv
-google-generativeai
+google-genai
 pymupdf
