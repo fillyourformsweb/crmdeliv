@@ -3,193 +3,250 @@
 {% block title %}Marketing Manager Dashboard{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <h1><i class="fas fa-chart-pie"></i> Marketing Manager Dashboard</h1>
-    <p class="text-muted">Your pipeline overview and key metrics</p>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="fw-black mb-0" style="letter-spacing: -1px; color: #0f172a;">
+                <i class="fas fa-chart-pie text-primary me-2"></i>Marketing Manager Dashboard
+            </h1>
+            <p class="text-muted fs-5 mb-0 opacity-75">Your pipeline overview and key performance metrics</p>
+        </div>
+        <div class="d-none d-md-block">
+            <span class="badge bg-primary-subtle text-primary p-2 px-3 rounded-pill fw-bold">
+                <i class="fas fa-calendar-alt me-2"></i>{{ now.strftime('%B %d, %Y') if now else 'Today' }}
+            </span>
+        </div>
+    </div>
 
     <!-- KPI Cards -->
-    <div class="row mb-4">
+    <div class="row g-4 mb-4">
         <div class="col-md-3">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-1">Total Visits</p>
-                            <h2 class="mb-0">{{ total_visits }}</h2>
+            <div class="card border-0 luxury-card h-100" style="background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="stat-icon-pod bg-blue-light">
+                            <i class="fas fa-users"></i>
                         </div>
-                        <i class="fas fa-users fa-2x text-primary opacity-50"></i>
+                        <span class="badge bg-blue-light rounded-pill">+{{ (total_visits * 0.1)|int if total_visits else 0 }}%</span>
                     </div>
+                    <p class="text-muted fw-bold text-uppercase small mb-1 ls-1">Total Visits</p>
+                    <h2 class="fw-black mb-0 display-6">{{ total_visits }}</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-1">Pending Follow-ups</p>
-                            <h2 class="mb-0 text-warning">{{ follow_ups_pending }}</h2>
+            <div class="card border-0 luxury-card h-100" style="background: linear-gradient(135deg, #ffffff 0%, #fff4e0 100%);">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="stat-icon-pod bg-gold-light">
+                            <i class="fas fa-clock"></i>
                         </div>
-                        <i class="fas fa-clock fa-2x text-warning opacity-50"></i>
+                        {% if follow_ups_pending > 0 %}
+                        <span class="badge bg-gold-light rounded-pill">Urgent</span>
+                        {% endif %}
                     </div>
+                    <p class="text-muted fw-bold text-uppercase small mb-1 ls-1">Pending Follow-ups</p>
+                    <h2 class="fw-black mb-0 display-6 text-warning">{{ follow_ups_pending }}</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-1">Meetings Today</p>
-                            <h2 class="mb-0 text-info">{{ meetings_today }}</h2>
+            <div class="card border-0 luxury-card h-100" style="background: linear-gradient(135deg, #ffffff 0%, #e0faff 100%);">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="stat-icon-pod bg-cyan-light">
+                            <i class="fas fa-calendar-check"></i>
                         </div>
-                        <i class="fas fa-calendar fa-2x text-info opacity-50"></i>
                     </div>
+                    <p class="text-muted fw-bold text-uppercase small mb-1 ls-1">Meetings Today</p>
+                    <h2 class="fw-black mb-0 display-6 text-info">{{ meetings_today }}</h2>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-1">Conversions</p>
-                            <h2 class="mb-0 text-success">{{ conversions }}</h2>
-                            <small class="text-muted">{{ "{:.1f}".format(conversion_rate) }}% rate</small>
+            <div class="card border-0 luxury-card h-100" style="background: linear-gradient(135deg, #ffffff 0%, #f0fff4 100%);">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="stat-icon-pod bg-emerald-light">
+                            <i class="fas fa-handshake"></i>
                         </div>
-                        <i class="fas fa-handshake fa-2x text-success opacity-50"></i>
+                        <span class="badge bg-emerald-light rounded-pill">{{ "{:.1f}".format(conversion_rate) }}%</span>
                     </div>
+                    <p class="text-muted fw-bold text-uppercase small mb-1 ls-1">Conversions</p>
+                    <h2 class="fw-black mb-0 display-6 text-success">{{ conversions }}</h2>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Quick Navigation -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light border-bottom">
-            <h5 class="mb-0">Quick Navigation</h5>
-        </div>
-        <div class="card-body">
-            <!-- Featured Booking Button -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <a href="{{ url_for('walkin_order') }}" class="btn btn-lg btn-danger w-100 d-flex align-items-center justify-content-center gap-3" style="padding: 1.5rem;">
-                        <i class="fas fa-plus-circle fa-2x"></i>
-                        <div class="text-start">
-                            <div style="font-size: 1.1rem; font-weight: bold;">📅 Book Walk-in Order</div>
-                            <small class="opacity-75">Create new customer shipment with price list selection</small>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Other Quick Links -->
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <a href="{{ url_for('marketing_manager_pitch_followup') }}" class="btn btn-outline-primary w-100">
-                        <i class="fas fa-arrow-right"></i> Pitch Follow-ups
-                    </a>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <a href="{{ url_for('marketing_manager_client_reschedule') }}" class="btn btn-outline-info w-100">
-                        <i class="fas fa-calendar-check"></i> Client Reschedules
-                    </a>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <a href="{{ url_for('marketing_manager_meeting_notes') }}" class="btn btn-outline-secondary w-100">
-                        <i class="fas fa-clipboard"></i> Meeting Notes
-                    </a>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <a href="{{ url_for('marketing_manager_insights') }}" class="btn btn-outline-success w-100">
-                        <i class="fas fa-lightbulb"></i> Insights
-                    </a>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <a href="{{ url_for('marketing_visit_new') }}" class="btn btn-outline-warning w-100">
-                        <i class="fas fa-plus"></i> New Pitch
-                    </a>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <a href="{{ url_for('marketing_visits') }}" class="btn btn-outline-dark w-100">
-                        <i class="fas fa-list"></i> All Visits
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pending Follow-ups -->
+    <!-- Main Action Panel -->
     <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0">Pending Follow-ups (Next 10)</h5>
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm luxury-card overflow-hidden h-100">
+                <div class="card-header bg-white py-3 border-bottom-0">
+                    <h5 class="fw-bold mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Featured Booking Button -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <a href="{{ url_for('walkin_order') }}" class="btn btn-primary d-flex align-items-center justify-content-between p-4 border-0 shadow-lg btn-gradient-animate" 
+                               style="background: linear-gradient(135deg, #1e293b 0%, #2563eb 50%, #1e293b 100%); border-radius: 1.25rem;">
+                                <div class="d-flex align-items-center gap-4">
+                                    <div class="bg-white bg-opacity-20 p-3 rounded-4">
+                                        <i class="fas fa-shipping-fast fa-2x text-white"></i>
+                                    </div>
+                                    <div class="text-start">
+                                        <h4 class="mb-0 fw-bold text-white">Book Walk-in Order</h4>
+                                        <p class="mb-0 text-white opacity-75 small">Process a new customer shipment instantly</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-chevron-right fa-lg text-white opacity-50"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Quick Links -->
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="{{ url_for('marketing_manager_pitch_followup') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
+                                <i class="fas fa-arrow-right text-primary"></i>
+                                <span class="fw-600">Pitch Follow-ups</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('marketing_manager_client_reschedule') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
+                                <i class="fas fa-calendar-check text-info"></i>
+                                <span class="fw-600">Reschedules</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('marketing_manager_meeting_notes') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
+                                <i class="fas fa-clipboard text-secondary"></i>
+                                <span class="fw-600">Meeting Notes</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('marketing_manager_insights') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
+                                <i class="fas fa-lightbulb text-success"></i>
+                                <span class="fw-600">Market Insights</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('marketing_visit_new') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
+                                <i class="fas fa-plus text-warning"></i>
+                                <span class="fw-600">New Pitch</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('marketing_visits') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border text-dark">
+                                <i class="fas fa-list"></i>
+                                <span class="fw-600">All Visits</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Summary (Repurposed Recent Visits) -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm luxury-card h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Recent Visits</h5>
+                    <a href="{{ url_for('marketing_visits') }}" class="text-primary small fw-bold text-decoration-none">View All</a>
                 </div>
                 <div class="card-body p-0">
-                    {% if pending_followups %}
+                    {% if recent_visits %}
                     <div class="list-group list-group-flush">
-                        {% for followup in pending_followups %}
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">
-                                        {{ followup.visit.contact_name }}
-                                        <small class="text-muted">({{ followup.visit.company_name }})</small>
-                                    </h6>
-                                    <p class="mb-1 small">{{ followup.notes[:50] }}...</p>
-                                    {% if followup.follow_up_date %}
-                                    <small class="text-danger">
-                                        <i class="fas fa-calendar"></i> 
-                                        {{ followup.follow_up_date.strftime('%b %d, %H:%M') }}
-                                    </small>
-                                    {% endif %}
-                                </div>
-                                <a href="{{ url_for('marketing_visit_detail', visit_id=followup.visit_id) }}" 
-                                   class="btn btn-sm btn-outline-primary">View</a>
+                        {% for visit in recent_visits %}
+                        <a href="{{ url_for('marketing_visit_detail', visit_id=visit.id) }}" class="list-group-item list-group-item-action border-0 px-3 py-3 d-flex align-items-center">
+                            <div class="avatar-circle me-3" style="width: 40px; height: 40px; background: #f1f5f9;">
+                                <i class="fas fa-user text-muted small"></i>
                             </div>
-                        </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0 fw-bold">{{ visit.contact_name }}</h6>
+                                    <span class="badge bg-{% if visit.status == 'new' %}primary{% elif visit.status == 'follow_up' %}warning{% elif visit.status == 'converted' %}success{% else %}danger{% endif %} rounded-pill opacity-75" style="font-size: 0.65rem;">
+                                        {{ visit.status.replace('_', ' ').title() }}
+                                    </span>
+                                </div>
+                                <small class="text-muted">{{ visit.company_name }}</small>
+                            </div>
+                        </a>
                         {% endfor %}
                     </div>
                     {% else %}
-                    <div class="p-4 text-center text-muted">
-                        <i class="fas fa-check-circle fa-3x opacity-50 mb-3"></i>
-                        <p>No pending follow-ups!</p>
+                    <div class="p-5 text-center">
+                        <img src="https://illustrations.popsy.co/gray/active-search.svg" alt="Empty" style="width: 120px; opacity: 0.5;" class="mb-3">
+                        <p class="text-muted small">No recent visits tracked</p>
                     </div>
                     {% endif %}
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Recent Visits -->
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0">Recent Visits</h5>
+    <!-- Secondary Data Row -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm luxury-card overflow-hidden">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0 text-danger">
+                        <i class="fas fa-hourglass-half me-2"></i>Pending Follow-ups
+                    </h5>
                 </div>
                 <div class="card-body p-0">
-                    {% if recent_visits %}
-                    <table class="table table-hover mb-0">
-                        <tbody>
-                            {% for visit in recent_visits %}
-                            <tr>
-                                <td>
-                                    <strong>{{ visit.contact_name }}</strong>
-                                    <div class="small text-muted">{{ visit.company_name }}</div>
-                                </td>
-                                <td class="small">
-                                    <span class="badge bg-{% if visit.status == 'new' %}primary{% elif visit.status == 'follow_up' %}warning{% elif visit.status == 'converted' %}success{% else %}danger{% endif %}">
-                                        {{ visit.status.replace('_', ' ').title() }}
-                                    </span>
-                                </td>
-                                <td class="text-end">
-                                    <a href="{{ url_for('marketing_visit_detail', visit_id=visit.id) }}" 
-                                       class="btn btn-sm btn-outline-primary">View</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    {% if pending_followups %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Contact</th>
+                                    <th>Company</th>
+                                    <th>Recent Notes</th>
+                                    <th>Next Scheduled</th>
+                                    <th class="text-end pe-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for followup in pending_followups %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">{{ followup.visit.contact_name }}</div>
+                                    </td>
+                                    <td>{{ followup.visit.company_name }}</td>
+                                    <td>
+                                        <div class="text-muted small text-truncate" style="max-width: 250px;">
+                                            {{ followup.notes[:60] }}{% if followup.notes|length > 60 %}...{% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if followup.follow_up_date %}
+                                        <span class="text-danger fw-bold small">
+                                            <i class="fas fa-calendar-day me-1"></i>
+                                            {{ followup.follow_up_date.strftime('%b %d, %H:%M') }}
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <a href="{{ url_for('marketing_visit_detail', visit_id=followup.visit_id) }}" 
+                                           class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">Review</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-5 text-center text-muted">
+                        <div class="mb-3">
+                            <i class="fas fa-check-circle fa-4x text-success opacity-25"></i>
+                        </div>
+                        <h4 class="fw-bold">All caught up!</h4>
+                        <p>You have no pending follow-ups for the upcoming period.</p>
+                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -198,12 +255,55 @@
 </div>
 
 <style>
-    .card {
-        transition: transform 0.2s;
+    /* Professional Overrides */
+    .fw-black { font-weight: 900 !important; }
+    .ls-1 { letter-spacing: 0.05rem; }
+    .fw-600 { font-weight: 600; }
+    
+    .luxury-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0,0,0,0.05) !important;
+        border-radius: 1.25rem !important;
+        background: #ffffff;
     }
-    .card:hover {
+    
+    .luxury-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+    }
+    
+    .luxury-link {
+        transition: all 0.2s ease;
+        border-radius: 0.75rem !important;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0 !important;
+    }
+    
+    .luxury-link:hover {
+        background: #ffffff !important;
+        border-color: #2563eb !important;
+        color: #2563eb !important;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+    }
+    
+    .stat-icon-pod {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    /* Animation for the Book Order button */
+    .btn-gradient-animate {
+        background-size: 200% auto;
+        transition: 0.5s;
+    }
+    .btn-gradient-animate:hover {
+        background-position: right center;
     }
 </style>
 {% endblock %}

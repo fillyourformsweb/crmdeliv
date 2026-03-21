@@ -6,14 +6,17 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     .report-card {
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0,0,0,0.05) !important;
+        border-radius: 1rem;
     }
     .report-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08) !important;
     }
     .nav-tabs-luxury {
-        border-bottom: 2px solid #f0f2f5;
-        gap: 1.5rem;
+        border-bottom: 2px solid #f1f5f9;
+        gap: 2rem;
     }
     .nav-tabs-luxury .nav-link {
         border: none;
@@ -21,9 +24,13 @@
         color: #64748b;
         font-weight: 600;
         position: relative;
+        transition: all 0.2s ease;
+    }
+    .nav-tabs-luxury .nav-link:hover {
+        color: #1e293b;
     }
     .nav-tabs-luxury .nav-link.active {
-        color: #0d6efd;
+        color: #2563eb;
         background: transparent;
     }
     .nav-tabs-luxury .nav-link.active::after {
@@ -32,9 +39,23 @@
         bottom: -2px;
         left: 0;
         width: 100%;
-        height: 2px;
-        background: #0d6efd;
+        height: 3px;
+        background: #2563eb;
+        border-radius: 3px 3px 0 0;
     }
+    .btn-luxury {
+        background: #1e293b !important;
+        color: white !important;
+        border: none !important;
+        transition: all 0.2s ease;
+    }
+    .btn-luxury:hover {
+        background: #0f172a !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+    }
+    .text-primary { color: #2563eb !important; }
+    .btn-primary { background-color: #2563eb !important; border-color: #2563eb !important; }
 </style>
 {% endblock %}
 
