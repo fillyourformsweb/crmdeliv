@@ -111,8 +111,8 @@
                     <h5 class="mb-0">Sample Meeting Note</h5>
                 </div>
                 <div class="card-body">
-                    {% if meetings %}
-                        {% set latest_meeting = meetings[0] %}
+                    {% if meetings.items %}
+                        {% set latest_meeting = meetings.items[0] %}
                         <h6>{{ latest_meeting.visit.contact_name }} - {{ latest_meeting.visit.company_name }}</h6>
                         <p class="text-muted small">{{ latest_meeting.scheduled_at.strftime('%B %d, %Y at %H:%M') if latest_meeting.scheduled_at else 'Date not set' }}</p>
                         <hr>

@@ -3,53 +3,53 @@
 {% block title %}New Walk-in Order - CRM Delivery{% endblock %}
 
 {% block content %}
-<div class="row mb-5 align-items-center">
+<div class="row mb-3 align-items-center">
     <div class="col-md-8">
-        <h5 class="text-primary fw-bold mb-1">Dispatch Center</h5>
-        <h1 class="display-5 fw-black text-dark mb-2">New Walk-in Order</h1>
-        <p class="text-muted fs-5 mb-0">Enter customer and shipment details to generate a new invoice.</p>
+        <h6 class="text-primary fw-bold mb-0">Dispatch Center</h6>
+        <h2 class="fw-black text-dark mb-1">New Walk-in Order</h2>
+        <p class="text-muted small mb-0">Enter customer and shipment details to generate a new invoice.</p>
     </div>
     <div class="col-md-4 text-md-end">
-        <a href="{{ url_for('orders') }}" class="luxury-btn btn btn-light border px-4">
-            <i class="fas fa-arrow-left me-2"></i>Back to List
+        <a href="{{ url_for('orders') }}" class="luxury-btn btn btn-light border px-3 py-2 small">
+            <i class="fas fa-arrow-left me-1"></i>Back to List
         </a>
     </div>
 </div>
 
 <form method="POST" id="orderForm" class="page-reveal">
     <!-- Receipt Mode Selection (TOP) -->
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-12">
             <div class="card luxury-card border-0 shadow-sm">
-                <div class="card-body p-4 d-flex align-items-center justify-content-between flex-wrap gap-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="avatar-circle-sm bg-primary-subtle text-primary">
+                <div class="card-body p-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-circle-sm bg-primary-subtle text-primary" style="width: 32px; height: 32px; font-size: 0.8rem;">
                             <i class="fas fa-receipt"></i>
                         </div>
                         <div>
-                            <h5 class="fw-bold mb-0">Tracking Mode</h5>
-                            <p class="small text-muted mb-0">Choose how to generate the tracking number</p>
+                            <h6 class="fw-bold mb-0">Tracking Mode</h6>
+                            <p class="font-xs text-muted mb-0">Automatic or manual entry</p>
                         </div>
                     </div>
 
-                    <div class="d-flex align-items-center gap-4">
+                    <div class="d-flex align-items-center gap-3">
                         <div class="d-flex gap-3">
                             <div class="form-check custom-radio flex-shrink-0">
                                 <input class="form-check-input" type="radio" name="receipt_type" id="typeStandard"
                                     value="standard" checked>
-                                <label class="form-check-label fw-bold" for="typeStandard">Automatic</label>
+                                <label class="form-check-label fw-bold small" for="typeStandard">Automatic</label>
                             </div>
                             <div class="form-check custom-radio flex-shrink-0">
                                 <input class="form-check-input" type="radio" name="receipt_type" id="typeManual"
                                     value="manual">
-                                <label class="form-check-label fw-bold" for="typeManual">Manual Entry</label>
+                                <label class="form-check-label fw-bold small" for="typeManual">Manual</label>
                             </div>
                         </div>
 
-                        <div id="receiptFields" style="min-width: 250px;">
+                        <div id="receiptFields" style="min-width: 200px;">
                             <input type="text" name="receipt_number" id="receiptNumberInput"
-                                class="form-control luxury-input" required placeholder="Generating..."
-                                style="height: 45px;">
+                                class="form-control luxury-input p-2" required placeholder="Generating..."
+                                style="height: 38px; font-size: 0.9rem;">
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
             <!-- Customer & Receiver Section -->
             <div class="card luxury-card border-0 shadow-sm mb-4">
                 <div
-                    class="card-header bg-transparent border-0 px-4 pt-4 d-flex justify-content-between align-items-center">
+                    class="card-header bg-transparent border-0 px-3 pt-3 d-flex justify-content-between align-items-center">
                     <h5 class="fw-bold mb-0 text-dark">
                         <i class="fas fa-user-circle me-2 text-primary opacity-50"></i>Sender Information
                     </h5>
@@ -73,7 +73,7 @@
                     <input type="file" id="aiScannerFile" style="display: none;" accept="image/*,.pdf"
                         onchange="handleAIScan(this)">
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-3">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-uppercase text-muted">Customer Name *</label>
@@ -106,11 +106,11 @@
             </div>
 
             <div class="card luxury-card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                <div class="card-header bg-transparent border-0 px-3 pt-3">
                     <h5 class="fw-bold mb-0 text-dark"><i
                             class="fas fa-map-marker-alt me-2 text-success opacity-50"></i>Receiver Information</h5>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-3">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-uppercase text-muted">Receiver Name *</label>
@@ -154,13 +154,13 @@
 
             <!-- International Booking Section -->
             <div class="card luxury-card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                <div class="card-header bg-transparent border-0 px-3 pt-3">
                     <h5 class="fw-bold mb-0 text-dark">
                         <i class="fas fa-globe me-2 text-danger opacity-50"></i>International Booking
                     </h5>
                     <p class="small text-muted mb-0">Enable for cross-border shipments</p>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-3">
                     <div class="form-check form-switch mb-4">
                         <input class="form-check-input" type="checkbox" name="is_international" id="isInternational">
                         <label class="form-check-label fw-bold text-dark" for="isInternational">
@@ -239,7 +239,7 @@
         <div class="col-lg-5">
             <!-- Package & Billing Section -->
             <div class="card luxury-card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
+                <div class="card-body p-3">
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-uppercase text-muted">Shipping Mode *</label>
@@ -394,13 +394,13 @@
 
             <!-- Handling Tags Selection -->
             <div class="card luxury-card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent border-0 px-4 pt-4">
+                <div class="card-header bg-transparent border-0 px-3 pt-3">
                     <h5 class="fw-bold mb-0 text-dark">
                         <i class="fas fa-tag me-2 text-warning opacity-50"></i>Handling Tags
                     </h5>
                     <p class="small text-muted mb-0">Select tags to print on box label</p>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-3">
                     <div class="row g-2">
                         <!-- Care & Fragile -->
                         <div class="col-md-6">

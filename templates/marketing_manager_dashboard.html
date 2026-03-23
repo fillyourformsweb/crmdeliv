@@ -4,343 +4,422 @@
 
 {% block content %}
 <div class="dashboard-canvas">
-<div class="container-fluid px-0 py-0"> <!-- Full page width -->
-    <!-- Brand/Header Section -->
-    <div class="executive-header rounded-0 mb-5 p-5 shadow-lg">
-        <div class="d-flex align-items-center justify-content-between position-relative" style="z-index: 2;">
-            <div class="d-flex align-items-center gap-4">
-                <div class="brand-logo bg-white bg-opacity-10 p-4 rounded-4 shadow-sm text-white" style="backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1);">
-                    <i class="fas fa-chart-line fa-3x"></i>
+    <div class="container-fluid px-0 py-0"> <!-- Full page width -->
+        <!-- Brand/Header Section -->
+        <div class="executive-header rounded-0 mb-4 py-3 px-4 shadow-sm">
+            <div class="d-flex align-items-center justify-content-between position-relative" style="z-index: 2;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="brand-logo bg-dark p-3 rounded-3 shadow-lg text-white"
+                        style="border: 1px solid rgba(255,255,255,0.1);">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="text-uppercase fw-900 mb-0 ls-1"
+                            style="letter-spacing: 1.5px; font-size: 0.75rem; color: #64748b;">Growth & Analytics Suite
+                        </h5>
+                        <h1 class="h2 fw-900 mb-0 text-dark" style="letter-spacing: -1px;">
+                            Marketing <span class="text-primary fst-italic">Manager</span>
+                        </h1>
+                        <p class="small mb-0 text-secondary opacity-75">Strategy panel for pipeline oversight and performance metrics</p>
+                    </div>
                 </div>
-                <div>
-                    <h5 class="text-uppercase fw-900 mb-1 ls-1" style="letter-spacing: 2px; font-size: 0.85rem; color: rgba(255,255,255,0.8);">Growth & Analytics Suite</h5>
-                    <h1 class="display-3 fw-900 mb-0 text-white" style="letter-spacing: -2px;">
-                        Marketing <span class="opacity-75">Intelligence</span>
-                    </h1>
-                    <p class="fs-5 mb-0 text-white opacity-75">Strategy panel for pipeline oversight and performance metrics</p>
-                </div>
-            </div>
-            <div class="d-none d-lg-block text-end">
-                <div class="badge bg-white bg-opacity-10 text-white p-3 rounded-4 border border-white border-opacity-10 shadow-sm" style="backdrop-filter: blur(5px);">
-                    <i class="fas fa-calendar-alt text-white opacity-75 me-2"></i>
-                    <span class="fw-bold">{{ now.strftime('%B %d, %Y') if now else 'Today' }}</span>
+                <div class="d-none d-lg-block text-end">
+                    <div class="badge bg-dark text-white p-2 rounded-pill border border-dark shadow-sm" style="font-size: 0.75rem;">
+                        <i class="fas fa-calendar-alt opacity-75 me-1"></i>
+                        <span class="fw-bold">{{ now.strftime('%B %d, %Y') if now else 'Today' }}</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="px-4"> <!-- Page padding inside fluid container -->
-        <!-- KPI Cards -->
-        <div class="row g-4 mb-5">
-            <div class="col-xl-3 col-md-6">
-                <div class="card border-0 luxury-card h-100 shadow-sm">
-                    <div class="card-body p-4 d-flex flex-column justify-content-between">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div class="stat-icon-pod bg-primary bg-opacity-10 text-primary">
-                                <i class="fas fa-users"></i>
+        <div class="px-4"> <!-- Page padding inside fluid container -->
+            <!-- KPI Cards -->
+            <div class="row g-4 mb-5">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-0 luxury-card kpi-card-blue h-100 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="stat-icon-pod bg-gradient-blue text-white shadow-md">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 fw-bold small">
+                                    +{{ (total_visits * 0.1)|int if total_visits else 0 }}%
+                                </span>
                             </div>
-                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 fw-bold">
-                                +{{ (total_visits * 0.1)|int if total_visits else 0 }}%
-                            </span>
+                            <div>
+                                <p class="text-primary fw-800 text-uppercase mb-1 ls-1 opacity-75 small">Total Visits</p>
+                                <h2 class="fw-900 mb-0 text-dark">{{ total_visits }}</h2>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-secondary fw-bold text-uppercase small mb-1 ls-1">Total Visits</p>
-                            <h2 class="fw-900 mb-0 display-4 text-dark">{{ total_visits }}</h2>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-0 luxury-card kpi-card-gold h-100 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="stat-icon-pod bg-gradient-gold text-white shadow-md">
+                                    <i class="fas fa-hourglass-half"></i>
+                                </div>
+                                {% if follow_ups_pending > 0 %}
+                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2 fw-bold small">Active</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p class="text-warning fw-800 text-uppercase mb-1 ls-1 opacity-75 small">Pending Follow-ups</p>
+                                <h2 class="fw-900 mb-0 text-dark">{{ follow_ups_pending }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-0 luxury-card kpi-card-cyan h-100 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="stat-icon-pod bg-gradient-cyan text-white shadow-md">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-info fw-800 text-uppercase mb-1 ls-1 opacity-75 small">Meetings Today</p>
+                                <h2 class="fw-900 mb-0 text-dark">{{ meetings_today }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-0 luxury-card kpi-card-emerald h-100 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="stat-icon-pod bg-gradient-emerald text-white shadow-md">
+                                    <i class="fas fa-handshake"></i>
+                                </div>
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 fw-bold small">
+                                    {{ "{:.1f}".format(conversion_rate) }}%
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-success fw-800 text-uppercase mb-1 ls-1 opacity-75 small">Total Conversions</p>
+                                <h2 class="fw-900 mb-0 text-dark">{{ conversions }}</h2>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="card border-0 luxury-card h-100 shadow-sm">
-                    <div class="card-body p-4 d-flex flex-column justify-content-between">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div class="stat-icon-pod bg-warning bg-opacity-10 text-warning">
-                                <i class="fas fa-hourglass-half"></i>
+
+            <!-- Main Action & Recent Data -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-lg luxury-card quick-ops-card h-100">
+                        <div class="card-header bg-transparent py-4 px-4 border-0">
+                            <h4 class="fw-bold mb-0 text-dark">Quick Operations</h4>
+                        </div>
+                        <div class="card-body p-4 pt-0">
+                            <!-- Featured Booking Button -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-12">
+                                     <a href="{{ url_for('walkin_order') }}"
+                                         class="btn btn-primary d-flex align-items-center justify-content-between p-4 border-0 shadow-lg btn-gradient-animate"
+                                         style="background: linear-gradient(135deg, #1e293b 0%, #2563eb 50%, #1e293b 100%); border-radius: 1.25rem;">
+                                         <div class="d-flex align-items-center gap-4">
+                                             <div class="bg-white bg-opacity-20 p-3 rounded-4">
+                                                 <i class="fas fa-shipping-fast fa-2x text-white"></i>
+                                             </div>
+                                             <div class="text-start">
+                                                 <h4 class="mb-0 fw-bold text-white">Book Walk-in Order</h4>
+                                                 <p class="mb-0 text-white opacity-75 small">Immediate customer shipment processing</p>
+                                             </div>
+                                         </div>
+                                         <i class="fas fa-chevron-right fa-lg text-white opacity-50"></i>
+                                     </a>
+                                 </div>
                             </div>
-                            {% if follow_ups_pending > 0 %}
-                            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2 fw-bold">Active</span>
+
+                            <!-- Secondary Quick Links -->
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <a href="{{ url_for('marketing_manager_pitch_followup') }}"
+                                        class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
+                                        <i class="fas fa-arrow-right text-primary"></i>
+                                        <span class="fw-600">Pitch Follow-ups</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="{{ url_for('marketing_manager_client_reschedule') }}"
+                                        class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
+                                        <i class="fas fa-calendar-check text-info"></i>
+                                        <span class="fw-600">Reschedules</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="{{ url_for('marketing_manager_meeting_notes') }}"
+                                        class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
+                                        <i class="fas fa-clipboard text-secondary"></i>
+                                        <span class="fw-600">Meeting Notes</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="{{ url_for('marketing_manager_insights') }}"
+                                        class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
+                                        <i class="fas fa-lightbulb text-success"></i>
+                                        <span class="fw-600">Market Insights</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="{{ url_for('marketing_visit_new') }}"
+                                        class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
+                                        <i class="fas fa-plus text-warning"></i>
+                                        <span class="fw-600">New Pitch</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="{{ url_for('marketing_visits') }}"
+                                        class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border text-dark">
+                                        <i class="fas fa-list"></i>
+                                        <span class="fw-600">All Visits</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Summary (Repurposed Recent Visits) -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm luxury-card h-100">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold mb-0">Recent Visits</h5>
+                            <a href="{{ url_for('marketing_visits') }}"
+                                class="text-primary small fw-bold text-decoration-none">View All</a>
+                        </div>
+                        <div class="card-body p-0">
+                            {% if recent_visits %}
+                            <div class="list-group list-group-flush">
+                                {% for visit in recent_visits %}
+                                <a href="{{ url_for('marketing_visit_detail', visit_id=visit.id) }}"
+                                    class="list-group-item list-group-item-action border-0 px-3 py-3 d-flex align-items-center">
+                                    <div class="avatar-circle me-3"
+                                        style="width: 40px; height: 40px; background: #f1f5f9;">
+                                        <i class="fas fa-user text-muted small"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0 fw-bold">{{ visit.contact_name }}</h6>
+                                            <span
+                                                class="badge bg-{% if visit.status == 'new' %}primary{% elif visit.status == 'follow_up' %}warning{% elif visit.status == 'converted' %}success{% else %}danger{% endif %} rounded-pill opacity-75"
+                                                style="font-size: 0.65rem;">
+                                                {{ visit.status.replace('_', ' ').title() }}
+                                            </span>
+                                        </div>
+                                        <small class="text-muted">{{ visit.company_name }}</small>
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="p-5 text-center">
+                                <img src="https://illustrations.popsy.co/gray/active-search.svg" alt="Empty"
+                                    style="width: 120px; opacity: 0.5;" class="mb-3">
+                                <p class="text-muted small">No recent visits tracked</p>
+                            </div>
                             {% endif %}
                         </div>
-                        <div>
-                            <p class="text-secondary fw-bold text-uppercase small mb-1 ls-1">Pending Follow-ups</p>
-                            <h2 class="fw-900 mb-0 display-4 text-dark">{{ follow_ups_pending }}</h2>
-                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="card border-0 luxury-card h-100 shadow-sm">
-                    <div class="card-body p-4 d-flex flex-column justify-content-between">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div class="stat-icon-pod bg-info bg-opacity-10 text-info">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="text-secondary fw-bold text-uppercase small mb-1 ls-1">Meetings Today</p>
-                            <h2 class="fw-900 mb-0 display-4 text-dark">{{ meetings_today }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="card border-0 luxury-card h-100 shadow-sm">
-                    <div class="card-body p-4 d-flex flex-column justify-content-between">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div class="stat-icon-pod bg-success bg-opacity-10 text-success">
-                                <i class="fas fa-handshake"></i>
-                            </div>
-                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 fw-bold">{{ "{:.1f}".format(conversion_rate) }}%</span>
-                        </div>
-                        <div>
-                            <p class="text-secondary fw-bold text-uppercase small mb-1 ls-1">Total Conversions</p>
-                            <h2 class="fw-900 mb-0 display-4 text-dark">{{ conversions }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Main Action & Recent Data -->
-        <div class="row g-4 mb-4">
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-sm luxury-card h-100">
-                    <div class="card-header bg-white py-4 px-4 border-0">
-                        <h4 class="fw-bold mb-0">Quick Operations</h4>
-                    </div>
-                    <div class="card-body p-4 pt-0">
-                    <!-- Featured Booking Button -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-12">
-                            <a href="{{ url_for('walkin_order') }}" class="btn btn-primary d-flex align-items-center justify-content-between p-4 border-0 shadow-lg btn-gradient-animate" 
-                               style="background: linear-gradient(135deg, #1e293b 0%, #2563eb 50%, #1e293b 100%); border-radius: 1.25rem;">
-                                <div class="d-flex align-items-center gap-4">
-                                    <div class="bg-white bg-opacity-20 p-3 rounded-4">
-                                        <i class="fas fa-shipping-fast fa-2x text-white"></i>
-                                    </div>
-                                    <div class="text-start">
-                                        <h4 class="mb-0 fw-bold text-white">Book Walk-in Order</h4>
-                                        <p class="mb-0 text-white opacity-75 small">Process a new customer shipment instantly</p>
-                                    </div>
+            <!-- Secondary Data Row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card border-0 shadow-sm luxury-card overflow-hidden">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="fw-bold mb-0 text-danger">
+                                <i class="fas fa-hourglass-half me-2"></i>Pending Follow-ups
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            {% if pending_followups %}
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-4">Contact</th>
+                                            <th>Company</th>
+                                            <th>Recent Notes</th>
+                                            <th>Next Scheduled</th>
+                                            <th class="text-end pe-4">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for followup in pending_followups %}
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="fw-bold">{{ followup.visit.contact_name }}</div>
+                                            </td>
+                                            <td>{{ followup.visit.company_name }}</td>
+                                            <td>
+                                                <div class="text-muted small text-truncate" style="max-width: 250px;">
+                                                    {{ followup.notes[:60] }}{% if followup.notes|length > 60 %}...{%
+                                                    endif %}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if followup.follow_up_date %}
+                                                <span class="text-danger fw-bold small">
+                                                    <i class="fas fa-calendar-day me-1"></i>
+                                                    {{ followup.follow_up_date.strftime('%b %d, %H:%M') }}
+                                                </span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <a href="{{ url_for('marketing_visit_detail', visit_id=followup.visit_id) }}"
+                                                    class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">Review</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="p-5 text-center text-muted">
+                                <div class="mb-3">
+                                    <i class="fas fa-check-circle fa-4x text-success opacity-25"></i>
                                 </div>
-                                <i class="fas fa-chevron-right fa-lg text-white opacity-50"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Secondary Quick Links -->
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <a href="{{ url_for('marketing_manager_pitch_followup') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
-                                <i class="fas fa-arrow-right text-primary"></i>
-                                <span class="fw-600">Pitch Follow-ups</span>
-                            </a>
-                        </div>
-                        <div class="col-md-4">
-                            <a href="{{ url_for('marketing_manager_client_reschedule') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
-                                <i class="fas fa-calendar-check text-info"></i>
-                                <span class="fw-600">Reschedules</span>
-                            </a>
-                        </div>
-                        <div class="col-md-4">
-                            <a href="{{ url_for('marketing_manager_meeting_notes') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
-                                <i class="fas fa-clipboard text-secondary"></i>
-                                <span class="fw-600">Meeting Notes</span>
-                            </a>
-                        </div>
-                        <div class="col-md-4">
-                            <a href="{{ url_for('marketing_manager_insights') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
-                                <i class="fas fa-lightbulb text-success"></i>
-                                <span class="fw-600">Market Insights</span>
-                            </a>
-                        </div>
-                        <div class="col-md-4">
-                            <a href="{{ url_for('marketing_visit_new') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border">
-                                <i class="fas fa-plus text-warning"></i>
-                                <span class="fw-600">New Pitch</span>
-                            </a>
-                        </div>
-                        <div class="col-md-4">
-                            <a href="{{ url_for('marketing_visits') }}" class="btn btn-light w-100 p-3 text-start d-flex align-items-center gap-3 luxury-link border text-dark">
-                                <i class="fas fa-list"></i>
-                                <span class="fw-600">All Visits</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Activity Summary (Repurposed Recent Visits) -->
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm luxury-card h-100">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold mb-0">Recent Visits</h5>
-                    <a href="{{ url_for('marketing_visits') }}" class="text-primary small fw-bold text-decoration-none">View All</a>
-                </div>
-                <div class="card-body p-0">
-                    {% if recent_visits %}
-                    <div class="list-group list-group-flush">
-                        {% for visit in recent_visits %}
-                        <a href="{{ url_for('marketing_visit_detail', visit_id=visit.id) }}" class="list-group-item list-group-item-action border-0 px-3 py-3 d-flex align-items-center">
-                            <div class="avatar-circle me-3" style="width: 40px; height: 40px; background: #f1f5f9;">
-                                <i class="fas fa-user text-muted small"></i>
+                                <h4 class="fw-bold">All caught up!</h4>
+                                <p>You have no pending follow-ups for the upcoming period.</p>
                             </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0 fw-bold">{{ visit.contact_name }}</h6>
-                                    <span class="badge bg-{% if visit.status == 'new' %}primary{% elif visit.status == 'follow_up' %}warning{% elif visit.status == 'converted' %}success{% else %}danger{% endif %} rounded-pill opacity-75" style="font-size: 0.65rem;">
-                                        {{ visit.status.replace('_', ' ').title() }}
-                                    </span>
-                                </div>
-                                <small class="text-muted">{{ visit.company_name }}</small>
-                            </div>
-                        </a>
-                        {% endfor %}
+                            {% endif %}
+                        </div>
                     </div>
-                    {% else %}
-                    <div class="p-5 text-center">
-                        <img src="https://illustrations.popsy.co/gray/active-search.svg" alt="Empty" style="width: 120px; opacity: 0.5;" class="mb-3">
-                        <p class="text-muted small">No recent visits tracked</p>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Secondary Data Row -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card border-0 shadow-sm luxury-card overflow-hidden">
-                <div class="card-header bg-white py-3">
-                    <h5 class="fw-bold mb-0 text-danger">
-                        <i class="fas fa-hourglass-half me-2"></i>Pending Follow-ups
-                    </h5>
-                </div>
-                <div class="card-body p-0">
-                    {% if pending_followups %}
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th class="ps-4">Contact</th>
-                                    <th>Company</th>
-                                    <th>Recent Notes</th>
-                                    <th>Next Scheduled</th>
-                                    <th class="text-end pe-4">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for followup in pending_followups %}
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="fw-bold">{{ followup.visit.contact_name }}</div>
-                                    </td>
-                                    <td>{{ followup.visit.company_name }}</td>
-                                    <td>
-                                        <div class="text-muted small text-truncate" style="max-width: 250px;">
-                                            {{ followup.notes[:60] }}{% if followup.notes|length > 60 %}...{% endif %}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if followup.follow_up_date %}
-                                        <span class="text-danger fw-bold small">
-                                            <i class="fas fa-calendar-day me-1"></i>
-                                            {{ followup.follow_up_date.strftime('%b %d, %H:%M') }}
-                                        </span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <a href="{{ url_for('marketing_visit_detail', visit_id=followup.visit_id) }}" 
-                                           class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">Review</a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="p-5 text-center text-muted">
-                        <div class="mb-3">
-                            <i class="fas fa-check-circle fa-4x text-success opacity-25"></i>
-                        </div>
-                        <h4 class="fw-bold">All caught up!</h4>
-                        <p>You have no pending follow-ups for the upcoming period.</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
+    <style>
+        /* Professional Overrides */
+        .fw-900 {
+            font-weight: 900 !important;
+        }
 
-<style>
-    /* Professional Overrides */
-    .fw-900 { font-weight: 900 !important; }
-    .ls-1 { letter-spacing: 0.05rem; }
-    .fw-600 { font-weight: 600; }
-    
-    /* Sophisticated Page Background */
-    .dashboard-canvas {
-        background-color: #f8fafc;
-        background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-        background-size: 24px 24px;
-        min-height: 100vh;
-    }
+        .ls-1 {
+            letter-spacing: 0.05rem;
+        }
 
-    .luxury-card {
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        border: 1px solid rgba(255, 255, 255, 0.8) !important;
-        border-radius: 1.5rem !important;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-    
-    .luxury-card:hover {
-        transform: translateY(-8px) scale(1.02);
-        background: #ffffff;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-        border-color: #2563eb !important;
-    }
-    
-    .luxury-link {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 1rem !important;
-        background: rgba(255, 255, 255, 0.8) !important;
-        border: 1px solid #e2e8f0 !important;
-    }
-    
-    .luxury-link:hover {
-        background: #ffffff !important;
-        border-color: #2563eb !important;
-        color: #2563eb !important;
-        transform: translateY(-3px);
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
-    }
-    
-    .stat-icon-pod {
-        width: 60px;
-        height: 60px;
-        border-radius: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.75rem;
-        box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-    }
+        .fw-600 {
+            font-weight: 600;
+        }
 
-    .btn-gradient-animate {
-        background-size: 200% auto;
-        transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3) !important;
-    }
-    .btn-gradient-animate:hover {
-        background-position: right center;
-        transform: scale(1.015);
-        box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.4) !important;
-    }
-</style>
+        /* Sophisticated Page Background */
+        .dashboard-canvas {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+            min-height: 100vh;
+        }
+
+        .luxury-card {
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 1.25rem !important;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card-blue { background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); }
+        .kpi-card-gold { background: linear-gradient(135deg, #fffaf0 0%, #ffffff 100%); }
+        .kpi-card-cyan { background: linear-gradient(135deg, #f0fdff 0%, #ffffff 100%); }
+        .kpi-card-emerald { background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%); }
+
+        .luxury-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .kpi-card-blue:hover { border-color: #3b82f6 !important; }
+        .kpi-card-gold:hover { border-color: #f59e0b !important; }
+        .kpi-card-cyan:hover { border-color: #06b6d4 !important; }
+        .kpi-card-emerald:hover { border-color: #10b981 !important; }
+
+        .bg-gradient-blue { background: linear-gradient(135deg, #2563eb, #1e40af); }
+        .bg-gradient-gold { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .bg-gradient-cyan { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .bg-gradient-emerald { background: linear-gradient(135deg, #10b981, #059669); }
+
+        .luxury-link {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1rem !important;
+            background: #ffffff !important;
+            border: 1.5px solid #cbd5e1 !important;
+            color: #1e293b;
+        }
+
+        .luxury-link:hover {
+            background: #f8fafc !important;
+            border-color: #3b82f6 !important;
+            color: #2563eb !important;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.15);
+        }
+
+        .luxury-link i {
+            transition: transform 0.3s ease;
+        }
+
+        .luxury-link:hover i {
+            transform: translateX(4px);
+        }
+
+        .stat-icon-pod {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .quick-ops-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+            border: 1.5px solid #d1d5db !important;
+        }
+
+        .quick-ops-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.03) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .luxury-card:hover .stat-icon-pod {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .btn-gradient-animate {
+            background-size: 200% auto;
+            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3) !important;
+        }
+
+        .btn-gradient-animate:hover {
+            background-position: right center;
+            transform: scale(1.015);
+            box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.4) !important;
+        }
+
+        .fw-800 { font-weight: 800 !important; }
+        .fw-801 { font-weight: 801 !important; }
+        .font-xs { font-size: 0.65rem !important; }
+        .x-small { font-size: 0.75rem !important; }
+        .shadow-md { box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important; }
+    </style>
 {% endblock %}

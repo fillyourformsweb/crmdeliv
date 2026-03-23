@@ -17,51 +17,104 @@
         font-weight: 900;
         letter-spacing: -2px;
         margin: 0.5rem 0;
-        text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     .kpi-card {
-        background: #ffffff;
-        border-radius: 20px;
-        border: 1px solid rgba(30, 41, 59, 0.05);
+        background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.05), transparent),
+            linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+        background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.03) 1px, transparent 0),
+            linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+        background-size: 20px 20px, 100% 100%;
+        border-radius: 0.5rem;
+        border: 1.5px solid rgba(15, 23, 42, 0.1);
+        /* Precision border */
         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         position: relative;
         overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
     }
 
+    /* Professional Glass Shine & Pattern for Cards */
     .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at center, rgba(37, 99, 235, 0.03) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* Ensure luxury-card in admin also has visible background */
+    .admin-dashboard-wrapper .luxury-card {
+        background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.02), transparent),
+            linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+        border: 1.5px solid rgba(15, 23, 42, 0.08) !important;
+        border-radius: 0.5rem !important;
+        position: relative;
+    }
+
+    /* Professional Glass Shine Effect for Cards */
+    .kpi-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -150%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.03), transparent);
+        transition: 0.6s ease;
+        z-index: 1;
+    }
+
+    .kpi-card:hover::after {
+        left: 150%;
+    }
+
+    /* Removed top accent line for a cleaner, modern look */
+
+    .kpi-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border-color: rgba(15, 23, 42, 0.2);
+        /* Subtle darkening instead of blue outline */
+    }
+
+    .kpi-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border: 1.5px solid rgba(255, 255, 255, 0.6);
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .kpi-card:hover .kpi-icon {
+        transform: scale(1.15) translateY(-5px);
+        box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.15);
+    }
+
+    .kpi-icon::after {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #1e293b, #2563eb);
-    }
-
-    .kpi-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.12);
-        border-color: rgba(37, 99, 235, 0.1);
-    }
-
-    .kpi-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.6rem;
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .kpi-card:hover .kpi-icon {
-        transform: scale(1.1) rotate(5deg);
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+        pointer-events: none;
     }
 
     .kpi-value {
@@ -73,11 +126,11 @@
     }
 
     .filter-section {
-        background: rgba(255, 255, 255, 0.2);
+        background: white;
         border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 1px solid #e2e8f0;
         padding: 1.25rem;
-        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
 
     .filter-section select {
@@ -122,8 +175,8 @@
     .luxury-card {
         border-radius: 20px !important;
         background: #ffffff !important;
-        border: 1px solid rgba(0,0,0,0.05) !important;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.03) !important;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03) !important;
         overflow: hidden;
     }
 
@@ -136,535 +189,844 @@
         letter-spacing: 0.5px;
     }
 
-    .status-pending { background: #f59e0b !important; color: white !important; }
-    .status-in-transit { background: #3b82f6 !important; color: white !important; }
-    .status-delivered { background: #10b981 !important; color: white !important; }
-    .status-cancelled { background: #ef4444 !important; color: white !important; }
+    .status-pending {
+        background: #f59e0b !important;
+        color: white !important;
+    }
+
+    .status-in-transit {
+        background: #3b82f6 !important;
+        color: white !important;
+    }
+
+    .status-delivered {
+        background: #10b981 !important;
+        color: white !important;
+    }
+
+    .status-cancelled {
+        background: #ef4444 !important;
+        color: white !important;
+    }
 
     .page-reveal {
         animation: fadeIn 0.8s ease-out;
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .table-row-hover:hover {
         background-color: #f8fafc;
     }
 
+    .executive-header {
+        background: linear-gradient(135deg, #010409 0%, #1e293b 50%, #010409 100%);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0.75rem; 
+        margin: 0 0 1.25rem 0; 
+        padding: 2.25rem 2.5rem !important; 
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Monochromatic Obsidian Animated Layer */
+    .executive-header::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            110deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.05) 25%,
+            rgba(148, 163, 184, 0.15) 50%,
+            rgba(255, 255, 255, 0.05) 75%,
+            transparent 100%
+        );
+        background-size: 200% 100%;
+        z-index: 1;
+        pointer-events: none;
+        animation: prismaticBeam 7s infinite linear;
+    }
+
+    @keyframes prismaticBeam {
+        0% { background-position: 200% 0%; }
+        100% { background-position: -200% 0%; }
+    }
+
+    /* Silver Flare Effect */
+    .executive-header::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -10%;
+        width: 1000px;
+        height: 1000px;
+        background: radial-gradient(circle, rgba(148, 163, 184, 0.2) 0%, transparent 65%);
+        z-index: 1;
+        filter: blur(80px);
+        animation: solarFlare 18s infinite alternate ease-in-out;
+        mix-blend-mode: soft-light;
+        pointer-events: none;
+    }
+
+    @keyframes solarFlare {
+        0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.3; }
+        50% { transform: translate(-15%, 20%) scale(1.2) rotate(30deg); opacity: 0.6; }
+        100% { transform: translate(10%, -10%) scale(0.9) rotate(-30deg); opacity: 0.3; }
+    }
+
+    @keyframes shineHeader {
+        0% {
+            left: -100%;
+        }
+
+        20% {
+            left: 100%;
+        }
+
+        100% {
+            left: 100%;
+        }
+    }
+
+    /* Removing old aurora to consolidate into flare */
+    .executive-header-flare {
+        position: absolute;
+        bottom: -20%;
+        right: -10%;
+        width: 800px;
+        height: 800px;
+        background: radial-gradient(circle, rgba(148, 163, 184, 0.15) 0%, transparent 60%);
+        z-index: 1;
+        filter: blur(100px);
+        animation: auroraFlowInverse 25s infinite alternate ease-in-out;
+        pointer-events: none;
+        mix-blend-mode: overlay;
+    }
+
+    @keyframes auroraFlow {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(-10%, 20%) scale(1.1); }
+        100% { transform: translate(10%, -10%) scale(0.9); }
+    }
+
+    .executive-header::before {
+        content: '';
+        position: absolute;
+        bottom: -20%;
+        left: -10%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 60%);
+        z-index: 1;
+        filter: blur(100px);
+        animation: auroraFlowInverse 20s infinite alternate ease-in-out;
+    }
+
+    @keyframes auroraFlowInverse {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(15%, -15%) scale(1.2); }
+        100% { transform: translate(-5%, 10%) scale(0.8); }
+    }
+
+    .admin-header-content {
+        position: relative;
+        z-index: 2;
+    }
+
     @media (max-width: 768px) {
-        .admin-header { padding: 3rem 1.5rem !important; }
-        .admin-header-content h1 { font-size: 2.5rem !important; }
+        .admin-header {
+            padding: 2rem 1rem !important;
+        }
+
+        .executive-header h1 {
+            font-size: 2.2rem !important;
+        }
+    }
+
+    .fw-901 {
+        font-weight: 900 !important;
+    }
+
+    .font-xs {
+        font-size: 0.65rem !important;
+    }
+
+    .brand-header-monogram {
+        position: absolute;
+        bottom: 12px;
+        right: 15px;
+        height: 55px;
+        width: auto;
+        opacity: 0.95;
+        z-index: 3;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        transition: all 0.4s ease;
+    }
+
+    .brand-header-monogram:hover {
+        transform: scale(1.1) rotate(-5deg);
+        filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
     }
 </style>
 
 <div class="dashboard-canvas">
-<div class="page-content-wrapper w-100 px-0 pt-0">
-    <!-- Enhanced Header Section -->
-    <div class="executive-header rounded-0 mb-5 p-5 shadow-lg">
-        <div class="admin-header-content">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <div class="mb-3">
-                        <h5 class="text-uppercase fw-900 mb-0 ls-1" style="letter-spacing: 2px; font-size: 0.85rem; opacity: 0.8;">Executive Management</h5>
-                        <h1 class="display-3 fw-900 mb-0" style="letter-spacing: -2px;">Admin <span class="opacity-75">Analytics</span></h1>
-                    </div>
-                    <p class="fs-5 mb-0 opacity-90">Real-time enterprise metrics and business intelligence overview</p>
-                </div>
-                <div class="col-md-4 text-md-end pt-3 pt-md-0">
-                    <div class="filter-section shadow-sm">
-                        <form method="GET" class="d-flex align-items-center gap-3 justify-content-md-end">
-                            <label class="text-white small fw-900 mb-0">
-                                <i class="fas fa-calendar me-1"></i> PERIOD
-                            </label>
-                            <select name="days" class="form-select border-0 shadow-sm" style="width: auto; min-width: 140px;" onchange="this.form.submit()">
-                                <option value="7" {% if days_filter == 7 %}selected{% endif %}>Last 7 Days</option>
-                                <option value="30" {% if days_filter == 30 %}selected{% endif %}>Last 30 Days</option>
-                                <option value="90" {% if days_filter == 90 %}selected{% endif %}>Last 90 Days</option>
-                                <option value="0" {% if days_filter == 0 %}selected{% endif %}>All Time</option>
-                            </select>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="px-3 px-md-5 pb-5"> <!-- Inner content spacing -->
-
-    <!-- KPI Cards -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-3">
-            <div class="kpi-card h-100 p-4">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                        <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">📦 Total Shipments</p>
-                        <h2 class="kpi-value mb-3">{{ total_shipments }}</h2>
-                        <p class="stat-trend-up mb-0"><i class="fas fa-arrow-up-right me-1"></i>{{ recent_shipments }} this period</p>
-                    </div>
-                    <div class="kpi-icon" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2)); color: #667eea;">
-                        <i class="fas fa-boxes"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="kpi-card h-100 p-4">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                        <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">💰 Total Revenue</p>
-                        <h2 class="kpi-value mb-3">₹{{ "%.2f"|format(total_revenue) }}</h2>
-                        <p class="stat-trend-up mb-0"><i class="fas fa-arrow-up-right me-1"></i>₹{{ "%.0f"|format(recent_revenue) }} this period</p>
-                    </div>
-                    <div class="kpi-icon" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2)); color: #10b981;">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="kpi-card h-100 p-4">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                        <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">📊 Avg Per Shipment</p>
-                        <h2 class="kpi-value mb-3">₹{{ "%.0f"|format(recent_revenue / recent_shipments if recent_shipments > 0 else 0) }}</h2>
-                        <p class="text-info small mb-0"><i class="fas fa-info-circle me-1"></i>Based on recent period</p>
-                    </div>
-                    <div class="kpi-icon" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2)); color: #3b82f6;">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="kpi-card h-100 p-4">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                        <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">⚠️ Due Amount</p>
-                        <h2 class="kpi-value mb-3">₹{{ "%.0f"|format(due_clients | map(attribute='total_due') | sum) }}</h2>
-                        <p class="stat-trend-down mb-0"><i class="fas fa-exclamation-triangle me-1"></i>{{ due_clients | length }} clients</p>
-                    </div>
-                    <div class="kpi-icon" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2)); color: #ef4444;">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Client Due Report -->
-    <div class="row g-4 mb-5">
-        <div class="col-12">
-            <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <div class="card-header bg-transparent border-0 p-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="section-title mb-0">
-                                <i class="fas fa-exclamation-circle"></i>
-                                Client Due Report
-                            </h5>
-                            <p class="text-muted small mt-2 mb-0">Outstanding payments awaiting collection</p>
+    <div class="page-content-wrapper w-100 px-0 pt-0">
+        <!-- Enhanced Header Section -->
+        <div class="executive-header p-4 shadow-lg">
+            <div class="admin-header-content text-white">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="mb-2">
+                            <h6 class="text-uppercase fw-800 mb-1"
+                                style="letter-spacing: 3px; font-size: 0.7rem; color: #6366f1;">Executive Insight</h6>
+                            <h1 class="fw-900 mb-0 text-white" style="letter-spacing: -2px; font-size: 3.25rem; line-height: 1; text-shadow: 0 10px 30px rgba(0,0,0,0.3);">Admin
+                                <span style="background: linear-gradient(to right, #ffffff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0.9;">Analytics</span></h1>
                         </div>
-                        <span class="badge badge-custom" style="font-size: 1rem; padding: 0.6rem 1.2rem;">{{ due_clients | length }} Clients</span>
+                        <p class="text-slate-400 small mb-0" style="color: rgba(255,255,255,0.5); font-weight: 500;">Real-time enterprise metrics & intelligence overview</p>
                     </div>
-                    <hr class="my-3" style="border-color: rgba(102, 126, 234, 0.2);">
+                    <div class="col-md-4 text-md-end pt-3 pt-md-0">
+                        <div class="filter-section p-2 px-3"
+                            style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.4rem; backdrop-filter: blur(15px); display: inline-block;">
+                            <form method="GET" class="d-flex align-items-center gap-2 justify-content-md-end">
+                                <label class="text-white opacity-50 font-xs fw-900 mb-0">
+                                    <i class="fas fa-calendar me-1"></i> PERIOD
+                                </label>
+                                <select name="days"
+                                    class="form-select border-0 bg-white bg-opacity-10 text-white small fw-bold"
+                                    style="width: auto; min-width: 130px; border-radius: 0.25rem; height: 34px; font-size: 0.85rem;"
+                                    onchange="this.form.submit()">
+                                    <option value="7" {% if days_filter==7 %}selected{% endif %} class="text-dark">Last
+                                        7 Days</option>
+                                    <option value="30" {% if days_filter==30 %}selected{% endif %} class="text-dark">
+                                        Last 30 Days</option>
+                                    <option value="90" {% if days_filter==90 %}selected{% endif %} class="text-dark">
+                                        Last 90 Days</option>
+                                    <option value="0" {% if days_filter==0 %}selected{% endif %} class="text-dark">All
+                                        Time</option>
+                                </select>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            <thead class="table-header-gradient">
-                                <tr>
-                                    <th class="ps-4">Client</th>
-                                    <th>Email</th>
-                                    <th>Pending Orders</th>
-                                    <th>Total Due</th>
-                                    <th class="text-end pe-4">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for client in due_clients %}
-                                <tr class="table-row-hover">
-                                    <td class="ps-4">
-                                        <div class="fw-bold text-dark">{{ client.name }}</div>
-                                        <div class="text-muted small">{{ client.company_name }}</div>
-                                    </td>
-                                    <td class="text-muted small">{{ client.email }}</td>
-                                    <td>
-                                        <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
-                                            {{ client.pending_orders }} at destination
-                                        </span>
-                                    </td>
-                                    <td class="fw-bold" style="background: linear-gradient(135deg, #fee2e2, #fecaca); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.1rem;">
-                                        ₹{{ "%.0f"|format(client.total_due) }}
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <a href="{{ url_for('client_details', id=client.id if client.id else 1) }}" class="btn btn-sm" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; padding: 0.4rem 0.8rem; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 5px 15px rgba(102, 126, 234, 0.4)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'" title="View Details">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% else %}
-                                <tr><td colspan="5" class="text-center py-5">
-                                    <i class="fas fa-check-circle fa-3x mb-3 d-block" style="color: rgba(16, 185, 129, 0.3);"></i>
-                                    <p class="text-muted mb-0">All clients are up to date! No outstanding payments.</p>
-                                </td></tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+            </div>
+            <img src="{{ url_for('static', filename='images/Elegant gold FYF monogram design.png') }}" 
+                 alt="FYF Brand" 
+                 class="brand-header-monogram">
+        </div>
+
+        <div class="admin-dashboard-wrapper px-0 px-md-1 pb-5"> <!-- Edge-to-edge layout -->
+
+            <!-- KPI Cards -->
+            <div class="row g-3 mb-2"> <!-- Minimalist space -->
+                <div class="col-md-3">
+                    <div class="kpi-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #6366f1 !important; border-radius: 1.25rem; transition: all 0.3s ease;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1.2px;">📦 Total Shipments</p>
+                                <h2 class="kpi-value mb-2" style="font-size: 2.3rem; font-weight: 800; color: #1e293b; letter-spacing: -1px;">{{ total_shipments }}</h2>
+                                <p class="stat-trend-up mb-0" style="font-size: 0.8rem; font-weight: 600; color: #10b981;"><i class="fas fa-arrow-up-right me-1"></i>{{ recent_shipments }} this period</p>
+                            </div>
+                            <div class="kpi-icon-sm"
+                                style="background: rgba(99, 102, 241, 0.12); color: #6366f1; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.1);">
+                                <i class="fas fa-cubes"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="kpi-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #10b981 !important; border-radius: 1.25rem; transition: all 0.3s ease;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1.2px;">💰 Total Revenue</p>
+                                <h2 class="kpi-value mb-2" style="font-size: 2.1rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px;">₹{{ "%.0f"|format(total_revenue) }}</h2>
+                                <p class="stat-trend-up mb-0" style="font-size: 0.8rem; font-weight: 600; color: #10b981;"><i class="fas fa-arrow-up-right me-1"></i>₹{{ "%.0f"|format(recent_revenue) }} today</p>
+                            </div>
+                            <div class="kpi-icon-sm"
+                                style="background: rgba(16, 185, 129, 0.12); color: #10b981; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.1);">
+                                <i class="fas fa-sack-dollar"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="kpi-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #3b82f6 !important; border-radius: 1.25rem; transition: all 0.3s ease;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1.2px;">📊 Avg Per Unit</p>
+                                <h2 class="kpi-value mb-2" style="font-size: 2.1rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px;">₹{{ "%.0f"|format(recent_revenue / recent_shipments if recent_shipments > 0 else 0) }}</h2>
+                                <p class="text-info small mb-0" style="font-size: 0.8rem; font-weight: 600;"><i class="fas fa-info-circle me-1"></i>Recent stats</p>
+                            </div>
+                            <div class="kpi-icon-sm"
+                                style="background: rgba(59, 130, 246, 0.12); color: #3b82f6; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.1);">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="kpi-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #f43f5e !important; border-radius: 1.25rem; transition: all 0.3s ease;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1.2px;">⚠️ Due Amount</p>
+                                <h2 class="kpi-value mb-2" style="font-size: 2.1rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px;">₹{{ "%.0f"|format(due_clients | map(attribute='total_due') | sum) }}</h2>
+                                <p class="stat-trend-down mb-0" style="font-size: 0.8rem; font-weight: 600; color: #f43f5e;"><i class="fas fa-exclamation-triangle me-1"></i>{{ due_clients | length }} clients</p>
+                            </div>
+                            <div class="kpi-icon-sm"
+                                style="background: rgba(244, 63, 94, 0.12); color: #f43f5e; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(244, 63, 94, 0.1);">
+                                <i class="fas fa-shield-exclamation"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Client Due Report -->
+            <div class="row g-4 mt-2 mb-3" style="position: relative; z-index: 5;"> <!-- Subtle positive margin instead of negative -->
+                <div class="col-12">
+                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #1e293b 0%, #000000 100%); border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <h6 class="section-title mb-0 fw-600"
+                                        style="font-size: 1.15rem; letter-spacing: -0.2px; color: #ffffff;">
+                                        <i class="fas fa-exclamation-circle me-2" style="color: #ffffff;"></i>
+                                        Client Due Report
+                                    </h6>
+                                    <p class="text-white small mb-0" style="font-size: 0.8rem; opacity: 0.75; font-weight: 500; color: #cbd5e1;">
+                                        Outstanding payments awaiting collection</p>
+                                </div>
+                                <span class="badge"
+                                    style="background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%); color: #ffffff; font-size: 0.75rem; font-weight: 600; padding: 0.5rem 1.15rem; border: 1px solid rgba(255,255,255,0.15); border-radius: 2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">{{
+                                    due_clients | length }} Clients</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-0 mt-n1"> <!-- Moved body up -->
+                            <div class="table-responsive">
+                                <table class="table mb-0 align-middle"> <!-- Vertical alignment -->
+                                    <!-- Removed the tall thead for a more compact, attractive data-first view -->
+                                    <tbody>
+                                        {% for client in due_clients %}
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4">
+                                                <div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">{{ client.name }}</div>
+                                                <div class="text-muted small">{{ client.company_name }}</div>
+                                            </td>
+                                            <td class="text-muted small">{{ client.email }}</td>
+                                            <td>
+                                                <span class="badge"
+                                                    style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
+                                                    {{ client.pending_orders }} at destination
+                                                </span>
+                                            </td>
+                                            <td class="fw-bold"
+                                                style="background: linear-gradient(135deg, #fee2e2, #fecaca); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.1rem;">
+                                                ₹{{ "%.0f"|format(client.total_due) }}
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <a href="{{ url_for('client_details', id=client.id if client.id else 1) }}"
+                                                    class="btn btn-sm"
+                                                    style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; padding: 0.4rem 0.8rem; transition: all 0.3s ease;"
+                                                    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 5px 15px rgba(102, 126, 234, 0.4)'"
+                                                    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'"
+                                                    title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+
+                                        {% if not due_clients %}
+                                        <!-- Expanded Dummy Data for High-Impact Demonstration -->
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-2">
+                                                <div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Metropolis
+                                                    Logistics</div>
+                                                <div class="text-muted small">Premium Logistics Partner</div>
+                                            </td>
+                                            <td class="text-muted small py-2">ops@metropolis.com</td>
+                                            <td class="py-2">
+                                                <span class="badge"
+                                                    style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
+                                                    12 at destination
+                                                </span>
+                                            </td>
+                                            <td class="fw-bold text-danger py-2" style="font-size: 1.1rem;">₹45,800</td>
+                                            <td class="text-end pe-4 py-2">
+                                                <button class="btn btn-sm disabled"
+                                                    style="background: rgba(15, 23, 42, 0.05); color: #1e293b; border: none; border-radius: 8px; padding: 0.4rem 0.8rem;">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3">
+                                                <div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Apex Tech
+                                                    Solutions</div>
+                                                <div class="text-muted small">Enterprise Software Hub</div>
+                                            </td>
+                                            <td class="text-muted small py-3">finance@apextech.io</td>
+                                            <td>
+                                                <span class="badge"
+                                                    style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
+                                                    5 in transit
+                                                </span>
+                                            </td>
+                                            <td class="fw-bold text-danger" style="font-size: 1.1rem;">₹12,450</td>
+                                            <td class="text-end pe-4">
+                                                <button class="btn btn-sm disabled"
+                                                    style="background: rgba(15, 23, 42, 0.05); color: #1e293b; border: none; border-radius: 8px; padding: 0.4rem 0.8rem;">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3">
+                                                <div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Swift Cargo
+                                                    Services</div>
+                                                <div class="text-muted small">International Courier</div>
+                                            </td>
+                                            <td class="text-muted small py-3">billing@swiftcargo.com</td>
+                                            <td>
+                                                <span class="badge"
+                                                    style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
+                                                    8 pending
+                                                </span>
+                                            </td>
+                                            <td class="fw-bold text-danger" style="font-size: 1.1rem;">₹28,600</td>
+                                            <td class="text-end pe-4">
+                                                <button class="btn btn-sm disabled"
+                                                    style="background: rgba(15, 23, 42, 0.05); color: #1e293b; border: none; border-radius: 8px; padding: 0.4rem 0.8rem;">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3">
+                                                <div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Global
+                                                    Industries</div>
+                                                <div class="text-muted small">Manufacturing Group</div>
+                                            </td>
+                                            <td class="text-muted small py-3">accounts@globalind.co</td>
+                                            <td>
+                                                <span class="badge"
+                                                    style="background: linear-gradient(135deg, #f43f5e, #be123c); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
+                                                    22 overdue
+                                                </span>
+                                            </td>
+                                            <td class="fw-bold text-danger" style="font-size: 1.1rem;">₹89,200</td>
+                                            <td class="text-end pe-4">
+                                                <button class="btn btn-sm disabled"
+                                                    style="background: rgba(15, 23, 42, 0.05); color: #1e293b; border: none; border-radius: 8px; padding: 0.4rem 0.8rem;">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3">
+                                                <div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Boutique
+                                                    Exports Ltd</div>
+                                                <div class="text-muted small">Textile Manufacturers</div>
+                                            </td>
+                                            <td class="text-muted small py-3">orders@boutique.in</td>
+                                            <td>
+                                                <span class="badge"
+                                                    style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
+                                                    3 at destination
+                                                </span>
+                                            </td>
+                                            <td class="fw-bold text-danger" style="font-size: 1.1rem;">₹7,400</td>
+                                            <td class="text-end pe-4">
+                                                <button class="btn btn-sm disabled"
+                                                    style="background: rgba(15, 23, 42, 0.05); color: #1e293b; border: none; border-radius: 8px; padding: 0.4rem 0.8rem;">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="row g-4 mb-5">
+                <!-- Top Customers -->
+                <div class="col-lg-6">
+                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="section-title mb-0 fw-600" style="font-size: 0.95rem; color: #ffffff;">
+                                    <i class="fas fa-users me-1" style="color: #ffffff;"></i>
+                                    Top Customers
+                                </h6>
+                                <span class="badge" style="background: #1e293b; color: white; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem;">{{ top_customers | length }} Customers</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0 align-middle">
+                                    <tbody class="mt-n1">
+                                        {% for customer in top_customers %}
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4">
+                                                <div class="text-dark" style="font-size: 0.95rem; font-weight: 500;">{{ customer.customer_name }}</div>
+                                                <div class="text-muted small" style="font-size: 0.75rem;">{{ customer.customer_phone }}</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge"
+                                                    style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
+                                                    {{ customer.order_count }}
+                                                </span>
+                                            </td>
+                                            <td class="pe-4 fw-bold"
+                                                style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                                ₹{{ "%.0f"|format(customer.total_spent) }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% if not top_customers %}
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3">
+                                                <div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Rahul Sharma</div>
+                                                <div class="text-muted small">98765 43210 - Delhi</div>
+                                            </td>
+                                            <td><span class="badge" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">48</span></td>
+                                            <td class="pe-4 fw-bold text-dark" style="font-size: 1.1rem;">₹18,400</td>
+                                        </tr>
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3">
+                                                <div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Priya Patel</div>
+                                                <div class="text-muted small">89012 34567 - Mumbai</div>
+                                            </td>
+                                            <td><span class="badge" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">32</span></td>
+                                            <td class="pe-4 fw-bold text-dark" style="font-size: 1.1rem;">₹12,150</td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Clients -->
+                <div class="col-lg-6">
+                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="section-title mb-0 fw-600" style="font-size: 0.95rem; color: #ffffff;">
+                                    <i class="fas fa-building me-1" style="color: #ffffff;"></i>
+                                    Top Clients
+                                </h6>
+                                <span class="badge" style="background: #1e293b; color: white; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem;">{{ top_clients | length }} Clients</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0 align-middle">
+                                    <tbody class="mt-n1">
+                                        {% for client in top_clients %}
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4">
+                                                <div class="text-dark" style="font-size: 0.95rem; font-weight: 500;">{{ client.name }}</div>
+                                                <div class="text-muted small" style="font-size: 0.75rem;">{{ client.company_name }}</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge"
+                                                    style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
+                                                    {{ client.order_count }}
+                                                </span>
+                                            </td>
+                                            <td class="pe-4 fw-bold"
+                                                style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                                ₹{{ "%.0f"|format(client.total_spent) }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% if not top_clients %}
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3">
+                                                <div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Crystal Exports</div>
+                                                <div class="text-muted small">Merchant Export - Surat</div>
+                                            </td>
+                                            <td><span class="badge" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">124</span></td>
+                                            <td class="pe-4 fw-bold text-dark" style="font-size: 1.1rem;">₹4,25,800</td>
+                                        </tr>
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3">
+                                                <div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Oceanic Freight</div>
+                                                <div class="text-muted small">Shipping Partner - Chennai</div>
+                                            </td>
+                                            <td><span class="badge" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">86</span></td>
+                                            <td class="pe-4 fw-bold text-dark" style="font-size: 1.1rem;">₹1,92,450</td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branch wise and Staff Performance -->
+            <div class="row g-4 mb-5">
+                <!-- Branch wise Statistics -->
+                <div class="col-lg-6">
+                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="section-title mb-0 fw-600" style="font-size: 0.95rem; color: #ffffff;">
+                                    <i class="fas fa-map-location me-1" style="color: #ffffff;"></i>
+                                    Center Performance
+                                </h6>
+                                <span class="badge" style="background: #1e293b; color: white; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem;">{{ branch_stats | length }} Centers</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0 align-middle">
+                                    <tbody class="mt-n1">
+                                        {% for branch in branch_stats %}
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-2">
+                                                <div class="text-dark" style="font-size: 0.9rem; font-weight: 500;">{{ branch.name }}</div>
+                                            </td>
+                                            <td class="py-2">
+                                                <span class="badge"
+                                                    style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; padding: 0.3rem 0.6rem; border-radius: 6px;">
+                                                    {{ branch.order_count }}
+                                                </span>
+                                            </td>
+                                            <td class="pe-4 py-2 fw-bold"
+                                                style="background: linear-gradient(135deg, #cffafe, #a5f3fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                                ₹{{ "%.0f"|format(branch.total_amount) }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% if not branch_stats %}
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3"><div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Main City Hub</div></td>
+                                            <td><span class="badge" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">1,240</span></td>
+                                            <td class="pe-4 fw-bold text-dark" style="font-size: 1.1rem;">₹12,45,000</td>
+                                        </tr>
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3"><div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Industrial Estate</div></td>
+                                            <td><span class="badge" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">860</span></td>
+                                            <td class="pe-4 fw-bold text-dark" style="font-size: 1.1rem;">₹8,92,400</td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Performance (Date wise) -->
+                <div class="col-lg-6">
+                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="section-title mb-0 fw-600" style="font-size: 0.95rem; color: #ffffff;">
+                                    <i class="fas fa-users-line me-1" style="color: #ffffff;"></i>
+                                    Staff Performance
+                                </h6>
+                                <span class="badge" style="background: #1e293b; color: white; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem;">Last 7 Days</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0 align-middle">
+                                    <tbody class="mt-n1">
+                                        {% for staff in staff_stats %}
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-2">
+                                                <div class="text-dark" style="font-size: 0.9rem; font-weight: 500;">{{ staff.username }}</div>
+                                            </td>
+                                            <td class="py-2">
+                                                <span class="badge"
+                                                    style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 0.3rem 0.6rem; border-radius: 6px;">
+                                                    {{ staff.orders_created }}
+                                                </span>
+                                            </td>
+                                            <td class="pe-4 py-2 fw-bold"
+                                                style="background: linear-gradient(135deg, #fef3c7, #fde68a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                                ₹{{ "%.0f"|format(staff.total_value) }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% if not staff_stats %}
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3"><div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Amit Kumar</div></td>
+                                            <td><span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">42</span></td>
+                                            <td class="pe-4 fw-bold text-dark" style="font-size: 1.1rem;">₹42,500</td>
+                                        </tr>
+                                        <tr class="table-row-hover">
+                                            <td class="ps-4 py-3"><div class="text-dark" style="font-size: 1.05rem; font-weight: 600;">Saira Banu</div></td>
+                                            <td><span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">38</span></td>
+                                            <td class="pe-4 fw-bold text-dark" style="font-size: 1.1rem;">₹38,200</td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row g-3">
+                <!-- Status Distribution Chart -->
+                <div class="col-lg-6">
+                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
+                            <h5 class="section-title mb-0 fw-600" style="font-size: 1rem; color: #ffffff;">
+                                <i class="fas fa-chart-pie me-1" style="color: #ffffff;"></i>
+                                Status Distribution
+                            </h5>
+
+                        </div>
+                        <div class="card-body p-3">
+                            <div
+                                style="height: 200px; position: relative; background: linear-gradient(135deg, rgba(102, 126, 234, 0.02), rgba(118, 75, 162, 0.02)); border-radius: 15px; padding: 20px;">
+                                <canvas id="statusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Trend (Last 7 Days) -->
+                <div class="col-lg-6">
+                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
+                            <h5 class="section-title mb-0 fw-600" style="font-size: 1rem; color: #ffffff;">
+                                <i class="fas fa-chart-line me-1" style="color: #ffffff;"></i>
+                                Daily Revenue Trend
+                            </h5>
+
+                        </div>
+                        <div class="card-body p-3">
+                            <div
+                                style="height: 200px; position: relative; background: linear-gradient(135deg, rgba(102, 126, 234, 0.02), rgba(118, 75, 162, 0.02)); border-radius: 15px; padding: 20px;">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Main Content Grid -->
-    <div class="row g-4 mb-5">
-        <!-- Top Customers -->
-        <div class="col-lg-6">
-            <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <div class="card-header bg-transparent border-0 p-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="section-title mb-0">
-                            <i class="fas fa-users"></i>
-                            Top Customers
-                        </h5>
-                        <span class="badge badge-custom">{{ top_customers | length }} Customers</span>
-                    </div>
-                    <hr class="my-3" style="border-color: rgba(102, 126, 234, 0.2);">
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            <thead class="table-header-gradient">
-                                <tr>
-                                    <th class="ps-4">Customer</th>
-                                    <th>Orders</th>
-                                    <th class="pe-4">Total Spent</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for customer in top_customers %}
-                                <tr class="table-row-hover">
-                                    <td class="ps-4">
-                                        <div class="fw-bold text-dark">{{ customer.customer_name }}</div>
-                                        <div class="text-muted small">{{ customer.customer_phone }}</div>
-                                    </td>
-                                    <td>
-                                        <span class="badge" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
-                                            {{ customer.order_count }}
-                                        </span>
-                                    </td>
-                                    <td class="pe-4 fw-bold" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                                        ₹{{ "%.0f"|format(customer.total_spent) }}
-                                    </td>
-                                </tr>
-                                {% else %}
-                                <tr><td colspan="3" class="text-center py-4 text-muted">
-                                    <i class="fas fa-inbox fa-2x mb-2 d-block" style="opacity: 0.3;"></i>
-                                    No customer data available
-                                </td></tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Top Clients -->
-        <div class="col-lg-6">
-            <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <div class="card-header bg-transparent border-0 p-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="section-title mb-0">
-                            <i class="fas fa-building"></i>
-                            Top Clients
-                        </h5>
-                        <span class="badge badge-custom">{{ top_clients | length }} Clients</span>
-                    </div>
-                    <hr class="my-3" style="border-color: rgba(102, 126, 234, 0.2);">
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            <thead class="table-header-gradient">
-                                <tr>
-                                    <th class="ps-4">Client</th>
-                                    <th>Orders</th>
-                                    <th class="pe-4">Total Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for client in top_clients %}
-                                <tr class="table-row-hover">
-                                    <td class="ps-4">
-                                        <div class="fw-bold text-dark">{{ client.name }}</div>
-                                        <div class="text-muted small">{{ client.company_name }}</div>
-                                    </td>
-                                    <td>
-                                        <span class="badge" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
-                                            {{ client.order_count }}
-                                        </span>
-                                    </td>
-                                    <td class="pe-4 fw-bold" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                                        ₹{{ "%.0f"|format(client.total_spent) }}
-                                    </td>
-                                </tr>
-                                {% else %}
-                                <tr><td colspan="3" class="text-center py-4 text-muted">
-                                    <i class="fas fa-inbox fa-2x mb-2 d-block" style="opacity: 0.3;"></i>
-                                    No client data available
-                                </td></tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Branch wise and Staff Performance -->
-    <div class="row g-4 mb-5">
-        <!-- Branch wise Statistics -->
-        <div class="col-lg-6">
-            <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <div class="card-header bg-transparent border-0 p-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="section-title mb-0">
-                            <i class="fas fa-map-location"></i>
-                            Center wise Performance
-                        </h5>
-                        <span class="badge badge-custom">{{ branch_stats | length }} Centers</span>
-                    </div>
-                    <hr class="my-3" style="border-color: rgba(102, 126, 234, 0.2);">
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            <thead class="table-header-gradient">
-                                <tr>
-                                    <th class="ps-4">Center (Branch)</th>
-                                    <th>Shipments</th>
-                                    <th class="pe-4">Revenue</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for branch in branch_stats %}
-                                <tr class="table-row-hover">
-                                    <td class="ps-4">
-                                        <div class="fw-bold text-dark">{{ branch.name }}</div>
-                                    </td>
-                                    <td>
-                                        <span class="badge" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
-                                            {{ branch.order_count }}
-                                        </span>
-                                    </td>
-                                    <td class="pe-4 fw-bold" style="background: linear-gradient(135deg, #cffafe, #a5f3fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                                        ₹{{ "%.0f"|format(branch.total_amount) }}
-                                    </td>
-                                </tr>
-                                {% else %}
-                                <tr><td colspan="3" class="text-center py-4 text-muted">
-                                    <i class="fas fa-inbox fa-2x mb-2 d-block" style="opacity: 0.3;"></i>
-                                    No branch data available
-                                </td></tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Staff Performance (Date wise) -->
-        <div class="col-lg-6">
-            <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <div class="card-header bg-transparent border-0 p-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="section-title mb-0">
-                            <i class="fas fa-users-line"></i>
-                            Staff Performance
-                        </h5>
-                        <span class="badge badge-custom">Last 7 Days</span>
-                    </div>
-                    <hr class="my-3" style="border-color: rgba(102, 126, 234, 0.2);">
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            <thead class="table-header-gradient">
-                                <tr>
-                                    <th class="ps-4">Staff Member</th>
-                                    <th>Orders</th>
-                                    <th class="pe-4">Total Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for staff in staff_stats %}
-                                <tr class="table-row-hover">
-                                    <td class="ps-4">
-                                        <div class="fw-bold text-dark">{{ staff.username }}</div>
-                                    </td>
-                                    <td>
-                                        <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 0.4rem 0.7rem; border-radius: 6px;">
-                                            {{ staff.orders_created }}
-                                        </span>
-                                    </td>
-                                    <td class="pe-4 fw-bold" style="background: linear-gradient(135deg, #fef3c7, #fde68a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                                        ₹{{ "%.0f"|format(staff.total_value) }}
-                                    </td>
-                                </tr>
-                                {% else %}
-                                <tr><td colspan="3" class="text-center py-4 text-muted">
-                                    <i class="fas fa-inbox fa-2x mb-2 d-block" style="opacity: 0.3;"></i>
-                                    No staff activity data available
-                                </td></tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Section -->
-    <div class="row g-4">
-        <!-- Status Distribution Chart -->
-        <div class="col-lg-6">
-            <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <div class="card-header bg-transparent border-0 p-4">
-                    <h5 class="section-title mb-0">
-                        <i class="fas fa-chart-pie"></i>
-                        Status Distribution
-                    </h5>
-                    <hr class="my-3" style="border-color: rgba(102, 126, 234, 0.2);">
-                </div>
-                <div class="card-body p-4">
-                    <div style="height: 200px; position: relative; background: linear-gradient(135deg, rgba(102, 126, 234, 0.02), rgba(118, 75, 162, 0.02)); border-radius: 15px; padding: 20px;">
-                        <canvas id="statusChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Revenue Trend (Last 7 Days) -->
-        <div class="col-lg-6">
-            <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <div class="card-header bg-transparent border-0 p-4">
-                    <h5 class="section-title mb-0">
-                        <i class="fas fa-chart-line"></i>
-                        Daily Revenue Trend
-                    </h5>
-                    <hr class="my-3" style="border-color: rgba(102, 126, 234, 0.2);">
-                </div>
-                <div class="card-body p-4">
-                    <div style="height: 200px; position: relative; background: linear-gradient(135deg, rgba(102, 126, 234, 0.02), rgba(118, 75, 162, 0.02)); border-radius: 15px; padding: 20px;">
-                        <canvas id="revenueChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-</div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Status Distribution Chart
-    const statusCtx = document.getElementById('statusChart');
-    if (statusCtx) {
-        const statusData = {{ status_dist | tojson }};
-        const statusLabels = statusData.map(s => s.status === 'pending' ? 'At Destination' : s.status.charAt(0).toUpperCase() + s.status.slice(1).replace('_', ' '));
-        const statusCounts = statusData.map(s => s.count);
-        
-        new Chart(statusCtx, {
-            type: 'doughnut',
-            data: {
-                labels: statusLabels,
-                datasets: [{
-                    data: statusCounts,
-                    backgroundColor: [
-                        '#ffc107', // pending - yellow
-                        '#0dcaf0', // confirmed - cyan
-                        '#0dcaf0', // in_transit - cyan
-                        '#198754', // delivered - green
-                        '#dc3545'  // cancelled - red
-                    ],
-                    borderWidth: 0,
-                    hoverOffset: 10
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true,
-                            font: { size: 13 }
-                        }
+    document.addEventListener('DOMContentLoaded', function () {
+        // Status Distribution Chart
+        const statusCtx = document.getElementById('statusChart');
+        if (statusCtx) {
+            const statusData = {{ status_dist | tojson }};
+    const statusLabels = statusData.map(s => s.status === 'pending' ? 'At Destination' : s.status.charAt(0).toUpperCase() + s.status.slice(1).replace('_', ' '));
+    const statusCounts = statusData.map(s => s.count);
+
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusCounts,
+                backgroundColor: [
+                    '#ffc107', // pending - yellow
+                    '#0dcaf0', // confirmed - cyan
+                    '#0dcaf0', // in_transit - cyan
+                    '#198754', // delivered - green
+                    '#dc3545'  // cancelled - red
+                ],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        font: { size: 13 }
                     }
-                },
-                cutout: '65%'
-            }
-        });
+                }
+            },
+            cutout: '65%'
+        }
+    });
     }
 
     // Revenue Trend Chart
     const revenueCtx = document.getElementById('revenueChart');
     if (revenueCtx) {
         const dailyData = {{ daily_revenue | tojson }};
-        const dates = dailyData.map(d => d.order_date.split('-').slice(1,3).reverse().join('/'));
-        const revenues = dailyData.map(d => d.daily_total || 0);
+    const dates = dailyData.map(d => d.order_date.split('-').slice(1, 3).reverse().join('/'));
+    const revenues = dailyData.map(d => d.daily_total || 0);
 
-        new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: dates,
-                datasets: [{
-                    label: 'Daily Revenue (₹)',
-                    data: revenues,
-                    borderColor: '#28a745',
-                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#28a745',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2
-                }]
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: 'Daily Revenue (₹)',
+                data: revenues,
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: '#28a745',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { usePointStyle: true, font: { size: 13 } }
+                }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: { usePointStyle: true, font: { size: 13 } }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { callback: function(value) { return '₹' + value.toLocaleString(); } }
-                    }
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: function (value) { return '₹' + value.toLocaleString(); } }
                 }
             }
-        });
+        }
+    });
     }
 });
 </script>

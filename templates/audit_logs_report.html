@@ -4,13 +4,13 @@
 
 {% block content %}
 <div class="page-content-wrapper w-100">
-    <div class="row mb-5 align-items-center">
+    <div class="row mb-3 align-items-center">
         <div class="col-md-7">
-            <a href="{{ url_for('audit_logs') }}" class="btn btn-light border mb-3">
-                <i class="fas fa-arrow-left me-2"></i> Back to Audit Logs
+            <a href="{{ url_for('audit_logs') }}" class="btn btn-light border btn-sm mb-2">
+                <i class="fas fa-arrow-left me-1"></i> Back
             </a>
-            <h1 class="display-4 fw-black text-dark mb-2">Audit Activity Report</h1>
-            <p class="text-muted fs-5 mb-0">System activity summary for the last 30 days.</p>
+            <h2 class="fw-black text-dark mb-1" style="letter-spacing: -1px;">Audit Activity Report</h2>
+            <p class="text-muted small mb-0">System activity summary for the last 30 days.</p>
         </div>
         <div class="col-md-5 text-md-end mt-3 mt-md-0">
             <a href="{{ url_for('export_audit_logs') }}" class="luxury-btn btn btn-success border-0">
@@ -20,29 +20,68 @@
     </div>
 
     <!-- Key Statistics Cards -->
-    <div class="row mb-4">
+    <div class="row mb-4 g-3">
+        <!-- Active Users Card -->
         <div class="col-md-3">
-            <div class="luxury-card text-center py-4">
-                <div class="fs-3 fw-bold text-primary mb-2">{{ user_activity|length }}</div>
-                <div class="text-muted small">Active Users</div>
+            <div class="luxury-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #6366f1 !important; border-radius: 1.25rem; transition: all 0.3s ease;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-uppercase fw-bold text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 1px;">Active Users</h6>
+                        <h3 class="fw-black mb-0 text-dark" style="font-size: 2.2rem; letter-spacing: -1.5px;">{{ user_activity|length }}</h3>
+                        <p class="text-indigo small mb-0 mt-1 fw-semibold" style="font-size: 0.75rem;">System activity</p>
+                    </div>
+                    <div class="p-3" style="background: rgba(99, 102, 241, 0.12); color: #6366f1; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.15);">
+                        <i class="fas fa-users-viewfinder"></i>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Entity Changes Card -->
         <div class="col-md-3">
-            <div class="luxury-card text-center py-4">
-                <div class="fs-3 fw-bold text-success mb-2">{{ entity_activity|length }}</div>
-                <div class="text-muted small">Entity Types Changed</div>
+            <div class="luxury-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #10b981 !important; border-radius: 1.25rem; transition: all 0.3s ease;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-uppercase fw-bold text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 1px;">Entities Changed</h6>
+                        <h3 class="fw-black mb-0 text-dark" style="font-size: 2.2rem; letter-spacing: -1.5px;">{{ entity_activity|length }}</h3>
+                        <p class="text-emerald small mb-0 mt-1 fw-semibold" style="font-size: 0.75rem;">Type variety</p>
+                    </div>
+                    <div class="p-3" style="background: rgba(16, 185, 129, 0.12); color: #10b981; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.15);">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Action Types Card -->
         <div class="col-md-3">
-            <div class="luxury-card text-center py-4">
-                <div class="fs-3 fw-bold text-warning mb-2">{{ action_activity|length }}</div>
-                <div class="text-muted small">Action Types</div>
+            <div class="luxury-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #f59e0b !important; border-radius: 1.25rem; transition: all 0.3s ease;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-uppercase fw-bold text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 1px;">Action Types</h6>
+                        <h3 class="fw-black mb-0 text-dark" style="font-size: 2.2rem; letter-spacing: -1.5px;">{{ action_activity|length }}</h3>
+                        <p class="text-warning small mb-0 mt-1 fw-semibold" style="font-size: 0.75rem;">Operation modes</p>
+                    </div>
+                    <div class="p-3" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.15);">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Outstanding Dues Card -->
         <div class="col-md-3">
-            <div class="luxury-card text-center py-4">
-                <div class="fs-3 fw-bold text-danger mb-2">{{ due_alerts|length }}</div>
-                <div class="text-muted small">Outstanding Dues</div>
+            <div class="luxury-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #f43f5e !important; border-radius: 1.25rem; transition: all 0.3s ease;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-uppercase fw-bold text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 1px;">Due Alerts</h6>
+                        <h3 class="fw-black mb-0 text-dark" style="font-size: 2.2rem; letter-spacing: -1.5px;">{{ due_alerts|length }}</h3>
+                        <p class="text-danger small mb-0 mt-1 fw-semibold" style="font-size: 0.75rem;">Critical alerts</p>
+                    </div>
+                    <div class="p-3" style="background: rgba(244, 63, 94, 0.12); color: #f43f5e; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(244, 63, 94, 0.1);">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
