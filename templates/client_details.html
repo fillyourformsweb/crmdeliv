@@ -56,8 +56,14 @@
                         <div class="text-dark small">{{ client.gst_number or 'N/A' }}</div>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label class="small fw-bold text-uppercase text-muted d-block">Bill Pattern</label>
-                        <div class="text-dark small">{{ client.bill_pattern or 'N/A' }}</div>
+                        <label class="small fw-bold text-uppercase text-muted d-block">Billing Pattern</label>
+                        <div class="text-dark small">
+                            {% if client.billing_pattern %}
+                                {{ client.billing_pattern.name }} (Pattern {{ client.billing_pattern.pattern_type }})
+                            {% else %}
+                                <span class="text-muted">Not assigned</span>
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="small fw-bold text-uppercase text-muted d-block">Billing Date</label>

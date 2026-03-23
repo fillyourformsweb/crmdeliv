@@ -196,7 +196,7 @@
                 <div class="card-body p-4">
                     <div class="mb-4">
                         <label class="form-label small fw-bold text-uppercase text-muted">Shipping Mode *</label>
-                        <select name="receipt_mode" class="form-select luxury-input" required>
+                        <select name="receipt_mode" id="shippingModeSelect" class="form-select luxury-input" required>
                             <option value="">Select Shipping Mode</option>
                             <option value="standard">Standard Delivery</option>
                             <option value="prime">Prime Express</option>
@@ -205,6 +205,12 @@
                             <option value="road_express">Road Express</option>
                             <option value="air">Air</option>
                         </select>
+                        <!-- Shipping Mode Display -->
+                        <div id="shippingModeDisplay" class="mt-3 p-3 bg-light border-left-4" style="border-left: 4px solid #0dcaf0; border-radius: 4px; display: none;">
+                            <div class="small text-muted mb-1">Selected Shipping Mode</div>
+                            <div class="fw-bold text-dark fs-6" id="selectedShippingText">-</div>
+                            <div class="small text-muted mt-2" id="shippingModeDesc"></div>
+                        </div>
                     </div>
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
@@ -326,6 +332,34 @@
         resetClientBtn.addEventListener('click', function (e) {
             e.preventDefault();
             resetClientSelection();
+        });
+    }
+
+    // Shipping Mode Display Logic
+    const shippingModeSelect = document.getElementById('shippingModeSelect');
+    const shippingModeDisplay = document.getElementById('shippingModeDisplay');
+    const selectedShippingText = document.getElementById('selectedShippingText');
+    const shippingModeDesc = document.getElementById('shippingModeDesc');
+
+    const shippingModeDescriptions = {
+        'standard': '📦 Standard nationwide delivery within 7-10 business days',
+        'prime': '⚡ Express delivery within 2-3 business days with priority handling',
+        'parcel': '📫 Cost-effective parcel service for lightweight packages',
+        'state_express': '🚚 State-level express delivery with faster transit',
+        'road_express': '🛣️ Road network express service with regional coverage',
+        'air': '✈️ Air freight for urgent international and domestic shipments'
+    };
+
+    if (shippingModeSelect) {
+        shippingModeSelect.addEventListener('change', function () {
+            if (this.value) {
+                const selectedText = this.options[this.selectedIndex].text;
+                selectedShippingText.textContent = selectedText;
+                shippingModeDesc.textContent = shippingModeDescriptions[this.value] || '';
+                shippingModeDisplay.style.display = 'block';
+            } else {
+                shippingModeDisplay.style.display = 'none';
+            }
         });
     }
 

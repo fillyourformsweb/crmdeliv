@@ -60,7 +60,7 @@
                                 value="{{ price.price_extra_per_kg or 20 }}" required>
                         </div>
                         <div class="col-md-8">
-                            <small class="text-muted"><strong>Note:</strong> 2kg = 1kg × 2 = ₹{{ (price.price_1kg * 2)|int }} | 3kg = 1kg × 3 = ₹{{ (price.price_1kg * 3)|int }}</small>
+                            <small class="text-muted"><strong>Note:</strong> 2kg = 1kg × 2 = ₹{{ (price.price_1kg * 2)|int }} | 3kg = 1kg × 3 = ₹{{ (price.price_1kg * 3)|int }} | >3kg = weight × extra per kg</small>
                         </div>
                     </div>
                 </div>

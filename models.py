@@ -401,7 +401,7 @@ class DefaultStatePrice(db.Model):
     price_1kg = db.Column(db.Float, default=0)
     price_2kg = db.Column(db.Float, default=0)
     price_3kg = db.Column(db.Float, default=0)
-    price_extra_per_kg = db.Column(db.Float, default=20)  # Extra charge per kg for weight > 3kg
+    price_extra_per_kg = db.Column(db.Float, default=20)  # Rate per kg for weight > 3kg
     # Air cargo pricing (> 3kg tiers)
     price_3_10kg = db.Column(db.Float, default=0)  # 3-10 kg tier
     price_10_25kg = db.Column(db.Float, default=0)  # 10-25 kg tier
@@ -454,7 +454,7 @@ class NormalClientStatePrice(db.Model):
     price_1kg = db.Column(db.Float, default=0)
     price_2kg = db.Column(db.Float, default=0)
     price_3kg = db.Column(db.Float, default=0)
-    price_extra_per_kg = db.Column(db.Float, default=20)  # Extra charge per kg for weight > 3kg
+    price_extra_per_kg = db.Column(db.Float, default=20)  # Rate per kg for weight > 3kg
     price_3_10kg = db.Column(db.Float, default=0)  # 3-10 kg tier
     price_10_25kg = db.Column(db.Float, default=0)  # 10-25 kg tier
     price_25_50kg = db.Column(db.Float, default=0)  # 25-50 kg tier

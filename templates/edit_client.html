@@ -90,9 +90,16 @@
                                 value="{{ client.gst_number or '' }}" placeholder="e.g. 27AAACN1234F1Z5">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Bill Pattern</label>
-                            <input type="text" name="bill_pattern" class="form-control luxury-input"
-                                value="{{ client.bill_pattern or '' }}">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Billing Pattern</label>
+                            <select name="billing_pattern_id" class="form-select luxury-input">
+                                <option value="">-- Select Billing Pattern --</option>
+                                {% for pattern in patterns %}
+                                <option value="{{ pattern.id }}" {% if client.billing_pattern_id == pattern.id %}selected{% endif %}>
+                                    {{ pattern.name }} (Pattern {{ pattern.pattern_type }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Select a billing pattern for consolidated billing</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-uppercase text-muted">Billing Date

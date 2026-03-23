@@ -83,8 +83,14 @@
                     <input type="text" name="gst_number" class="form-control">
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Bill Pattern</label>
-                    <input type="text" name="bill_pattern" class="form-control">
+                    <label class="form-label">Billing Pattern</label>
+                    <select name="billing_pattern_id" class="form-select">
+                        <option value="">-- Select Billing Pattern --</option>
+                        {% for pattern in patterns %}
+                        <option value="{{ pattern.id }}">{{ pattern.name }} (Pattern {{ pattern.pattern_type }})</option>
+                        {% endfor %}
+                    </select>
+                    <small class="text-muted">Select a billing pattern for consolidated billing</small>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Billing Date (1-31)</label>

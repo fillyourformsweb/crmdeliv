@@ -56,6 +56,11 @@
                                 value="0.00" required>
                         </div>
                         <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Extra Per KG (₹)</label>
+                            <input type="number" step="0.01" class="form-control luxury-input" name="price_extra_per_kg"
+                                value="20.00" required>
+                        </div>
+                        <div class="col-md-4">
                             <label class="form-label small fw-bold text-uppercase text-muted">3-10 kg Rate (₹/kg)</label>
                             <input type="number" step="0.01" class="form-control luxury-input" name="price_3_10kg"
                                 value="0.00" required>
@@ -83,7 +88,7 @@
                         </div>
 
                         <div class="col-md-12">
-                            <small class="text-muted"><strong>Note:</strong> Weights &lt;1kg use fixed prices. Larger weights are charged per kg within their tier.</small>
+                            <small class="text-muted"><strong>Note:</strong> Weights ≤3kg use fixed prices. For >3kg: weight × extra per kg (or use tiered rates for bulk shipments).</small>
                         </div>
                     </div>
                 </div>

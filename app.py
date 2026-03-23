@@ -397,11 +397,9 @@ def calculate_from_state_price(weight, price_obj, shipping_mode='standard'):
         elif weight <= 3.0:  # 3kg = 1kg price × 3
             amount = price_obj.price_1kg * 3
         else:
-            # For weights > 3kg: (1kg price × 3) + extra per kg
-            base_3kg = price_obj.price_1kg * 3
-            extra_weight = weight - 3.0
+            # For weights > 3kg: use extra_per_kg rate for entire weight
             extra_per_kg = getattr(price_obj, 'price_extra_per_kg', 20) or 20
-            amount = base_3kg + (extra_weight * extra_per_kg)
+            amount = weight * extra_per_kg
 
     if amount == 0:
         return None
@@ -1204,6 +1202,8 @@ def operations_dashboard():
 @manager_required
 def operations_profile():
     """Operation Manager's own profile page"""
+    from sqlalchemy import func
+    
     user = current_user
     
     # Get user statistics
@@ -1772,7 +1772,7 @@ def operations_shipment_tracking():
 @manager_required
 def operations_marketing_sales():
     """View marketing and sales analytics"""
-    from sqlalchemy import func, desc
+    from sqlalchemy import func, desc, case
     from datetime import datetime, timedelta, timezone
     
     days_filter = request.args.get('days', 30, type=int)
@@ -3168,7 +3168,7 @@ def add_client():
             alt_address=request.form.get('alt_address'),
             alt_landmark=request.form.get('alt_landmark'),
             gst_number=request.form.get('gst_number'),
-            bill_pattern=request.form.get('bill_pattern'),
+            billing_pattern_id=request.form.get('billing_pattern_id', type=int) if request.form.get('billing_pattern_id') else None,
             billing_date=request.form.get('billing_date', type=int)
         )
         db.session.add(client)
@@ -3176,7 +3176,8 @@ def add_client():
         flash('Client added successfully!', 'success')
         return redirect(url_for('clients'))
     
-    return render_template('add_client.html')
+    patterns = BillingPattern.query.filter_by(is_active=True).all()
+    return render_template('add_client.html', patterns=patterns)
 
 
 @app.route('/client/edit/<int:id>', methods=['GET', 'POST'])
@@ -3200,7 +3201,7 @@ def edit_client(id):
         client.alt_address = request.form.get('alt_address')
         client.alt_landmark = request.form.get('alt_landmark')
         client.gst_number = request.form.get('gst_number')
-        client.bill_pattern = request.form.get('bill_pattern')
+        client.billing_pattern_id = request.form.get('billing_pattern_id', type=int) if request.form.get('billing_pattern_id') else None
         client.billing_date = request.form.get('billing_date', type=int)
         client.is_active = request.form.get('is_active') == 'on'
         
@@ -3208,7 +3209,8 @@ def edit_client(id):
         flash('Client updated successfully!', 'success')
         return redirect(url_for('clients'))
     
-    return render_template('edit_client.html', client=client)
+    patterns = BillingPattern.query.filter_by(is_active=True).all()
+    return render_template('edit_client.html', client=client, patterns=patterns)
 
 
 @app.route('/client/<int:id>/details')
@@ -4063,8 +4065,76 @@ def insurance_settings():
 
 # ============== BILLING PATTERNS ==============
 
-# Billing Pattern routes removed
+@app.route('/billing-patterns')
+@login_required
+@admin_required
+def billing_patterns():
+    patterns = BillingPattern.query.all()
+    return render_template('billing_patterns.html', patterns=patterns)
 
+
+@app.route('/billing-patterns/add', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_billing_pattern():
+    if request.method == 'POST':
+        pattern = BillingPattern(
+            name=request.form.get('name'),
+            pattern_type=request.form.get('pattern_type'),
+            base_rate=float(request.form.get('base_rate', 0)),
+            rate_per_kg=float(request.form.get('rate_per_kg', 0)),
+            additional_charges=float(request.form.get('additional_charges', 0)),
+            min_weight=float(request.form.get('min_weight', 0.5)),
+            max_weight=float(request.form.get('max_weight')) if request.form.get('max_weight') else None,
+            discount_percentage=float(request.form.get('discount_percentage', 0)),
+            description=request.form.get('description'),
+            is_active=True
+        )
+        db.session.add(pattern)
+        db.session.commit()
+        flash(f'Billing pattern "{pattern.name}" created successfully!', 'success')
+        return redirect(url_for('billing_patterns'))
+    
+    return render_template('add_billing_pattern.html')
+
+
+@app.route('/billing-patterns/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_billing_pattern(id):
+    pattern = BillingPattern.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        pattern.name = request.form.get('name')
+        pattern.pattern_type = request.form.get('pattern_type')
+        pattern.base_rate = float(request.form.get('base_rate', 0))
+        pattern.rate_per_kg = float(request.form.get('rate_per_kg', 0))
+        pattern.additional_charges = float(request.form.get('additional_charges', 0))
+        pattern.min_weight = float(request.form.get('min_weight', 0.5))
+        pattern.max_weight = float(request.form.get('max_weight')) if request.form.get('max_weight') else None
+        pattern.discount_percentage = float(request.form.get('discount_percentage', 0))
+        pattern.description = request.form.get('description')
+        pattern.is_active = request.form.get('is_active') == 'on'
+        
+        db.session.commit()
+        flash(f'Billing pattern "{pattern.name}" updated successfully!', 'success')
+        return redirect(url_for('billing_patterns'))
+    
+    return render_template('edit_billing_pattern.html', pattern=pattern)
+
+
+@app.route('/billing-patterns/delete/<int:id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_billing_pattern(id):
+    pattern = BillingPattern.query.get_or_404(id)
+    pattern_name = pattern.name
+    
+    db.session.delete(pattern)
+    db.session.commit()
+    
+    flash(f'Billing pattern "{pattern_name}" deleted successfully!', 'success')
+    return redirect(url_for('billing_patterns'))
 
 
 # ============== EXCEL UPLOAD ==============
