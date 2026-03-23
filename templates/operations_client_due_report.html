@@ -147,11 +147,11 @@
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{{ url_for('client_details', client_id=client.id) }}" 
+                                    <a href="{{ url_for('client_details', id=client.id) }}" 
                                        class="btn btn-outline-primary" title="View Client Details">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{{ url_for('client_orders', client_id=client.id) }}" 
+                                    <a href="{{ url_for('client_orders_due', client_id=client.id) }}" 
                                        class="btn btn-outline-info" title="View Orders">
                                         <i class="fas fa-box"></i>
                                     </a>

@@ -1772,7 +1772,7 @@ def operations_shipment_tracking():
 @manager_required
 def operations_marketing_sales():
     """View marketing and sales analytics"""
-    from sqlalchemy import func, desc, case
+    from sqlalchemy import func, desc
     from datetime import datetime, timedelta, timezone
     
     days_filter = request.args.get('days', 30, type=int)
@@ -1816,14 +1816,30 @@ def operations_marketing_sales():
     ).order_by(desc('revenue')).limit(15).all()
     
     # Daily order trend
-    daily_orders = db.session.query(
+    daily_orders_query = db.session.query(
         func.date(Order.created_at).label('date'),
-        func.count(Order.id).label('total_orders'),
-        func.sum(case([(Order.order_type == 'walkin', 1)], else_=0)).label('walkin_count'),
-        func.sum(case([(Order.order_type == 'client', 1)], else_=0)).label('client_count')
+        func.count(Order.id).label('total_orders')
     ).filter(Order.created_at >= start_date).group_by(
         func.date(Order.created_at)
     ).order_by('date').all()
+    
+    # Convert to dictionaries and add walkin/client counts
+    daily_orders = []
+    for day in daily_orders_query:
+        walkin_count = Order.query.filter(
+            Order.order_type == 'walkin',
+            func.date(Order.created_at) == day.date
+        ).count()
+        client_count = Order.query.filter(
+            Order.order_type == 'client',
+            func.date(Order.created_at) == day.date
+        ).count()
+        daily_orders.append({
+            'date': day.date,
+            'total_orders': day.total_orders,
+            'walkin_count': walkin_count,
+            'client_count': client_count
+        })
     
     # Order type breakdown
     order_type_data = db.session.query(
@@ -5781,6 +5797,131 @@ def api_report_performance():
         'avg_processing_time': 4.5,
         'efficiency_metrics': [85, 90, 78, 92, 88]
     })
+
+@app.route('/api/reports/generate-pdf')
+@login_required
+@manager_required
+def generate_report_pdf():
+    """Generate PDF report export"""
+    try:
+        from datetime import datetime
+        import io
+        from reportlab.lib.pagesizes import letter, A4
+        from reportlab.lib import colors
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        
+        # Get filters
+        report_type = request.args.get('reportType', 'weekly')
+        from_date = request.args.get('fromDate', '')
+        to_date = request.args.get('toDate', '')
+        
+        # Create PDF in memory
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        elements = []
+        styles = getSampleStyleSheet()
+        
+        # Title
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            textColor=colors.HexColor('#2563eb'),
+            spaceAfter=30,
+            alignment=1
+        )
+        elements.append(Paragraph('Executive Analytics Report', title_style))
+        elements.append(Spacer(1, 12))
+        
+        # Report metadata
+        metadata = f"Report Period: {report_type.upper()} | Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+        elements.append(Paragraph(metadata, styles['Normal']))
+        elements.append(Spacer(1, 20))
+        
+        # Summary stats
+        total_orders = Order.query.count()
+        total_revenue = db.session.query(func.sum(Order.total_amount)).scalar() or 0
+        summary_data = [
+            ['Metric', 'Value'],
+            ['Total Orders', str(total_orders)],
+            ['Total Revenue', f'₹{total_revenue:,.2f}'],
+            ['Average Order Value', f'₹{total_revenue/total_orders:,.2f}' if total_orders > 0 else '₹0']
+        ]
+        
+        summary_table = Table(summary_data, colWidths=[300, 200])
+        summary_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2563eb')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        elements.append(summary_table)
+        
+        # Build PDF
+        doc.build(elements)
+        buffer.seek(0)
+        
+        return send_file(
+            buffer,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=f'Executive_Report_{datetime.now().strftime("%Y%m%d")}.pdf'
+        )
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/reports/export-dataset')
+@login_required
+@manager_required
+def export_report_dataset():
+    """Export report data as Excel"""
+    try:
+        from datetime import datetime
+        import io
+        import pandas as pd
+        
+        # Get filters
+        from_date = request.args.get('fromDate', '')
+        to_date = request.args.get('toDate', '')
+        
+        # Fetch data
+        orders = Order.query.all()
+        
+        # Prepare data for export
+        data = []
+        for order in orders:
+            data.append({
+                'Order ID': order.id,
+                'Receipt No': order.receipt_number or '',
+                'Customer Name': order.sender_name or '',
+                'Type': order.order_type or '',
+                'Amount': float(order.total_amount or 0),
+                'Status': order.status or '',
+                'Date': order.created_at.strftime('%Y-%m-%d') if order.created_at else ''
+            })
+        
+        # Create DataFrame
+        df = pd.DataFrame(data)
+        
+        # Create Excel file
+        buffer = io.BytesIO()
+        with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Orders', index=False)
+        
+        buffer.seek(0)
+        return send_file(
+            buffer,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name=f'Dataset_{datetime.now().strftime("%Y%m%d")}.xlsx'
+        )
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/mark_paid/<int:order_id>', methods=['POST'])
 @login_required

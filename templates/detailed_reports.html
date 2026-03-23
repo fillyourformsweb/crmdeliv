@@ -228,6 +228,50 @@
 <script>
     let overviewChart, topStatesChart, salesByDayChart, salesByWeightChart;
     
+    function generateReport() {
+        const filters = {
+            reportType: document.getElementById('reportType').value,
+            fromDate: document.getElementById('fromDate').value,
+            toDate: document.getElementById('toDate').value,
+            customerType: document.getElementById('customerType').value,
+            state: document.getElementById('stateFilter').value
+        };
+        fetch('/api/reports/generate-pdf?' + new URLSearchParams(filters))
+            .then(res => res.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Executive_Report_' + new Date().toISOString().split('T')[0] + '.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(err => alert('Error generating PDF: ' + err.message));
+    }
+
+    function exportReport() {
+        const filters = {
+            reportType: document.getElementById('reportType').value,
+            fromDate: document.getElementById('fromDate').value,
+            toDate: document.getElementById('toDate').value,
+            customerType: document.getElementById('customerType').value,
+            state: document.getElementById('stateFilter').value
+        };
+        fetch('/api/reports/export-dataset?' + new URLSearchParams(filters))
+            .then(res => res.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Dataset_' + new Date().toISOString().split('T')[0] + '.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(err => alert('Error exporting dataset: ' + err.message));
+    }
+    
     function applyFilters() {
         const filters = {
             reportType: document.getElementById('reportType').value,

@@ -135,7 +135,7 @@
                                 </small>
                             </td>
                             <td>
-                                <a href="{{ url_for('order_details', order_id=order.id) }}" 
+                                <a href="{{ url_for('order_details', id=order.id) }}" 
                                    class="btn btn-sm btn-outline-primary"
                                    title="View Details">
                                     <i class="fas fa-eye"></i>
@@ -196,7 +196,7 @@
                 </li>
             {% endif %}
 
-            {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_margin=1, right_margin=1) %}
+            {% for page_num in pagination.iter_pages() %}
                 {% if page_num %}
                     {% if page_num == pagination.page %}
                         <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>

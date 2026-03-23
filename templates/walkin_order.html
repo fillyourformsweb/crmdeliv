@@ -640,21 +640,42 @@
 
 {% block extra_js %}
 <script>
-    // Load Available Offers Modal
+    // Load Available Offers Modal with Auto-matching
     const offersModal = document.getElementById('offersModal');
     if (offersModal) {
         offersModal.addEventListener('show.bs.modal', function() {
             const modalContent = document.getElementById('offersModalContent');
+            
+            // Get current order amount
+            const totalAmountInput = document.getElementById('received_amount');
+            const currentAmount = totalAmountInput ? parseFloat(totalAmountInput.value) || 0 : 0;
             
             fetch('/api/get-all-offers')
                 .then(response => response.json())
                 .then(data => {
                     if (data.offers && data.offers.length > 0) {
                         let html = '<div class="p-4">';
+                        let matchedOffer = null;
+                        
+                        // Find matching offer
+                        data.offers.forEach(offer => {
+                            if (currentAmount >= offer.min_amount && currentAmount <= offer.max_amount) {
+                                matchedOffer = offer;
+                            }
+                        });
                         
                         data.offers.forEach((offer, index) => {
+                            const isMatched = matchedOffer && matchedOffer.id === offer.id;
+                            const highlightStyle = isMatched ? 
+                                'background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-left: 4px solid #059669; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);' :
+                                'background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-left: 4px solid #0284c7;';
+                            
+                            const badgeClass = isMatched ? 'bg-success' : 'bg-success';
+                            const matchBadge = isMatched ? '<div class="badge bg-success position-absolute" style="top: 10px; right: 10px;"><i class="fas fa-check me-1"></i>AUTO MATCHED</div>' : '';
+                            
                             html += `
-                                <div class="mb-3 p-3 border rounded-3" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-left: 4px solid #0284c7;">
+                                <div class="mb-3 p-3 border rounded-3 offer-card" data-offer-id="${offer.id}" data-min="${offer.min_amount}" data-max="${offer.max_amount}" data-discount="${offer.offer_amount}" style="${highlightStyle} position: relative; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='${isMatched ? '0 4px 12px rgba(16, 185, 129, 0.2)' : 'none'}';">
+                                    ${matchBadge}
                                     <div class="d-flex justify-content-between align-items-start gap-3">
                                         <div class="flex-grow-1">
                                             <div class="fw-bold text-dark mb-1">
@@ -666,7 +687,7 @@
                                             </div>
                                         </div>
                                         <div class="text-end flex-shrink-0">
-                                            <div class="badge bg-success fs-6 py-2 px-3">
+                                            <div class="badge ${badgeClass} fs-6 py-2 px-3">
                                                 <i class="fas fa-tag me-1"></i>
                                                 GET ₹${offer.offer_amount.toFixed(0)} OFF
                                             </div>
@@ -678,6 +699,46 @@
                         
                         html += '</div>';
                         modalContent.innerHTML = html;
+                        
+                        // Add click handlers to apply offers
+                        document.querySelectorAll('.offer-card').forEach(card => {
+                            card.addEventListener('click', function() {
+                                const offerId = this.dataset.offerId;
+                                const discount = parseFloat(this.dataset.discount);
+                                
+                                // Apply the discount
+                                const currentAmount = parseFloat(totalAmountInput.value) || 0;
+                                const finalAmount = Math.max(0, currentAmount - discount);
+                                
+                                // Update UI
+                                totalAmountInput.value = finalAmount.toFixed(2);
+                                
+                                // Store selected offer ID
+                                const offerIdInput = document.getElementById('offer_id') || 
+                                    (function() {
+                                        const input = document.createElement('input');
+                                        input.type = 'hidden';
+                                        input.id = 'offer_id';
+                                        input.name = 'offer_id';
+                                        document.querySelector('form').appendChild(input);
+                                        return input;
+                                    })();
+                                offerIdInput.value = offerId;
+                                
+                                // Visual feedback
+                                document.querySelectorAll('.offer-card').forEach(c => c.style.opacity = '0.5');
+                                this.style.opacity = '1';
+                                this.style.borderColor = '#059669';
+                                this.style.borderWidth = '2px';
+                                
+                                // Show confirmation
+                                alert('Offer applied! Discount of ₹' + discount.toFixed(2) + ' applied to order amount.');
+                                
+                                // Close modal
+                                const modal = bootstrap.Modal.getInstance(offersModal);
+                                if (modal) modal.hide();
+                            });
+                        });
                     } else {
                         modalContent.innerHTML = `
                             <div class="text-center p-5">
