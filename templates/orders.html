@@ -4,40 +4,42 @@
 
 {% block content %}
 <div class="page-content-wrapper w-100">
-    <div class="row mb-2 align-items-center">
+    <div class="row mb-3 align-items-center">
         <div class="col-md-7">
-            <h4 class="fw-black text-dark mb-1">Order Control</h4>
-            <p class="text-muted small mb-0">Manage all active logistics.</p>
+            <h4 class="fw-black text-dark mb-1" style="font-size: 1.6rem; letter-spacing: -0.5px;">Order Control</h4>
+            <p class="text-muted mb-0" style="font-size: 0.9rem; opacity: 0.8;">Manage and track all active logistics.</p>
         </div>
-        <div class="col-md-5 text-md-end mt-3 mt-md-0">
-            <div class="d-flex justify-content-md-end gap-3">
-                <a href="{{ url_for('walkin_order') }}" class="luxury-btn btn btn-primary border-0"
-                    style="background: var(--primary-gradient);">
-                    <i class="fas fa-plus me-1"></i> New Walk-in
+        <div class="col-md-5 text-md-end mt-2 mt-md-0">
+            <div class="d-flex justify-content-md-end gap-2">
+                <a href="{{ url_for('walkin_order') }}" class="btn btn-primary fw-bold shadow-sm hover-lift px-3" 
+                   style="height: 40px; border-radius: 10px; background: var(--primary-gradient); border: none; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
+                    <i class="fas fa-plus-circle me-2"></i> NEW WALK-IN
                 </a>
-                <a href="{{ url_for('client_order') }}" class="luxury-btn btn btn-dark border-0">
-                    <i class="fas fa-building me-1"></i> Corporate
+                <a href="{{ url_for('client_order') }}" class="btn btn-outline-primary fw-bold shadow-sm hover-lift px-3" 
+                   style="height: 40px; border-radius: 10px; background: #fff; color: #4f46e5; border: 2px solid #4f46e5; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
+                    <i class="fas fa-building me-2"></i> CORPORATE
                 </a>
             </div>
         </div>
     </div>
 
 
-    <!-- Advanced Filter Card -->
-    <div class="luxury-card mb-4" style="border-top: 5px solid #6366f1 !important;">
-        <div class="card-body p-3">
-            <form method="GET" class="row g-3 align-items-end">
-                <div class="col-md-5">
-                    <label class="form-label small fw-bold text-muted mb-1">Search Shipments</label>
-                    <div class="position-relative">
-                        <i class="fas fa-search position-absolute text-muted" style="left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.8rem;"></i>
-                        <input type="text" name="search" class="form-control luxury-input ps-4"
-                            placeholder="Receipt, Customer, Phone..." value="{{ search }}" autocomplete="off" style="height: 42px;">
-                    </div>
+    <!-- Minimalist Professional Filter Bar -->
+    <div class="luxury-card mb-4 shadow-sm" style="border: 1px solid #edf2f7 !important; border-top: 3px solid #6366f1 !important; border-radius: 12px; background: #ffffff;">
+        <div class="card-body py-2 px-3">
+            <form method="GET" class="d-flex align-items-center flex-wrap gap-3">
+                <!-- Search Box -->
+                <div class="d-flex align-items-center flex-grow-1 bg-light px-3 rounded-pill border" style="height: 42px; min-width: 250px;">
+                    <i class="fas fa-search text-muted me-2 small"></i>
+                    <input type="text" name="search" class="border-0 bg-transparent shadow-none w-100" 
+                           placeholder="Search by receipt #, customer or phone..." value="{{ search }}" 
+                           autocomplete="off" style="outline: none; font-size: 0.92rem; color: #1e293b;">
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-muted mb-1">Status</label>
-                    <select name="status" class="form-select luxury-input" style="height: 42px;">
+
+                <!-- Status Selector -->
+                <div class="d-flex align-items-center gap-2 ps-2">
+                    <span class="text-muted text-uppercase fw-bold" style="font-size: 0.68rem; white-space: nowrap; letter-spacing: 0.5px;">Status:</span>
+                    <select name="status" class="form-select border-0 bg-transparent py-0 px-1 shadow-none fw-bold" style="width: 140px; font-size: 0.88rem; color: #475569; cursor: pointer;">
                         <option value="">All Statuses</option>
                         <option value="at_destination" {{ 'selected' if status_filter=='at_destination' }}>At Destination</option>
                         <option value="confirmed" {{ 'selected' if status_filter=='confirmed' }}>Confirmed</option>
@@ -46,18 +48,26 @@
                         <option value="cancelled" {{ 'selected' if status_filter=='cancelled' }}>Cancelled</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-muted mb-1">Order Type</label>
-                    <select name="order_type" class="form-select luxury-input" style="height: 42px;">
+
+                <div class="vr opacity-10 d-none d-md-block" style="height: 28px;"></div>
+
+                <!-- Type Selector -->
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted text-uppercase fw-bold" style="font-size: 0.68rem; white-space: nowrap; letter-spacing: 0.5px;">Type:</span>
+                    <select name="order_type" class="form-select border-0 bg-transparent py-0 px-1 shadow-none fw-bold" style="width: 110px; font-size: 0.88rem; color: #475569; cursor: pointer;">
                         <option value="">All Types</option>
                         <option value="walkin" {{ 'selected' if order_type_filter=='walkin' }}>Walk-in</option>
                         <option value="client" {{ 'selected' if order_type_filter=='client' }}>Client</option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary d-none">Search</button>
-                    <a href="{{ url_for('orders') }}" class="btn btn-light border w-100 fw-semibold text-muted" style="height: 42px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; border-radius: 10px; background: #f8fafc;">
-                        <i class="fas fa-rotate-left me-2 small"></i> Reset All Filters
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2 ms-auto align-items-center">
+                    <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm" style="height: 38px; font-size: 0.8rem; border-radius: 10px; background: var(--primary-gradient); border: none;">
+                        APPLY
+                    </button>
+                    <a href="{{ url_for('orders') }}" class="btn btn-light border shadow-sm" title="Reset Filters" style="height: 38px; width: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #64748b; background: white;">
+                        <i class="fas fa-undo-alt"></i>
                     </a>
                 </div>
             </form>

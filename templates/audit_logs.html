@@ -4,44 +4,51 @@
 
 {% block content %}
 <div class="page-content-wrapper w-100">
-    <div class="row mb-2 align-items-center">
+    <div class="row mb-3 align-items-center">
         <div class="col-md-7">
-            <h4 class="fw-black text-dark mb-1">Audit Logs</h4>
-            <p class="text-muted small mb-0">System activity history.</p>
+            <h4 class="fw-black text-dark mb-1" style="font-size: 1.6rem; letter-spacing: -0.5px;">Audit Logs</h4>
+            <p class="text-muted mb-0" style="font-size: 0.9rem; opacity: 0.8;">System activity history.</p>
         </div>
         <div class="col-md-5 text-md-end mt-3 mt-md-0">
-            <div class="d-flex justify-content-md-end gap-3">
-                <a href="{{ url_for('audit_logs_report') }}" class="luxury-btn btn btn-primary border-0"
-                    style="background: var(--primary-gradient);">
-                    <i class="fas fa-chart-pie me-1"></i> View Report
+            <div class="d-flex justify-content-md-end gap-2">
+                <a href="{{ url_for('audit_logs_report') }}" class="btn btn-primary shadow-sm hover-lift fw-bold px-3"
+                    style="height: 40px; border-radius: 10px; background: var(--primary-gradient); border: none; display: flex; align-items: center; justify-content: center; font-size: 0.82rem;">
+                    <i class="fas fa-chart-pie me-2"></i> VIEW REPORT
                 </a>
-                <a href="{{ url_for('export_audit_logs') }}" class="luxury-btn btn btn-success border-0">
-                    <i class="fas fa-download me-1"></i> Export CSV
+                <a href="{{ url_for('export_audit_logs') }}" class="btn btn-success shadow-sm hover-lift fw-bold px-3"
+                    style="height: 40px; border-radius: 10px; background: #10b981; border: none; display: flex; align-items: center; justify-content: center; font-size: 0.82rem;">
+                    <i class="fas fa-download me-2"></i> EXPORT CSV
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Advanced Filter Card -->
-    <div class="luxury-card mb-4">
-        <div class="card-body p-4">
-            <form method="GET" class="row g-3 align-items-end">
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-muted">Action</label>
-                    <select name="action" class="form-select luxury-input">
+    <!-- Minimalist Professional Filter Bar -->
+    <div class="luxury-card mb-4 shadow-sm" style="border: 1px solid #edf2f7 !important; border-top: 3px solid #6366f1 !important; border-radius: 12px; background: #ffffff;">
+        <div class="card-body py-2 px-3">
+            <form method="GET" class="d-flex align-items-center flex-wrap gap-2 gap-lg-3">
+                
+                <!-- Action Filter -->
+                <div class="d-flex align-items-center gap-2 ps-1">
+                    <span class="text-muted text-uppercase fw-bold" style="font-size: 0.62rem; white-space: nowrap; letter-spacing: 0.5px;">Action:</span>
+                    <select name="action" class="form-select border-0 bg-light py-0 px-2 shadow-none fw-bold" style="width: 130px; height: 36px; font-size: 0.85rem; color: #475569; border-radius: 8px; cursor: pointer;">
                         <option value="">All Actions</option>
                         <option value="CREATE" {{ 'selected' if action_filter=='CREATE' }}>Create</option>
                         <option value="UPDATE" {{ 'selected' if action_filter=='UPDATE' }}>Update</option>
                         <option value="DELETE" {{ 'selected' if action_filter=='DELETE' }}>Delete</option>
                         <option value="PAYMENT" {{ 'selected' if action_filter=='PAYMENT' }}>Payment</option>
-                        <option value="STATUS_CHANGE" {{ 'selected' if action_filter=='STATUS_CHANGE' }}>Status Change</option>
+                        <option value="STATUS_CHANGE" {{ 'selected' if action_filter=='STATUS_CHANGE' }}>Status Charge</option>
                         <option value="VERIFY" {{ 'selected' if action_filter=='VERIFY' }}>Verify</option>
                         <option value="ASSIGN" {{ 'selected' if action_filter=='ASSIGN' }}>Assign</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-muted">Entity Type</label>
-                    <select name="entity_type" class="form-select luxury-input">
+
+                <div class="vr opacity-10 d-none d-lg-block" style="height: 24px;"></div>
+
+                <!-- Entity Filter -->
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted text-uppercase fw-bold" style="font-size: 0.62rem; white-space: nowrap; letter-spacing: 0.5px;">Entity:</span>
+                    <select name="entity_type" class="form-select border-0 bg-light py-0 px-2 shadow-none fw-bold" style="width: 120px; height: 36px; font-size: 0.85rem; color: #475569; border-radius: 8px; cursor: pointer;">
                         <option value="">All Types</option>
                         <option value="Order" {{ 'selected' if entity_filter=='Order' }}>Order</option>
                         <option value="Client" {{ 'selected' if entity_filter=='Client' }}>Client</option>
@@ -50,21 +57,33 @@
                         <option value="Pricing" {{ 'selected' if entity_filter=='Pricing' }}>Pricing</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-muted">User</label>
-                    <input type="text" name="username" class="form-control luxury-input"
-                        placeholder="Username..." value="{{ user_filter }}">
+
+                <div class="vr opacity-10 d-none d-lg-block" style="height: 24px;"></div>
+
+                <!-- User Search -->
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted text-uppercase fw-bold" style="font-size: 0.62rem; white-space: nowrap; letter-spacing: 0.5px;">User:</span>
+                    <input type="text" name="username" class="form-control border-0 bg-light py-0 px-2 shadow-none fw-bold" 
+                           placeholder="Filter user..." value="{{ user_filter }}" 
+                           style="width: 120px; height: 36px; font-size: 0.85rem; color: #475569; border-radius: 8px;">
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-muted">Date</label>
-                    <input type="date" name="date" class="form-control luxury-input" value="{{ search_date }}">
+
+                <div class="vr opacity-10 d-none d-lg-block" style="height: 24px;"></div>
+
+                <!-- Date Filter -->
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted text-uppercase fw-bold" style="font-size: 0.62rem; white-space: nowrap; letter-spacing: 0.5px;">Date:</span>
+                    <input type="date" name="date" class="form-control border-0 bg-light py-0 px-2 shadow-none fw-bold" value="{{ search_date }}"
+                           style="width: 150px; height: 36px; font-size: 0.85rem; color: #475569; border-radius: 8px;">
                 </div>
-                <div class="col-md-4 d-flex gap-2">
-                    <button type="submit" class="luxury-btn btn btn-primary flex-grow-1">
-                        <i class="fas fa-filter me-1"></i> Filter
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2 ms-auto align-items-center">
+                    <button type="submit" class="btn btn-primary px-3 fw-bold shadow-sm" style="height: 36px; font-size: 0.75rem; border-radius: 8px; background: var(--primary-gradient); border: none;">
+                        APPLY
                     </button>
-                    <a href="{{ url_for('audit_logs') }}" class="luxury-btn btn btn-light border">
-                        <i class="fas fa-redo me-1"></i> Reset
+                    <a href="{{ url_for('audit_logs') }}" class="btn btn-light border shadow-sm" title="Reset Filters" style="height: 36px; width: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b; background: white;">
+                        <i class="fas fa-undo-alt small"></i>
                     </a>
                 </div>
             </form>

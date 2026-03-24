@@ -173,11 +173,28 @@
     }
 
     .luxury-card {
-        border-radius: 20px !important;
-        background: #ffffff !important;
-        border: 1px solid rgba(0, 0, 0, 0.05) !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03) !important;
+        border-radius: 16px !important;
+        background: #fcfdfe !important;
+        border: 1px solid #eef2f6 !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02) !important;
         overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .luxury-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05) !important;
+        border-color: #e2e8f0 !important;
+    }
+
+    .card-header-professional {
+        background: #ffffff !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        padding: 1rem 1.5rem !important;
+        border-left: 5px solid #2563eb !important;
+        display: flex;
+        align-items: center;
+        width: 100%;
     }
 
     .badge-custom {
@@ -230,114 +247,45 @@
     }
 
     .executive-header {
-        background: linear-gradient(135deg, #010409 0%, #1e293b 50%, #010409 100%);
+        background: url("{{ url_for('static', filename='images/tytttttt.png') }}") no-repeat center 85%;
+        background-size: 120%;
         position: relative;
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 0.75rem; 
-        margin: 0 0 1.25rem 0; 
-        padding: 2.25rem 2.5rem !important; 
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 1.5rem; 
+        margin: 0 0 1.5rem 0; 
+        padding: 3rem !important; 
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
     }
 
-    /* Monochromatic Obsidian Animated Layer */
+    /* Ultra-Deep High Contrast Mirror Overlay */
     .executive-header::before {
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(
-            110deg,
-            transparent 0%,
-            rgba(255, 255, 255, 0.05) 25%,
-            rgba(148, 163, 184, 0.15) 50%,
-            rgba(255, 255, 255, 0.05) 75%,
-            transparent 100%
-        );
-        background-size: 200% 100%;
+        background: rgba(0, 0, 0, 0.9); /* Deepest shadow for text isolation */
+        backdrop-filter: blur(16px); /* Strongest blur */
         z-index: 1;
         pointer-events: none;
-        animation: prismaticBeam 7s infinite linear;
     }
 
-    @keyframes prismaticBeam {
-        0% { background-position: 200% 0%; }
-        100% { background-position: -200% 0%; }
-    }
-
-    /* Silver Flare Effect */
+    /* Ambient Glow nodes */
     .executive-header::after {
         content: '';
         position: absolute;
         top: -50%;
         left: -10%;
-        width: 1000px;
-        height: 1000px;
-        background: radial-gradient(circle, rgba(148, 163, 184, 0.2) 0%, transparent 65%);
-        z-index: 1;
-        filter: blur(80px);
-        animation: solarFlare 18s infinite alternate ease-in-out;
-        mix-blend-mode: soft-light;
-        pointer-events: none;
-    }
-
-    @keyframes solarFlare {
-        0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.3; }
-        50% { transform: translate(-15%, 20%) scale(1.2) rotate(30deg); opacity: 0.6; }
-        100% { transform: translate(10%, -10%) scale(0.9) rotate(-30deg); opacity: 0.3; }
-    }
-
-    @keyframes shineHeader {
-        0% {
-            left: -100%;
-        }
-
-        20% {
-            left: 100%;
-        }
-
-        100% {
-            left: 100%;
-        }
-    }
-
-    /* Removing old aurora to consolidate into flare */
-    .executive-header-flare {
-        position: absolute;
-        bottom: -20%;
-        right: -10%;
         width: 800px;
         height: 800px;
-        background: radial-gradient(circle, rgba(148, 163, 184, 0.15) 0%, transparent 60%);
-        z-index: 1;
-        filter: blur(100px);
-        animation: auroraFlowInverse 25s infinite alternate ease-in-out;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        z-index: 2;
+        filter: blur(80px);
         pointer-events: none;
-        mix-blend-mode: overlay;
     }
 
-    @keyframes auroraFlow {
-        0% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(-10%, 20%) scale(1.1); }
-        100% { transform: translate(10%, -10%) scale(0.9); }
-    }
-
-    .executive-header::before {
-        content: '';
-        position: absolute;
-        bottom: -20%;
-        left: -10%;
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 60%);
-        z-index: 1;
-        filter: blur(100px);
-        animation: auroraFlowInverse 20s infinite alternate ease-in-out;
-    }
-
-    @keyframes auroraFlowInverse {
-        0% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(15%, -15%) scale(1.2); }
-        100% { transform: translate(-5%, 10%) scale(0.8); }
+    .admin-header-content {
+        position: relative;
+        z-index: 5;
     }
 
     .admin-header-content {
@@ -353,6 +301,20 @@
         .executive-header h1 {
             font-size: 2.2rem !important;
         }
+    }
+
+    /* Fix for Select Outline and Shape during interaction */
+    .filter-section .form-select:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        border-color: transparent !important;
+    }
+
+    /* Electrified Glow Effect for Interactive Pill */
+    .filter-section:hover {
+        border-color: rgba(14, 165, 233, 0.6) !important;
+        box-shadow: 0 0 20px rgba(14, 165, 233, 0.3) !important;
+        transform: translateY(-1px);
     }
 
     .fw-901 {
@@ -384,28 +346,29 @@
 <div class="dashboard-canvas">
     <div class="page-content-wrapper w-100 px-0 pt-0">
         <!-- Enhanced Header Section -->
-        <div class="executive-header p-4 shadow-lg">
+        <div class="executive-header shadow-lg">
+            <div class="executive-header-silk"></div>
             <div class="admin-header-content text-white">
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <div class="mb-2">
                             <h6 class="text-uppercase fw-800 mb-1"
-                                style="letter-spacing: 3px; font-size: 0.7rem; color: #6366f1;">Executive Insight</h6>
-                            <h1 class="fw-900 mb-0 text-white" style="letter-spacing: -2px; font-size: 3.25rem; line-height: 1; text-shadow: 0 10px 30px rgba(0,0,0,0.3);">Admin
-                                <span style="background: linear-gradient(to right, #ffffff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0.9;">Analytics</span></h1>
+                                style="letter-spacing: 3px; font-size: 0.75rem; color: #0ea5e9; text-shadow: 0 0 15px rgba(14, 165, 233, 0.3);">EXECUTIVE <span class="opacity-75">INSIGHT</span></h6>
+                            <h1 class="fw-900 mb-0 text-white" style="letter-spacing: -2px; font-size: 3.25rem; line-height: 1; text-shadow: 0 10px 40px rgba(0,0,0,0.9);">Admin
+                                <span style="color: #ffffff; text-shadow: 0 4px 25px rgba(0,0,0,1);">Analytics</span></h1>
                         </div>
-                        <p class="text-slate-400 small mb-0" style="color: rgba(255,255,255,0.5); font-weight: 500;">Real-time enterprise metrics & intelligence overview</p>
+                        <p class="small mb-0 fw-600" style="color: rgba(255,255,255,0.85); text-shadow: 0 2px 10px rgba(0,0,0,0.9);">Real-time enterprise metrics & intelligence overview</p>
                     </div>
                     <div class="col-md-4 text-md-end pt-3 pt-md-0">
-                        <div class="filter-section p-2 px-3"
-                            style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.4rem; backdrop-filter: blur(15px); display: inline-block;">
+                        <div class="filter-section p-1 px-4"
+                            style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(14, 165, 233, 0.3); border-radius: 50px; backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); display: inline-block; transition: all 0.3s ease;">
                             <form method="GET" class="d-flex align-items-center gap-2 justify-content-md-end">
-                                <label class="text-white opacity-50 font-xs fw-900 mb-0">
-                                    <i class="fas fa-calendar me-1"></i> PERIOD
+                                <label class="text-white fw-bold mb-0 me-1" style="font-size: 0.65rem; letter-spacing: 2px;">
+                                    <i class="fas fa-calendar-alt me-1" style="color: #0ea5e9; filter: drop-shadow(0 0 5px rgba(14, 165, 233, 0.5));"></i>
                                 </label>
                                 <select name="days"
-                                    class="form-select border-0 bg-white bg-opacity-10 text-white small fw-bold"
-                                    style="width: auto; min-width: 130px; border-radius: 0.25rem; height: 34px; font-size: 0.85rem;"
+                                    class="form-select border-0 text-white small fw-900 px-0"
+                                    style="background: transparent; width: auto; min-width: 130px; height: 38px; font-size: 0.85rem; cursor: pointer; box-shadow: none;"
                                     onchange="this.form.submit()">
                                     <option value="7" {% if days_filter==7 %}selected{% endif %} class="text-dark">Last
                                         7 Days</option>
@@ -421,9 +384,6 @@
                     </div>
                 </div>
             </div>
-            <img src="{{ url_for('static', filename='images/Elegant gold FYF monogram design.png') }}" 
-                 alt="FYF Brand" 
-                 class="brand-header-monogram">
         </div>
 
         <div class="admin-dashboard-wrapper px-0 px-md-1 pb-5"> <!-- Edge-to-edge layout -->
@@ -498,21 +458,20 @@
             <!-- Client Due Report -->
             <div class="row g-4 mt-2 mb-3" style="position: relative; z-index: 5;"> <!-- Subtle positive margin instead of negative -->
                 <div class="col-12">
-                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #1e293b 0%, #000000 100%); border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;">
+                    <div class="luxury-card border-0">
+                        <div class="card-header-professional d-flex justify-content-between align-items-center">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <div>
-                                    <h6 class="section-title mb-0 fw-600"
-                                        style="font-size: 1.15rem; letter-spacing: -0.2px; color: #ffffff;">
-                                        <i class="fas fa-exclamation-circle me-2" style="color: #ffffff;"></i>
+                                    <h6 class="section-title mb-0 fw-bold" style="font-size: 1rem; color: #1e293b;">
+                                        <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-2 me-2" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                        </div>
                                         Client Due Report
                                     </h6>
-                                    <p class="text-white small mb-0" style="font-size: 0.8rem; opacity: 0.75; font-weight: 500; color: #cbd5e1;">
+                                    <p class="text-muted mb-0" style="font-size: 0.72rem; margin-left: 40px; opacity: 0.8;">
                                         Outstanding payments awaiting collection</p>
                                 </div>
-                                <span class="badge"
-                                    style="background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%); color: #ffffff; font-size: 0.75rem; font-weight: 600; padding: 0.5rem 1.15rem; border: 1px solid rgba(255,255,255,0.15); border-radius: 2rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">{{
-                                    due_clients | length }} Clients</span>
+                                <span class="badge" style="background: #ef4444; color: #ffffff; font-size: 0.72rem; font-weight: 700; padding: 0.4rem 1rem; border-radius: 2rem;">{{ due_clients | length }} Clients</span>
                             </div>
                         </div>
                         <div class="card-body p-0 mt-n1"> <!-- Moved body up -->
@@ -670,15 +629,17 @@
             <div class="row g-4 mb-5">
                 <!-- Top Customers -->
                 <div class="col-lg-6">
-                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <h6 class="section-title mb-0 fw-600" style="font-size: 0.95rem; color: #ffffff;">
-                                    <i class="fas fa-users me-1" style="color: #ffffff;"></i>
+                    <div class="luxury-card border-0">
+                        <div class="card-header-professional d-flex justify-content-between align-items-center" style="border-left-color: #6366f1 !important;">
+                            <div>
+                                <h6 class="section-title mb-0 fw-bold" style="font-size: 1rem; color: #1e293b;">
+                                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 me-2" style="width: 36px; height: 36px;">
+                                        <i class="fas fa-users"></i>
+                                    </div>
                                     Top Customers
                                 </h6>
-                                <span class="badge" style="background: #1e293b; color: white; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem;">{{ top_customers | length }} Customers</span>
                             </div>
+                            <span class="badge" style="background: #e0e7ff; color: #4338ca; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem; font-weight: 700;">{{ top_customers | length }} Customers</span>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -729,15 +690,17 @@
 
                 <!-- Top Clients -->
                 <div class="col-lg-6">
-                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <h6 class="section-title mb-0 fw-600" style="font-size: 0.95rem; color: #ffffff;">
-                                    <i class="fas fa-building me-1" style="color: #ffffff;"></i>
+                    <div class="luxury-card border-0">
+                        <div class="card-header-professional d-flex justify-content-between align-items-center" style="border-left-color: #10b981 !important;">
+                            <div>
+                                <h6 class="section-title mb-0 fw-bold" style="font-size: 1rem; color: #1e293b;">
+                                    <div class="d-inline-flex align-items-center justify-content-center bg-success-subtle text-success rounded-3 me-2" style="width: 36px; height: 36px;">
+                                        <i class="fas fa-building"></i>
+                                    </div>
                                     Top Clients
                                 </h6>
-                                <span class="badge" style="background: #1e293b; color: white; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem;">{{ top_clients | length }} Clients</span>
                             </div>
+                            <span class="badge" style="background: #d1fae5; color: #065f46; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem; font-weight: 700;">{{ top_clients | length }} Clients</span>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -791,15 +754,17 @@
             <div class="row g-4 mb-5">
                 <!-- Branch wise Statistics -->
                 <div class="col-lg-6">
-                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <h6 class="section-title mb-0 fw-600" style="font-size: 0.95rem; color: #ffffff;">
-                                    <i class="fas fa-map-location me-1" style="color: #ffffff;"></i>
+                    <div class="luxury-card border-0">
+                        <div class="card-header-professional d-flex justify-content-between align-items-center" style="border-left-color: #06b6d4 !important;">
+                            <div>
+                                <h6 class="section-title mb-0 fw-bold" style="font-size: 1rem; color: #1e293b;">
+                                    <div class="d-inline-flex align-items-center justify-content-center bg-info-subtle text-info rounded-3 me-2" style="width: 36px; height: 36px;">
+                                        <i class="fas fa-map-location"></i>
+                                    </div>
                                     Center Performance
                                 </h6>
-                                <span class="badge" style="background: #1e293b; color: white; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem;">{{ branch_stats | length }} Centers</span>
                             </div>
+                            <span class="badge" style="background: #cffafe; color: #0891b2; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem; font-weight: 700;">{{ branch_stats | length }} Centers</span>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -843,15 +808,17 @@
 
                 <!-- Staff Performance (Date wise) -->
                 <div class="col-lg-6">
-                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <h6 class="section-title mb-0 fw-600" style="font-size: 0.95rem; color: #ffffff;">
-                                    <i class="fas fa-users-line me-1" style="color: #ffffff;"></i>
+                    <div class="luxury-card border-0">
+                        <div class="card-header-professional d-flex justify-content-between align-items-center" style="border-left-color: #f59e0b !important;">
+                            <div>
+                                <h6 class="section-title mb-0 fw-bold" style="font-size: 1rem; color: #1e293b;">
+                                    <div class="d-inline-flex align-items-center justify-content-center bg-warning-subtle text-warning rounded-3 me-2" style="width: 36px; height: 36px;">
+                                        <i class="fas fa-users-line"></i>
+                                    </div>
                                     Staff Performance
                                 </h6>
-                                <span class="badge" style="background: #1e293b; color: white; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem;">Last 7 Days</span>
                             </div>
+                            <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.7rem; padding: 0.4rem 0.8rem; border-radius: 2rem; font-weight: 700;">Last 7 Days</span>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -898,12 +865,14 @@
             <div class="row g-3">
                 <!-- Status Distribution Chart -->
                 <div class="col-lg-6">
-                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
-                            <h5 class="section-title mb-0 fw-600" style="font-size: 1rem; color: #ffffff;">
-                                <i class="fas fa-chart-pie me-1" style="color: #ffffff;"></i>
+                    <div class="luxury-card border-0">
+                        <div class="card-header-professional" style="border-left-color: #3b82f6 !important;">
+                            <h6 class="section-title mb-0 fw-bold d-flex align-items-center" style="font-size: 0.95rem; color: #1e293b;">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-blue-subtle text-blue rounded-3 me-2" style="width: 36px; height: 36px; color: #3b82f6;">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
                                 Status Distribution
-                            </h5>
+                            </h6>
 
                         </div>
                         <div class="card-body p-3">
@@ -917,12 +886,14 @@
 
                 <!-- Revenue Trend (Last 7 Days) -->
                 <div class="col-lg-6">
-                    <div class="luxury-card border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                        <div class="card-header border-0 pt-3 pb-2 px-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #000000 100%);">
-                            <h5 class="section-title mb-0 fw-600" style="font-size: 1rem; color: #ffffff;">
-                                <i class="fas fa-chart-line me-1" style="color: #ffffff;"></i>
+                    <div class="luxury-card border-0">
+                        <div class="card-header-professional" style="border-left-color: #10b981 !important;">
+                            <h6 class="section-title mb-0 fw-bold d-flex align-items-center" style="font-size: 0.95rem; color: #1e293b;">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-success-subtle text-success rounded-3 me-2" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
                                 Daily Revenue Trend
-                            </h5>
+                            </h6>
 
                         </div>
                         <div class="card-body p-3">
@@ -946,88 +917,88 @@
         // Status Distribution Chart
         const statusCtx = document.getElementById('statusChart');
         if (statusCtx) {
-            const statusData = {{ status_dist | tojson }};
-    const statusLabels = statusData.map(s => s.status === 'pending' ? 'At Destination' : s.status.charAt(0).toUpperCase() + s.status.slice(1).replace('_', ' '));
-    const statusCounts = statusData.map(s => s.count);
+            const statusData = {{ status_dist | tojson | safe }};
+            const statusLabels = statusData.map(s => s.status === 'pending' ? 'At Destination' : s.status.charAt(0).toUpperCase() + s.status.slice(1).replace('_', ' '));
+            const statusCounts = statusData.map(s => s.count);
 
-    new Chart(statusCtx, {
-        type: 'doughnut',
-        data: {
-            labels: statusLabels,
-            datasets: [{
-                data: statusCounts,
-                backgroundColor: [
-                    '#ffc107', // pending - yellow
-                    '#0dcaf0', // confirmed - cyan
-                    '#0dcaf0', // in_transit - cyan
-                    '#198754', // delivered - green
-                    '#dc3545'  // cancelled - red
-                ],
-                borderWidth: 0,
-                hoverOffset: 10
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        usePointStyle: true,
-                        font: { size: 13 }
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusCounts,
+                        backgroundColor: [
+                            '#ffc107', // pending - yellow
+                            '#0dcaf0', // confirmed - cyan
+                            '#0dcaf0', // in_transit - cyan
+                            '#198754', // delivered - green
+                            '#dc3545'  // cancelled - red
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: { size: 13 }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        // Revenue Trend Chart
+        const revenueCtx = document.getElementById('revenueChart');
+        if (revenueCtx) {
+            const dailyData = {{ daily_revenue | tojson | safe }};
+            const dates = dailyData.map(d => d.order_date.split('-').slice(1, 3).reverse().join('/'));
+            const revenues = dailyData.map(d => d.daily_total || 0);
+
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Daily Revenue (₹)',
+                        data: revenues,
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#28a745',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { usePointStyle: true, font: { size: 13 } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: function (value) { return '₹' + value.toLocaleString(); } }
+                        }
                     }
                 }
-            },
-            cutout: '65%'
+            });
         }
-    });
-    }
-
-    // Revenue Trend Chart
-    const revenueCtx = document.getElementById('revenueChart');
-    if (revenueCtx) {
-        const dailyData = {{ daily_revenue | tojson }};
-    const dates = dailyData.map(d => d.order_date.split('-').slice(1, 3).reverse().join('/'));
-    const revenues = dailyData.map(d => d.daily_total || 0);
-
-    new Chart(revenueCtx, {
-        type: 'line',
-        data: {
-            labels: dates,
-            datasets: [{
-                label: 'Daily Revenue (₹)',
-                data: revenues,
-                borderColor: '#28a745',
-                backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 4,
-                pointBackgroundColor: '#28a745',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: { usePointStyle: true, font: { size: 13 } }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { callback: function (value) { return '₹' + value.toLocaleString(); } }
-                }
-            }
-        }
-    });
-    }
 });
 </script>
 {% endblock %}

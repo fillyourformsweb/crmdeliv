@@ -3,53 +3,54 @@
 {% block title %}New Client Order - CRM Delivery{% endblock %}
 
 {% block content %}
-<div class="row mb-5 align-items-center">
+<div class="row mb-4 align-items-center">
     <div class="col-md-8">
-        <h5 class="text-primary fw-bold mb-1">Corporate Dispatch</h5>
-        <h1 class="display-5 fw-black text-dark mb-2">New Client Order</h1>
-        <p class="text-muted fs-5 mb-0">Select a corporate partner and enter shipment details.</p>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 fw-bold text-uppercase" style="font-size: 0.6rem; letter-spacing: 0.5px;">Corporate Dispatch</span>
+        </div>
+        <h4 class="fw-black text-dark mb-1" style="font-size: 1.6rem; letter-spacing: -0.5px;">New Client Order</h4>
+        <p class="text-muted mb-0" style="font-size: 0.88rem; opacity: 0.8;">Select a corporate partner and enter shipment details.</p>
     </div>
-    <div class="col-md-4 text-md-end">
-        <a href="{{ url_for('orders') }}" class="luxury-btn btn btn-light border px-4">
-            <i class="fas fa-arrow-left me-2"></i>Back to List
-        </a>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <div class="d-flex justify-content-md-end">
+            <a href="{{ url_for('orders') }}" class="btn btn-light border shadow-sm hover-lift px-3" style="height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem;">
+                <i class="fas fa-arrow-left me-2"></i> BACK TO LIST
+            </a>
+        </div>
     </div>
 </div>
 
-<form method="POST" id="orderForm" class="page-reveal">
+<form method="POST" id="client_order_form" class="page-reveal mt-2 pb-5" action="{{ url_for('client_order') }}">
     <!-- Receipt Mode Selection (TOP) -->
-    <div class="row mb-4">
+    <div class="row g-3 mb-3">
         <div class="col-12">
-            <div class="card luxury-card border-0 shadow-sm">
-                <div class="card-body p-4 d-flex align-items-center justify-content-between flex-wrap gap-4">
+            <div class="card luxury-card shadow-sm border-0" style="border-radius: 12px; background: #ffffff; border-left: 4px solid #6366f1 !important;">
+                <div class="card-body py-2 px-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="avatar-circle-sm bg-primary-subtle text-primary">
+                        <div class="text-primary" style="background: rgba(99, 102, 241, 0.1); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                             <i class="fas fa-receipt"></i>
                         </div>
                         <div>
-                            <h5 class="fw-bold mb-0">Tracking Mode</h5>
-                            <p class="small text-muted mb-0">Choose how to generate the tracking number</p>
+                            <h6 class="fw-black mb-0 text-dark" style="font-size: 0.95rem;">Tracking Mode</h6>
+                            <p class="text-muted mb-0" style="font-size: 0.72rem; opacity: 0.8;">How to generate the tracking number</p>
                         </div>
                     </div>
 
-                    <div class="d-flex align-items-center gap-4">
-                        <div class="d-flex gap-3">
-                            <div class="form-check custom-radio flex-shrink-0">
-                                <input class="form-check-input" type="radio" name="receipt_type" id="typeStandard"
-                                    value="standard" checked>
-                                <label class="form-check-label fw-bold" for="typeStandard">Automatic</label>
-                            </div>
-                            <div class="form-check custom-radio flex-shrink-0">
-                                <input class="form-check-input" type="radio" name="receipt_type" id="typeManual"
-                                    value="manual">
-                                <label class="form-check-label fw-bold" for="typeManual">Manual Entry</label>
-                            </div>
+                    <div class="d-flex align-items-center gap-3 ms-auto">
+                        <!-- Button Toggle Segmented Control -->
+                        <div class="btn-group shadow-none" role="group" style="background: #f8fafc; padding: 4px; border-radius: 10px; border: 1px solid #e2e8f0; height: 40px;">
+                            <input type="radio" class="btn-check" name="receipt_type" id="typeStandard" value="standard" checked>
+                            <label class="btn btn-sm px-3 py-0 d-flex align-items-center fw-bold tracking-toggle-btn" for="typeStandard" style="border-radius: 7px; font-size: 0.72rem; letter-spacing: 0.5px;">AUTOMATIC</label>
+
+                            <input type="radio" class="btn-check" name="receipt_type" id="typeManual" value="manual">
+                            <label class="btn btn-sm px-3 py-0 d-flex align-items-center fw-bold tracking-toggle-btn" for="typeManual" style="border-radius: 7px; font-size: 0.72rem; letter-spacing: 0.5px;">MANUAL</label>
                         </div>
 
-                        <div id="receiptFields" style="min-width: 250px;">
+                        <div id="receiptFields" style="width: 180px;">
                             <input type="text" name="receipt_number" id="receiptNumberInput"
-                                class="form-control luxury-input" required placeholder="Generating..."
-                                style="height: 45px;">
+                                class="form-control border-0 bg-light px-3 shadow-none fw-bold" 
+                                required placeholder="Generating..."
+                                style="height: 40px; border-radius: 8px; font-size: 0.85rem; color: #475569;">
                         </div>
                     </div>
                 </div>
@@ -57,33 +58,38 @@
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-lg-7">
-            <!-- Client Selection & Receiver Section -->
-            <div class="card luxury-card border-0 shadow-sm mb-4">
-                <div
-                    class="card-header bg-transparent border-0 px-4 pt-4 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold mb-0 text-dark">
-                        <i class="fas fa-building me-2 text-primary opacity-50"></i>Client Selection
-                    </h5>
-                    <div class="d-flex gap-2">
-                        <button type="button" id="resetClientBtn" class="btn btn-sm btn-outline-secondary fw-bold">
-                            <i class="fas fa-undo me-1"></i> Reset Client
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
-                            onclick="document.getElementById('aiScannerFile').click()">
-                            <i class="fas fa-magic me-1"></i> AI Scan Document
-                        </button>
-                        <input type="file" id="aiScannerFile" style="display: none;" accept="image/*,.pdf"
-                            onchange="handleAIScan(this)">
+    <!-- Inline Style for Toggle -->
+    <style>
+        .tracking-toggle-btn {
+            border: none !important;
+            color: #64748b !important;
+            background: transparent !important;
+        }
+        .btn-check:checked + .tracking-toggle-btn {
+            background: white !important;
+            color: #4f46e5 !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        }
+    </style>
+
+    <!-- Main Form Content -->
+    <div class="row g-3 mb-4">
+            <div class="card luxury-card shadow-sm border-0" style="border-radius: 12px; background: #ffffff; border-left: 4px solid #3b82f6 !important;">
+                <div class="card-body py-2 px-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="text-primary" style="background: rgba(59, 130, 246, 0.1); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="d-none d-sm-block">
+                            <h6 class="fw-black mb-0 text-dark" style="font-size: 0.95rem;">Client Selection</h6>
+                            <p class="text-muted mb-0" style="font-size: 0.72rem; opacity: 0.8;">Choose a corporate partner</p>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body p-4">
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold text-uppercase text-muted">Select Corporate Partner
-                            *</label>
-                        <select name="client_id" id="clientSelect" class="form-select luxury-input" required>
-                            <option value="">Choose a Client...</option>
+
+                    <div class="flex-grow-1 mx-md-4" style="max-width: 440px;">
+                        <select name="client_id" id="clientSelect" class="form-select border-0 bg-light py-0 px-3 shadow-none fw-bold" required 
+                            style="height: 40px; border-radius: 8px; font-size: 0.85rem; color: #475569;">
+                            <option value="">Select Corporate Partner...</option>
                             {% for client in clients %}
                             <option value="{{ client.id }}" data-name="{{ client.name }}"
                                 data-phone="{{ client.phone }}" data-email="{{ client.email or '' }}"
@@ -99,105 +105,63 @@
                         </select>
                     </div>
 
-                    <div id="clientInfo" class="luxury-card bg-light border-0 p-3 mb-0" style="display: none;">
-                        <div class="row g-3">
-                            <div class="col-md-12 mb-2">
-                                <label class="form-label small fw-bold text-uppercase text-muted">Select Sender
-                                    Address</label>
-                                <select id="senderAddressSelect" name="sender_address_id"
-                                    class="form-select form-select-sm luxury-input">
-                                    <option value="">Primary Address</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Contact
-                                    Person</div>
-                                <div class="fw-bold text-dark" id="clientName"></div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Phone
-                                </div>
-                                <div class="fw-bold text-dark" id="clientPhone"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Email
-                                </div>
-                                <div class="fw-bold text-dark text-truncate" id="clientEmail"></div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Pincode
-                                </div>
-                                <div class="fw-bold text-dark" id="clientPincode"></div>
-                            </div>
-                        </div>
+                    <div class="d-flex gap-2 ms-auto">
+                        <button type="button" id="resetClientBtn" class="btn btn-sm btn-light border fw-bold px-3 d-flex align-items-center justify-content-center" style="height: 40px; border-radius: 8px; font-size: 0.72rem;">
+                            <i class="fas fa-undo me-1"></i> RESET
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary fw-bold px-3 shadow-sm d-flex align-items-center justify-content-center" style="height: 40px; border-radius: 8px; background: #3b82f6; border: none; font-size: 0.72rem; min-width: 95px;"
+                            onclick="document.getElementById('aiScannerFile').click()">
+                            <i class="fas fa-magic me-1"></i> AI SCAN
+                        </button>
+                        <input type="file" id="aiScannerFile" style="display: none;" accept="image/*,.pdf" onchange="handleAIScan(this)">
                     </div>
                 </div>
-            </div>
-
-            <div class="card luxury-card border-0 shadow-sm mb-4">
-                <div
-                    class="card-header bg-transparent border-0 px-4 pt-4 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold mb-0 text-dark">
-                        <i class="fas fa-map-marker-alt me-2 text-success opacity-50"></i>Receiver Information
-                    </h5>
-                    <div id="receiverSelectWrapper" style="display: none; width: 250px;">
-                        <select id="receiverSelect" class="form-select form-select-sm luxury-input">
-                            <option value="">Select Saved Receiver...</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Receiver Name *</label>
-                            <input type="text" name="receiver_name" class="form-control luxury-input"
-                                placeholder="Full Name" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Receiver Number *</label>
-                            <input type="text" name="receiver_phone" class="form-control luxury-input"
-                                placeholder="+1..." required>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Delivery Address *</label>
-                            <textarea name="receiver_address" class="form-control luxury-input" rows="2"
-                                 placeholder="Full delivery address..." required></textarea>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Landmark</label>
-                            <input type="text" name="receiver_landmark" class="form-control luxury-input"
-                                placeholder="E.g. Near Bus Stand">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold text-uppercase text-muted">City *</label>
-                            <input type="text" name="receiver_city" class="form-control luxury-input"
-                                placeholder="City" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold text-uppercase text-muted">State *</label>
-                            <select name="receiver_state" id="receiver_state" class="form-select luxury-input" required>
-                                <option value="">Select State</option>
+                
+                <!-- Expanded Info Section (Inside the same card for attractiveness) -->
+                <div id="clientInfo" class="px-4 pb-3" style="display: none;">
+                    <div class="p-3 row g-3 bg-light border-0" style="border-radius: 12px; margin: 0;">
+                        <div class="col-md-5">
+                            <div class="small text-muted text-uppercase fw-bold mb-1" style="font-size: 0.6rem;">Sender Reference</div>
+                            <select id="senderAddressSelect" name="sender_address_id" class="form-select form-select-sm bg-white border-0 shadow-none fw-bold" style="border-radius: 6px; height: 32px; font-size: 0.75rem;">
+                                <option value="">Primary Address</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Pincode *</label>
-                            <input type="text" name="receiver_pincode" id="receiver_pincode"
-                                class="form-control luxury-input" placeholder="Code" pattern="[0-9]{6}" minlength="6"
-                                maxlength="6" inputmode="numeric" required>
+                            <div class="small text-muted text-uppercase fw-bold mb-1" style="font-size: 0.6rem;">Contact</div>
+                            <div class="fw-bold text-dark small" id="clientName"></div>
+                            <div class="text-muted xsmall" id="clientPhone" style="font-size: 0.65rem;"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="small text-muted text-uppercase fw-bold mb-1" style="font-size: 0.6rem;">Communication</div>
+                            <div class="fw-bold text-dark text-truncate small" id="clientEmail"></div>
+                            <div class="text-muted xsmall" id="clientPincode" style="font-size: 0.65rem;"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-5">
-            <!-- Package & Billing Section -->
-            <div class="card luxury-card border-0 shadow-sm mb-4">
+        <!-- MIDDLE: Shipping mode & Receiver info (EXECUTIVE GLASS DASHBOARD STYLE) -->
+        <div class="row g-3 mb-2">
+            <div class="col-lg-6">
+            <div class="card luxury-card shadow-lg border-0 h-100 overflow-hidden" style="border-radius: 16px; background: #ffffff;">
+                <div class="px-4 py-3 d-flex align-items-center gap-3" style="background: linear-gradient(to bottom, #f8faff 0%, #ffffff 100%); border-bottom: 1px solid #f1f5f9;">
+                    <div class="text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 42px; height: 42px; background: #6366f1; border-radius: 12px;">
+                        <i class="fas fa-box" style="font-size: 1.15rem;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-black mb-0 text-dark" style="font-size: 1.05rem; letter-spacing: -0.3px;">Shipping Specs</h6>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary-subtle text-primary fw-bold" style="font-size: 0.55rem; letter-spacing: 0.5px;">PRIMARY CONFIG</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body p-4">
                     <div class="mb-4">
-                        <label class="form-label small fw-bold text-uppercase text-muted">Shipping Mode *</label>
-                        <select name="receipt_mode" id="shippingModeSelect" class="form-select luxury-input" required>
-                            <option value="">Select Shipping Mode</option>
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 0.8px; opacity: 0.8;">Shipping Mode *</label>
+                        <select name="receipt_mode" id="shippingModeSelect" class="form-select luxury-input fw-bold px-3 shadow-sm" required 
+                            style="height: 46px; border-radius: 10px; font-size: 0.88rem; background-color: #fcfdfe; border: 1px solid #eef2f6; line-height: 1.5; padding-top: 8px;">
+                            <option value="">Select Shipping Mode...</option>
                             <option value="standard">Standard Delivery</option>
                             <option value="prime">Prime Express</option>
                             <option value="parcel">Parcel Service</option>
@@ -205,85 +169,157 @@
                             <option value="road_express">Road Express</option>
                             <option value="air">Air</option>
                         </select>
-                        <!-- Shipping Mode Display -->
-                        <div id="shippingModeDisplay" class="mt-3 p-3 bg-light border-left-4" style="border-left: 4px solid #0dcaf0; border-radius: 4px; display: none;">
-                            <div class="small text-muted mb-1">Selected Shipping Mode</div>
-                            <div class="fw-bold text-dark fs-6" id="selectedShippingText">-</div>
-                            <div class="small text-muted mt-2" id="shippingModeDesc"></div>
+                        <div id="shippingModeDisplay" class="mt-3 p-2 bg-light border-0" style="border-radius: 8px; display: none; background: #f8fafc;">
+                            <div class="fw-bold text-primary small" id="selectedShippingText">-</div>
+                            <div class="text-muted xsmall" id="shippingModeDesc" style="font-size: 0.65rem;"></div>
                         </div>
                     </div>
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Weight (kg)</label>
-                            <div class="input-group">
-                                <input type="number" name="weight" id="weight" class="form-control luxury-input"
-                                    step="0.01" min="0" placeholder="0.00">
-                                <span class="input-group-text bg-light border-0">KG</span>
+                            <label class="form-label small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 0.8px; opacity: 0.8;">Weight *</label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden; border: 1px solid #eef2f6;">
+                                <input type="number" name="weight" id="weight" class="form-control border-0 fw-bold px-3"
+                                    step="0.01" min="0" placeholder="0.00" required style="height: 46px; font-size: 0.88rem;">
+                                <span class="input-group-text border-0 bg-primary-subtle text-primary fw-bold" style="font-size: 0.72rem; min-width: 50px; justify-content: center;">KG</span>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Qty (Boxes)</label>
-                            <input type="number" name="number_of_boxes" class="form-control luxury-input" value="1"
-                                min="1">
+                            <label class="form-label small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 0.8px; opacity: 0.8;">Quantity *</label>
+                            <input type="number" name="number_of_boxes" class="form-control luxury-input fw-bold shadow-sm" value="1" min="1" required
+                                style="height: 46px; border-radius: 10px; border: 1px solid #eef2f6; font-size: 0.88rem;">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 0.8px; opacity: 0.8;">Insured Value</label>
+                        <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden; border: 1px solid #eef2f6;">
+                            <span class="input-group-text border-0 bg-light-subtle text-muted fw-bold" style="font-size: 1rem; min-width: 45px; justify-content: center; background: #f8fafc;">₹</span>
+                            <input type="number" name="insured_amount" id="insured_amount"
+                                class="form-control border-0 fw-bold px-3" step="0.01" min="0" placeholder="0.00"
+                                style="height: 46px; font-size: 0.88rem;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card luxury-card shadow-lg border-0 h-100 overflow-hidden" style="border-radius: 16px; background: #ffffff;">
+                <div class="px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-2" style="background: linear-gradient(to bottom, #f0fdf4 0%, #ffffff 100%); border-bottom: 1px solid #f1f5f9;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 42px; height: 42px; background: #10b981; border-radius: 12px;">
+                            <i class="fas fa-map-pin" style="font-size: 1.15rem;"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-black mb-0 text-dark" style="font-size: 1.05rem; letter-spacing: -0.3px;">Receiver Hub</h6>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-success-subtle text-success fw-bold" style="font-size: 0.55rem; letter-spacing: 0.5px;">DESTINATION INFO</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="receiverSelectWrapper" style="display: none;">
+                        <button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-1" style="border-radius: 8px; font-size: 0.65rem; border-width: 2px;">
+                            SAVED RECEIVERS
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 0.8px; opacity: 0.8;">Full Name *</label>
+                            <input type="text" name="receiver_name" class="form-control luxury-input fw-bold shadow-sm"
+                                placeholder="Receiver Name" required style="height: 46px; border-radius: 10px; font-size: 0.88rem; border: 1px solid #eef2f6;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 0.8px; opacity: 0.8;">Phone Number *</label>
+                            <input type="text" name="receiver_phone" class="form-control luxury-input fw-bold shadow-sm"
+                                placeholder="+1..." required style="height: 46px; border-radius: 10px; font-size: 0.88rem; border: 1px solid #eef2f6;">
                         </div>
                     </div>
                     <div class="mb-4">
-                        <label class="form-label small fw-bold text-uppercase text-muted">Insured/Declared Value
-                            (Optional)</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-0">₹</span>
-                            <input type="number" name="insured_amount" id="insured_amount"
-                                class="form-control luxury-input" step="0.01" min="0" placeholder="0.00">
-                        </div>
-                        <small class="text-muted">Declare item value for insurance coverage</small>
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 0.8px; opacity: 0.8;">Delivery Pointer *</label>
+                        <textarea name="receiver_address" class="form-control luxury-input fw-bold shadow-sm" rows="1"
+                             placeholder="Complete address details..." required style="border-radius: 10px; padding-top: 13px; font-size: 0.88rem; border: 1px solid #eef2f6; min-height: 48px;"></textarea>
                     </div>
-                    <!-- Billing Pattern Removed -->
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 0.8px; opacity: 0.8;">City *</label>
+                            <input type="text" name="receiver_city" class="form-control luxury-input fw-bold shadow-sm"
+                                placeholder="City" required style="height: 46px; border-radius: 10px; font-size: 0.88rem; border: 1px solid #eef2f6;">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 0.8px; opacity: 0.8;">State / Province *</label>
+                            <select name="receiver_state" id="receiver_state" class="form-select luxury-input fw-bold shadow-sm" required
+                                style="height: 46px; border-radius: 10px; font-size: 0.88rem; border: 1px solid #eef2f6; line-height: 1.5; padding-top: 8px;">
+                                <option value="">Select State</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-uppercase text-muted mb-2" style="font-size: 0.65rem; letter-spacing: 0.8px; opacity: 0.8;">Zip *</label>
+                            <input type="text" name="receiver_pincode" id="receiver_pincode"
+                                class="form-control luxury-input fw-bold shadow-sm" placeholder="Code" pattern="[0-9]{6}" minlength="6"
+                                maxlength="6" inputmode="numeric" required style="height: 46px; border-radius: 10px; font-size: 0.88rem; border: 1px solid #eef2f6;">
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Pricing Summary -->
-            <div class="card luxury-card border-0 shadow-sm mb-4 bg-primary text-white overflow-hidden">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4 opacity-75"><i class="fas fa-calculator me-2"></i>Estimated Charges</h5>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="opacity-75">Base Rate</span>
-                        <span id="baseAmount" class="fw-bold">₹0.00</span>
+        <!-- BOTTOM: Pricing & Action (SIDE BY SIDE) -->
+        <div class="row g-3 mt-1">
+            <div class="col-lg-6">
+            <div class="card luxury-card shadow-sm border-0 h-100" style="border-radius: 12px; background: #ffffff; border-left: 4px solid #4f46e5 !important;">
+                <div class="card-header bg-transparent border-0 px-4 pt-3 d-flex align-items-center gap-3">
+                    <div class="text-primary" style="background: rgba(79, 70, 229, 0.1); width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1rem;">
+                        <i class="fas fa-calculator"></i>
                     </div>
+                    <div>
+                        <h6 class="fw-black mb-0 text-dark" style="font-size: 0.9rem;">Pricing Summary</h6>
+                        <p class="text-muted mb-0" style="font-size: 0.65rem; opacity: 0.7;">Estimated delivery charges</p>
+                    </div>
+                </div>
+                <div class="card-body px-4 py-3">
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="opacity-75">Weight Surcharge</span>
-                        <span id="weightCharges" class="fw-bold">₹0.00</span>
+                        <span class="text-muted small fw-bold">Base + Weight Charge</span>
+                        <span id="baseAmount" class="fw-bold text-dark small">₹0.00</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3">
-                        <span class="opacity-75">Insurance Charge</span>
-                        <span id="insuranceCharge" class="fw-bold">₹0.00</span>
+                        <span class="text-muted small fw-bold">Insurance Surcharge</span>
+                        <span id="insuranceCharge" class="fw-bold text-dark small">₹0.00</span>
                     </div>
-                    <div
-                        class="border-top border-white border-opacity-25 pt-3 d-flex justify-content-between align-items-end">
+                    <div class="pt-3 border-top d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="small opacity-75 text-uppercase fw-bold">Grand Total</div>
-                            <h2 class="mb-0 fw-black" id="totalAmount">₹0.00</h2>
+                            <span class="small text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 1px;">Grand Total</span>
+                            <h4 class="mb-0 fw-black text-primary" id="totalAmount" style="font-size: 1.5rem; letter-spacing: -0.5px;">₹0.00</h4>
                         </div>
-                        <i class="fas fa-file-invoice-dollar fs-1 opacity-25"></i>
+                        <div class="text-primary opacity-25">
+                            <i class="fas fa-receipt fs-2"></i>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Actions -->
-            <div class="card luxury-card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <div class="form-check mb-4 custom-checkbox">
-                        <input type="checkbox" name="create_customer_link" class="form-check-input" id="createLink">
-                        <label class="form-check-label fw-bold text-dark" for="createLink">
-                            Enable Customer Self-Onboarding
+        <div class="col-lg-6">
+            <div class="card luxury-card shadow-sm border-0 h-100" style="border-radius: 12px; background: #ffffff;">
+                <div class="card-body p-4 d-flex flex-column justify-content-center">
+                    <div class="form-check mb-4 custom-checkbox d-flex align-items-center gap-2">
+                        <input type="checkbox" name="create_customer_link" class="form-check-input mt-0" id="createLink" style="width: 18px; height: 18px;">
+                        <label class="form-check-label fw-bold text-dark small" for="createLink">
+                            Enable Customer Self-Onboarding Link
                         </label>
-                        <p class="small text-muted mb-0">Sends a secure link for the customer to fill additional KYC
-                            details.</p>
                     </div>
-                    <button type="submit" class="luxury-btn btn btn-primary w-100 py-3 fw-bold fs-5 shadow-lg mb-3">
-                        <i class="fas fa-check-circle me-2"></i>Confirm Corporate Order
+                    
+                    <button type="submit" class="btn btn-primary w-100 shadow-sm hover-lift fw-bold mb-3" 
+                        style="height: 52px; border-radius: 12px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border: none; font-size: 1rem; letter-spacing: 0.5px;">
+                        <i class="fas fa-check-circle me-2"></i> CONFIRM CORPORATE ORDER
                     </button>
-                    <a href="{{ url_for('orders') }}"
-                        class="btn btn-link w-100 text-muted text-decoration-none fw-bold">Discard Order</a>
+                    
+                    <div class="text-center">
+                        <a href="{{ url_for('orders') }}" class="text-muted text-decoration-none small fw-bold hover-opacity" style="opacity: 0.7;">
+                            <i class="fas fa-times-circle me-1"></i> Discard and Reset Form
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -306,6 +342,7 @@
     const insuredAmountInput = document.getElementById('insured_amount');
     const totalAmountEl = document.getElementById('totalAmount');
     const resetClientBtn = document.getElementById('resetClientBtn');
+    const shippingModeSelect = document.getElementById('shippingModeSelect');
 
     function resetClientSelection() {
         // Clear client dropdown
@@ -335,8 +372,8 @@
         });
     }
 
+  
     // Shipping Mode Display Logic
-    const shippingModeSelect = document.getElementById('shippingModeSelect');
     const shippingModeDisplay = document.getElementById('shippingModeDisplay');
     const selectedShippingText = document.getElementById('selectedShippingText');
     const shippingModeDesc = document.getElementById('shippingModeDesc');
@@ -449,7 +486,6 @@
     const typeManual = document.getElementById('typeManual');
     const typeStandard = document.getElementById('typeStandard');
     const receiptInput = document.getElementById('receiptNumberInput');
-    const shippingModeSelect = document.querySelector('select[name="receipt_mode"]');
 
     function updateReceiptField() {
         if (typeStandard.checked) {
