@@ -33,10 +33,14 @@
 
 ### 1. **Order Management**
 - **Walk-in Orders**: Fast-track orders from walk-in customers
-- **Corporate Orders**: Bulk orders from registered clients
+- **Corporate Orders**: Bulk orders from registered clients with enhanced features
+  - **Saved Receiver Selection**: Quick dropdown to select from saved receivers
+  - **Handling Tags**: 18 predefined + custom tags for special packaging instructions
+  - **Additional Charges**: Track Stationary, Matrix, and Custom charges per order
+  - **Pricing Summary**: Real-time display of charges breakdown
 - **Order Tracking**: Real-time shipment status updates
 - **Receipt Management**: Auto-generated or manual receipt numbering
-- **Shipping Mode Selection**: 6 modes with automatic rate selection
+- **Shipping Mode Selection**: 6 modes with automatic rate selection (Standard, Prime, Parcel, State Express, Road Express, Air)
 
 ### 2. **Pricing Engine**
 - **Weight-Based Calculation**:
@@ -79,6 +83,51 @@
 - **Performance Tracking**: Individual staff performance metrics
 - **Receipt Assignment**: Track which staff created orders
 - **Branch Management**: Multi-branch operations support
+
+### 8. **Enhanced Client Order Management**
+
+#### 8.1 Saved Receiver Selection
+- **Quick Receiver Lookup**: Dropdown selector showing all saved receivers for selected client
+- **Auto-Fill Details**: Automatically populates all receiver information when selected:
+  - Name, phone number, delivery address
+  - City, state, pincode
+  - Auto-matches state from database
+- **Flexibility**: Option to enter new receiver details instead of using saved receivers
+
+#### 8.2 Handling Tags System
+- **18 Predefined Tags** for shipping instructions:
+  - Care & Fragility: HANDLE WITH CARE, FRAGILE
+  - Positioning: THIS SIDE UP, KEEP UPRIGHT
+  - Environment: KEEP DRY, TEMPERATURE SENSITIVE
+  - Warnings: DO NOT BEND, DO NOT STACK, DO NOT DROP
+  - Special: SIGNATURE REQUIRED
+  - Content: PERISHABLE, HAZARDOUS MATERIAL, ELECTRONICS, GLASS INSIDE, HEAVY PACKAGE, LIQUID INSIDE
+  - Handling: NO HOOKS, PROTECT FROM SUN
+- **Custom Tag Input**: Add custom handling instructions (max 50 characters)
+- **Database Storage**: All selected tags stored as comma-separated values with order
+- **Label Printing**: Tags display on shipping labels for carrier handling
+
+#### 8.3 Additional Charges Management
+- **Four Charge Categories**:
+  - **Insured Value**: Insurance for package contents (₹)
+  - **Stationary Charge**: Packaging material costs (₹)
+  - **Matrix Charge**: Matrix/warehouse fees (₹)
+  - **Custom Charge**: Any miscellaneous charges (₹)
+- **Real-time Calculation**: All charges summed and included in order total
+- **Order-Level Tracking**: Each charge recorded separately for accounting
+
+#### 8.4 Dynamic Pricing Summary
+- **Real-time Price Breakdown**:
+  1. Base + Weight Charge (calculated based on weight and shipping mode)
+  2. Insurance Surcharge (if insured amount specified)
+  3. Additional Charges (sum of all extra charges)
+  4. **Grand Total** (all components combined)
+- **Automatic Updates**: Summary recalculates when:
+  - Weight changes
+  - State/delivery location changes
+  - Insured amount changes
+  - Any additional charge is modified
+- **Visual Display**: Clear, formatted pricing with rupee symbols and decimal precision
 
 ---
 

@@ -243,53 +243,92 @@ This document provides detailed step-by-step workflows for all user roles and bu
 2. **Select Client** (if not pre-selected)
    - Search/select from client list dropdown
    - System loads client's billing pattern and historical data
+   - **Saves to database**: Client's sender information displayed for reference
 
-3. **Select or Add Receiver**
-   - **Option 1**: Click on existing receiver from client's address list
-     - Auto-fills all receiver details
-     - Address auto-selected
-   - **Option 2**: Add new receiver on-the-fly
-     - Enter receiver details as walk-in process
-     - Automatically linked to client account for future use
+3. **Select or Add Receiver** (ENHANCED)
+   - **Option 1 - Quick Selection**: Use "SAVED RECEIVERS" dropdown
+     - Shows all previously saved receivers for this client
+     - Displays receiver name and company (if applicable)
+     - Click to auto-fill all receiver details:
+       - Name, phone number, delivery address
+       - City, state, pincode
+       - Auto-matches state from database dropdown
+     - **Pro Tip**: Fastest option for repeat deliveries
+   
+   - **Option 2 - Manual Entry**: Enter new receiver details
+     - Name
+     - Phone number
+     - Complete delivery address
+     - City, state, pincode
+     - New receivers are automatically saved for future use
 
-4. **Enter Shipment Details**
-   - Select shipping mode (same 6 options as walk-in)
-   - Weight
-   - Shipment type
-   - Item description
-   - Declared value
+4. **Enter Shipment & Packaging Details**
+   - **Shipping Details**:
+     - Select shipping mode (same 6 options as walk-in)
+     - Weight (in kg)
+     - Quantity (number of boxes/items)
+     - Declared insured value (optional)
+   
+   - **Handling Tags (NEW FEATURE)**:
+     - Select applicable handling instructions from 18 predefined tags:
+       - **Care Tags**: HANDLE WITH CARE, FRAGILE
+       - **Position Tags**: THIS SIDE UP, KEEP UPRIGHT
+       - **Environment Tags**: KEEP DRY, TEMPERATURE SENSITIVE
+       - **Warning Tags**: DO NOT BEND, DO NOT STACK, DO NOT DROP
+       - **Special Tags**: SIGNATURE REQUIRED, PERISHABLE, HAZARDOUS MATERIAL
+       - **Content Tags**: ELECTRONICS, GLASS INSIDE, HEAVY PACKAGE, LIQUID INSIDE, NO HOOKS, PROTECT FROM SUN
+     - Add custom handling instruction (optional, max 50 characters)
+     - **Note**: Tags print on shipping label for carrier handling instructions
 
-5. **System Auto-Calculates Pricing**
-   - **Calculation Hierarchy**:
-     1. Check if client has specific state pricing
-     2. If not, use normal client pricing
-     3. If not, use default pricing
-     4. Apply billing pattern discount
-   - Display final amount with breakdown
+5. **Additional Charges Management (NEW FEATURE)**
+   - **Four charge categories** (all optional):
+     - **Insured Value (₹)**: Insurance premium for package contents
+     - **Stationary Charge (₹)**: Packaging materials cost
+     - **Matrix Charge (₹)**: Warehouse/processing fee
+     - **Custom Charge (₹)**: Any miscellaneous charges
+   - Enter amounts for applicable charges
+   - Real-time calculation of total charges
 
-6. **Optional: Apply Special Offer**
+6. **Price Summary with Enhanced Breakdown**
+   - System displays **four-line pricing summary**:
+     1. **Base + Weight Charge**: Auto-calculated based on weight and mode
+     2. **Insurance Surcharge**: If insured amount specified
+     3. **Additional Charges**: Sum of all entered charges
+     4. **GRAND TOTAL**: Final order amount (all components)
+   - **Auto-Updates**: Pricing recalculates automatically when:
+     - Weight changes
+     - State/location changes
+     - Insured amount changes
+     - Any additional charge is modified
+   - **Visual Clarity**: All amounts shown in ₹ with precise decimals
+
+7. **Optional: Apply Special Offer**
    - Same process as walk-in
-   - Click "Select Offer"
-   - System highlights matching offer
-   - Click to apply discount
+   - Click "Check Offer" or "View Offers"
+   - System highlights matching offer based on total amount
+   - Click to apply discount to final amount
 
-7. **Confirm Order**
-   - Review all details
-   - Click "Create Order"
+8. **Confirm Order**
+   - Review all details including:
+     - Client and receiver information
+     - Selected handling tags
+     - All charges breakdown
+     - Final total amount
+   - Click "CONFIRM CORPORATE ORDER"
    - System generates Order ID and links to client
 
-8. **Generate Documentation**
-   - Waybill generation
-   - Invoice with client billing details
+9. **Generate Documentation**
+   - Waybill generation with handling tags
+   - Invoice includes all charges breakdown
    - Email to client (auto-sends if configured)
    - PDF for printing/filing
 
-9. **Payment Processing**
-   - For pre-paid clients: Mark as paid
-   - For post-paid clients: Add to client's due amount
-   - Track payment status and due date
+10. **Payment Processing**
+    - For pre-paid clients: Mark as paid
+    - For post-paid clients: Add to client's due amount
+    - All charges tracked separately for accounting
 
-10. **Delivery & Follow-up**
+11. **Delivery & Follow-up**
     - Operation Manager picks up shipment
     - Updates tracking status
     - Notifies client of delivery via email

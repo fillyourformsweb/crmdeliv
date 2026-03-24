@@ -182,6 +182,39 @@ FLASK_PORT=5001
 
 ---
 
+## ✨ New Features: Enhanced Client Order Management
+
+### 1. Saved Receiver Selection
+- When creating a client order, quick-select from saved receivers
+- Auto-populates all receiver details (name, phone, address, city, state, pincode)
+- Saves time for repeat deliveries to same locations
+
+### 2. Handling Tags
+- 18 predefined handling tags to mark special shipping instructions
+- Tags include: FRAGILE, HANDLE WITH CARE, KEEP DRY, DO NOT BEND, PERISHABLE, HAZARDOUS, etc.
+- Custom tags for special requirements (max 50 characters)
+- Tags print on shipping label for proper handling
+
+### 3. Additional Charges
+- Track four types of charges per order:
+  - **Insured Value**: Insurance premium for package contents
+  - **Stationary Charge**: Packaging materials cost
+  - **Matrix Charge**: Warehouse/processing fee
+  - **Custom Charge**: Any miscellaneous charges
+- All charges summed and included in order total
+
+### 4. Real-time Pricing Summary
+- Live pricing breakdown showing:
+  1. Base + Weight Charge
+  2. Insurance Surcharge
+  3. Additional Charges
+  4. **Grand Total**
+- Auto-updates when weight, state, insured amount, or charges change
+
+**For detailed workflow → See WORKFLOW.md (Flow 2: Client Order Creation)**
+
+---
+
 ## 📚 Additional Resources
 
 - **ENV_SETUP_GUIDE.md** - Detailed configuration for each email provider
