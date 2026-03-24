@@ -247,6 +247,7 @@
                                 <option value="">Select Shipping Mode</option>
                                 <option value="standard">Standard Delivery</option>
                                 <option value="prime">Prime Express</option>
+                                <option value="prime_express">⚡ Prime Express Ultra</option>
                                 <option value="parcel">Parcel Service</option>
                                 <option value="state_express">State Express</option>
                                 <option value="road_express">Road Express</option>
@@ -371,23 +372,55 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-0">
-                        <label class="form-label small fw-bold text-uppercase text-muted">Insured/Declared Value
-                            (Optional)</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-0">₹</span>
-                            <input type="number" name="insured_amount" id="insured_amount"
-                                class="form-control luxury-input" step="0.01" min="0"
-                                placeholder="Enter item value for insurance...">
+                    <!-- Insured Value & Additional Charges - Compact Layout -->
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <label class="form-label xs fw-bold text-uppercase text-muted" style="font-size: 0.7rem;">Insured Value</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0" style="font-size: 0.85rem;">₹</span>
+                                <input type="number" name="insured_amount" id="insured_amount"
+                                    class="form-control luxury-input charge-input" step="0.01" min="0" style="font-size: 0.85rem; padding: 0.4rem 0.5rem;"
+                                    placeholder="0">
+                            </div>
+                            <small class="text-muted" style="font-size: 0.7rem;">Optional</small>
                         </div>
-                        <div id="insuranceChargeDisplay" class="mt-2" style="display: none;">
-                            <span
-                                class="badge bg-info-subtle text-info border border-info border-opacity-25 px-3 py-2 rounded-pill">
-                                <i class="fas fa-shield-alt me-1"></i> Insurance Fee: ₹<span
-                                    id="insuranceChargeAmount">0.00</span>
-                            </span>
+                        <div class="col-md-3">
+                            <label class="form-label xs fw-bold text-uppercase text-muted" style="font-size: 0.7rem;">Stationary ₹</label>
+                            <input type="number" name="stationary_charge" id="stationary_charge"
+                                class="form-control luxury-input charge-input" step="0.01" min="0" value="0" style="font-size: 0.85rem; padding: 0.4rem 0.5rem;"
+                                placeholder="0">
                         </div>
-                        <small class="text-muted">Declare item value for insurance coverage</small>
+                        <div class="col-md-3">
+                            <label class="form-label xs fw-bold text-uppercase text-muted" style="font-size: 0.7rem;">Matrix ₹</label>
+                            <input type="number" name="matrix_charge" id="matrix_charge"
+                                class="form-control luxury-input charge-input" step="0.01" min="0" value="0" style="font-size: 0.85rem; padding: 0.4rem 0.5rem;"
+                                placeholder="0">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label xs fw-bold text-uppercase text-muted" style="font-size: 0.7rem;">Custom ₹</label>
+                            <input type="number" name="custom_charge" id="custom_charge"
+                                class="form-control luxury-input charge-input" step="0.01" min="0" value="0" style="font-size: 0.85rem; padding: 0.4rem 0.5rem;"
+                                placeholder="0">
+                        </div>
+                    </div>
+                    <div class="row g-2 mt-1">
+                        <div class="col-md-3">
+                            <label class="form-label xs fw-bold text-uppercase text-muted" style="font-size: 0.7rem;">Insurance Fee</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0" style="font-size: 0.85rem;">₹</span>
+                                <input type="number" id="insuranceChargeAmount" class="form-control bg-light" readonly style="font-size: 0.85rem; padding: 0.4rem 0.5rem;" value="0">
+                            </div>
+                            <small class="text-muted" style="font-size: 0.7rem;">Auto calculated</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label xs fw-bold text-uppercase text-muted" style="font-size: 0.7rem;">Total Charges</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0" style="font-size: 0.85rem;">₹</span>
+                                <input type="number" name="additional_charges" id="additional_charges"
+                                    class="form-control bg-light" step="0.01" min="0" value="0" readonly style="font-size: 0.85rem; padding: 0.4rem 0.5rem;">
+                            </div>
+                            <small class="text-muted" style="font-size: 0.7rem;">Auto sum</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -804,6 +837,10 @@
                     updateReceiptField();
                 }
             }
+            // Recalculate amounts when shipping mode changes
+            if (typeof calculateAmount === 'function') {
+                calculateAmount();
+            }
         });
     }
 
@@ -814,7 +851,6 @@
     const cityInput = document.querySelector('input[name="receiver_city"]');
     const rateIndicator = document.getElementById('rateIndicator');
     const insuredAmountInput = document.getElementById('insured_amount');
-    const insuranceChargeDisplay = document.getElementById('insuranceChargeDisplay');
     const insuranceChargeAmount = document.getElementById('insuranceChargeAmount');
 
     // Fetch states for dropdown
@@ -905,6 +941,55 @@
         });
     }
 
+    // ====== Additional Charges Calculation ======
+    function calculateAdditionalCharges() {
+        const stationaryCharge = parseFloat(document.getElementById('stationary_charge')?.value) || 0;
+        const matrixCharge = parseFloat(document.getElementById('matrix_charge')?.value) || 0;
+        const customCharge = parseFloat(document.getElementById('custom_charge')?.value) || 0;
+        const insuranceCharge = parseFloat(document.getElementById('insuranceChargeAmount')?.value) || 0;
+        
+        const totalAdditionalCharges = stationaryCharge + matrixCharge + customCharge + insuranceCharge;
+        
+        // Update the total additional charges field
+        const additionalChargesField = document.getElementById('additional_charges');
+        if (additionalChargesField) {
+            additionalChargesField.value = totalAdditionalCharges.toFixed(2);
+        }
+        
+        // Recalculate received amount to include all charges
+        updateReceivedAmountWithCharges();
+        
+        return totalAdditionalCharges;
+    }
+
+    function updateReceivedAmountWithCharges() {
+        const receivedAmountInput = document.getElementById('received_amount');
+        if (!receivedAmountInput || !receivedAmountInput.value) return;
+        
+        // Get the current calculated base amount from the API
+        // For now, we'll just add the additional charges to the current value
+        const currentAmount = parseFloat(receivedAmountInput.value) || 0;
+        const additionalCharges = parseFloat(document.getElementById('additional_charges')?.value) || 0;
+        
+        // The received_amount is already set by calculateAmount function
+        // We don't need to modify it here; the form submission will use additional_charges separately
+    }
+
+    // Add event listeners for additional charges inputs
+    const chargeInputs = document.querySelectorAll('.charge-input');
+    chargeInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.id === 'insured_amount') {
+                calculateAmount(); // Insured amount triggers the main calculation
+            } else {
+                calculateAdditionalCharges(); // Other charges just update totals
+            }
+        });
+    });
+
+    // Initialize additional charges calculation on page load
+    calculateAdditionalCharges();
+
     function checkApplicableOffers(amount) {
         const offerSection = document.getElementById('offerSection');
         const offerAmountDisplay = document.getElementById('offerAmount');
@@ -938,10 +1023,31 @@
         const state = stateInput ? stateInput.value.trim() : '';
         const insuredAmount = parseFloat(insuredAmountInput.value) || 0;
 
+        // ALWAYS calculate insurance fee from insured amount (independent of state/rate lookup)
+        if (insuredAmount > 0) {
+            // Default insurance percentage is 100% if not configured
+            const insurancePercentage = 100.0;
+            const insuranceFee = (insuredAmount * insurancePercentage) / 100;
+            if (insuranceChargeAmount) {
+                insuranceChargeAmount.value = insuranceFee.toFixed(2);
+            }
+            // Recalculate total charges to include insurance
+            calculateAdditionalCharges();
+        } else if (insuredAmount === 0) {
+            if (insuranceChargeAmount) {
+                insuranceChargeAmount.value = '0.00';
+            }
+            calculateAdditionalCharges();
+        }
+
+        // Now try to fetch shipping rate (state-dependent)
         if (state || insuredAmount) {
             // Show billing section immediately if a state is selected
             if (billingSection && state) billingSection.style.display = 'block';
             if (stateError && state) stateError.style.display = 'none';
+
+            // Get the selected shipping mode
+            const shippingModeValue = shippingModeSelect ? shippingModeSelect.value : 'standard';
 
             fetch('/api/calculate-amount', {
                 method: 'POST',
@@ -949,7 +1055,8 @@
                 body: JSON.stringify({
                     weight: weight,
                     state: state,
-                    insured_amount: insuredAmount
+                    insured_amount: insuredAmount,
+                    shipping_mode: shippingModeValue
                 })
             })
                 .then(response => response.json())
@@ -973,13 +1080,10 @@
                     }
 
                     // Update insurance charge display
-                    if (insuranceChargeDisplay && insuranceChargeAmount) {
-                        if (data.insurance_charge > 0) {
-                            insuranceChargeAmount.textContent = data.insurance_charge.toFixed(2);
-                            insuranceChargeDisplay.style.display = 'block';
-                        } else {
-                            insuranceChargeDisplay.style.display = 'none';
-                        }
+                    if (insuranceChargeAmount) {
+                        insuranceChargeAmount.value = data.insurance_charge ? data.insurance_charge.toFixed(2) : '0.00';
+                        // Recalculate total charges to include insurance fee
+                        calculateAdditionalCharges();
                     }
 
                     // Update rate indicator

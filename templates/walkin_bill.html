@@ -293,6 +293,37 @@
                 </ul>
             </div>
             <div class="calculations-box">
+                <!-- Charges Summary Section -->
+                {% if order.base_amount or order.weight_charges or order.additional_charges or order.insurance_charge %}
+                <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-left: 3px solid #0284c7; border-radius: 3px;">
+                    <div class="fw-bold mb-2" style="font-size: 0.9rem; color: #333;">Charges Breakdown</div>
+                    {% if order.base_amount and order.base_amount > 0 %}
+                    <div class="calc-row" style="font-size: 0.85rem;">
+                        <div class="calc-label">Base Charge</div>
+                        <div class="calc-value">₹{{ "%.2f"|format(order.base_amount) }}</div>
+                    </div>
+                    {% endif %}
+                    {% if order.weight_charges and order.weight_charges > 0 %}
+                    <div class="calc-row" style="font-size: 0.85rem;">
+                        <div class="calc-label">Weight Charges</div>
+                        <div class="calc-value">₹{{ "%.2f"|format(order.weight_charges) }}</div>
+                    </div>
+                    {% endif %}
+                    {% if order.insurance_charge and order.insurance_charge > 0 %}
+                    <div class="calc-row" style="font-size: 0.85rem;">
+                        <div class="calc-label">Insurance Charge</div>
+                        <div class="calc-value">₹{{ "%.2f"|format(order.insurance_charge) }}</div>
+                    </div>
+                    {% endif %}
+                    {% if order.additional_charges and order.additional_charges > 0 %}
+                    <div class="calc-row" style="font-size: 0.85rem;">
+                        <div class="calc-label">Additional Charges</div>
+                        <div class="calc-value">₹{{ "%.2f"|format(order.additional_charges) }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
                 {% if is_gst %}
                 {% set taxable_value = total / 1.18 %}
                 {% set cgst_amount = taxable_value * 0.09 %}

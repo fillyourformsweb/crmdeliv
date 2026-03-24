@@ -23,7 +23,7 @@ INDIAN_STATES = [
     'Telangana', 'Andhra Pradesh', 'Madhya Pradesh', 'Bihar', 'Jharkhand'
 ]
 
-SHIPPING_MODES = ['standard', 'prime', 'parcel', 'state_express', 'road_express', 'air']
+SHIPPING_MODES = ['standard', 'prime', 'prime_express', 'parcel', 'state_express', 'road_express', 'air']
 
 def create_demo_database():
     """Create complete demo database"""
@@ -279,6 +279,7 @@ def create_default_state_prices():
                 base_prices = {
                     'standard': {'100gm': 30, '250gm': 50, '500gm': 80, '1kg': 120, '2kg': 200, '3kg': 280, 'extra': 80},
                     'prime': {'100gm': 40, '250gm': 65, '500gm': 100, '1kg': 150, '2kg': 250, '3kg': 340, 'extra': 100},
+                    'prime_express': {'1kg': 180, 'extra': 120},  # Prime Express has special tier logic
                     'parcel': {'100gm': 35, '250gm': 60, '500gm': 95, '1kg': 140, '2kg': 230, '3kg': 310, 'extra': 90},
                     'state_express': {'100gm': 25, '250gm': 45, '500gm': 70, '1kg': 110, '2kg': 180, '3kg': 250, 'extra': 70},
                     'road_express': {'100gm': 50, '250gm': 80, '500gm': 120, '1kg': 180, '2kg': 300, '3kg': 420, 'extra': 120},
@@ -290,18 +291,18 @@ def create_default_state_prices():
                 price = DefaultStatePrice(
                     state=state,
                     shipping_mode=mode,
-                    price_100gm=prices['100gm'],
-                    price_250gm=prices['250gm'],
-                    price_500gm=prices['500gm'],
-                    price_1kg=prices['1kg'],
-                    price_2kg=prices['2kg'],
-                    price_3kg=prices['3kg'],
-                    price_extra_per_kg=prices['extra'],
-                    price_3_10kg=int(prices['extra'] * 2.5),
-                    price_10_25kg=int(prices['extra'] * 4),
-                    price_25_50kg=int(prices['extra'] * 6),
-                    price_50_100kg=int(prices['extra'] * 8),
-                    price_100plus_kg=int(prices['extra'] * 10),
+                    price_100gm=prices.get('100gm', 0),
+                    price_250gm=prices.get('250gm', 0),
+                    price_500gm=prices.get('500gm', 0),
+                    price_1kg=prices.get('1kg', 120),
+                    price_2kg=prices.get('2kg', 0),
+                    price_3kg=prices.get('3kg', 0),
+                    price_extra_per_kg=prices.get('extra', 80),
+                    price_3_10kg=int(prices.get('extra', 80) * 2.5),
+                    price_10_25kg=int(prices.get('extra', 80) * 4),
+                    price_25_50kg=int(prices.get('extra', 80) * 6),
+                    price_50_100kg=int(prices.get('extra', 80) * 8),
+                    price_100plus_kg=int(prices.get('extra', 80) * 10),
                 )
                 db.session.add(price)
     
@@ -318,6 +319,7 @@ def create_normal_client_state_prices():
                 base_prices = {
                     'standard': {'100gm': 25, '250gm': 42, '500gm': 65, '1kg': 100, '2kg': 165, '3kg': 230, 'extra': 65},
                     'prime': {'100gm': 33, '250gm': 55, '500gm': 85, '1kg': 125, '2kg': 205, '3kg': 285, 'extra': 85},
+                    'prime_express': {'1kg': 155, 'extra': 110, '3_10kg': 100},  # Prime Express special tier
                     'parcel': {'100gm': 28, '250gm': 50, '500gm': 78, '1kg': 115, '2kg': 190, '3kg': 260, 'extra': 75},
                     'state_express': {'100gm': 20, '250gm': 38, '500gm': 58, '1kg': 90, '2kg': 150, '3kg': 210, 'extra': 58},
                     'road_express': {'100gm': 42, '250gm': 68, '500gm': 100, '1kg': 150, '2kg': 250, '3kg': 350, 'extra': 100},
@@ -329,18 +331,18 @@ def create_normal_client_state_prices():
                 price = NormalClientStatePrice(
                     state=state,
                     shipping_mode=mode,
-                    price_100gm=prices['100gm'],
-                    price_250gm=prices['250gm'],
-                    price_500gm=prices['500gm'],
-                    price_1kg=prices['1kg'],
-                    price_2kg=prices['2kg'],
-                    price_3kg=prices['3kg'],
-                    price_extra_per_kg=prices['extra'],
-                    price_3_10kg=int(prices['extra'] * 2.2),
-                    price_10_25kg=int(prices['extra'] * 3.5),
-                    price_25_50kg=int(prices['extra'] * 5),
-                    price_50_100kg=int(prices['extra'] * 7),
-                    price_100plus_kg=int(prices['extra'] * 9),
+                    price_100gm=prices.get('100gm', 0),
+                    price_250gm=prices.get('250gm', 0),
+                    price_500gm=prices.get('500gm', 0),
+                    price_1kg=prices.get('1kg', 100),
+                    price_2kg=prices.get('2kg', 0),
+                    price_3kg=prices.get('3kg', 0),
+                    price_extra_per_kg=prices.get('extra', 65),
+                    price_3_10kg=prices.get('3_10kg', int(prices.get('extra', 65) * 2.2)),
+                    price_10_25kg=int(prices.get('extra', 65) * 3.5),
+                    price_25_50kg=int(prices.get('extra', 65) * 5),
+                    price_50_100kg=int(prices.get('extra', 65) * 7),
+                    price_100plus_kg=int(prices.get('extra', 65) * 9),
                 )
                 db.session.add(price)
     
@@ -493,6 +495,7 @@ def create_client_state_prices(clients):
                     base_prices = {
                         'standard': {'100gm': 20, '250gm': 35, '500gm': 55, '1kg': 85, '2kg': 140, '3kg': 190, 'extra': 55},
                         'prime': {'100gm': 28, '250gm': 48, '500gm': 75, '1kg': 110, '2kg': 180, '3kg': 250, 'extra': 75},
+                        'prime_express': {'1kg': 135, 'extra': 95, '3_10kg': 85},  # Prime Express special tier
                         'parcel': {'100gm': 23, '250gm': 42, '500gm': 65, '1kg': 100, '2kg': 165, '3kg': 230, 'extra': 65},
                         'state_express': {'100gm': 15, '250gm': 28, '500gm': 45, '1kg': 70, '2kg': 120, '3kg': 170, 'extra': 45},
                         'road_express': {'100gm': 35, '250gm': 55, '500gm': 85, '1kg': 130, '2kg': 220, '3kg': 310, 'extra': 85},
@@ -505,17 +508,17 @@ def create_client_state_prices(clients):
                         client_id=client.id,
                         state=state,
                         shipping_mode=mode,
-                        price_100gm=prices['100gm'],
-                        price_250gm=prices['250gm'],
-                        price_500gm=prices['500gm'],
-                        price_1kg=prices['1kg'],
-                        price_2kg=prices['2kg'],
-                        price_3kg=prices['3kg'],
-                        price_extra_per_kg=prices['extra'],
-                        price_3_10kg=int(prices['extra'] * 2),
-                        price_10_25kg=int(prices['extra'] * 3),
-                        price_25_50kg=int(prices['extra'] * 4.5),
-                        price_50_100kg=int(prices['extra'] * 6),
+                        price_100gm=prices.get('100gm', 0),
+                        price_250gm=prices.get('250gm', 0),
+                        price_500gm=prices.get('500gm', 0),
+                        price_1kg=prices.get('1kg', 85),
+                        price_2kg=prices.get('2kg', 0),
+                        price_3kg=prices.get('3kg', 0),
+                        price_extra_per_kg=prices.get('extra', 55),
+                        price_3_10kg=prices.get('3_10kg', int(prices.get('extra', 55) * 2)),
+                        price_10_25kg=int(prices.get('extra', 55) * 3),
+                        price_25_50kg=int(prices.get('extra', 55) * 4.5),
+                        price_50_100kg=int(prices.get('extra', 55) * 6),
                         price_100plus_kg=int(prices['extra'] * 8),
                     )
                     db.session.add(price)

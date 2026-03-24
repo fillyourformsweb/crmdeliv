@@ -352,10 +352,30 @@ def get_next_receipt_number(user=None):
 def calculate_from_state_price(weight, price_obj, shipping_mode='standard'):
     amount = 0
     
+    # Check if this is prime_express (special weight-based tiers)
+    is_prime_express = getattr(price_obj, 'shipping_mode', 'standard').lower() == 'prime_express' or shipping_mode.lower() == 'prime_express'
+    
     # Check if this is air cargo (>3kg with special tiers)
     is_air = getattr(price_obj, 'shipping_mode', 'standard').lower() == 'air'
     
-    if is_air:
+    if is_prime_express:
+        # Prime Express special weight-based calculation
+        price_1kg = getattr(price_obj, 'price_1kg', 0) or 0
+        price_extra = getattr(price_obj, 'price_extra_per_kg', 0) or 0
+        
+        if weight <= 1.0:
+            # ≤1kg: charge 1kg rate
+            amount = price_1kg
+        elif weight <= 1.5:
+            # 1.1-1.5kg: charge (1kg rate + 1kg rate/2)
+            amount = price_1kg + (price_1kg / 2)
+        elif weight <= 2.0:
+            # 1.51-2kg: charge (1kg rate × 2)
+            amount = price_1kg * 2
+        else:
+            # >2kg: use extra_per_kg rate for entire weight
+            amount = weight * price_extra if price_extra > 0 else (price_1kg * 2)
+    elif is_air:
         # Air cargo pricing for weights > 3kg
         if weight > 3.0:
             if weight <= 10.0:  # 3-10 kg
@@ -411,12 +431,12 @@ def calculate_order_amount(weight, billing_pattern_id=None, state=None, client_i
     state_clean = state.strip().lower() if state else None
     shipping_mode_clean = shipping_mode.strip().lower() if shipping_mode else 'standard'
     
-    # Get insurance percentage from settings
+    # Get insurance percentage from settings (default to 100% if not set)
     insurance_setting = SystemSettings.query.filter_by(key='insurance_percentage').first()
-    insurance_percentage = float(insurance_setting.value) if insurance_setting and insurance_setting.value else 0
+    insurance_percentage = float(insurance_setting.value) if insurance_setting and insurance_setting.value else 100.0
     insurance_charge = (insured_amount * insurance_percentage) / 100
     
-    # 1. Check for Client State Price first
+    # 1. Check for Client State Price first (only for registered clients, not walk-in orders)
     if client_id and state_clean:
         client_price = ClientStatePrice.query.filter(
             ClientStatePrice.client_id == client_id,
@@ -445,8 +465,8 @@ def calculate_order_amount(weight, billing_pattern_id=None, state=None, client_i
                     res_list[4] += insurance_charge
                     return (*tuple(res_list), 'client', insurance_charge)
 
-    # 2. Check for Normal Client State Price (Default for all clients)
-    if state_clean:
+    # 2. Check for Normal Client State Price (only for registered clients, NOT for walk-in orders)
+    if client_id and state_clean:
         normal_client_price = NormalClientStatePrice.query.filter(
             db.func.lower(NormalClientStatePrice.state) == state_clean,
             db.func.lower(NormalClientStatePrice.shipping_mode) == shipping_mode_clean
@@ -471,7 +491,7 @@ def calculate_order_amount(weight, billing_pattern_id=None, state=None, client_i
                     res_list[4] += insurance_charge
                     return (*tuple(res_list), 'normal_client', insurance_charge)
 
-    # 3. Check for Default State Price
+    # 3. Check for Default State Price (Price Master - used for walk-in orders and as fallback)
     if state_clean:
         default_price = DefaultStatePrice.query.filter(
             db.func.lower(DefaultStatePrice.state) == state_clean,
@@ -3499,8 +3519,12 @@ def walkin_order():
         received_amount = float(request.form.get('received_amount') or 0)
         insured_amount = float(request.form.get('insured_amount') or 0)
         
-        order.received_amount = received_amount
-        order.total_amount = received_amount
+        # Extract new charge fields
+        stationary_charge = float(request.form.get('stationary_charge') or 0)
+        matrix_charge = float(request.form.get('matrix_charge') or 0)
+        custom_charge = float(request.form.get('custom_charge') or 0)
+        total_additional_charges = stationary_charge + matrix_charge + custom_charge
+        
         order.insured_amount = insured_amount
         
         if order.weight:
@@ -3509,14 +3533,22 @@ def walkin_order():
             )
             order.base_amount = base
             order.weight_charges = weight_charge
-            order.additional_charges = additional
+            # Combine calculated additional charges with user-entered charges
+            order.additional_charges = additional + total_additional_charges
             order.discount = discount
             order.insurance_charge = ins_charge
+            # Calculate total: base + weight + insurance + additional - discount
+            order.total_amount = base + weight_charge + ins_charge + order.additional_charges - discount
         else:
-            order.base_amount = received_amount
+            order.base_amount = received_amount if received_amount > 0 else 0
             order.weight_charges = 0
-            order.additional_charges = 0
+            order.additional_charges = total_additional_charges
             order.discount = 0
+            order.insurance_charge = 0
+            order.total_amount = received_amount
+        
+        # Use total_amount if received_amount not specified
+        order.received_amount = received_amount if received_amount > 0 else order.total_amount
         
         if order.received_amount > 0:
             order.payment_status = 'paid'
@@ -3733,12 +3765,21 @@ def client_order():
         base, weight_charge, additional, discount, total, _, ins_charge = calculate_order_amount(
             order.weight, None, state=order.receiver_state, client_id=order.client_id, insured_amount=order.insured_amount, shipping_mode=order.receipt_mode
         )
+        
+        # Extract custom charge fields
+        stationary_charge = float(request.form.get('stationary_charge') or 0)
+        matrix_charge = float(request.form.get('matrix_charge') or 0)
+        custom_charge = float(request.form.get('custom_charge') or 0)
+        total_additional_charges = stationary_charge + matrix_charge + custom_charge
+        
         order.base_amount = base
         order.weight_charges = weight_charge
-        order.additional_charges = additional
+        # Combine calculated additional charges with user-entered charges
+        order.additional_charges = additional + total_additional_charges
         order.discount = discount
         order.insurance_charge = ins_charge
-        order.total_amount = total
+        # Calculate total: base + weight + insurance + additional - discount
+        order.total_amount = base + weight_charge + ins_charge + order.additional_charges - discount
         
         order.generate_tracking_link()
         
@@ -5473,6 +5514,169 @@ def set_walking_air_prices():
                          states=all_states, 
                          selected_state=selected_state,
                          existing_price=existing_price)
+
+
+# ============== PRIME EXPRESS PRICING ROUTES ==============
+
+@app.route('/prime-express-prices')
+@login_required
+def prime_express_default_prices():
+    """View all Prime Express default state prices"""
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    prices = DefaultStatePrice.query.filter_by(shipping_mode='prime_express').all()
+    return render_template('prime_express_default_prices.html', prices=prices)
+
+
+@app.route('/prime-express-prices/add', methods=['GET', 'POST'])
+@login_required
+def add_prime_express_default_price():
+    """Add new Prime Express default state price"""
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # List of Indian states
+    indian_states = [
+        'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+        'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+        'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+        'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
+        'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
+    ]
+    
+    if request.method == 'POST':
+        state = request.form.get('state')
+        if DefaultStatePrice.query.filter_by(state=state, shipping_mode='prime_express').first():
+            flash('Prime Express price for this state already exists.', 'error')
+            return redirect(url_for('add_prime_express_default_price'))
+            
+        price = DefaultStatePrice(
+            state=state,
+            shipping_mode='prime_express',
+            price_1kg=float(request.form.get('price_1kg', 0)),
+            price_extra_per_kg=float(request.form.get('price_extra_per_kg', 100))
+        )
+        db.session.add(price)
+        db.session.commit()
+        flash(f'Prime Express rates for {state} added successfully!', 'success')
+        return redirect(url_for('prime_express_default_prices'))
+    
+    # Get states that already have prime_express prices
+    existing_states = [price.state for price in DefaultStatePrice.query.filter_by(shipping_mode='prime_express').all()]
+    available_states = [state for state in indian_states if state not in existing_states]
+    
+    return render_template('add_prime_express_default_price.html', states=available_states)
+
+
+@app.route('/prime-express-prices/edit/<int:price_id>', methods=['GET', 'POST'])
+@login_required
+def edit_prime_express_default_price(price_id):
+    """Edit Prime Express default state price"""
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    price = DefaultStatePrice.query.get_or_404(price_id)
+    
+    if request.method == 'POST':
+        price.price_1kg = float(request.form.get('price_1kg', 0))
+        price.price_extra_per_kg = float(request.form.get('price_extra_per_kg', 100))
+        db.session.commit()
+        flash(f'Prime Express rates for {price.state} updated successfully!', 'success')
+        return redirect(url_for('prime_express_default_prices'))
+        
+    return render_template('edit_prime_express_default_price.html', price=price)
+
+
+@app.route('/prime-express-prices/delete/<int:price_id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_prime_express_default_price(price_id):
+    """Delete Prime Express default state price"""
+    price = DefaultStatePrice.query.get_or_404(price_id)
+    state_name = price.state
+    db.session.delete(price)
+    db.session.commit()
+    flash(f'Prime Express pricing for {state_name} deleted.', 'success')
+    return redirect(url_for('prime_express_default_prices'))
+
+
+@app.route('/prime-express-normal-client-prices')
+@login_required
+def prime_express_normal_client_prices():
+    """View all Prime Express normal client prices"""
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    prices = NormalClientStatePrice.query.filter_by(shipping_mode='prime_express').all()
+    return render_template('prime_express_normal_client_prices.html', prices=prices)
+
+
+@app.route('/prime-express-normal-client-price/add', methods=['GET', 'POST'])
+@login_required
+def add_prime_express_normal_client_price():
+    """Add Prime Express normal client price"""
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    if request.method == 'POST':
+        state = request.form.get('state')
+        if NormalClientStatePrice.query.filter_by(state=state, shipping_mode='prime_express').first():
+            flash('Prime Express client price for this state already exists.', 'error')
+            return redirect(url_for('add_prime_express_normal_client_price'))
+            
+        price = NormalClientStatePrice(
+            state=state,
+            shipping_mode='prime_express',
+            price_1kg=float(request.form.get('price_1kg', 0)),
+            price_extra_per_kg=float(request.form.get('price_extra_per_kg', 100)),
+            price_3_10kg=float(request.form.get('price_3_10kg', 0))
+        )
+        db.session.add(price)
+        db.session.commit()
+        flash(f'Prime Express client rates for {state} added successfully!', 'success')
+        return redirect(url_for('prime_express_normal_client_prices'))
+        
+    return render_template('add_prime_express_normal_client_price.html')
+
+
+@app.route('/prime-express-normal-client-price/edit/<int:price_id>', methods=['GET', 'POST'])
+@login_required
+def edit_prime_express_normal_client_price(price_id):
+    """Edit Prime Express normal client price"""
+    if current_user.role not in ['admin', 'manager', 'operation_manager', 'branch']:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    price = NormalClientStatePrice.query.get_or_404(price_id)
+    
+    if request.method == 'POST':
+        price.price_1kg = float(request.form.get('price_1kg', 0))
+        price.price_extra_per_kg = float(request.form.get('price_extra_per_kg', 100))
+        price.price_3_10kg = float(request.form.get('price_3_10kg', 0))
+        db.session.commit()
+        flash(f'Prime Express client rates for {price.state} updated successfully!', 'success')
+        return redirect(url_for('prime_express_normal_client_prices'))
+        
+    return render_template('edit_prime_express_normal_client_price.html', price=price)
+
+
+@app.route('/prime-express-normal-client-price/delete/<int:price_id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_prime_express_normal_client_price(price_id):
+    """Delete Prime Express normal client price"""
+    price = NormalClientStatePrice.query.get_or_404(price_id)
+    state_name = price.state
+    db.session.delete(price)
+    db.session.commit()
+    flash(f'Prime Express client pricing for {state_name} deleted.', 'success')
+    return redirect(url_for('prime_express_normal_client_prices'))
 
 
 # ============== ADVANCED REPORTS ==============

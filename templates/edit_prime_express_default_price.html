@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Prime Express Rate - {{ price.state }}{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-danger fw-bold mb-1">⚡ Premium Delivery Service</h5>
+        <h1 class="display-5 fw-black text-dark mb-2">Modify {{ price.state }}</h1>
+        <p class="text-muted fs-5 mb-0">Update Prime Express shipping rates for this zone.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('prime_express_default_prices') }}" class="luxury-btn btn btn-light border px-4">
+            <i class="fas fa-arrow-left me-2"></i>Back to Matrix
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center page-reveal">
+    <div class="col-lg-10">
+        <form method="POST">
+            <div class="card luxury-card border-0 shadow-sm overflow-hidden mb-5">
+                <div class="card-header bg-danger bg-opacity-10 border-0 px-4 pt-4">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-edit me-2 text-danger opacity-50"></i>Update Prime Express Rate</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Prime Express Pricing Formula:</strong>
+                        <ul class="mb-0 mt-2 small">
+                            <li>Weight ≤ 1kg → Charge: 1kg rate</li>
+                            <li>Weight 1.1-1.5kg → Charge: 1kg rate + ₹500</li>
+                            <li>Weight 1.51-2kg → Charge: 1kg rate × 2</li>
+                            <li>Weight > 2kg → Charge: weight × extra_per_kg rate</li>
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Destination State</label>
+                            <input type="text" class="form-control luxury-input" value="{{ price.state }}" disabled>
+                            <small class="text-muted">Cannot change state. Create new rate if needed.</small>
+                        </div>
+
+                        <div class="col-12 bg-light p-3 rounded-3">
+                            <h6 class="fw-bold text-dark mb-3">Rate Configuration</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-uppercase text-muted">1kg Base Rate (₹)</label>
+                                    <input type="number" step="0.01" class="form-control luxury-input border-danger" name="price_1kg" value="{{ price.price_1kg }}" required>
+                                    <small class="text-muted">Current: ₹{{ price.price_1kg }}</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-uppercase text-muted">Extra Per KG (₹) for >2kg</label>
+                                    <input type="number" step="0.01" class="form-control luxury-input" name="price_extra_per_kg" value="{{ price.price_extra_per_kg or 100 }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                <strong>Calculation Preview (with current rate: ₹{{ price.price_1kg }}):</strong>
+                                <ul class="mb-0 small mt-2">
+                                    <li>Order 800g: <span class="fw-bold text-danger">₹{{ price.price_1kg }}</span></li>
+                                    <li>Order 1.2kg: <span class="fw-bold text-danger">₹{{ price.price_1kg + 500 }}</span></li>
+                                    <li>Order 1.8kg: <span class="fw-bold text-danger">₹{{ price.price_1kg * 2 }}</span></li>
+                                </ul>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light border-0 p-4 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-danger px-4 fw-bold rounded-pill" onclick="confirmDelete()">
+                        <i class="fas fa-trash-alt me-2"></i>Delete Rate
+                    </button>
+                    <button type="submit" class="luxury-btn btn btn-danger px-5 py-2 fw-bold rounded-pill">
+                        <i class="fas fa-save me-2"></i>Apply Changes
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<form id="deleteForm" method="POST" action="{{ url_for('delete_prime_express_default_price', price_id=price.id) }}" style="display: none;"></form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmDelete() {
+        if (confirm('Delete Prime Express rates for {{ price.state }}? This action cannot be undone.')) {
+            document.getElementById('deleteForm').submit();
+        }
+    }
+</script>
+{% endblock %}

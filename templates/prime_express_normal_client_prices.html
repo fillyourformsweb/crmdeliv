@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Prime Express Client Rates - CRM Delivery{% endblock %}
+
+{% block content %}
+<div class="row mb-5 align-items-center">
+    <div class="col-md-8">
+        <h5 class="text-danger fw-bold mb-1">⚡ Prime Express for Clients</h5>
+        <h1 class="display-5 fw-black text-dark mb-2">Client Prime Express Rates</h1>
+        <p class="text-muted fs-5 mb-0">Standard Prime Express pricing for all non-corporate clients.</p>
+    </div>
+    {% if current_user.role == 'admin' %}
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('add_prime_express_normal_client_price') }}" class="luxury-btn btn btn-danger px-4">
+            <i class="fas fa-plus-circle me-2"></i>Add Zone
+        </a>
+        <a href="{{ url_for('normal_client_prices') }}" class="btn btn-outline-secondary px-3 ms-2">
+            <i class="fas fa-arrow-left me-2"></i>Back
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="row g-4 page-reveal">
+    <div class="col-12">
+        <div class="card luxury-card border-0 shadow-sm overflow-hidden">
+            <div class="card-header bg-transparent border-0 px-4 pt-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-lightning me-2 text-danger opacity-50"></i>Prime Express Matrix (Clients)</h5>
+                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">{{ prices|length }} States</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted">Zone</th>
+                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">≤ 1kg</th>
+                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">1.1-1.5kg</th>
+                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">1.51-2kg</th>
+                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">3-10kg</th>
+                                <th class="py-3 border-0 small fw-bold text-uppercase text-muted text-center">Extra/kg</th>
+                                {% if current_user.role == 'admin' %}
+                                <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted text-end">Actions</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if not prices %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="fas fa-inbox fs-1 text-muted opacity-25 mb-3 d-block"></i>
+                                    <p class="text-muted">No Prime Express client rates configured yet.</p>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% for price in prices %}
+                            <tr>
+                                <td class="px-4">
+                                    <div class="fw-black text-dark fs-6">{{ price.state }}</div>
+                                    <div class="small text-danger text-uppercase fw-bold" style="font-size: 0.6rem;">Client Prime</div>
+                                </td>
+                                <td class="text-center fw-bold text-danger">₹{{ "%.2f"|format(price.price_1kg) }}</td>
+                                <td class="text-center fw-bold text-danger">₹{{ "%.2f"|format(price.price_1kg + (price.price_1kg / 2)) }}</td>
+                                <td class="text-center fw-bold text-danger">₹{{ "%.2f"|format(price.price_1kg * 2) }}</td>
+                                <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_3_10kg) }}</td>
+                                <td class="text-center fw-bold">₹{{ "%.2f"|format(price.price_extra_per_kg) }}</td>
+                                {% if current_user.role == 'admin' %}
+                                <td class="px-4 text-end">
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('edit_prime_express_normal_client_price', price_id=price.id) }}" class="btn btn-sm btn-light rounded-circle shadow-sm me-1">
+                                            <i class="fas fa-edit text-danger"></i>
+                                        </a>
+                                        <form action="{{ url_for('delete_prime_express_normal_client_price', price_id=price.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Remove?')">
+                                            <button type="submit" class="btn btn-sm btn-light rounded-circle shadow-sm">
+                                                <i class="fas fa-trash text-danger"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
