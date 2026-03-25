@@ -14,7 +14,7 @@ try:
 except ImportError:
     fitz = None
 try:
-    import google.genai as genai
+    from google import genai
 except ImportError:
     genai = None
 from PIL import Image
@@ -40,9 +40,13 @@ from models import (
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Configure Gemini
+# Configure Gemini using new SDK
+gemini_client = None
 if genai and app.config.get('GEMINI_API_KEY'):
-    genai.configure(api_key=app.config['GEMINI_API_KEY'])
+    try:
+        gemini_client = genai.Client(api_key=app.config['GEMINI_API_KEY'])
+    except Exception as e:
+        print(f"Error initializing Gemini: {e}")
 
 
 # JWT Configuration
@@ -6788,13 +6792,10 @@ def scan_document():
     if not (file and (file.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.pdf')))):
         return jsonify({'error': 'Unsupported file format. Please upload an image or PDF.'}), 400
 
-    if not genai:
-        return jsonify({'error': 'Google Generative AI is not configured. Please contact admin.'}), 400
+    if not genai or not gemini_client:
+        return jsonify({'error': 'Gemini not configured'}), 500
 
     try:
-        # Load Gemini model
-        model = genai.GenerativeModel('gemini-flash-latest')
-        
         # Prepare content for Gemini
         img_content = []
         
@@ -6836,7 +6837,11 @@ def scan_document():
         If a field is not found, leave it as an empty string.
         """
 
-        response = model.generate_content([prompt, img_content[0]])
+        # Use new SDK client
+        response = gemini_client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=[prompt, img_content[0]]
+        )
         
         # Parse JSON results
         result_text = response.text.strip()

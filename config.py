@@ -9,6 +9,15 @@ class Config:
     basedir = os.path.abspath(os.path.dirname(__file__))
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'instance', 'crm_delivery.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # SQLite Engine Options for AWS Free Tier stability
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'connect_args': {
+            'timeout': 30  # Increase SQLite timeout to 30 seconds
+        },
+        'pool_pre_ping': True
+    }
+
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
     ALLOWED_EXTENSIONS = {'xlsx', 'xls', 'png', 'jpg', 'jpeg', 'pdf'}
