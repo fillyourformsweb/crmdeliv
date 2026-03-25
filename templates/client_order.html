@@ -3,54 +3,51 @@
 {% block title %}New Client Order - CRM Delivery{% endblock %}
 
 {% block content %}
-<div class="row mb-4 align-items-center">
-    <div class="col-md-8">
-        <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 fw-bold text-uppercase" style="font-size: 0.6rem; letter-spacing: 0.5px;">Corporate Dispatch</span>
+<div class="fitted-page-container">
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center gap-2 mb-0">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0 fw-bold text-uppercase" style="font-size: 0.55rem; letter-spacing: 0.5px;">Corporate Dispatch</span>
+            </div>
+            <h2 class="fw-black text-dark mb-0">New Client Order</h2>
         </div>
-        <h4 class="fw-black text-dark mb-1" style="font-size: 1.6rem; letter-spacing: -0.5px;">New Client Order</h4>
-        <p class="text-muted mb-0" style="font-size: 0.88rem; opacity: 0.8;">Select a corporate partner and enter shipment details.</p>
-    </div>
-    <div class="col-md-4 text-md-end mt-3 mt-md-0">
-        <div class="d-flex justify-content-md-end">
-            <a href="{{ url_for('orders') }}" class="btn btn-light border shadow-sm hover-lift px-3" style="height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem;">
-                <i class="fas fa-arrow-left me-2"></i> BACK TO LIST
+        <div class="col-md-4 text-md-end">
+            <a href="{{ url_for('orders') }}" class="btn btn-light border px-3 py-1 small fw-bold">
+                <i class="fas fa-arrow-left me-2"></i>BACK
             </a>
         </div>
     </div>
-</div>
 
-<form method="POST" id="client_order_form" class="page-reveal mt-2 pb-5" action="{{ url_for('client_order') }}">
+<form method="POST" id="client_order_form" class="fitted-form mt-2 pb-2" action="{{ url_for('client_order') }}">
     <!-- Receipt Mode Selection (TOP) -->
-    <div class="row g-3 mb-3">
+    <div class="row g-2 mb-2">
         <div class="col-12">
-            <div class="card luxury-card shadow-sm border-0" style="border-radius: 12px; background: #ffffff; border-left: 4px solid #6366f1 !important;">
-                <div class="card-body py-2 px-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="card fitted-card py-2">
+                <div class="card-body py-1 px-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="text-primary" style="background: rgba(99, 102, 241, 0.1); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                        <div class="text-primary" style="background: rgba(99, 102, 241, 0.1); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">
                             <i class="fas fa-receipt"></i>
                         </div>
                         <div>
-                            <h6 class="fw-black mb-0 text-dark" style="font-size: 0.95rem;">Tracking Mode</h6>
-                            <p class="text-muted mb-0" style="font-size: 0.72rem; opacity: 0.8;">How to generate the tracking number</p>
+                            <h6 class="fw-black mb-0 text-dark" style="font-size: 0.85rem;">Tracking Mode</h6>
                         </div>
                     </div>
 
                     <div class="d-flex align-items-center gap-3 ms-auto">
                         <!-- Button Toggle Segmented Control -->
-                        <div class="btn-group shadow-none" role="group" style="background: #f8fafc; padding: 4px; border-radius: 10px; border: 1px solid #e2e8f0; height: 40px;">
+                        <div class="btn-group shadow-none" role="group" style="background: #f8fafc; padding: 3px; border-radius: 8px; border: 1px solid #e2e8f0; height: 36px;">
                             <input type="radio" class="btn-check" name="receipt_type" id="typeStandard" value="standard" checked>
-                            <label class="btn btn-sm px-3 py-0 d-flex align-items-center fw-bold tracking-toggle-btn" for="typeStandard" style="border-radius: 7px; font-size: 0.72rem; letter-spacing: 0.5px;">AUTOMATIC</label>
+                            <label class="btn btn-sm px-3 py-0 d-flex align-items-center fw-bold tracking-toggle-btn" for="typeStandard" style="border-radius: 6px; font-size: 0.65rem; letter-spacing: 0.5px;">AUTO</label>
 
                             <input type="radio" class="btn-check" name="receipt_type" id="typeManual" value="manual">
-                            <label class="btn btn-sm px-3 py-0 d-flex align-items-center fw-bold tracking-toggle-btn" for="typeManual" style="border-radius: 7px; font-size: 0.72rem; letter-spacing: 0.5px;">MANUAL</label>
+                            <label class="btn btn-sm px-3 py-0 d-flex align-items-center fw-bold tracking-toggle-btn" for="typeManual" style="border-radius: 6px; font-size: 0.65rem; letter-spacing: 0.5px;">MANUAL</label>
                         </div>
 
-                        <div id="receiptFields" style="width: 180px;">
+                        <div id="receiptFields" style="width: 160px;">
                             <input type="text" name="receipt_number" id="receiptNumberInput"
                                 class="form-control border-0 bg-light px-3 shadow-none fw-bold" 
                                 required placeholder="Generating..."
-                                style="height: 40px; border-radius: 8px; font-size: 0.85rem; color: #475569;">
+                                style="height: 36px; border-radius: 8px; font-size: 0.8rem; color: #475569;">
                         </div>
                     </div>
                 </div>
@@ -74,48 +71,47 @@
 
     <!-- Main Form Content -->
     <div class="row g-3 mb-4">
-            <div class="card luxury-card shadow-sm border-0" style="border-radius: 12px; background: #ffffff; border-left: 4px solid #3b82f6 !important;">
-                <div class="card-body py-2 px-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="text-primary" style="background: rgba(59, 130, 246, 0.1); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
-                            <i class="fas fa-building"></i>
+                <div class="card fitted-card py-2">
+                    <div class="card-body py-1 px-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="text-primary" style="background: rgba(59, 130, 246, 0.1); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-black mb-0 text-dark" style="font-size: 0.85rem;">Client Selection</h6>
+                            </div>
                         </div>
-                        <div class="d-none d-sm-block">
-                            <h6 class="fw-black mb-0 text-dark" style="font-size: 0.95rem;">Client Selection</h6>
-                            <p class="text-muted mb-0" style="font-size: 0.72rem; opacity: 0.8;">Choose a corporate partner</p>
+
+                        <div class="flex-grow-1 mx-md-4" style="max-width: 440px;">
+                            <select name="client_id" id="clientSelect" class="form-select border-0 bg-light py-0 px-3 shadow-none fw-bold" required 
+                                style="height: 36px; border-radius: 8px; font-size: 0.8rem; color: #475569;">
+                                <option value="">Select Corporate Partner...</option>
+                                {% for client in clients %}
+                                <option value="{{ client.id }}" data-name="{{ client.name }}"
+                                    data-phone="{{ client.phone }}" data-email="{{ client.email or '' }}"
+                                    data-pincode="{{ client.pincode or '' }}"
+                                    data-address="{{ client.address or '' }}"
+                                    data-pattern="{{ client.billing_pattern_id or '' }}"
+                                    data-receivers='{{ client.receivers|map(attribute="id")|list|tojson }}'
+                                    data-receiver-details='{{ client.receivers|each_to_dict|tojson }}'
+                                    data-addresses='{{ client.addresses|each_to_dict|tojson }}'>
+                                    {{ client.name }} {% if client.company_name %}({{ client.company_name }}){% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="d-flex gap-2 ms-auto">
+                            <button type="button" id="resetClientBtn" class="btn btn-sm btn-light border fw-bold px-3 py-1" style="height: 36px; border-radius: 8px; font-size: 0.65rem;">
+                                <i class="fas fa-undo me-1"></i> RESET
+                            </button>
+                            <button type="button" class="btn btn-sm btn-primary fw-bold px-3 py-1" style="height: 36px; border-radius: 8px; background: #3b82f6; border: none; font-size: 0.65rem;"
+                                onclick="document.getElementById('aiScannerFile').click()">
+                                <i class="fas fa-magic me-1"></i> AI SCAN
+                            </button>
+                            <input type="file" id="aiScannerFile" style="display: none;" accept="image/*,.pdf" onchange="handleAIScan(this)">
                         </div>
                     </div>
-
-                    <div class="flex-grow-1 mx-md-4" style="max-width: 440px;">
-                        <select name="client_id" id="clientSelect" class="form-select border-0 bg-light py-0 px-3 shadow-none fw-bold" required 
-                            style="height: 40px; border-radius: 8px; font-size: 0.85rem; color: #475569;">
-                            <option value="">Select Corporate Partner...</option>
-                            {% for client in clients %}
-                            <option value="{{ client.id }}" data-name="{{ client.name }}"
-                                data-phone="{{ client.phone }}" data-email="{{ client.email or '' }}"
-                                data-pincode="{{ client.pincode or '' }}"
-                                data-address="{{ client.address or '' }}"
-                                data-pattern="{{ client.billing_pattern_id or '' }}"
-                                data-receivers='{{ client.receivers|map(attribute="id")|list|tojson }}'
-                                data-receiver-details='{{ client.receivers|each_to_dict|tojson }}'
-                                data-addresses='{{ client.addresses|each_to_dict|tojson }}'>
-                                {{ client.name }} {% if client.company_name %}({{ client.company_name }}){% endif %}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="d-flex gap-2 ms-auto">
-                        <button type="button" id="resetClientBtn" class="btn btn-sm btn-light border fw-bold px-3 d-flex align-items-center justify-content-center" style="height: 40px; border-radius: 8px; font-size: 0.72rem;">
-                            <i class="fas fa-undo me-1"></i> RESET
-                        </button>
-                        <button type="button" class="btn btn-sm btn-primary fw-bold px-3 shadow-sm d-flex align-items-center justify-content-center" style="height: 40px; border-radius: 8px; background: #3b82f6; border: none; font-size: 0.72rem; min-width: 95px;"
-                            onclick="document.getElementById('aiScannerFile').click()">
-                            <i class="fas fa-magic me-1"></i> AI SCAN
-                        </button>
-                        <input type="file" id="aiScannerFile" style="display: none;" accept="image/*,.pdf" onchange="handleAIScan(this)">
-                    </div>
-                </div>
                 
                 <!-- Expanded Info Section (Inside the same card for attractiveness) -->
                 <div id="clientInfo" class="px-4 pb-3" style="display: none;">
@@ -141,10 +137,10 @@
             </div>
         </div>
 
-        <!-- MIDDLE: Shipping mode & Receiver info (EXECUTIVE GLASS DASHBOARD STYLE) -->
-        <div class="row g-3 mb-2">
+        <!-- MIDDLE: Shipping mode & Receiver info -->
+        <div class="row g-2 mb-2">
             <div class="col-lg-6">
-            <div class="card luxury-card shadow-lg border-0 h-100 overflow-hidden" style="border-radius: 16px; background: #ffffff;">
+            <div class="card fitted-card h-100 overflow-hidden" style="border-radius: 12px; background: #ffffff;">
                 <div class="px-4 py-3 d-flex align-items-center gap-3" style="background: linear-gradient(to bottom, #f8faff 0%, #ffffff 100%); border-bottom: 1px solid #f1f5f9;">
                     <div class="text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 42px; height: 42px; background: #6366f1; border-radius: 12px;">
                         <i class="fas fa-box" style="font-size: 1.15rem;"></i>

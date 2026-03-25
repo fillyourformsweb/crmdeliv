@@ -3,18 +3,18 @@
 {% block title %}Operations Dashboard{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-1">
     <!-- Header Section -->
-    <div class="mb-5">
-        <h1 class="fw-900 text-primary mb-1 display-5" style="letter-spacing: -1.5px;">OPERATIONS <span class="text-dark opacity-75">COMMAND</span></h1>
-        <p class="text-muted fs-5">Enterprise logistics overview and multi-center operational heartbeat</p>
+    <div class="mb-2">
+        <h1 class="fw-900 text-primary mb-0" style="letter-spacing: -1.5px; font-size: 2.5rem;">OPERATIONS <span class="text-dark opacity-75">COMMAND</span></h1>
+        <p class="text-muted small mb-0">Enterprise logistics overview and multi-center operational heartbeat</p>
     </div>
 
     <!-- KPI Cards Row 1 -->
-    <div class="row g-4 mb-5">
+    <div class="row g-2 mb-3">
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100" style="border-left: 4px solid #2563eb !important;">
-                <div class="card-body p-4">
+            <div class="card fitted-card border-0 h-100" style="border-left: 4px solid #2563eb !important;">
+                <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="bg-primary-subtle text-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
                             <i class="fas fa-boxes fs-5"></i>
@@ -35,8 +35,8 @@
         </div>
 
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100" style="border-left: 4px solid #f59e0b !important;">
-                <div class="card-body p-4">
+            <div class="card fitted-card border-0 h-100" style="border-left: 4px solid #f59e0b !important;">
+                <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="bg-warning-subtle text-warning rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
                             <i class="fas fa-truck-fast fs-5"></i>
@@ -56,8 +56,8 @@
         </div>
 
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100" style="border-left: 4px solid #10b981 !important;">
-                <div class="card-body p-4">
+            <div class="card fitted-card border-0 h-100" style="border-left: 4px solid #10b981 !important;">
+                <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="bg-success-subtle text-success rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
                             <i class="fas fa-check-circle fs-5"></i>
@@ -75,8 +75,8 @@
         </div>
 
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100" style="border-left: 4px solid #0f172a !important;">
-                <div class="card-body p-4">
+            <div class="card fitted-card border-0 h-100" style="border-left: 4px solid #0f172a !important;">
+                <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="bg-dark-subtle text-dark rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
                             <i class="fas fa-wallet fs-5"></i>
@@ -95,71 +95,71 @@
     </div>
 
     <!-- Quick Navigation -->
-    <div class="mb-5">
-        <h5 class="fw-bold mb-3 d-flex align-items-center" style="color: #1e293b; letter-spacing: -0.5px;">
-            <div class="bg-primary-subtle rounded-pill me-2" style="width: 8px; height: 1.5rem;"></div>
+    <div class="mb-3">
+        <h6 class="fw-bold mb-2 d-flex align-items-center" style="color: #1e293b; letter-spacing: -0.5px;">
+            <div class="bg-primary me-2" style="width: 4px; height: 1.2rem; border-radius: 2px;"></div>
             Quick Navigation
-        </h5>
-        <div class="row g-3">
+        </h6>
+        <div class="row g-2">
             <div class="col-md-2">
-                <a href="{{ url_for('operations_booking_history') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #10b981 !important;">
-                    <div class="bg-success-subtle text-success rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-history fs-5"></i>
+                <a href="{{ url_for('operations_booking_history') }}" class="card fitted-card border-0 p-2 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #10b981 !important;">
+                    <div class="text-success mb-1">
+                        <i class="fas fa-history" style="font-size: 1.2rem;"></i>
                     </div>
-                    <small class="fw-bold text-dark">History</small>
+                    <span class="fw-bold text-dark" style="font-size: 0.75rem;">History</span>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_branch_bookings') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #3b82f6 !important;">
-                    <div class="bg-blue-subtle text-blue rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-sitemap fs-5"></i>
+                <a href="{{ url_for('operations_branch_bookings') }}" class="card fitted-card border-0 p-2 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #3b82f6 !important;">
+                    <div class="text-primary mb-1">
+                        <i class="fas fa-sitemap" style="font-size: 1.2rem;"></i>
                     </div>
-                    <small class="fw-bold text-dark">Branches</small>
+                    <span class="fw-bold text-dark" style="font-size: 0.75rem;">Branches</span>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_walk_in_orders') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #f59e0b !important;">
-                    <div class="bg-warning-subtle text-warning rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-walking fs-5"></i>
+                <a href="{{ url_for('operations_walk_in_orders') }}" class="card fitted-card border-0 p-2 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #f59e0b !important;">
+                    <div class="text-warning mb-1">
+                        <i class="fas fa-walking" style="font-size: 1.2rem;"></i>
                     </div>
-                    <small class="fw-bold text-dark">Walk-in</small>
+                    <span class="fw-bold text-dark" style="font-size: 0.75rem;">Walk-in</span>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_client_orders') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #6366f1 !important;">
-                    <div class="bg-indigo-subtle text-indigo rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-users fs-5"></i>
+                <a href="{{ url_for('operations_client_orders') }}" class="card fitted-card border-0 p-2 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #6366f1 !important;">
+                    <div class="text-indigo mb-1">
+                        <i class="fas fa-users" style="font-size: 1.2rem;"></i>
                     </div>
-                    <small class="fw-bold text-dark">Clients</small>
+                    <span class="fw-bold text-dark" style="font-size: 0.75rem;">Clients</span>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_crm_overview') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #64748b !important;">
-                    <div class="bg-slate-subtle text-slate rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-chart-line fs-5"></i>
+                <a href="{{ url_for('operations_crm_overview') }}" class="card fitted-card border-0 p-2 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #64748b !important;">
+                    <div class="text-slate mb-1">
+                        <i class="fas fa-chart-line" style="font-size: 1.2rem;"></i>
                     </div>
-                    <small class="fw-bold text-dark">Overview</small>
+                    <span class="fw-bold text-dark" style="font-size: 0.75rem;">Overview</span>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('staff_dashboard') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #1e293b !important;">
-                    <div class="bg-dark-subtle text-dark rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-file-analytics fs-5"></i>
+                <a href="{{ url_for('staff_dashboard') }}" class="card fitted-card border-0 p-2 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #1e293b !important;">
+                    <div class="text-dark mb-1">
+                        <i class="fas fa-file-analytics" style="font-size: 1.2rem;"></i>
                     </div>
-                    <small class="fw-bold text-dark">Reports</small>
+                    <span class="fw-bold text-dark" style="font-size: 0.75rem;">Reports</span>
                 </a>
             </div>
         </div>
     </div>
 
     <!-- Order Type Distribution -->
-    <div class="row g-4 mb-5">
+    <div class="row g-2 mb-3">
         <div class="col-md-6">
-            <div class="luxury-card border-0 h-100">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4 d-flex align-items-center" style="color: #1e293b;">
+            <div class="card fitted-card border-0 h-100">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold mb-3 d-flex align-items-center" style="color: #1e293b;">
                         <i class="fas fa-chart-pie text-primary me-2"></i>Order Distribution
-                    </h5>
+                    </h6>
                     <div class="d-flex align-items-center justify-content-around py-2">
                         <div class="text-center">
                             <h2 class="fw-900 text-warning mb-1">{{ walkin_count }}</h2>
@@ -176,11 +176,11 @@
         </div>
 
         <div class="col-md-6">
-            <div class="luxury-card border-0 h-100">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4 d-flex align-items-center" style="color: #1e293b;">
+            <div class="card fitted-card border-0 h-100">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold mb-3 d-flex align-items-center" style="color: #1e293b;">
                         <i class="fas fa-star text-warning me-2"></i>Top Strategic Branches
-                    </h5>
+                    </h6>
                     <ul class="list-unstyled mb-0">
                         {% for branch in branch_stats[:5] %}
                         <li class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-light">
@@ -201,14 +201,14 @@
     </div>
 
     <!-- Recent Completed Bookings -->
-    <div class="luxury-card border-0 mb-5 overflow-hidden">
-        <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center" style="border-left: 5px solid #10b981 !important;">
-            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center">
-                <div class="bg-success-subtle text-success rounded-3 me-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-                    <i class="fas fa-check-double"></i>
+    <div class="card fitted-card border-0 mb-3 overflow-hidden">
+        <div class="card-header bg-white border-0 py-2 px-3 d-flex justify-content-between align-items-center" style="border-left: 5px solid #10b981 !important;">
+            <h6 class="mb-0 fw-bold text-dark d-flex align-items-center">
+                <div class="bg-success-subtle text-success rounded-3 me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <i class="fas fa-check-double small"></i>
                 </div>
-                Execution Ledger <span class="text-muted opacity-50 ms-2 fw-normal" style="font-size: 0.85rem;">Recently Finalized Bookings</span>
-            </h5>
+                Execution Ledger <span class="text-muted opacity-50 ms-2 fw-normal" style="font-size: 0.75rem;">Recently Finalized</span>
+            </h6>
         </div>
         <div class="card-body p-0">
             {% if recent_completed %}

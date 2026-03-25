@@ -3,16 +3,22 @@
 {% block title %}Edit Order - CRM Delivery{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col">
-        <h2><i class="fas fa-edit"></i> Edit Order</h2>
+<div class="fitted-page-container">
+    <div class="row mb-3 align-items-center">
+        <div class="col-8">
+            <h2 class="fw-black text-dark mb-0"><i class="fas fa-edit me-2 text-primary"></i>Edit Order</h2>
+        </div>
+        <div class="col-4 text-end">
+            <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-light border px-3 py-1 small">
+                <i class="fas fa-arrow-left me-1"></i>Back
+            </a>
+        </div>
     </div>
-</div>
 
-<form method="POST">
-    <div class="card mb-4 border-warning">
-        <div class="card-header bg-warning text-dark fw-bold">
-            <i class="fas fa-barcode"></i> critical: Tracking Number
+<form method="POST" class="fitted-form">
+    <div class="card fitted-card mb-3 border-warning border-opacity-25">
+        <div class="card-header bg-warning bg-opacity-10 text-dark fw-bold py-2">
+            <i class="fas fa-barcode me-2"></i>Critical: Tracking Number
         </div>
         <div class="card-body">
             <div class="row align-items-center">
@@ -32,33 +38,33 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <i class="fas fa-user"></i> Customer Details
+            <div class="card fitted-card mb-3">
+                <div class="card-header bg-primary bg-opacity-10 text-primary fw-bold py-2">
+                    <i class="fas fa-user me-2"></i>Customer Details
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
+                    <div class="mb-1">
                         <label class="form-label">Customer Name *</label>
                         <input type="text" name="customer_name" class="form-control" value="{{ order.customer_name }}"
                             required>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-1">
                         <label class="form-label">Phone *</label>
                         <input type="text" name="customer_phone" class="form-control" value="{{ order.customer_phone }}"
                             required>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-1">
                         <label class="form-label">Email</label>
                         <input type="email" name="customer_email" class="form-control"
                             value="{{ order.customer_email or '' }}">
                     </div>
                     <div class="row">
-                        <div class="col-md-8 mb-3">
+                        <div class="col-md-8 mb-1">
                             <label class="form-label">Address</label>
                             <textarea name="customer_address" class="form-control"
                                 rows="2">{{ order.customer_address or '' }}</textarea>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4 mb-1">
                             <label class="form-label">Pincode</label>
                             <input type="text" name="customer_pincode" class="form-control"
                                 value="{{ order.customer_pincode or '' }}" pattern="[0-9]{6}" minlength="6"
@@ -68,27 +74,27 @@
                 </div>
             </div>
 
-            <div class="card mb-4">
-                <div class="card-header bg-success text-white">
-                    <i class="fas fa-map-marker-alt"></i> Receiver Details
+            <div class="card fitted-card mb-3">
+                <div class="card-header bg-success bg-opacity-10 text-success fw-bold py-2">
+                    <i class="fas fa-map-marker-alt me-2"></i>Receiver Details
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
+                    <div class="mb-1">
                         <label class="form-label">Receiver Name</label>
                         <input type="text" name="receiver_name" class="form-control"
                             value="{{ order.receiver_name or '' }}">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-1">
                         <label class="form-label">Receiver Phone</label>
                         <input type="text" name="receiver_phone" class="form-control"
                             value="{{ order.receiver_phone or '' }}">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-1">
                         <label class="form-label">Address</label>
                         <textarea name="receiver_address" class="form-control"
                             rows="2">{{ order.receiver_address or '' }}</textarea>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-1">
                         <label class="form-label">Landmark</label>
                         <input type="text" name="receiver_landmark" class="form-control"
                             value="{{ order.receiver_landmark or '' }}" placeholder="E.g. Near Bus Stand">
@@ -286,12 +292,13 @@
         </div>
     </div>
 
-    <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary btn-lg">
-            <i class="fas fa-save"></i> Update Order
+    <div class="d-flex gap-2 mb-4">
+        <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">
+            <i class="fas fa-save me-2"></i>Update Order
         </button>
-        <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-secondary btn-lg">Cancel</a>
+        <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-light border px-4 py-2">Cancel</a>
     </div>
+</div>
 </form>
 
 <script>

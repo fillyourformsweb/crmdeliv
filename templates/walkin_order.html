@@ -3,69 +3,67 @@
 {% block title %}New Walk-in Order - CRM Delivery{% endblock %}
 
 {% block content %}
-<div class="row mb-3 align-items-center">
-    <div class="col-md-8">
-        <h6 class="text-primary fw-bold mb-0">Dispatch Center</h6>
-        <h2 class="fw-black text-dark mb-1">New Walk-in Order</h2>
-        <p class="text-muted small mb-0">Enter customer and shipment details to generate a new invoice.</p>
+<div class="fitted-page-container">
+    <div class="row mb-2 align-items-center">
+        <div class="col-8">
+            <h2 class="fw-black text-dark mb-0"><i class="fas fa-truck-fast me-2 text-primary"></i>Walk-in Order</h2>
+        </div>
+        <div class="col-4 text-end">
+            <a href="{{ url_for('orders') }}" class="btn btn-light border px-2 py-1 small fw-bold">
+                <i class="fas fa-arrow-left me-1"></i>BACK
+            </a>
+        </div>
     </div>
-    <div class="col-md-4 text-md-end">
-        <a href="{{ url_for('orders') }}" class="luxury-btn btn btn-light border px-3 py-2 small">
-            <i class="fas fa-arrow-left me-1"></i>Back to List
-        </a>
-    </div>
-</div>
 
-<form method="POST" id="orderForm" class="page-reveal">
-    <!-- Receipt Mode Selection (TOP) -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card luxury-card border-0 shadow-sm">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="avatar-circle-sm bg-primary-subtle text-primary" style="width: 32px; height: 32px; font-size: 0.8rem;">
-                            <i class="fas fa-receipt"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold mb-0">Tracking Mode</h6>
-                            <p class="font-xs text-muted mb-0">Automatic or manual entry</p>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="d-flex gap-3">
-                            <div class="form-check custom-radio flex-shrink-0">
-                                <input class="form-check-input" type="radio" name="receipt_type" id="typeStandard"
-                                    value="standard" checked>
-                                <label class="form-check-label fw-bold small" for="typeStandard">Automatic</label>
+    <form method="POST" id="orderForm" class="fitted-form">
+        <!-- Receipt Mode Selection (TOP) -->
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="card fitted-card py-2">
+                    <div class="card-body p-2 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle-sm bg-primary-subtle text-primary" style="width: 28px; height: 28px; font-size: 0.75rem;">
+                                <i class="fas fa-receipt"></i>
                             </div>
-                            <div class="form-check custom-radio flex-shrink-0">
-                                <input class="form-check-input" type="radio" name="receipt_type" id="typeManual"
-                                    value="manual">
-                                <label class="form-check-label fw-bold small" for="typeManual">Manual</label>
+                            <div>
+                                <h6 class="fw-bold mb-0 small">Tracking Mode</h6>
                             </div>
                         </div>
 
-                        <div id="receiptFields" style="min-width: 200px;">
-                            <input type="text" name="receipt_number" id="receiptNumberInput"
-                                class="form-control luxury-input p-2" required placeholder="Generating..."
-                                style="height: 38px; font-size: 0.9rem;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="d-flex gap-3">
+                                <div class="form-check custom-radio flex-shrink-0">
+                                    <input class="form-check-input" type="radio" name="receipt_type" id="typeStandard"
+                                        value="standard" checked>
+                                    <label class="form-check-label fw-bold small" for="typeStandard">Auto</label>
+                                </div>
+                                <div class="form-check custom-radio flex-shrink-0">
+                                    <input class="form-check-input" type="radio" name="receipt_type" id="typeManual"
+                                        value="manual">
+                                    <label class="form-check-label fw-bold small" for="typeManual">Manual</label>
+                                </div>
+                            </div>
+
+                            <div id="receiptFields" style="min-width: 180px;">
+                                <input type="text" name="receipt_number" id="receiptNumberInput"
+                                    class="form-control luxury-input py-1 px-2" required placeholder="Generating..."
+                                    style="height: 32px; font-size: 0.85rem;">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row g-4">
+        <div class="row g-2">
         <div class="col-lg-7">
             <!-- Customer & Receiver Section -->
-            <div class="card luxury-card border-0 shadow-sm mb-4">
+            <div class="card fitted-card mb-2">
                 <div
-                    class="card-header bg-transparent border-0 px-3 pt-3 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold mb-0 text-dark">
-                        <i class="fas fa-user-circle me-2 text-primary opacity-50"></i>Sender Information
-                    </h5>
+                    class="card-header bg-transparent border-0 px-3 pt-2 d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="fas fa-user-circle me-2 text-primary"></i>Sender Information
+                    </h6>
                     <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
                         onclick="document.getElementById('aiScannerFile').click()">
                         <i class="fas fa-magic me-1"></i> AI Scan Document
@@ -105,10 +103,10 @@
                 </div>
             </div>
 
-            <div class="card luxury-card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent border-0 px-3 pt-3">
-                    <h5 class="fw-bold mb-0 text-dark"><i
-                            class="fas fa-map-marker-alt me-2 text-success opacity-50"></i>Receiver Information</h5>
+            <div class="card fitted-card mb-2">
+                <div class="card-header bg-transparent border-0 px-3 pt-2">
+                    <h6 class="fw-bold mb-0 text-dark"><i
+                            class="fas fa-map-marker-alt me-2 text-success"></i>Receiver Information</h6>
                 </div>
                 <div class="card-body p-3">
                     <div class="row g-3">
@@ -153,14 +151,13 @@
             </div>
 
             <!-- International Booking Section -->
-            <div class="card luxury-card border-0 shadow-sm mb-4">
-                <div class="card-header bg-transparent border-0 px-3 pt-3">
-                    <h5 class="fw-bold mb-0 text-dark">
+            <div class="card fitted-card mb-2 border-danger border-opacity-10">
+                <div class="card-header bg-transparent border-0 px-3 pt-2">
+                    <h6 class="fw-bold mb-0 text-dark">
                         <i class="fas fa-globe me-2 text-danger opacity-50"></i>International Booking
-                    </h5>
-                    <p class="small text-muted mb-0">Enable for cross-border shipments</p>
+                    </h6>
                 </div>
-                <div class="card-body p-3">
+                <div class="card-body p-2">
                     <div class="form-check form-switch mb-4">
                         <input class="form-check-input" type="checkbox" name="is_international" id="isInternational">
                         <label class="form-check-label fw-bold text-dark" for="isInternational">
@@ -238,9 +235,9 @@
 
         <div class="col-lg-5">
             <!-- Package & Billing Section -->
-            <div class="card luxury-card border-0 shadow-sm mb-4">
+            <div class="card fitted-card mb-2">
                 <div class="card-body p-3">
-                    <div class="row g-3 mb-4">
+                    <div class="row g-2 mb-2">
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-uppercase text-muted">Shipping Mode *</label>
                             <select name="receipt_mode" class="form-select luxury-input" required>
@@ -314,7 +311,7 @@
                         </div>
                     </div>
                     {% endif %}
-                    <div class="row g-3 mb-4" style="margin-top: 0;">
+                    <div class="row g-2 mb-2" style="margin-top: 0;">
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-uppercase text-muted">Weight (kg)</label>
                             <div class="input-group">
@@ -624,21 +621,20 @@
 
 
             <!-- Actions -->
-            <div class="card luxury-card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <div class="form-check mb-4 custom-checkbox">
+            <div class="card fitted-card mb-2">
+                <div class="card-body p-2">
+                    <div class="form-check mb-2 custom-checkbox">
                         <input type="checkbox" name="create_customer_link" class="form-check-input" id="createLink">
-                        <label class="form-check-label fw-bold text-dark" for="createLink">
+                        <label class="form-check-label fw-bold text-dark small" for="createLink">
                             Enable Customer Self-Onboarding
                         </label>
-                        <p class="small text-muted mb-0">Sends a secure link for the customer to fill additional KYC
-                            details.</p>
                     </div>
-                    <button type="submit" class="luxury-btn btn btn-primary w-100 py-3 fw-bold fs-5 shadow-lg mb-3">
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-lg mb-2">
                         <i class="fas fa-check-circle me-2"></i>Finalize & Print Invoice
                     </button>
-                    <a href="{{ url_for('orders') }}"
-                        class="btn btn-link w-100 text-muted text-decoration-none fw-bold">Discard Order</a>
+                    <div class="text-center">
+                        <a href="{{ url_for('orders') }}" class="text-muted small text-decoration-none fw-bold">Discard Order</a>
+                    </div>
                 </div>
             </div>
         </div>

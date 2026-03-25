@@ -247,15 +247,134 @@
     }
 
     .executive-header {
-        background: url("{{ url_for('static', filename='images/tytttttt.png') }}") no-repeat center 85%;
-        background-size: 120%;
+        background: url("{{ url_for('static', filename='images/ChatGPT Image Mar 25, 2026, 12_00_26 AM.png') }}") no-repeat center 75%;
+        background-size: cover;
         position: relative;
         overflow: hidden;
         border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 1.5rem; 
-        margin: 0 0 1.5rem 0; 
-        padding: 3rem !important; 
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+        border-radius: 1rem; 
+        margin: 0.1rem 0 0.75rem 0; 
+        padding: 1.5rem !important; 
+        box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.4);
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes glint {
+        0% { left: -100%; top: -100%; }
+        100% { left: 200%; top: 200%; }
+    }
+
+    .neon-spin-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(15, 23, 42, 0.08) !important;
+        border-radius: 16px !important;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        transform-style: preserve-3d;
+        perspective: 1200px;
+        min-height: 100px;
+    }
+
+    /* High-Intensity Perimeter Trace */
+    .neon-spin-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(transparent, transparent, var(--accent-color), transparent);
+        animation: spin 3s linear infinite;
+        opacity: 0;
+        transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 0;
+    }
+
+    .neon-spin-card:hover::before {
+        opacity: 1;
+    }
+
+    /* Inner Buffer - Steel Plate Look */
+    .neon-spin-card-inner {
+        position: absolute;
+        inset: 1.5px;
+        background: #fcfdfe;
+        border-radius: 14.5px;
+        z-index: 1;
+        box-shadow: inset 0 0 15px rgba(15, 23, 42, 0.03);
+        transition: background 0.4s ease;
+    }
+
+    .neon-spin-card:hover .neon-spin-card-inner {
+        background: #ffffff;
+    }
+
+    /* 3D Depth Content Plate - Reduced for Visibility */
+    .neon-spin-content {
+        position: relative;
+        z-index: 5;
+        padding: 0.9rem 1rem !important;
+        transition: transform 0.6s cubic-bezier(0.2, 1, 0.3, 1);
+    }
+
+    .neon-spin-card:hover {
+        transform: translateY(-4px) rotateX(4deg) rotateY(-2deg);
+        box-shadow: 
+            0 25px 50px -15px var(--accent-glow),
+            0 8px 15px -8px rgba(15, 23, 42, 0.15) !important;
+        border-color: var(--accent-color) !important;
+    }
+
+    .neon-spin-card:hover .neon-spin-content {
+        transform: translateZ(15px);
+    }
+
+    /* Glass Glint */
+    .neon-spin-glint {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, transparent, rgba(255,255,255,0.7), transparent);
+        animation: glint 5s infinite;
+        z-index: 2;
+        opacity: 0.3;
+    }
+
+    .neon-metric-plate {
+        font-size: 1.85rem;
+        font-weight: 1000;
+        letter-spacing: -1.2px;
+        color: #0f172a; /* Pure Midnight */
+        margin: 0;
+    }
+
+    .neon-icon-pod {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: #f1f5f9;
+        border: 1px solid rgba(15, 23, 42, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-color);
+        font-size: 1.1rem;
+        transition: all 0.4s ease;
+    }
+
+    .neon-spin-card:hover .neon-icon-pod {
+        background: var(--accent-color);
+        color: #ffffff;
+        box-shadow: 0 8px 16px var(--accent-glow);
+        transform: scale(1.1);
     }
 
     /* Ultra-Deep High Contrast Mirror Overlay */
@@ -351,13 +470,13 @@
             <div class="admin-header-content text-white">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <div class="mb-2">
-                            <h6 class="text-uppercase fw-800 mb-1"
-                                style="letter-spacing: 3px; font-size: 0.75rem; color: #0ea5e9; text-shadow: 0 0 15px rgba(14, 165, 233, 0.3);">EXECUTIVE <span class="opacity-75">INSIGHT</span></h6>
-                            <h1 class="fw-900 mb-0 text-white" style="letter-spacing: -2px; font-size: 3.25rem; line-height: 1; text-shadow: 0 10px 40px rgba(0,0,0,0.9);">Admin
+                        <div class="mb-1">
+                            <h6 class="text-uppercase fw-800 mb-0"
+                                style="letter-spacing: 2px; font-size: 0.65rem; color: #0ea5e9; text-shadow: 0 0 15px rgba(14, 165, 233, 0.3);">EXECUTIVE <span class="opacity-75">INSIGHT</span></h6>
+                            <h1 class="fw-900 mb-0 text-white" style="letter-spacing: -1.5px; font-size: 2rem; line-height: 1; text-shadow: 0 10px 40px rgba(0,0,0,0.9);">Admin
                                 <span style="color: #ffffff; text-shadow: 0 4px 25px rgba(0,0,0,1);">Analytics</span></h1>
                         </div>
-                        <p class="small mb-0 fw-600" style="color: rgba(255,255,255,0.85); text-shadow: 0 2px 10px rgba(0,0,0,0.9);">Real-time enterprise metrics & intelligence overview</p>
+                        <p class="mb-0 fw-600" style="color: rgba(255,255,255,0.85); text-shadow: 0 2px 10px rgba(0,0,0,0.9); font-size: 0.75rem;">Real-time enterprise metrics & intelligence overview</p>
                     </div>
                     <div class="col-md-4 text-md-end pt-3 pt-md-0">
                         <div class="filter-section p-1 px-4"
@@ -368,7 +487,7 @@
                                 </label>
                                 <select name="days"
                                     class="form-select border-0 text-white small fw-900 px-0"
-                                    style="background: transparent; width: auto; min-width: 130px; height: 38px; font-size: 0.85rem; cursor: pointer; box-shadow: none;"
+                                    style="background: transparent; width: auto; min-width: 110px; height: 32px; font-size: 0.75rem; cursor: pointer; box-shadow: none;"
                                     onchange="this.form.submit()">
                                     <option value="7" {% if days_filter==7 %}selected{% endif %} class="text-dark">Last
                                         7 Days</option>
@@ -389,66 +508,90 @@
         <div class="admin-dashboard-wrapper px-0 px-md-1 pb-5"> <!-- Edge-to-edge layout -->
 
             <!-- KPI Cards -->
-            <div class="row g-3 mb-2"> <!-- Minimalist space -->
+            <div class="row g-2 mb-2">
                 <div class="col-md-3">
-                    <div class="kpi-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #6366f1 !important; border-radius: 1.25rem; transition: all 0.3s ease;">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1.2px;">📦 Total Shipments</p>
-                                <h2 class="kpi-value mb-2" style="font-size: 2.3rem; font-weight: 800; color: #1e293b; letter-spacing: -1px;">{{ total_shipments }}</h2>
-                                <p class="stat-trend-up mb-0" style="font-size: 0.8rem; font-weight: 600; color: #10b981;"><i class="fas fa-arrow-up-right me-1"></i>{{ recent_shipments }} this period</p>
+                    <div class="neon-spin-card h-100 shadow-sm" style="--accent-color: #8b5cf6; --accent-glow: rgba(139, 92, 246, 0.5);">
+                        <div class="neon-spin-glint"></div>
+                        <div class="neon-spin-card-inner"></div>
+                        <div class="neon-spin-content">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <p class="small fw-bold text-uppercase mb-0" style="letter-spacing: 1.5px; font-size: 0.55rem; color: #475569;">Core Node</p>
+                                    <h2 class="neon-metric-plate">{{ total_shipments }}</h2>
+                                </div>
+                                <div class="neon-icon-pod">
+                                    <i class="fas fa-cubes"></i>
+                                </div>
                             </div>
-                            <div class="kpi-icon-sm"
-                                style="background: rgba(99, 102, 241, 0.12); color: #6366f1; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.1);">
-                                <i class="fas fa-cubes"></i>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <span style="color: var(--accent-color); font-weight: 900; font-size: 0.65rem;"><i class="fas fa-bolt me-1"></i>+{{ recent_shipments }} Active</span>
+                                <span style="color: #94a3b8; font-size: 0.6rem; letter-spacing: 1px;">SYNC_01</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-3">
-                    <div class="kpi-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #10b981 !important; border-radius: 1.25rem; transition: all 0.3s ease;">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1.2px;">💰 Total Revenue</p>
-                                <h2 class="kpi-value mb-2" style="font-size: 2.1rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px;">₹{{ "%.0f"|format(total_revenue) }}</h2>
-                                <p class="stat-trend-up mb-0" style="font-size: 0.8rem; font-weight: 600; color: #10b981;"><i class="fas fa-arrow-up-right me-1"></i>₹{{ "%.0f"|format(recent_revenue) }} today</p>
+                    <div class="neon-spin-card h-100 shadow-sm" style="--accent-color: #10b981; --accent-glow: rgba(16, 185, 129, 0.5);">
+                        <div class="neon-spin-glint"></div>
+                        <div class="neon-spin-card-inner"></div>
+                        <div class="neon-spin-content">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <p class="small fw-bold text-uppercase mb-0" style="letter-spacing: 1.5px; font-size: 0.55rem; color: #475569;">Yield Max</p>
+                                    <h2 class="neon-metric-plate">₹{{ "%.0f"|format(total_revenue or 0) }}</h2>
+                                </div>
+                                <div class="neon-icon-pod">
+                                    <i class="fas fa-sack-dollar"></i>
+                                </div>
                             </div>
-                            <div class="kpi-icon-sm"
-                                style="background: rgba(16, 185, 129, 0.12); color: #10b981; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.1);">
-                                <i class="fas fa-sack-dollar"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="kpi-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #3b82f6 !important; border-radius: 1.25rem; transition: all 0.3s ease;">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1.2px;">📊 Avg Per Unit</p>
-                                <h2 class="kpi-value mb-2" style="font-size: 2.1rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px;">₹{{ "%.0f"|format(recent_revenue / recent_shipments if recent_shipments > 0 else 0) }}</h2>
-                                <p class="text-info small mb-0" style="font-size: 0.8rem; font-weight: 600;"><i class="fas fa-info-circle me-1"></i>Recent stats</p>
-                            </div>
-                            <div class="kpi-icon-sm"
-                                style="background: rgba(59, 130, 246, 0.12); color: #3b82f6; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.1);">
-                                <i class="fas fa-chart-line"></i>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <span style="color: var(--accent-color); font-weight: 900; font-size: 0.65rem;"><i class="fas fa-chart-line me-1"></i>₹{{ "%.0f"|format(recent_revenue or 0) }}</span>
+                                <span style="color: #94a3b8; font-size: 0.6rem; letter-spacing: 1px;">PROF_02</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-3">
-                    <div class="kpi-card h-100 p-4 shadow-sm" style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05) !important; border-top: 5px solid #f43f5e !important; border-radius: 1.25rem; transition: all 0.3s ease;">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <p class="text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 1.2px;">⚠️ Due Amount</p>
-                                <h2 class="kpi-value mb-2" style="font-size: 2.1rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px;">₹{{ "%.0f"|format(due_clients | map(attribute='total_due') | sum) }}</h2>
-                                <p class="stat-trend-down mb-0" style="font-size: 0.8rem; font-weight: 600; color: #f43f5e;"><i class="fas fa-exclamation-triangle me-1"></i>{{ due_clients | length }} clients</p>
+                    <div class="neon-spin-card h-100 shadow-sm" style="--accent-color: #3b82f6; --accent-glow: rgba(59, 130, 246, 0.5);">
+                        <div class="neon-spin-glint"></div>
+                        <div class="neon-spin-card-inner"></div>
+                        <div class="neon-spin-content">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <p class="small fw-bold text-uppercase mb-0" style="letter-spacing: 1.5px; font-size: 0.55rem; color: #475569;">Unit Opt</p>
+                                    <h2 class="neon-metric-plate">₹{{ "%.0f"|format(recent_revenue / recent_shipments if recent_shipments > 0 else 0) }}</h2>
+                                </div>
+                                <div class="neon-icon-pod">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
                             </div>
-                            <div class="kpi-icon-sm"
-                                style="background: rgba(244, 63, 94, 0.12); color: #f43f5e; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(244, 63, 94, 0.1);">
-                                <i class="fas fa-shield-exclamation"></i>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <span style="color: var(--accent-color); font-weight: 900; font-size: 0.65rem;"><i class="fas fa-atom me-1"></i>Peak</span>
+                                <span style="color: #94a3b8; font-size: 0.6rem; letter-spacing: 1px;">UNIT_03</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="neon-spin-card h-100 shadow-sm" style="--accent-color: #f43f5e; --accent-glow: rgba(244, 63, 94, 0.5);">
+                        <div class="neon-spin-glint"></div>
+                        <div class="neon-spin-card-inner"></div>
+                        <div class="neon-spin-content">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <p class="small fw-bold text-uppercase mb-0" style="letter-spacing: 1.5px; font-size: 0.55rem; color: #475569;">Risk Vectors</p>
+                                    <h2 class="neon-metric-plate">₹{{ "%.0f"|format(due_clients | map(attribute='total_due') | sum) }}</h2>
+                                </div>
+                                <div class="neon-icon-pod">
+                                    <i class="fas fa-shield-exclamation"></i>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <span style="color: var(--accent-color); font-weight: 900; font-size: 0.65rem;"><i class="fas fa-radiation me-1"></i>Alert</span>
+                                <span style="color: #94a3b8; font-size: 0.6rem; letter-spacing: 1px;">RISK_04</span>
                             </div>
                         </div>
                     </div>
@@ -456,7 +599,7 @@
             </div>
 
             <!-- Client Due Report -->
-            <div class="row g-4 mt-2 mb-3" style="position: relative; z-index: 5;"> <!-- Subtle positive margin instead of negative -->
+            <div class="row g-2 mt-0 mb-3" style="position: relative; z-index: 5;"> <!-- Tightened grid and margin -->
                 <div class="col-12">
                     <div class="luxury-card border-0">
                         <div class="card-header-professional d-flex justify-content-between align-items-center">
@@ -626,7 +769,7 @@
             </div>
 
             <!-- Main Content Grid -->
-            <div class="row g-4 mb-5">
+            <div class="row g-2 mb-3">
                 <!-- Top Customers -->
                 <div class="col-lg-6">
                     <div class="luxury-card border-0">
@@ -751,7 +894,7 @@
             </div>
 
             <!-- Branch wise and Staff Performance -->
-            <div class="row g-4 mb-5">
+            <div class="row g-2 mb-3">
                 <!-- Branch wise Statistics -->
                 <div class="col-lg-6">
                     <div class="luxury-card border-0">
@@ -862,7 +1005,7 @@
             </div>
 
             <!-- Charts Section -->
-            <div class="row g-3">
+            <div class="row g-2 mb-3">
                 <!-- Status Distribution Chart -->
                 <div class="col-lg-6">
                     <div class="luxury-card border-0">
