@@ -3,246 +3,264 @@
 {% block title %}Client Due Report{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <h1><i class="fas fa-receipt"></i> Client Due Report</h1>
-    <p class="text-muted">Detailed list of corporate clients with outstanding payment dues</p>
+<div class="compact-dash-wrapper px-4 mt-3">
+    <!-- Balanced Dynamic Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-900 border-start border-5 border-danger ps-3 mb-0" style="color: #0f172a; font-size: 1.35rem; letter-spacing: -0.5px;">
+                <i class="fas fa-receipt me-2 text-danger"></i> CLIENT DUE <span class="text-muted fw-light opacity-50">REPORT</span>
+            </h1>
+            <p class="text-secondary font-sm mb-0 opacity-75">Detailed ledger of corporate accounts and aging receivables</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ url_for('operations_finance_due_report') }}" class="btn btn-outline-primary btn-sm rounded-pill font-xs text-uppercase fw-900 px-3 shadow-sm">
+                <i class="fas fa-chart-bar me-1"></i> Finance Analytics
+            </a>
+            <a href="{{ url_for('operations_dashboard') }}" class="btn btn-dark btn-sm rounded-pill font-xs text-uppercase fw-900 px-3 shadow-sm">
+                <i class="fas fa-house-chimney"></i> Hub
+            </a>
+        </div>
+    </div>
 
-    <!-- Summary Cards -->
-    <div class="row mb-4">
+    <!-- Executive Summary Pods -->
+    <div class="row g-3 mb-3">
         <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <h2 class="text-danger">₹{{ "{:,.2f}".format(total_outstanding) }}</h2>
-                    <p class="text-muted mb-0">Total Outstanding Dues</p>
+            <div class="luxury-card kpi-glass-red border-0 p-3 d-flex align-items-center gap-3">
+                <div class="kpi-icon-lg bg-red-subtle text-danger"><i class="fas fa-hand-holding-dollar"></i></div>
+                <div>
+                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Total Outstanding</h6>
+                    <h3 class="fw-900 mb-0 ls-n1 text-danger">₹{{ "{:,.0f}".format(total_outstanding or 0) }}</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <h2 class="text-warning">{{ total_clients_due }}</h2>
-                    <p class="text-muted mb-0">Clients with Pending Payments</p>
+            <div class="luxury-card kpi-glass-amber border-0 p-3 d-flex align-items-center gap-3">
+                <div class="kpi-icon-lg bg-amber-subtle text-amber"><i class="fas fa-users-slash"></i></div>
+                <div>
+                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Clients Pending</h6>
+                    <h3 class="fw-900 mb-0 ls-n1">{{ total_clients_due }} <span class="font-xs fw-light opacity-50">Entities</span></h3>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body text-center">
-                    <h2 class="text-info">₹{{ "{:,.2f}".format(total_outstanding / total_clients_due) if total_clients_due > 0 else 0 }}</h2>
-                    <p class="text-muted mb-0">Average Due per Client</p>
+            <div class="luxury-card kpi-glass-cyan border-0 p-3 d-flex align-items-center gap-3">
+                <div class="kpi-icon-lg bg-cyan-subtle text-cyan"><i class="fas fa-calculator"></i></div>
+                <div>
+                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Avg Due / Client</h6>
+                    <h3 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(total_outstanding / total_clients_due) if total_clients_due > 0 else 0 }}</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Filter Section -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light border-bottom">
-            <h5 class="mb-0">Search & Filter</h5>
-        </div>
-        <div class="card-body">
-            <form method="GET" class="row g-3">
-                <div class="col-md-6">
-                    <label for="search" class="form-label">Search Client Name, Company, or Phone</label>
-                    <input type="text" class="form-control" id="search" name="search" 
-                           value="{{ search_client or '' }}" placeholder="Search...">
+    <!-- Optimized Search & Filter -->
+    <div class="luxury-card p-3 mb-3 border-0 shadow-sm">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label for="search" class="font-xxs text-uppercase fw-900 text-muted mb-1 ps-1">Client / Company Search</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted opacity-50"></i></span>
+                    <input type="text" class="form-control border-start-0 font-sm" id="search" name="search" 
+                           value="{{ search_client or '' }}" placeholder="Enter name, company, or phone...">
                 </div>
-                <div class="col-md-4">
-                    <label for="min_due" class="form-label">Minimum Due Amount (₹)</label>
-                    <input type="number" class="form-control" id="min_due" name="min_due" 
-                           value="{{ min_due or 0 }}" step="100">
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search"></i> Filter
-                    </button>
-                </div>
-                <div class="col-md-12">
-                    <a href="{{ url_for('operations_client_due_report') }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="fas fa-redo"></i> Reset Filters
-                    </a>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="col-md-3">
+                <label for="min_due" class="font-xxs text-uppercase fw-900 text-muted mb-1 ps-1">Min. Amount (₹)</label>
+                <input type="number" class="form-control form-control-sm font-sm" id="min_due" name="min_due" 
+                       value="{{ min_due or 0 }}" step="100">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary btn-sm w-100 font-xs fw-900 text-uppercase rounded-pill py-2 shadow-sm">
+                    <i class="fas fa-filter me-1"></i> Apply
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('operations_client_due_report') }}" class="btn btn-light btn-sm w-100 font-xs fw-900 text-uppercase rounded-pill py-2 border">
+                    <i class="fas fa-redo me-1"></i> Reset
+                </a>
+            </div>
+        </form>
     </div>
 
-    <!-- Clients Due Table -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light border-bottom">
-            <h5 class="mb-0">Clients with Outstanding Dues ({{ pagination.total }})</h5>
+    <!-- High-Density Client Ledger -->
+    <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm mb-3">
+        <div class="bg-white px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-address-book text-secondary me-2"></i>Receivable Aging Ledger ({{ pagination.total }})</h6>
+            <span class="badge bg-light text-muted font-xxs">Sorted by Exposure</span>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Client Name</th>
-                            <th>Company</th>
-                            <th>Phone</th>
-                            <th>Email</th>
-                            <th>Orders</th>
-                            <th>Total Billed</th>
-                            <th>Paid</th>
-                            <th>Outstanding Due</th>
-                            <th>Due %</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for client in clients %}
-                        <tr>
-                            <td>{{ (pagination.page - 1) * 25 + loop.index }}</td>
-                            <td>
-                                <strong>{{ client.name }}</strong>
-                            </td>
-                            <td>
-                                {% if client.company_name %}
-                                    <small class="text-muted">{{ client.company_name }}</small>
-                                {% else %}
-                                    <small class="text-muted text-secondary">-</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if client.phone %}
-                                    <a href="tel:{{ client.phone }}" class="text-decoration-none">
-                                        {{ client.phone }}
-                                    </a>
-                                {% else %}
-                                    <small class="text-muted">-</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if client.email %}
-                                    <a href="mailto:{{ client.email }}" class="text-decoration-none small" title="{{ client.email }}">
-                                        {{ client.email[:30] }}{{ '...' if client.email|length > 30 else '' }}
-                                    </a>
-                                {% else %}
-                                    <small class="text-muted">-</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge bg-info">{{ client.order_count }}</span>
-                            </td>
-                            <td>
-                                <strong>₹{{ "{:,.2f}".format(client.total_billed or 0) }}</strong>
-                            </td>
-                            <td class="text-success">
-                                ₹{{ "{:,.2f}".format(client.total_paid or 0) }}
-                            </td>
-                            <td>
-                                <span class="badge bg-danger" style="font-size: 0.95em; padding: 6px 10px;">
-                                    ₹{{ "{:,.2f}".format(client.total_due or 0) }}
-                                </span>
-                            </td>
-                            <td>
-                                {% set due_percent = (client.total_due / client.total_billed * 100) if client.total_billed > 0 else 0 %}
-                                {% if due_percent >= 100 %}
-                                    <span class="badge bg-danger">{{ "{:.0f}".format(due_percent) }}%</span>
-                                {% elif due_percent >= 50 %}
-                                    <span class="badge bg-warning">{{ "{:.0f}".format(due_percent) }}%</span>
-                                {% else %}
-                                    <span class="badge bg-success">{{ "{:.0f}".format(due_percent) }}%</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{{ url_for('client_details', id=client.id) }}" 
-                                       class="btn btn-outline-primary" title="View Client Details">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ url_for('client_orders_due', client_id=client.id) }}" 
-                                       class="btn btn-outline-info" title="View Orders">
-                                        <i class="fas fa-box"></i>
-                                    </a>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="bg-light sticky-top">
+                    <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                        <th class="ps-4">Entity Details</th>
+                        <th>Contact info</th>
+                        <th>Activity</th>
+                        <th>Financial Exposure</th>
+                        <th>Risk Profile</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in clients %}
+                    <tr class="font-sm border-bottom-light">
+                        <td class="ps-4 py-2">
+                            <div class="fw-900 text-dark">{{ client.name }}</div>
+                            <div class="text-muted font-xxs opacity-75">{{ client.company_name or 'Independent' }}</div>
+                        </td>
+                        <td class="py-2">
+                            {% if client.phone %}
+                                <div class="font-xxs fw-bold"><i class="fas fa-phone font-xxxs me-1 text-primary"></i>{{ client.phone }}</div>
+                            {% endif %}
+                            {% if client.email %}
+                                <div class="font-xxxs text-muted text-truncate" style="max-width: 150px;">{{ client.email }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="py-2">
+                            <span class="badge bg-blue-subtle text-blue font-xxs px-3 rounded-pill">{{ client.order_count }} Units</span>
+                        </td>
+                        <td class="py-2">
+                            <div class="d-flex flex-column">
+                                <div class="font-xxs text-muted opacity-75">Billed: ₹{{ "{:,.0f}".format(client.total_billed or 0) }}</div>
+                                <div class="fw-900 text-danger" style="font-size: 0.9rem;">₹{{ "{:,.0f}".format(client.total_due or 0) }}</div>
+                            </div>
+                        </td>
+                        <td class="py-2">
+                            {% set due_percent = (client.total_due / client.total_billed * 100) if client.total_billed > 0 else 0 %}
+                            <div style="width: 100px;">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="font-xxxs fw-900">{{ due_percent|int }}% Due</span>
                                 </div>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="11" class="text-center py-4 text-muted">
-                                <i class="fas fa-inbox fa-3x opacity-50 mb-3"></i>
-                                <p>No clients with outstanding dues found</p>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                                <div class="progress" style="height: 6px; border-radius: 10px;">
+                                    <div class="progress-bar {% if due_percent > 70 %}bg-danger{% elif due_percent > 30 %}bg-warning{% else %}bg-success{% endif %}" 
+                                         style="width: {{ due_percent }}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-end pe-4 py-2">
+                            <div class="btn-group">
+                                <a href="{{ url_for('client_details', id=client.id) }}" class="btn btn-xs btn-outline-dark px-2" title="Profile"><i class="fas fa-user-gear font-xxs"></i></a>
+                                <a href="{{ url_for('client_orders_due', client_id=client.id) }}" class="btn btn-xs btn-primary px-2" title="Orders"><i class="fas fa-boxes-stacked font-xxs"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
     <!-- Pagination -->
     {% if pagination.pages > 1 %}
-    <nav aria-label="Page navigation" class="mb-4">
-        <ul class="pagination justify-content-center">
+    <nav class="mb-4">
+        <ul class="pagination pagination-sm justify-content-center">
             {% if pagination.has_prev %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('operations_client_due_report', page=pagination.prev_num, search=search_client, min_due=min_due) }}">
-                        Previous
-                    </a>
-                </li>
+                <li class="page-item"><a class="page-link font-xxs fw-900 px-3" href="{{ url_for('operations_client_due_report', page=pagination.prev_num, search=search_client, min_due=min_due) }}">PREV</a></li>
             {% endif %}
-
-            {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_margin=1, right_margin=1) %}
+            {% for page_num in pagination.iter_pages(1, 1, 1, 1) %}
                 {% if page_num %}
-                    {% if page_num == pagination.page %}
-                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
-                    {% else %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('operations_client_due_report', page=page_num, search=search_client, min_due=min_due) }}">
-                                {{ page_num }}
-                            </a>
-                        </li>
-                    {% endif %}
+                    <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                        <a class="page-link font-xxs fw-900 px-3" href="{{ url_for('operations_client_due_report', page=page_num, search=search_client, min_due=min_due) }}">{{ page_num }}</a>
+                    </li>
                 {% else %}
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                    <li class="page-item disabled"><span class="page-link font-xxs">...</span></li>
                 {% endif %}
             {% endfor %}
-
             {% if pagination.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('operations_client_due_report', page=pagination.next_num, search=search_client, min_due=min_due) }}">
-                        Next
-                    </a>
-                </li>
+                <li class="page-item"><a class="page-link font-xxs fw-900 px-3" href="{{ url_for('operations_client_due_report', page=pagination.next_num, search=search_client, min_due=min_due) }}">NEXT</a></li>
             {% endif %}
         </ul>
     </nav>
     {% endif %}
 
-    <!-- Tips -->
-    <div class="alert alert-info mb-4">
-        <h5 class="alert-heading"><i class="fas fa-lightbulb"></i> Due Collection Tips</h5>
-        <ul class="mb-0">
-            <li><strong>Follow up Priority:</strong> Clients with highest outstanding amounts first</li>
-            <li><strong>Filter by Amount:</strong> Use the minimum due filter to focus on significant debts</li>
-            <li><strong>Contact Details:</strong> Phone and email are clickable for quick outreach</li>
-            <li><strong>Track Orders:</strong> Click the box icon to see all orders from a client</li>
-            <li><strong>Payment Terms:</strong> Consider extending payment terms for loyal clients with high volume</li>
-        </ul>
-    </div>
-
-    <!-- Navigation -->
-    <div class="mb-4">
-        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        <a href="{{ url_for('operations_finance_due_report') }}" class="btn btn-outline-success">
-            <i class="fas fa-chart-bar"></i> Finance Analytics
-        </a>
+    <!-- Recovery Intelligence Intelligence Brief -->
+    <div class="luxury-card p-4 d-flex align-items-center justify-content-between border-0 shadow-sm mb-5" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+        <div class="d-flex align-items-center gap-4">
+            <div class="bg-white bg-opacity-10 p-3 rounded-4">
+                <i class="fas fa-lightbulb fa-2x text-warning"></i>
+            </div>
+            <div>
+                <h5 class="text-white fw-900 mb-1">RECOVERY BEST PRACTICES</h5>
+                <p class="text-white opacity-50 font-xs mb-0">Priority recovery should focus on High-Exposure entities (Risk Profile > 70%)</p>
+            </div>
+        </div>
+        <div class="d-flex gap-3">
+             <div class="text-end">
+                 <p class="text-white opacity-50 font-xxxs text-uppercase fw-bold mb-0">Total Critical Risk</p>
+                 <h4 class="text-white fw-900 mb-0">₹{{ "{:,.0f}".format(total_outstanding) }}</h4>
+             </div>
+             <div class="dot-pulse bg-danger align-self-center"></div>
+        </div>
     </div>
 </div>
 
 <style>
-    .table tbody tr:hover {
-        background-color: #f8f9fa;
+    .compact-dash-wrapper { max-width: 100% !important; margin: 0 auto; }
+    
+    /* Font Scaling */
+    .font-sm { font-size: 0.85rem !important; }
+    .font-xs { font-size: 0.8rem !important; }
+    .font-xxs { font-size: 0.72rem !important; }
+    .font-xxxs { font-size: 0.65rem !important; }
+    
+    /* Typography */
+    .fw-900 { font-weight: 900 !important; }
+    .fw-800 { font-weight: 800 !important; }
+    .ls-n1 { letter-spacing: -0.5px; }
+    .ls-1 { letter-spacing: 0.5px; }
+
+    /* Cards */
+    .luxury-card {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+        border: 1px solid #eef2f6 !important;
+        overflow: hidden;
     }
-    a.text-decoration-none {
-        color: #0d6efd;
+
+    /* KPI Pods */
+    .kpi-icon-lg {
+        width: 48px; height: 48px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
     }
-    a.text-decoration-none:hover {
-        text-decoration: underline !important;
+    
+    .kpi-glass-red { background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%); border-left: 5px solid #dc2626 !important; }
+    .kpi-glass-amber { background: linear-gradient(135deg, #fffcf0 0%, #ffffff 100%); border-left: 5px solid #f59e0b !important; }
+    .kpi-glass-cyan { background: linear-gradient(135deg, #f0ffff 0%, #ffffff 100%); border-left: 5px solid #0891b2 !important; }
+
+    /* Colors */
+    .bg-blue-subtle { background: #e0e7ff !important; color: #3730a3 !important; }
+    .bg-red-subtle { background: #fee2e2 !important; color: #991b1b !important; }
+    .bg-amber-subtle { background: #fef3c7 !important; color: #92400e !important; }
+    .bg-cyan-subtle { background: #cffafe !important; color: #0891b2 !important; }
+    
+    .text-blue { color: #2563eb !important; }
+    .text-danger { color: #dc2626 !important; }
+    .text-amber { color: #f59e0b !important; }
+    .text-cyan { color: #0891b2 !important; }
+
+    /* Buttons */
+    .btn-xs { padding: 4px 8px; border-radius: 8px; }
+
+    /* Tables */
+    .border-bottom-light { border-bottom: 1px solid #f1f5f9; }
+    .sticky-top { top: 0; z-index: 10; background: #f8fafc !important; }
+    .table-hover tbody tr:hover { background-color: #f8fafc !important; }
+
+    /* Dot Pulse */
+    .dot-pulse {
+        width: 10px; height: 10px; border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+        animation: pulse-red 1.5s infinite;
     }
+    @keyframes pulse-red {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    }
+
+    /* Scrollbars */
+    .table-responsive::-webkit-scrollbar { height: 6px; width: 6px; }
+    .table-responsive::-webkit-scrollbar-track { background: #f1f5f9; }
+    .table-responsive::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 </style>
 {% endblock %}

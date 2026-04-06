@@ -1,23 +1,166 @@
 {% extends "base.html" %}
 
-{% block title %}Operations Dashboard{% endblock %}
+{% block extra_css %}
+<style>
+    /* High-Vibrancy Modern Dashboard Overrides */
+    .compact-dash {
+        background: #fdfdfd !important;
+        padding-top: 1rem;
+        padding-bottom: 2rem;
+        margin-top: 0 !important;
+    }
+    
+    .compact-dash .display-5 {
+        font-size: 1.6rem !important;
+        font-weight: 800 !important;
+        color: #0f172a !important;
+        margin-bottom: 2px !important;
+        letter-spacing: -1px !important;
+    }
+    
+    .compact-dash .display-5 span {
+        color: #3b82f6 !important;
+    }
+    
+    .compact-dash .fs-5 {
+        font-size: 0.8rem !important;
+        color: #94a3b8 !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Premium Modern Cards */
+    .compact-dash .luxury-card {
+        background: #ffffff !important;
+        border: 1px solid #f1f5f9 !important;
+        border-radius: 0.85rem !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    
+    .compact-dash .luxury-card:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.08) !important;
+        border-color: #e2e8f0 !important;
+    }
+    
+    /* Attractive Quick Nav Boxes */
+    .compact-dash .quick-nav-card {
+        border-bottom-width: 5px !important;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        padding: 0.85rem !important;
+    }
+    
+    .compact-dash .quick-nav-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: currentColor;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+    }
+    
+    .compact-dash .quick-nav-card:hover::before {
+        opacity: 0.03;
+    }
+    
+    .compact-dash .quick-nav-icon-pod {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 12px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.75rem !important;
+        font-size: 1.15rem !important;
+        background: #f8fafc !important;
+        color: inherit !important;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+    }
+    
+    .compact-dash .quick-nav-card:hover .quick-nav-icon-pod {
+        transform: scale(1.1) translateY(-2px);
+        background: currentColor !important;
+        color: #ffffff !important;
+        box-shadow: 0 8px 16px -4px currentColor;
+    }
+    
+    .compact-dash .quick-nav-card small {
+        font-size: 0.75rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.5px !important;
+        color: #1e293b !important;
+    }
+    
+    /* Standardized Icon Pods for KPI */
+    .compact-dash .icon-pod {
+        width: 34px !important;
+        height: 34px !important;
+        border-radius: 9px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.65rem;
+        background: #f1f5f9 !important;
+        color: #64748b !important;
+    }
+    
+    .compact-dash .luxury-card:hover .icon-pod {
+        background: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+    
+    .compact-dash .luxury-card h2 {
+        font-size: 1.4rem !important;
+        font-weight: 800 !important;
+        color: #0f172a !important;
+    }
+    
+    /* Dense High-End Table */
+    .compact-dash .table th {
+        background: #f8fafc !important;
+        padding: 0.65rem 0.85rem !important;
+        font-size: 0.65rem !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        border: none !important;
+        color: #64748b !important;
+    }
+    
+    .compact-dash .table td {
+        padding: 0.65rem 0.85rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .compact-dash .badge {
+        font-weight: 700 !important;
+        padding: 0.3rem 0.6rem !important;
+        border-radius: 6px !important;
+        font-size: 0.7rem !important;
+    }
+</style>
+{% endblock %}
+
 
 {% block content %}
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-2 compact-dash">
     <!-- Header Section -->
-    <div class="mb-5">
+    <div class="mb-3">
         <h1 class="fw-900 text-primary mb-1 display-5" style="letter-spacing: -1.5px;">OPERATIONS <span class="text-dark opacity-75">COMMAND</span></h1>
-        <p class="text-muted fs-5">Enterprise logistics overview and multi-center operational heartbeat</p>
+        <p class="text-muted fs-5 mb-0">Enterprise logistics overview and multi-center operational heartbeat</p>
     </div>
 
     <!-- KPI Cards Row 1 -->
     <div class="row g-4 mb-5">
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100" style="border-left: 4px solid #2563eb !important;">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="bg-primary-subtle text-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-                            <i class="fas fa-boxes fs-5"></i>
+            <div class="luxury-card border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="icon-pod">
+                            <i class="fas fa-boxes"></i>
                         </div>
                         <div class="text-end">
                             <h6 class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">Shipments</h6>
@@ -35,11 +178,11 @@
         </div>
 
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100" style="border-left: 4px solid #f59e0b !important;">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="bg-warning-subtle text-warning rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-                            <i class="fas fa-truck-fast fs-5"></i>
+            <div class="luxury-card border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="icon-pod">
+                            <i class="fas fa-truck-fast"></i>
                         </div>
                         <div class="text-end">
                             <h6 class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">In Transit</h6>
@@ -56,11 +199,11 @@
         </div>
 
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100" style="border-left: 4px solid #10b981 !important;">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="bg-success-subtle text-success rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-                            <i class="fas fa-check-circle fs-5"></i>
+            <div class="luxury-card border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="icon-pod">
+                            <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="text-end">
                             <h6 class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">Delivered</h6>
@@ -75,11 +218,11 @@
         </div>
 
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100" style="border-left: 4px solid #0f172a !important;">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="bg-dark-subtle text-dark rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-                            <i class="fas fa-wallet fs-5"></i>
+            <div class="luxury-card border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="icon-pod">
+                            <i class="fas fa-wallet"></i>
                         </div>
                         <div class="text-end">
                             <h6 class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">Revenue Today</h6>
@@ -95,65 +238,64 @@
     </div>
 
     <!-- Quick Navigation -->
-    <div class="mb-5">
-        <h5 class="fw-bold mb-3 d-flex align-items-center" style="color: #1e293b; letter-spacing: -0.5px;">
-            <div class="bg-primary-subtle rounded-pill me-2" style="width: 8px; height: 1.5rem;"></div>
-            Quick Navigation
-        </h5>
+    <div class="mb-4">
+            <h5 class="fw-bold mb-3 d-flex align-items-center" style="color: #0f172a; font-size: 0.95rem;">
+                Quick Navigation
+            </h5>
         <div class="row g-3">
             <div class="col-md-2">
-                <a href="{{ url_for('operations_booking_history') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #10b981 !important;">
-                    <div class="bg-success-subtle text-success rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-history fs-5"></i>
+                <a href="{{ url_for('operations_booking_history') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #10b981 !important; color: #10b981;">
+                    <div class="quick-nav-icon-pod">
+                        <i class="fas fa-history"></i>
                     </div>
-                    <small class="fw-bold text-dark">History</small>
+                    <small>History</small>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_branch_bookings') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #3b82f6 !important;">
-                    <div class="bg-blue-subtle text-blue rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-sitemap fs-5"></i>
+                <a href="{{ url_for('operations_branch_bookings') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #3b82f6 !important; color: #3b82f6;">
+                    <div class="quick-nav-icon-pod">
+                        <i class="fas fa-sitemap"></i>
                     </div>
-                    <small class="fw-bold text-dark">Branches</small>
+                    <small>Branches</small>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_walk_in_orders') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #f59e0b !important;">
-                    <div class="bg-warning-subtle text-warning rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-walking fs-5"></i>
+                <a href="{{ url_for('operations_walk_in_orders') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #f59e0b !important; color: #f59e0b;">
+                    <div class="quick-nav-icon-pod">
+                        <i class="fas fa-walking"></i>
                     </div>
-                    <small class="fw-bold text-dark">Walk-in</small>
+                    <small>Walk-in</small>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_client_orders') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #6366f1 !important;">
-                    <div class="bg-indigo-subtle text-indigo rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-users fs-5"></i>
+                <a href="{{ url_for('operations_client_orders') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #6366f1 !important; color: #6366f1;">
+                    <div class="quick-nav-icon-pod">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <small class="fw-bold text-dark">Clients</small>
+                    <small>Clients</small>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_crm_overview') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #64748b !important;">
-                    <div class="bg-slate-subtle text-slate rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-chart-line fs-5"></i>
+                <a href="{{ url_for('operations_crm_overview') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #64748b !important; color: #64748b;">
+                    <div class="quick-nav-icon-pod">
+                        <i class="fas fa-chart-line"></i>
                     </div>
-                    <small class="fw-bold text-dark">Overview</small>
+                    <small>Overview</small>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('staff_dashboard') }}" class="luxury-card border-0 p-3 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 3px solid #1e293b !important;">
-                    <div class="bg-dark-subtle text-dark rounded-3 mb-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-file-analytics fs-5"></i>
+                <a href="{{ url_for('staff_dashboard') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #0f172a !important; color: #0f172a;">
+                    <div class="quick-nav-icon-pod">
+                        <i class="fas fa-file-analytics"></i>
                     </div>
-                    <small class="fw-bold text-dark">Reports</small>
+                    <small>Reports</small>
                 </a>
             </div>
         </div>
     </div>
 
     <!-- Order Type Distribution -->
-    <div class="row g-4 mb-5">
+    <div class="row g-4 mb-4">
         <div class="col-md-6">
             <div class="luxury-card border-0 h-100">
                 <div class="card-body p-4">
@@ -201,13 +343,11 @@
     </div>
 
     <!-- Recent Completed Bookings -->
-    <div class="luxury-card border-0 mb-5 overflow-hidden">
-        <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center" style="border-left: 5px solid #10b981 !important;">
-            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center">
-                <div class="bg-success-subtle text-success rounded-3 me-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-                    <i class="fas fa-check-double"></i>
-                </div>
-                Execution Ledger <span class="text-muted opacity-50 ms-2 fw-normal" style="font-size: 0.85rem;">Recently Finalized Bookings</span>
+    <div class="luxury-card border-0 mb-4 overflow-hidden">
+        <div class="card-header bg-white border-0 py-3 px-4">
+            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1rem;">
+                <i class="fas fa-list-check text-primary me-2"></i>
+                Execution Ledger
             </h5>
         </div>
         <div class="card-body p-0">
@@ -263,39 +403,4 @@
     </div>
 </div>
 
-<style>
-    .luxury-card {
-        background: #ffffff !important;
-        border: 1px solid #eef2f6 !important;
-        border-radius: 16px !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    }
-    .luxury-card:hover {
-        transform: translateY(-5px) !important;
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08) !important;
-        border-color: rgba(37, 99, 235, 0.1) !important;
-    }
-    .transition-hover {
-        transition: all 0.3s ease;
-    }
-    .transition-hover:hover {
-        transform: translateY(-5px);
-        background: #f8fafc !important;
-    }
-    .text-primary { color: #2563eb !important; }
-    .bg-primary-subtle { background-color: #eff6ff !important; }
-    .bg-success-subtle { background-color: #f0fdf4 !important; }
-    .bg-warning-subtle { background-color: #fffbeb !important; }
-    .bg-info-subtle { background-color: #f0f9ff !important; }
-    .bg-indigo-subtle { background-color: #eef2ff !important; }
-    .bg-slate-subtle { background-color: #f1f5f9 !important; }
-    .bg-dark-subtle { background-color: #f8fafc !important; }
-    
-    .text-blue { color: #3b82f6 !important; }
-    .text-indigo { color: #6366f1 !important; }
-    .text-slate { color: #64748b !important; }
-    
-    .fw-900 { font-weight: 900 !important; }
-</style>
 {% endblock %}

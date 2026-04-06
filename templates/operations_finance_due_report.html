@@ -3,122 +3,90 @@
 {% block title %}Finance & Analytics Due Report{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <h1><i class="fas fa-chart-bar"></i> Finance & Analytics Due Report</h1>
-    <p class="text-muted">Financial overview, payment status, and outstanding dues analysis</p>
-
-    <!-- Date Range Selector -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <form method="GET" class="row g-2">
-                <div class="col-auto">
-                    <label class="form-label">Time Period:</label>
-                </div>
-                <div class="col-auto">
-                    <a href="?days=7" class="btn btn-sm {% if days_filter == 7 %}btn-primary{% else %}btn-outline-primary{% endif %}">
-                        Last 7 Days
-                    </a>
-                </div>
-                <div class="col-auto">
-                    <a href="?days=30" class="btn btn-sm {% if days_filter == 30 %}btn-primary{% else %}btn-outline-primary{% endif %}">
-                        Last 30 Days
-                    </a>
-                </div>
-                <div class="col-auto">
-                    <a href="?days=90" class="btn btn-sm {% if days_filter == 90 %}btn-primary{% else %}btn-outline-primary{% endif %}">
-                        Last 90 Days
-                    </a>
-                </div>
+<div class="compact-dash-wrapper px-4 mt-3">
+    <!-- Balanced Dynamic Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-900 border-start border-5 border-success ps-3 mb-0" style="color: #0f172a; font-size: 1.35rem; letter-spacing: -0.5px;">
+                <i class="fas fa-chart-bar me-2 text-success"></i> FINANCE & DUE <span class="text-muted fw-light opacity-50">REPORT</span>
+            </h1>
+            <p class="text-secondary font-sm mb-0 opacity-75">Revenue velocity, collection efficiency, and aging receivables</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <form method="GET" class="d-flex gap-1 bg-white border rounded-pill p-1 shadow-sm px-2 align-items-center">
+                <span class="text-muted font-xxs text-uppercase fw-bold me-2">Scope:</span>
+                <a href="?days=7" class="btn btn-xs {% if days_filter == 7 %}btn-success{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none">7D</a>
+                <a href="?days=30" class="btn btn-xs {% if days_filter == 30 %}btn-success{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none">30D</a>
+                <a href="?days=90" class="btn btn-xs {% if days_filter == 90 %}btn-success{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none">90D</a>
             </form>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('operations_client_due_report') }}" class="btn btn-outline-success btn-sm rounded-pill font-xs text-uppercase fw-900 px-3 shadow-sm">
+                    <i class="fas fa-list me-1"></i> Client Dues
+                </a>
+                <a href="{{ url_for('operations_dashboard') }}" class="btn btn-dark btn-sm rounded-pill font-xs text-uppercase fw-900 px-3 shadow-sm">
+                    <i class="fas fa-house-chimney"></i> Hub
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- Financial Summary Cards -->
-    <div class="row mb-4">
+    <!-- Executive Financial Pods -->
+    <div class="row g-3 mb-3">
         <div class="col-md-3">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-1">Total Invoiced</p>
-                            <h2 class="mb-0">₹{{ "{:,.2f}".format(total_amount) }}</h2>
-                            <small class="text-muted">{{ total_orders }} orders</small>
-                        </div>
-                        <i class="fas fa-file-invoice-dollar fa-2x text-primary opacity-50"></i>
-                    </div>
+            <div class="luxury-card kpi-glass-blue border-0 p-3 d-flex align-items-center gap-3">
+                <div class="kpi-icon-lg bg-blue-subtle text-blue"><i class="fas fa-file-invoice-dollar"></i></div>
+                <div>
+                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Total Invoiced</h6>
+                    <h3 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(total_amount or 0) }}</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-1">Amount Collected</p>
-                            <h2 class="mb-0 text-success">₹{{ "{:,.2f}".format(total_received) }}</h2>
-                            <small class="text-muted">{{ "{:.1f}".format((total_received / total_amount * 100)) if total_amount > 0 else 0 }}% collected</small>
-                        </div>
-                        <i class="fas fa-money-bill-wave fa-2x text-success opacity-50"></i>
-                    </div>
+            <div class="luxury-card kpi-glass-green border-0 p-3 d-flex align-items-center gap-3">
+                <div class="kpi-icon-lg bg-green-subtle text-green"><i class="fas fa-money-bill-check"></i></div>
+                <div>
+                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Total Collected</h6>
+                    <h3 class="fw-900 mb-0 ls-n1 text-success">₹{{ "{:,.0f}".format(total_received or 0) }}</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-1">Outstanding Due</p>
-                            <h2 class="mb-0 text-danger">₹{{ "{:,.2f}".format(total_due) }}</h2>
-                            <small class="text-muted">{{ "{:.1f}".format((total_due / total_amount * 100)) if total_amount > 0 else 0 }}% pending</small>
-                        </div>
-                        <i class="fas fa-exclamation-triangle fa-2x text-danger opacity-50"></i>
-                    </div>
+            <div class="luxury-card kpi-glass-amber border-0 p-3 d-flex align-items-center gap-3">
+                <div class="kpi-icon-lg bg-red-subtle text-danger"><i class="fas fa-exclamation-circle"></i></div>
+                <div>
+                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Outstanding Due</h6>
+                    <h3 class="fw-900 mb-0 ls-n1 text-danger">₹{{ "{:,.0f}".format(total_due or 0) }}</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-1">Average Invoice</p>
-                            <h2 class="mb-0">₹{{ "{:,.2f}".format(total_amount / total_orders) if total_orders > 0 else 0 }}</h2>
-                            <small class="text-muted">Per order</small>
-                        </div>
-                        <i class="fas fa-calculator fa-2x text-info opacity-50"></i>
-                    </div>
+            <div class="luxury-card kpi-glass-cyan border-0 p-3 d-flex align-items-center gap-3">
+                <div class="kpi-icon-lg bg-cyan-subtle text-cyan"><i class="fas fa-calculator"></i></div>
+                <div>
+                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Avg Invoice</h6>
+                    <h3 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(total_amount / total_orders) if total_orders > 0 else 0 }}</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Payment Status Breakdown -->
-    <div class="row mb-4">
+    <!-- Multi-Dimensional Insights -->
+    <div class="row g-3 mb-3">
+        <!-- Payment Status Breakdown -->
         <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0">Payment Status Breakdown</h5>
+            <div class="luxury-card h-100 p-0 overflow-hidden border-0 shadow-sm">
+                <div class="bg-white px-4 py-2 border-bottom d-flex justify-content-between align-items-center">
+                    <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1">Payment Status Distribution</h6>
+                    <span class="badge bg-green-subtle text-success font-xxs px-3">Live Status</span>
                 </div>
-                <div class="card-body">
-                    <div class="row text-center">
+                <div class="p-3">
+                    <div class="row text-center g-2">
                         {% for status in payment_breakdown %}
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                {% set status_color = {
-                                    'paid': 'success',
-                                    'partial': 'warning',
-                                    'unpaid': 'danger'
-                                } %}
-                                <h3 class="text-{{ status_color.get(status.payment_status, 'secondary') }}">
-                                    {{ status.count }}
-                                </h3>
-                                <p class="text-muted mb-1">
-                                    {{ status.payment_status.title() }}
-                                </p>
-                                <small class="text-muted">
-                                    ₹{{ "{:,.0f}".format(status.due or 0) }} due
-                                </small>
+                        <div class="col-4">
+                            <div class="status-pod p-2 rounded-3 {% if status.payment_status == 'paid' %}bg-success-subtle{% elif status.payment_status == 'partial' %}bg-warning-subtle{% else %}bg-red-subtle{% endif %}">
+                                <h4 class="fw-900 mb-0 ls-n1">{{ status.count }}</h4>
+                                <p class="text-uppercase font-xxxs fw-800 mb-1 opacity-75">{{ status.payment_status }}</p>
+                                <div class="font-xxs fw-bold">₹{{ "{:,.0f}".format(status.due or 0) }} <span class="fw-light opacity-50">due</span></div>
                             </div>
                         </div>
                         {% endfor %}
@@ -127,33 +95,120 @@
             </div>
         </div>
 
-        <!-- Payment Mode Distribution -->
+        <!-- Collections by Mode -->
         <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0">Collections by Payment Mode</h5>
+            <div class="luxury-card h-100 p-0 overflow-hidden border-0 shadow-sm">
+                <div class="bg-white px-4 py-2 border-bottom">
+                    <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1">Collections by Payment Mode</h6>
                 </div>
-                <div class="card-body p-0">
-                    <table class="table table-sm mb-0">
-                        <thead>
-                            <tr class="text-muted">
-                                <th>Mode</th>
-                                <th>Count</th>
-                                <th>Amount</th>
-                                <th>% of Total</th>
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="bg-light">
+                        <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                            <th class="ps-4">Mode</th>
+                            <th>Count</th>
+                            <th>Amount</th>
+                            <th class="text-end pe-4">Mix %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set total_collected = payment_mode_breakdown|map(attribute='amount')|sum %}
+                        {% for mode in payment_mode_breakdown %}
+                        <tr class="font-sm border-bottom-light">
+                            <td class="ps-4 py-2 fw-900">{{ mode.payment_mode.title() if mode.payment_mode else 'Other' }}</td>
+                            <td class="py-2">{{ mode.count }}</td>
+                            <td class="py-2 fw-bold text-dark">₹{{ "{:,.0f}".format(mode.amount or 0) }}</td>
+                            <td class="text-end pe-4 py-2">
+                                <div class="d-flex align-items-center justify-content-end gap-2">
+                                    <span class="font-xxs fw-900">{{ "{:.0f}".format((mode.amount / total_collected * 100)) if total_collected > 0 else 0 }}%</span>
+                                    <div class="progress" style="height: 4px; width: 40px;">
+                                        <div class="progress-bar bg-success" style="width: {{ (mode.amount / total_collected * 100) if total_collected > 0 else 0 }}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Outstanding Dues Row -->
+    <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm mb-3">
+        <div class="bg-white px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-users-viewfinder text-danger me-2"></i>Critical Outstanding Accounts (Top 20)</h6>
+            <span class="badge bg-red-subtle text-danger font-xxs px-3">Delinquency Alert</span>
+        </div>
+        <div class="table-responsive" style="max-height: 350px;">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="bg-light sticky-top">
+                    <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                        <th class="ps-4">Client / Entity</th>
+                        <th>Payload</th>
+                        <th>Total Billed</th>
+                        <th>Collected</th>
+                        <th>Outstanding</th>
+                        <th class="text-end pe-4">Risk Profile</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in top_due_clients %}
+                    <tr class="font-sm border-bottom-light">
+                        <td class="ps-4 py-2">
+                            <div class="fw-900 text-dark">{{ client.name }}</div>
+                            <div class="text-muted font-xxs opacity-75">{{ client.company_name or 'Independent' }}</div>
+                        </td>
+                        <td class="py-2">{{ client.order_count }} units</td>
+                        <td class="py-2 fw-bold">₹{{ "{:,.0f}".format(client.total_amount or 0) }}</td>
+                        <td class="py-2 text-success fw-bold">₹{{ "{:,.0f}".format(client.total_received or 0) }}</td>
+                        <td class="py-2 text-danger fw-900">₹{{ "{:,.0f}".format(client.total_due or 0) }}</td>
+                        <td class="text-end pe-4 py-2">
+                            {% set risk_pct = (client.total_due / client.total_amount * 100) if client.total_amount > 0 else 0 %}
+                            <div class="d-flex align-items-center justify-content-end gap-2">
+                                <span class="font-xxs fw-900">{{ risk_pct|int }}% Due</span>
+                                <div class="progress" style="height: 6px; width: 60px;">
+                                    <div class="progress-bar {% if risk_pct > 70 %}bg-danger{% elif risk_pct > 30 %}bg-warning{% else %}bg-primary{% endif %}" 
+                                         style="width: {{ risk_pct }}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Master Finance velocity Trends -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-9">
+            <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm h-100">
+                <div class="bg-white px-4 py-3 border-bottom">
+                    <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-timeline text-secondary me-2"></i>Daily Revenue & Collection Velocity</h6>
+                </div>
+                <div class="table-responsive" style="max-height: 250px;">
+                    <table class="table table-hover mb-0 align-middle text-center">
+                        <thead class="bg-light sticky-top">
+                            <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                                <th class="py-3 ps-4 text-start">Operation Date</th>
+                                <th class="py-3">Invoiced</th>
+                                <th class="py-3">Collected</th>
+                                <th class="py-3">Outstand.</th>
+                                <th class="py-3 pe-4 text-end">Yield Rate</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% set total_collected = payment_mode_breakdown|map(attribute='amount')|sum %}
-                            {% for mode in payment_mode_breakdown %}
-                            <tr>
-                                <td><strong>{{ mode.payment_mode.title() if mode.payment_mode else 'Not Specified' }}</strong></td>
-                                <td>{{ mode.count }}</td>
-                                <td>₹{{ "{:,.0f}".format(mode.amount or 0) }}</td>
-                                <td>
-                                    <small class="text-muted">
-                                        {{ "{:.1f}".format((mode.amount / total_collected * 100)) if total_collected > 0 else 0 }}%
-                                    </small>
+                            {% for day in daily_finance %}
+                            <tr class="font-sm border-bottom-light">
+                                <td class="ps-4 text-start py-2 fw-900 text-dark">{{ day.date }}</td>
+                                <td class="py-2">₹{{ "{:,.0f}".format(day.invoiced or 0) }}</td>
+                                <td class="py-2 text-success fw-bold">₹{{ "{:,.0f}".format(day.collected or 0) }}</td>
+                                <td class="py-2 text-danger fw-bold">₹{{ "{:,.0f}".format(day.outstanding or 0) }}</td>
+                                <td class="pe-4 text-end py-2">
+                                    {% set yield_rate = (day.collected / day.invoiced * 100) if day.invoiced > 0 else 0 %}
+                                    <span class="badge {% if yield_rate > 90 %}bg-success{% elif yield_rate > 50 %}bg-warning{% else %}bg-danger{% endif %} rounded-pill px-3 font-xxs">
+                                        {{ yield_rate|int }}%
+                                    </span>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -162,131 +217,112 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Top Clients with Outstanding Due -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light border-bottom">
-            <h5 class="mb-0"><i class="fas fa-users"></i> Top 20 Clients with Outstanding Dues</h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Client Name</th>
-                            <th>Company</th>
-                            <th>Orders</th>
-                            <th>Total Billed</th>
-                            <th>Collected</th>
-                            <th>Outstanding Due</th>
-                            <th>% Due</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for client in top_due_clients %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td><strong>{{ client.name }}</strong></td>
-                            <td>
-                                {% if client.company_name %}
-                                    <small class="text-muted">{{ client.company_name }}</small>
-                                {% else %}
-                                    <small class="text-muted">-</small>
-                                {% endif %}
-                            </td>
-                            <td>{{ client.order_count }}</td>
-                            <td>₹{{ "{:,.2f}".format(client.total_amount or 0) }}</td>
-                            <td class="text-success">₹{{ "{:,.2f}".format(client.total_received or 0) }}</td>
-                            <td class="text-danger"><strong>₹{{ "{:,.2f}".format(client.total_due or 0) }}</strong></td>
-                            <td>
-                                <span class="badge bg-danger">
-                                    {{ "{:.0f}".format((client.total_due / client.total_amount * 100)) if client.total_amount > 0 else 0 }}%
-                                </span>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <!-- Collections Intelligence -->
+        <div class="col-md-3">
+            <div class="luxury-card p-4 d-flex flex-column h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+                <h6 class="text-white font-sm text-uppercase fw-800 opacity-50 mb-4 ls-2">Intelligence Brief</h6>
+                <div class="intelligence-item mb-4 border-start border-3 border-success ps-3">
+                    <p class="text-white opacity-50 font-xxs mb-1 text-uppercase fw-bold">Efficiency</p>
+                    <h4 class="text-white fw-900 mb-0">{{ "{:.1f}".format((total_received / total_amount * 100)) if total_amount > 0 else 0 }}%</h4>
+                </div>
+                <div class="intelligence-item mb-4 border-start border-3 border-blue ps-3">
+                    <p class="text-white opacity-50 font-xxs mb-1 text-uppercase fw-bold">Avg Billed</p>
+                    <h4 class="text-white fw-900 mb-0">₹{{ "{:,.0f}".format(total_amount / total_orders) if total_orders > 0 else 0 }}</h4>
+                </div>
+                <div class="intelligence-item mb-0 border-start border-3 border-danger ps-3">
+                    <p class="text-white opacity-50 font-xxs mb-1 text-uppercase fw-bold">Top Due Entity</p>
+                    <h6 class="text-white fw-900 mb-1 text-truncate">
+                        {% if top_due_clients %}{{ top_due_clients[0].name }}{% else %}-{% endif %}
+                    </h6>
+                    <div class="text-danger fw-bold font-xs">₹{{ "{:,.0f}".format(top_due_clients[0].total_due) if top_due_clients else '0' }}</div>
+                </div>
+                <div class="mt-auto pt-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="font-xxxs text-white opacity-50 fw-bold">AUTO-ANALYSIS ACTIVE</span>
+                        <div class="dot-pulse bg-success"></div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- Daily Financial Trends -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light border-bottom">
-            <h5 class="mb-0"><i class="fas fa-calendar"></i> Daily Revenue & Collection Trend</h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-sm mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Date</th>
-                            <th>Orders</th>
-                            <th>Total Invoiced</th>
-                            <th>Collected</th>
-                            <th>Collection %</th>
-                            <th>Outstanding</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for day in daily_finance %}
-                        <tr>
-                            <td><strong>{{ day.date }}</strong></td>
-                            <td>{{ day.order_count }}</td>
-                            <td>₹{{ "{:,.0f}".format(day.invoiced or 0) }}</td>
-                            <td class="text-success">₹{{ "{:,.0f}".format(day.collected or 0) }}</td>
-                            <td>
-                                {{ "{:.1f}".format((day.collected / day.invoiced * 100)) if day.invoiced > 0 else 0 }}%
-                            </td>
-                            <td class="text-danger">
-                                <strong>₹{{ "{:,.0f}".format(day.outstanding or 0) }}</strong>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Collections Insights -->
-    <div class="alert alert-info mb-4">
-        <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Collections Insights</h5>
-        <ul class="mb-0">
-            <li><strong>Collection Efficiency:</strong> {{ "{:.1f}".format((total_received / total_amount * 100)) if total_amount > 0 else 0 }}% of billed amount collected</li>
-            <li><strong>Average Billed per Order:</strong> ₹{{ "{:,.2f}".format(total_amount / total_orders) if total_orders > 0 else 0 }}</li>
-            <li><strong>Outstanding Receivables:</strong> ₹{{ "{:,.2f}".format(total_due) }} from {{ total_orders }} orders</li>
-            <li><strong>Top Due Client:</strong> 
-                {% if top_due_clients %}
-                    {{ top_due_clients[0].name }} - ₹{{ "{:,.2f}".format(top_due_clients[0].total_due) }}
-                {% else %}
-                    No outstanding dues
-                {% endif %}
-            </li>
-        </ul>
-    </div>
-
-    <!-- Navigation -->
-    <div class="mb-4">
-        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        <a href="{{ url_for('operations_client_due_report') }}" class="btn btn-outline-success">
-            <i class="fas fa-list"></i> View Client Due Report
-        </a>
     </div>
 </div>
 
 <style>
-    .card {
-        transition: transform 0.2s;
+    .compact-dash-wrapper { max-width: 100% !important; margin: 0 auto; }
+    
+    /* Font Scaling */
+    .font-sm { font-size: 0.85rem !important; }
+    .font-xs { font-size: 0.8rem !important; }
+    .font-xxs { font-size: 0.72rem !important; }
+    .font-xxxs { font-size: 0.65rem !important; }
+    
+    /* Typography */
+    .fw-900 { font-weight: 900 !important; }
+    .fw-800 { font-weight: 800 !important; }
+    .ls-n1 { letter-spacing: -0.5px; }
+    .ls-1 { letter-spacing: 0.5px; }
+    .ls-2 { letter-spacing: 1px; }
+
+    /* Cards */
+    .luxury-card {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+        border: 1px solid #eef2f6 !important;
     }
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+
+    /* KPI Pods */
+    .kpi-icon-lg {
+        width: 48px; height: 48px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
     }
+    
+    .kpi-glass-blue { background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); border-left: 5px solid #2563eb !important; }
+    .kpi-glass-green { background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border-left: 5px solid #16a34a !important; }
+    .kpi-glass-amber { background: linear-gradient(135deg, #fffcf0 0%, #ffffff 100%); border-left: 5px solid #f59e0b !important; }
+    .kpi-glass-red { background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%); border-left: 5px solid #dc2626 !important; }
+    .kpi-glass-cyan { background: linear-gradient(135deg, #f0ffff 0%, #ffffff 100%); border-left: 5px solid #0891b2 !important; }
+
+    /* Status Pods */
+    .status-pod { transition: transform 0.2s; }
+    .status-pod:hover { transform: translateY(-2px); }
+
+    /* Colors */
+    .bg-blue-subtle { background: #e0e7ff !important; color: #3730a3 !important; }
+    .bg-green-subtle { background: #dcfce7 !important; color: #166534 !important; }
+    .bg-red-subtle { background: #fee2e2 !important; color: #991b1b !important; }
+    .bg-warning-subtle { background: #fef3c7 !important; color: #92400e !important; }
+    .bg-cyan-subtle { background: #cffafe !important; color: #0891b2 !important; }
+    .bg-blue { background-color: #2563eb !important; }
+    
+    .text-blue { color: #2563eb !important; }
+    .text-green { color: #16a34a !important; }
+    .text-cyan { color: #0891b2 !important; }
+    .text-amber { color: #f59e0b !important; }
+    .text-blue-subtle { color: #93c5fd; }
+    .text-green-subtle { color: #86efac; }
+
+    /* Tables */
+    .border-bottom-light { border-bottom: 1px solid #f1f5f9; }
+    .sticky-top { top: 0; z-index: 10; background: #f8fafc !important; }
+    .table-hover tbody tr:hover { background-color: #f8fafc !important; }
+
+    /* Dot Pulse Indicator */
+    .dot-pulse {
+        width: 8px; height: 8px; border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Scrollbars */
+    .table-responsive::-webkit-scrollbar { width: 6px; }
+    .table-responsive::-webkit-scrollbar-track { background: #f1f5f9; }
+    .table-responsive::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 </style>
 {% endblock %}

@@ -3,172 +3,198 @@
 {% block title %}Bulk Import Orders{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <h1><i class="fas fa-upload"></i> Bulk Import Orders</h1>
-            <p class="text-muted">Import multiple orders from an Excel file at once</p>
+<div class="compact-dash-wrapper px-4 mt-3">
+    <!-- Balanced Dynamic Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-900 border-start border-5 border-primary ps-3 mb-0" style="color: #0f172a; font-size: 1.35rem; letter-spacing: -0.5px;">
+                <i class="fas fa-upload me-2 text-primary"></i> BULK IMPORT <span class="text-muted fw-light opacity-50">TERMINAL</span>
+            </h1>
+            <p class="text-secondary font-sm mb-0 opacity-75">Automated high-volume order ingestion from strategic Excel payloads</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ url_for('excel_upload') }}" class="btn btn-outline-primary btn-sm rounded-pill font-xs text-uppercase fw-900 px-3 shadow-sm">
+                <i class="fas fa-history me-1"></i> Upload History
+            </a>
+            <a href="{{ url_for('operations_dashboard') }}" class="btn btn-dark btn-sm rounded-pill font-xs text-uppercase fw-900 px-3 shadow-sm">
+                <i class="fas fa-house-chimney"></i>
+            </a>
+        </div>
+    </div>
 
-            <!-- Instructions Card -->
-            <div class="alert alert-info mb-4">
-                <h5 class="alert-heading">How to Use Bulk Import</h5>
-                <ol class="mb-0">
-                    <li>Prepare an Excel file with your order data</li>
-                    <li>Ensure required columns are present (customer_name, receiver_name, receiver_pincode, etc.)</li>
-                    <li>Upload the file below</li>
-                    <li>The system will automatically create orders and generate receipt numbers</li>
-                </ol>
-            </div>
-
-            <!-- Excel Template Instructions -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0">Required Excel Columns</h5>
+    <!-- Multi-Column Operational Layout -->
+    <div class="row g-3 mb-3">
+        <!-- Infrastructure: Required Schema -->
+        <div class="col-md-7">
+            <div class="luxury-card h-100 p-0 overflow-hidden border-0 shadow-sm">
+                <div class="bg-white px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-table-columns text-primary me-2"></i>Schema Definition Protocol</h6>
+                    <span class="badge bg-blue-subtle text-blue font-xxs px-3">Column Mapping V2.0</span>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6><i class="fas fa-check text-success"></i> Required Fields</h6>
-                            <ul class="small">
-                                <li><code>customer_name</code> - Sender/Customer name</li>
-                                <li><code>customer_phone</code> - Sender phone number</li>
-                                <li><code>receiver_name</code> - Recipient name</li>
-                                <li><code>receiver_pincode</code> - Recipient pincode (6 digits)</li>
-                                <li><code>receiver_state</code> - Delivery state</li>
-                                <li><code>receiver_address</code> - Recipient address</li>
-                                <li><code>weight</code> - Package weight in kg</li>
-                            </ul>
+                <div class="p-4">
+                    <div class="row g-4">
+                        <div class="col-md-6 border-end">
+                            <h6 class="font-xxs text-uppercase fw-900 text-success mb-3 ls-1 border-bottom pb-1 d-inline-block">Required Fields</h6>
+                            <div class="schema-list d-flex flex-column gap-2">
+                                <div class="schema-item d-flex align-items-center gap-2">
+                                    <code class="font-xxs px-2 py-1 bg-light rounded text-primary fw-bold">customer_name</code>
+                                    <span class="font-xxs text-muted">Sender Identification</span>
+                                </div>
+                                <div class="schema-item d-flex align-items-center gap-2">
+                                    <code class="font-xxs px-2 py-1 bg-light rounded text-primary fw-bold">customer_phone</code>
+                                    <span class="font-xxs text-muted">Active Contact #</span>
+                                </div>
+                                <div class="schema-item d-flex align-items-center gap-2">
+                                    <code class="font-xxs px-2 py-1 bg-light rounded text-primary fw-bold">receiver_name</code>
+                                    <span class="font-xxs text-muted">Consignee Identity</span>
+                                </div>
+                                <div class="schema-item d-flex align-items-center gap-2">
+                                    <code class="font-xxs px-2 py-1 bg-light rounded text-primary fw-bold">receiver_pincode</code>
+                                    <span class="font-xxs text-muted">6-Digit Zip Code</span>
+                                </div>
+                                <div class="schema-item d-flex align-items-center gap-2">
+                                    <code class="font-xxs px-2 py-1 bg-light rounded text-primary fw-bold">receiver_state</code>
+                                    <span class="font-xxs text-muted">Delivery Province</span>
+                                </div>
+                                <div class="schema-item d-flex align-items-center gap-2">
+                                    <code class="font-xxs px-2 py-1 bg-light rounded text-primary fw-bold">weight</code>
+                                    <span class="font-xxs text-muted">Payload Mass (KG)</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <h6><i class="fas fa-info text-info"></i> Optional Fields</h6>
-                            <ul class="small">
-                                <li><code>order_type</code> - walkin or client (default: walkin)</li>
-                                <li><code>customer_email</code> - Sender email</li>
-                                <li><code>customer_address</code> - Sender address</li>
-                                <li><code>receiver_phone</code> - Recipient phone</li>
-                                <li><code>receiver_city</code> - Recipient city</li>
-                                <li><code>package_description</code> - What's being shipped</li>
-                                <li><code>number_of_boxes</code> - Number of boxes (default: 1)</li>
-                                <li><code>receipt_mode</code> - standard/prime/express (default: standard)</li>
-                                <li><code>special_instructions</code> - Special handling notes</li>
-                            </ul>
+                            <h6 class="font-xxs text-uppercase fw-900 text-info mb-3 ls-1 border-bottom pb-1 d-inline-block">Optional Parameters</h6>
+                            <div class="schema-list d-flex flex-column gap-2">
+                                <div class="schema-item d-flex align-items-center gap-2">
+                                    <code class="font-xxs px-2 py-1 bg-light rounded text-info fw-bold">order_type</code>
+                                    <span class="font-xxs text-muted">Direct / Corporate</span>
+                                </div>
+                                <div class="schema-item d-flex align-items-center gap-2">
+                                    <code class="font-xxs px-2 py-1 bg-light rounded text-info fw-bold">receipt_mode</code>
+                                    <span class="font-xxs text-muted">Service SLA</span>
+                                </div>
+                                <div class="schema-item d-flex align-items-center gap-2">
+                                    <code class="font-xxs px-2 py-1 bg-light rounded text-info fw-bold">number_of_boxes</code>
+                                    <span class="font-xxs text-muted">SKU Volume</span>
+                                </div>
+                                <div class="schema-item d-flex align-items-center gap-2">
+                                    <code class="font-xxs px-2 py-1 bg-light rounded text-info fw-bold">receiver_city</code>
+                                    <span class="font-xxs text-muted">Destination Node</span>
+                                </div>
+                                <div class="schema-item d-flex align-items-center gap-2">
+                                    <code class="font-xxs px-2 py-1 bg-light rounded text-info fw-bold">package_description</code>
+                                    <span class="font-xxs text-muted">Content Brief</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Upload Form -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0">Upload Excel File</h5>
+                <div class="bg-light px-4 py-2 border-top">
+                    <p class="font-xxs text-muted mb-0 opacity-75 fw-bold"><i class="fas fa-keyboard me-2"></i>COLUMN NAMES ARE CASE-SENSITIVE AND MUST MATCH EXACTLY</p>
                 </div>
-                <div class="card-body">
-                    <form method="POST" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label for="file" class="form-label">Select Excel File (.xlsx, .xls)</label>
-                            <input type="file" class="form-control form-control-lg" id="file" name="file" 
-                                   accept=".xlsx,.xls,.csv" required>
-                            <small class="text-muted">
-                                Maximum file size: 10MB. Supported formats: Excel (.xlsx), CSV
-                            </small>
+            </div>
+        </div>
+
+        <!-- Operation: Ingestion Terminal -->
+        <div class="col-md-5">
+            <div class="row g-3 h-100">
+                <div class="col-12 h-100">
+                    <div class="luxury-card h-100 border-0 shadow-sm overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+                        <div class="p-4 d-flex flex-column h-100">
+                            <div class="text-center mb-4 pt-2">
+                                <div class="bg-white bg-opacity-10 w-60 h-60 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 70px; height: 70px; border: 2px dashed rgba(255,255,255,0.2);">
+                                    <i class="fas fa-file-excel fa-2x text-primary shadow-sm"></i>
+                                </div>
+                                <h5 class="text-white fw-900 mb-1">DATA INGESTION PORTAL</h5>
+                                <p class="text-white opacity-50 font-xs mb-0">Supported formats: .XLSX, .XLS, .CSV</p>
+                            </div>
+
+                            <form method="POST" enctype="multipart/form-data" class="mt-auto">
+                                <div class="upload-zone p-4 rounded-4 mb-3 border border-white border-opacity-10 text-center" style="background: rgba(255,255,255,0.03);">
+                                    <input type="file" class="form-control form-control-sm bg-transparent border-0 text-white font-sm mb-2" id="file" name="file" accept=".xlsx,.xls,.csv" required>
+                                    <p class="font-xxs text-white opacity-25 mb-0 fw-bold">MAX PAYLOAD SIZE: 10MB</p>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-900 text-uppercase font-xs shadow-lg bounce">
+                                    <i class="fas fa-rocket me-2"></i> EXECUTE MASS IMPORT
+                                </button>
+                            </form>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-upload"></i> Import Orders
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Sample Data Table -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0">Sample Excel Format</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table mb-0 table-sm">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>customer_name</th>
-                                    <th>customer_phone</th>
-                                    <th>receiver_name</th>
-                                    <th>receiver_phone</th>
-                                    <th>receiver_address</th>
-                                    <th>receiver_city</th>
-                                    <th>receiver_state</th>
-                                    <th>receiver_pincode</th>
-                                    <th>weight</th>
-                                    <th>package_description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="table-light">
-                                    <td>John Doe</td>
-                                    <td>9876543210</td>
-                                    <td>Jane Smith</td>
-                                    <td>9876543211</td>
-                                    <td>123 Main St</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharashtra</td>
-                                    <td>400001</td>
-                                    <td>0.5</td>
-                                    <td>Documents</td>
-                                </tr>
-                                <tr class="table-light">
-                                    <td>ABC Company</td>
-                                    <td>9876543212</td>
-                                    <td>Receiver Name</td>
-                                    <td>9876543213</td>
-                                    <td>456 Business Ave</td>
-                                    <td>Delhi</td>
-                                    <td>Delhi</td>
-                                    <td>110001</td>
-                                    <td>2.0</td>
-                                    <td>Electronics</td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
-            </div>
-
-            <!-- Tips & Best Practices -->
-            <div class="card shadow-sm mb-4 border-success">
-                <div class="card-header bg-success bg-opacity-10 border-bottom">
-                    <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Tips for Successful Import</h5>
-                </div>
-                <div class="card-body">
-                    <ul class="mb-0">
-                        <li><strong>Check Pincode Format:</strong> All pincodes must be exactly 6 digits</li>
-                        <li><strong>Required Data:</strong> Missing customer name, receiver name, or pincode will skip that row</li>
-                        <li><strong>Weight Format:</strong> Use decimal format (0.5, 1.0, 2.5, etc.)</li>
-                        <li><strong>States:</strong> Use the complete state name (e.g., "Maharashtra", not "MH")</li>
-                        <li><strong>Column Names:</strong> Column names are case-sensitive - use exactly as shown</li>
-                        <li><strong>Receipt Numbers:</strong> System automatically generates unique receipt numbers - don't include them in the file</li>
-                        <li><strong>Phone Numbers:</strong> Enter phone numbers without spaces or special characters</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Navigation -->
-            <div class="mb-4">
-                <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left"></i> Back to Dashboard
-                </a>
-                <a href="{{ url_for('excel_upload') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-history"></i> View Upload History
-                </a>
             </div>
         </div>
     </div>
 
-    <!-- Success/Error Messages -->
+    <!-- Protocol Validation: Sample Data -->
+    <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm mb-3">
+        <div class="bg-white px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-microscope text-secondary me-2"></i>Payload Blueprint: Sample Architecture</h6>
+            <span class="badge bg-light text-muted font-xxs">Structural Reference</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm mb-0 align-middle">
+                <thead class="bg-light">
+                    <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                        <th class="ps-4">customer_name</th>
+                        <th>customer_phone</th>
+                        <th>receiver_name</th>
+                        <th>receiver_city</th>
+                        <th>receiver_state</th>
+                        <th>receiver_pincode</th>
+                        <th>weight</th>
+                        <th class="text-end pe-4">package_description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="font-xxs border-bottom-light">
+                        <td class="ps-4 py-2 fw-900 text-dark opacity-75">John Doe Export</td>
+                        <td class="py-2 text-muted">9876543210</td>
+                        <td class="py-2 fw-bold text-dark">Jane Consignee</td>
+                        <td class="py-2">Mumbai Node</td>
+                        <td class="py-2">Maharashtra</td>
+                        <td class="py-2 fw-900 text-primary">400001</td>
+                        <td class="py-2">1.50 KG</td>
+                        <td class="text-end pe-4 py-2 opacity-50">Strategic Logistics Payload</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Intelligence Brief: Best Practices -->
+    <div class="luxury-card p-4 d-flex align-items-center justify-content-between border-0 shadow-sm mb-5" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+        <div class="d-flex align-items-center gap-4">
+            <div class="bg-white bg-opacity-10 p-3 rounded-4">
+                <i class="fas fa-shield-check fa-2x text-success"></i>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-auto">
+                    <h6 class="text-white fw-900 mb-1 font-xs"><i class="fas fa-location-crosshairs me-2 text-success"></i>Precision Pincodes</h6>
+                    <p class="text-white opacity-50 font-xxs mb-0">Ensure exactly 6-digit formatting for global route mapping.</p>
+                </div>
+                <div class="col-md-auto">
+                    <h6 class="text-white fw-900 mb-1 font-xs"><i class="fas fa-weight-hanging me-2 text-primary"></i>Mass Validation</h6>
+                    <p class="text-white opacity-50 font-xxs mb-0">Use decimal point (e.g. 2.50) for payload weight accuracy.</p>
+                </div>
+                <div class="col-md-auto border-start border-white border-opacity-10 ps-4">
+                    <h6 class="text-white fw-900 mb-1 font-xs"><i class="fas fa-font me-2 text-info"></i>Nomenclature</h6>
+                    <p class="text-white opacity-50 font-xxs mb-0">Use full state names (e.g. "Delhi") to bypass operational errors.</p>
+                </div>
+            </div>
+        </div>
+        <div class="dot-pulse-green ms-4"></div>
+    </div>
+
+    <!-- Flash Notifications Container -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-            <div class="alert alert-{{ 'success' if category == 'success' else 'warning' if category == 'warning' else 'danger' }} position-fixed bottom-0 end-0 m-3" style="z-index: 1050;">
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                {{ message }}
+            <div class="alert alert-{{ 'success' if category == 'success' else 'warning' if category == 'warning' else 'danger' }} position-fixed bottom-0 end-0 m-4 shadow-lg border-0 rounded-4 px-4 py-3 toast-anim" style="z-index: 2000; min-width: 300px;">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="fas {% if category == 'success' %}fa-circle-check text-success{% else %}fa-circle-exclamation text-danger{% endif %} fa-lg"></i>
+                    <div class="fw-900 font-sm mb-0">{{ message }}</div>
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                </div>
             </div>
             {% endfor %}
         {% endif %}
@@ -176,12 +202,74 @@
 </div>
 
 <style>
-    code {
-        background-color: #f4f4f4;
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-family: 'Courier New', monospace;
-        font-size: 0.85em;
+    /* Full Page Expansion & Layout Symmetry */
+    .compact-dash-wrapper { max-width: 100% !important; margin: 0 auto; }
+    
+    /* Font Scaling Strategy */
+    .font-sm { font-size: 0.85rem !important; }
+    .font-xs { font-size: 0.8rem !important; }
+    .font-xxs { font-size: 0.72rem !important; }
+    .font-xxxs { font-size: 0.65rem !important; }
+    
+    /* Typography Excellence */
+    .fw-900 { font-weight: 900 !important; }
+    .fw-800 { font-weight: 800 !important; }
+    .ls-1 { letter-spacing: 0.5px; }
+
+    /* Cards & Glassmorphism */
+    .luxury-card {
+        background: #ffffff !important;
+        border-radius: 20px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important;
+        border: 1px solid #eef2f6 !important;
+        overflow: hidden;
     }
+
+    /* Input & Component Polishing */
+    .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+    
+    code {
+        background: #f1f5f9 !important;
+        color: #2563eb !important;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: -0.2px;
+    }
+
+    /* Color Palette */
+    .bg-blue-subtle { background: #eff6ff !important; color: #2563eb !important; }
+    .text-blue { color: #2563eb !important; }
+    .text-success { color: #10b981 !important; }
+
+    /* Tables */
+    .border-bottom-light { border-bottom: 1px solid #f1f5f9; }
+    .table-hover tbody tr:hover { background-color: #f8fafc !important; }
+
+    /* Animation Hub */
+    .bounce:active { transform: scale(0.98); }
+    .toast-anim { animation: slideIn 0.4s ease-out; }
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Dot Pulse Indicator */
+    .dot-pulse-green {
+        width: 12px; height: 12px; border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        animation: pulse-green 1.5s infinite;
+    }
+    @keyframes pulse-green {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Scrollbars */
+    .table-responsive::-webkit-scrollbar { height: 6px; }
+    .table-responsive::-webkit-scrollbar-track { background: #f1f5f9; }
+    .table-responsive::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 </style>
 {% endblock %}

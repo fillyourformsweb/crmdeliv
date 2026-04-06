@@ -3,159 +3,225 @@
 {% block title %}Audit Logs - Operations Manager{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="row mb-3">
-        <div class="col-md-8">
-            <h1><i class="fas fa-list-check"></i> Audit Logs</h1>
-            <p class="text-muted">View system activity and changes (Read-only)</p>
+<div class="compact-dash-wrapper px-4 mt-3">
+    <!-- Balanced Dynamic Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-900 border-start border-5 border-info ps-3 mb-0" style="color: #0f172a; font-size: 1.35rem; letter-spacing: -0.5px;">
+                <i class="fas fa-list-check me-2 text-info"></i> SYSTEM <span class="text-muted fw-light opacity-50">AUDIT LOGS</span>
+            </h1>
+            <p class="text-secondary font-sm mb-0 opacity-75">Comprehensive monitoring of administrative activities and entity changes</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ url_for('operations_dashboard') }}" class="btn btn-dark btn-sm rounded-pill font-xs text-uppercase fw-900 px-4 shadow-sm">
+                <i class="fas fa-house-chimney me-2"></i> OPS HUB
+            </a>
         </div>
     </div>
 
-    <!-- Filter Section -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <form method="GET" class="row g-2">
-                <div class="col-md-3">
-                    <label class="form-label">Action</label>
-                    <select name="action" class="form-select">
-                        <option value="">All Actions</option>
-                        <option value="create" {% if action_filter == 'create' %}selected{% endif %}>Create</option>
-                        <option value="update" {% if action_filter == 'update' %}selected{% endif %}>Update</option>
-                        <option value="delete" {% if action_filter == 'delete' %}selected{% endif %}>Delete</option>
-                        <option value="view" {% if action_filter == 'view' %}selected{% endif %}>View</option>
-                    </select>
+    <!-- Optimized Multi-Filter Bar -->
+    <div class="luxury-card p-3 mb-3 border-0 shadow-sm">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="font-xxs text-uppercase fw-900 text-muted mb-1 ps-1">Operation Type</label>
+                <select name="action" class="form-select form-select-sm font-sm">
+                    <option value="">All Actions</option>
+                    <option value="create" {% if action_filter == 'create' %}selected{% endif %}>Create</option>
+                    <option value="update" {% if action_filter == 'update' %}selected{% endif %}>Update</option>
+                    <option value="delete" {% if action_filter == 'delete' %}selected{% endif %}>Delete</option>
+                    <option value="view" {% if action_filter == 'view' %}selected{% endif %}>View</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="font-xxs text-uppercase fw-900 text-muted mb-1 ps-1">Entity Scope</label>
+                <select name="entity_type" class="form-select form-select-sm font-sm">
+                    <option value="">All Entities</option>
+                    <option value="Order" {% if entity_filter == 'Order' %}selected{% endif %}>Orders</option>
+                    <option value="Client" {% if entity_filter == 'Client' %}selected{% endif %}>Clients</option>
+                    <option value="User" {% if entity_filter == 'User' %}selected{% endif %}>Users</option>
+                    <option value="Branch" {% if entity_filter == 'Branch' %}selected{% endif %}>Branches</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="font-xxs text-uppercase fw-900 text-muted mb-1 ps-1">Account Oversight</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-user-shield text-muted opacity-50"></i></span>
+                    <input type="text" name="username" class="form-control border-start-0 font-sm" placeholder="Filter by username..." value="{{ user_filter }}">
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Entity Type</label>
-                    <select name="entity_type" class="form-select">
-                        <option value="">All Types</option>
-                        <option value="Order" {% if entity_filter == 'Order' %}selected{% endif %}>Order</option>
-                        <option value="Client" {% if entity_filter == 'Client' %}selected{% endif %}>Client</option>
-                        <option value="User" {% if entity_filter == 'User' %}selected{% endif %}>User</option>
-                        <option value="Branch" {% if entity_filter == 'Branch' %}selected{% endif %}>Branch</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Username</label>
-                    <input type="text" name="username" class="form-control" placeholder="Filter by user..." value="{{ user_filter }}">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-filter"></i> Filter
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-info btn-sm w-100 font-xs fw-900 text-uppercase rounded-pill py-2 shadow-sm text-white">
+                    <i class="fas fa-magnifying-glass me-1"></i> Audit
+                </button>
+            </div>
+        </form>
     </div>
 
-    <!-- Audit Logs Table -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-light border-bottom">
-            <h5 class="mb-0"><i class="fas fa-history"></i> Activity Log</h5>
+    <!-- High-Density Activity Ledger -->
+    <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm mb-3">
+        <div class="bg-white px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-clock-rotate-left text-secondary me-2"></i>Operational Activity Stream</h6>
+            <span class="badge bg-info-subtle text-info font-xxs px-3">Read-Only Archive</span>
         </div>
-        <div class="card-body p-0">
-            {% if logs %}
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 table-sm">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Date & Time</th>
-                            <th>User</th>
-                            <th>Action</th>
-                            <th>Entity Type</th>
-                            <th>Entity Name</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="bg-light sticky-top">
+                    <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                        <th class="ps-4">Timestamp (UTC)</th>
+                        <th>User Identity</th>
+                        <th>Action Protocol</th>
+                        <th>Entity Context</th>
+                        <th>Entity Identifier</th>
+                        <th class="text-end pe-4">Activity Metadata</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if logs %}
                         {% for log in logs %}
-                        <tr>
-                            <td>
-                                <small>{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                        <tr class="font-sm border-bottom-light">
+                            <td class="ps-4 py-2">
+                                <div class="fw-bold text-dark">{{ log.created_at.strftime('%Y-%m-%d') }}</div>
+                                <div class="font-xxs text-muted">{{ log.created_at.strftime('%H:%M:%S') }}</div>
                             </td>
-                            <td>
-                                <small><strong>{{ log.username }}</strong></small>
+                            <td class="py-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar-sm bg-light text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 0.7rem;">
+                                        <i class="fas fa-user-tie"></i>
+                                    </div>
+                                    <span class="fw-900">{{ log.username }}</span>
+                                </div>
                             </td>
-                            <td>
+                            <td class="py-2">
                                 {% if log.action == 'create' %}
-                                    <span class="badge bg-success">Create</span>
+                                    <span class="badge bg-success-subtle text-success font-xxs px-3 rounded-pill border border-success border-opacity-25">CREATE</span>
                                 {% elif log.action == 'update' %}
-                                    <span class="badge bg-info">Update</span>
+                                    <span class="badge bg-blue-subtle text-blue font-xxs px-3 rounded-pill border border-primary border-opacity-25">UPDATE</span>
                                 {% elif log.action == 'delete' %}
-                                    <span class="badge bg-danger">Delete</span>
+                                    <span class="badge bg-red-subtle text-danger font-xxs px-3 rounded-pill border border-danger border-opacity-25">DELETE</span>
                                 {% else %}
-                                    <span class="badge bg-secondary">{{ log.action }}</span>
+                                    <span class="badge bg-light text-muted font-xxs px-3 rounded-pill border">{{ log.action|upper }}</span>
                                 {% endif %}
                             </td>
-                            <td>
-                                <small>{{ log.entity_type or 'N/A' }}</small>
+                            <td class="py-2">
+                                <span class="fw-bold text-secondary font-xs">{{ log.entity_type or 'SYSTEM' }}</span>
                             </td>
-                            <td>
-                                <small><strong>{{ log.entity_name or 'N/A' }}</strong></small>
+                            <td class="py-2">
+                                <span class="fw-900 text-dark">{{ log.entity_name or 'N/A' }}</span>
                             </td>
-                            <td>
-                                <small>
+                            <td class="text-end pe-4 py-2 font-xxs">
+                                <div class="text-muted text-truncate" style="max-width: 250px;">
                                     {% if log.receipt_number %}
-                                        Receipt: {{ log.receipt_number }}<br>
+                                        <span class="fw-bold text-dark me-2">REC: {{ log.receipt_number }}</span>
                                     {% endif %}
                                     {% if log.changes %}
-                                        Changes: {{ log.changes[:50] }}...
+                                        {{ log.changes[:60] }}...
+                                    {% else %}
+                                        No payload modifications
                                     {% endif %}
-                                </small>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            {% if pagination.pages > 1 %}
-            <div class="d-flex justify-content-between align-items-center p-3 border-top">
-                <span class="text-muted">Page {{ pagination.page }} of {{ pagination.pages }}</span>
-                <nav>
-                    <ul class="pagination mb-0">
-                        {% if pagination.has_prev %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ pagination.prev_num }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if entity_filter %}&entity_type={{ entity_filter }}{% endif %}{% if user_filter %}&username={{ user_filter }}{% endif %}">
-                                Previous
-                            </a>
-                        </li>
-                        {% endif %}
-
-                        {% if pagination.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ pagination.next_num }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if entity_filter %}&entity_type={{ entity_filter }}{% endif %}{% if user_filter %}&username={{ user_filter }}{% endif %}">
-                                Next
-                            </a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-            {% endif %}
-
-            {% else %}
-            <div class="p-4 text-center text-muted">
-                <i class="fas fa-inbox fa-3x mb-3 opacity-50"></i>
-                <p>No audit logs found</p>
-            </div>
-            {% endif %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="opacity-25 mb-3"><i class="fas fa-database fa-3x"></i></div>
+                                <h6 class="fw-900 text-muted">NO ACTIVITY RECORDS FOUND</h6>
+                                <p class="font-xs text-muted">Adjust your filters to broaden the search</p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Info Box -->
-    <div class="alert alert-info mt-4">
-        <i class="fas fa-info-circle"></i> <strong>Read-Only Access:</strong> These logs are for monitoring purposes only. 
-        You can view all system activities but cannot make changes to the audit log data.
-    </div>
-
-    <!-- Back Button -->
-    <div class="mt-4">
-        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
+    <!-- Pagination & Logic Brief -->
+    <div class="row align-items-center mb-5">
+        <div class="col-md-6">
+            {% if pagination.pages > 1 %}
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    {% if pagination.has_prev %}
+                        <li class="page-item"><a class="page-link font-xxs fw-900 px-3" href="?page={{ pagination.prev_num }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if entity_filter %}&entity_type={{ entity_filter }}{% endif %}{% if user_filter %}&username={{ user_filter }}{% endif %}">PREV</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link font-xxs fw-900 px-3">PAGE {{ pagination.page }} OF {{ pagination.pages }}</span></li>
+                    {% if pagination.has_next %}
+                        <li class="page-item"><a class="page-link font-xxs fw-900 px-3" href="?page={{ pagination.next_num }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if entity_filter %}&entity_type={{ entity_filter }}{% endif %}{% if user_filter %}&username={{ user_filter }}{% endif %}">NEXT</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <div class="luxury-card p-3 d-flex align-items-center justify-content-between border-0 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-white bg-opacity-10 p-2 rounded-3 text-info">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <p class="text-white opacity-50 font-xxxs text-uppercase fw-bold mb-0">Security Status</p>
+                        <h6 class="text-white fw-900 mb-0 font-sm">INTEGRITY VERIFIED</h6>
+                    </div>
+                </div>
+                <div class="dot-pulse-blue"></div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    .compact-dash-wrapper { max-width: 100% !important; margin: 0 auto; }
+    
+    /* Font Scaling */
+    .font-sm { font-size: 0.85rem !important; }
+    .font-xs { font-size: 0.8rem !important; }
+    .font-xxs { font-size: 0.72rem !important; }
+    .font-xxxs { font-size: 0.65rem !important; }
+    
+    /* Typography */
+    .fw-900 { font-weight: 900 !important; }
+    .fw-800 { font-weight: 800 !important; }
+    .ls-1 { letter-spacing: 0.5px; }
+
+    /* Cards */
+    .luxury-card {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+        border: 1px solid #eef2f6 !important;
+        overflow: hidden;
+    }
+
+    /* Colors */
+    .bg-info-subtle { background: #ecfeff !important; color: #0891b2 !important; }
+    .bg-success-subtle { background: #dcfce7 !important; color: #166534 !important; }
+    .bg-blue-subtle { background: #e0e7ff !important; color: #3730a3 !important; }
+    .bg-red-subtle { background: #fee2e2 !important; color: #991b1b !important; }
+    
+    .text-info { color: #0891b2 !important; }
+    .text-blue { color: #2563eb !important; }
+
+    /* Tables */
+    .border-bottom-light { border-bottom: 1px solid #f1f5f9; }
+    .sticky-top { top: 0; z-index: 10; background: #f8fafc !important; }
+    .table-hover tbody tr:hover { background-color: #f8fafc !important; }
+
+    /* Dot Pulse Indicator */
+    .dot-pulse-blue {
+        width: 10px; height: 10px; border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
+        animation: pulse-blue 1.5s infinite;
+    }
+    @keyframes pulse-blue {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(14, 165, 233, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+    }
+
+    /* Scrollbars */
+    .table-responsive::-webkit-scrollbar { width: 6px; }
+    .table-responsive::-webkit-scrollbar-track { background: #f1f5f9; }
+    .table-responsive::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+</style>
 {% endblock %}

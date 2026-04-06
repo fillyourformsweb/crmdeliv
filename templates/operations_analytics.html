@@ -1,209 +1,254 @@
 {% extends "base.html" %}
 
-{% block title %}Operation Analytics{% endblock %}
+{% block title %}Operational Analytics{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="row mb-3">
-        <div class="col-md-8">
-            <h1><i class="fas fa-chart-line"></i> Operational Analytics</h1>
-            <p class="text-muted">Trends, insights, and performance metrics</p>
+<div class="compact-dash-wrapper px-4 mt-3">
+    <!-- Balanced Dynamic Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-900 border-start border-5 border-primary ps-3 mb-0" style="color: #0f172a; font-size: 1.35rem; letter-spacing: -0.5px;">
+                <i class="fas fa-chart-line me-2 text-primary"></i> OPERATIONAL <span class="text-muted fw-light opacity-50">ANALYTICS</span>
+            </h1>
+            <p class="text-secondary font-sm mb-0 opacity-75">Core performance trends and cross-functional operational metrics</p>
         </div>
-        <div class="col-md-4 text-end">
-            <form method="GET" class="d-inline-block">
-                <select name="days" class="form-select form-select-sm d-inline-block" style="width: auto;" onchange="this.form.submit()">
-                    <option value="7" {% if days_filter == 7 %}selected{% endif %}>Last 7 Days</option>
-                    <option value="30" {% if days_filter == 30 %}selected{% endif %}>Last 30 Days</option>
-                    <option value="90" {% if days_filter == 90 %}selected{% endif %}>Last 90 Days</option>
-                </select>
+        <div class="d-flex align-items-center gap-3">
+            <form method="GET" class="d-flex gap-1 bg-white border rounded-pill p-1 shadow-sm px-2 align-items-center">
+                <span class="text-muted font-xxs text-uppercase fw-bold me-2">Scope:</span>
+                <a href="?days=7" class="btn btn-xs {% if days_filter == 7 %}btn-primary{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none">7D</a>
+                <a href="?days=30" class="btn btn-xs {% if days_filter == 30 %}btn-primary{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none">30D</a>
+                <a href="?days=90" class="btn btn-xs {% if days_filter == 90 %}btn-primary{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none">90D</a>
             </form>
+            <a href="{{ url_for('operations_dashboard') }}" class="btn btn-dark btn-sm rounded-pill font-xs text-uppercase fw-900 px-4 shadow-sm">
+                <i class="fas fa-house-chimney me-2"></i> OPS HUB
+            </a>
         </div>
     </div>
 
-    <!-- KPI Cards -->
-    <div class="row mb-4 g-3">
+    <!-- Executive KPI Pods -->
+    <div class="row g-3 mb-3">
         <div class="col-md-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="text-muted mb-1">Total Orders</h6>
-                    <h3 class="mb-2">{{ orders_in_period }}</h3>
-                    <small class="text-success">
-                        <i class="fas fa-arrow-up"></i> 
-                        Walk-in: {{ walkin_in_period }} | Client: {{ client_in_period }}
-                    </small>
+            <div class="luxury-card kpi-glass-blue border-0 p-3 d-flex align-items-center gap-3">
+                <div class="kpi-icon-lg bg-blue-subtle text-blue"><i class="fas fa-cubes"></i></div>
+                <div>
+                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Total Orders</h6>
+                    <h3 class="fw-900 mb-0 ls-n1">{{ orders_in_period }} <span class="font-xs fw-light opacity-50">Units</span></h3>
                 </div>
             </div>
         </div>
-
         <div class="col-md-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="text-muted mb-1">Total Revenue</h6>
-                    <h3 class="mb-2">₹{{ "%.0f"|format(revenue_in_period) }}</h3>
-                    <small class="text-muted">{{ "%.2f"|format(avg_order_value) }} avg per order</small>
+            <div class="luxury-card kpi-glass-green border-0 p-3 d-flex align-items-center gap-3">
+                <div class="kpi-icon-lg bg-green-subtle text-green"><i class="fas fa-indian-rupee-sign"></i></div>
+                <div>
+                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Total Revenue</h6>
+                    <h3 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(revenue_in_period) }}</h3>
                 </div>
             </div>
         </div>
-
         <div class="col-md-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="text-muted mb-1">Avg Order Value</h6>
-                    <h3 class="mb-2">₹{{ "%.0f"|format(avg_order_value) }}</h3>
-                    <small class="text-muted">Avg weight: {{ "%.1f"|format(avg_weight) }} kg</small>
+            <div class="luxury-card kpi-glass-cyan border-0 p-3 d-flex align-items-center gap-3">
+                <div class="kpi-icon-lg bg-cyan-subtle text-cyan"><i class="fas fa-tags"></i></div>
+                <div>
+                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Avg Order Value</h6>
+                    <h3 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(avg_order_value) }}</h3>
                 </div>
             </div>
         </div>
-
         <div class="col-md-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="text-muted mb-1">Order Mix</h6>
-                    <h3 class="mb-2">{{ walkin_in_period }}</h3>
-                    <small class="text-muted">Walk-in orders</small>
+            <div class="luxury-card kpi-glass-amber border-0 p-3 d-flex align-items-center gap-3">
+                <div class="kpi-icon-lg bg-amber-subtle text-amber"><i class="fas fa-users-gear"></i></div>
+                <div>
+                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Direct Mix</h6>
+                    <h3 class="fw-900 mb-0 ls-n1 text-amber">{{ walkin_in_period }} <span class="font-xs fw-light opacity-50">Walk-ins</span></h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Status Breakdown & Top States -->
-    <div class="row mb-4 g-3">
+    <!-- Multi-Dimensional Insights -->
+    <div class="row g-3 mb-3">
+        <!-- Status Breakdown -->
         <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0">Order Status Distribution</h5>
+            <div class="luxury-card h-100 p-0 overflow-hidden border-0 shadow-sm">
+                <div class="bg-white px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-circle-nodes text-primary me-2"></i>Status Distribution</h6>
+                    <span class="badge bg-blue-subtle text-blue font-xxs px-3">Live Progress</span>
                 </div>
-                <div class="card-body">
-                    <ul class="list-unstyled">
-                        {% for stat in status_breakdown %}
-                        <li class="d-flex justify-content-between mb-2">
-                            <span>
+                <div class="p-4">
+                    {% for stat in status_breakdown %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="font-xs fw-900 text-dark">
                                 {% if stat.status == 'at_destination' %}
-                                    <i class="fas fa-map-marker text-primary"></i> At Destination
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i> At Destination
                                 {% elif stat.status == 'confirmed' %}
-                                    <i class="fas fa-check-circle text-info"></i> Confirmed
+                                    <i class="fas fa-check-circle text-info me-2"></i> Confirmed
                                 {% elif stat.status == 'in_transit' %}
-                                    <i class="fas fa-truck text-warning"></i> In Transit
+                                    <i class="fas fa-truck text-warning me-2"></i> In Transit
                                 {% elif stat.status == 'delivered' %}
-                                    <i class="fas fa-check-double text-success"></i> Delivered
+                                    <i class="fas fa-check-double text-success me-2"></i> Delivered
                                 {% else %}
-                                    <i class="fas fa-ban text-danger"></i> {{ stat.status | title }}
+                                    <i class="fas fa-circle-dot text-muted me-2"></i> {{ stat.status | title }}
                                 {% endif %}
                             </span>
-                            <strong>{{ stat.count }}</strong>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                            <span class="font-xs fw-900">{{ stat.count }}</span>
+                        </div>
+                        <div class="progress" style="height: 6px; border-radius: 10px;">
+                            {% set status_pct = (stat.count / orders_in_period * 100) if orders_in_period > 0 else 0 %}
+                            <div class="progress-bar {% if stat.status == 'delivered' %}bg-success{% elif stat.status == 'in_transit' %}bg-warning{% else %}bg-primary{% endif %}" 
+                                 style="width: {{ status_pct }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
 
+        <!-- Regional Revenue -->
         <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0">Top States by Revenue</h5>
+            <div class="luxury-card h-100 p-0 overflow-hidden border-0 shadow-sm">
+                <div class="bg-white px-4 py-3 border-bottom">
+                    <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-globe text-success me-2"></i>Regional Revenue Share</h6>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>State</th>
-                                    <th>Orders</th>
-                                    <th>Revenue</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for state in top_states %}
-                                <tr>
-                                    <td><strong>{{ state.receiver_state or 'Unknown' }}</strong></td>
-                                    <td>{{ state.order_count }}</td>
-                                    <td class="text-success"><strong>₹{{ "%.0f"|format(state.revenue or 0) }}</strong></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="table-responsive" style="max-height: 285px;">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light sticky-top">
+                            <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                                <th class="ps-4">Geographic Zone</th>
+                                <th>Volume</th>
+                                <th class="text-end pe-4">Cumulative Yield</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for state in top_states %}
+                            <tr class="font-sm border-bottom-light">
+                                <td class="ps-4 py-2 fw-900 text-dark">{{ state.receiver_state or 'Other Zones' }}</td>
+                                <td class="py-2">{{ state.order_count }} Units</td>
+                                <td class="text-end pe-4 py-2 fw-900 text-success">₹{{ "{:,.0f}".format(state.revenue or 0) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Top Clients -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0"><i class="fas fa-building"></i> Top Corporate Clients</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Client Name</th>
-                                    <th>Company</th>
-                                    <th>Orders</th>
-                                    <th>Revenue</th>
-                                    <th>Avg Order</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for client in top_clients %}
-                                <tr>
-                                    <td><strong>{{ client.name }}</strong></td>
-                                    <td>{{ client.company_name or 'N/A' }}</td>
-                                    <td>{{ client.order_count }}</td>
-                                    <td class="text-success"><strong>₹{{ "%.0f"|format(client.revenue or 0) }}</strong></td>
-                                    <td>₹{{ "%.0f"|format((client.revenue or 0) / (client.order_count or 1)) }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <!-- Corporate Performance Ledger -->
+    <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm mb-3">
+        <div class="bg-white px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-building-user text-amber me-2"></i>Top Strategic Accounts</h6>
+            <span class="badge bg-amber-subtle text-amber font-xxs px-3">Revenue Leaders</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="bg-light">
+                    <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                        <th class="ps-4 py-3">Account Entity</th>
+                        <th class="py-3">Company Context</th>
+                        <th class="py-3">Order Density</th>
+                        <th class="py-3">Gross Yield</th>
+                        <th class="text-end pe-4 py-3">Avg/Unit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in top_clients %}
+                    <tr class="font-sm border-bottom-light">
+                        <td class="ps-4 py-2 fw-900 text-dark">{{ client.name }}</td>
+                        <td class="py-2 text-muted font-xs">{{ client.company_name or 'Independent' }}</td>
+                        <td class="py-2"><span class="badge bg-blue-subtle text-blue font-xxs px-3 rounded-pill">{{ client.order_count }} units</span></td>
+                        <td class="py-2 fw-900 text-success">₹{{ "{:,.0f}".format(client.revenue or 0) }}</td>
+                        <td class="text-end pe-4 py-2 fw-bold text-primary">₹{{ "{:,.0f}".format((client.revenue or 0) / (client.order_count or 1)) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Daily Trend -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0"><i class="fas fa-calendar-alt"></i> Daily Revenue Trend</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Orders</th>
-                                    <th>Revenue</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for day in daily_revenue %}
-                                <tr>
-                                    <td><strong>{{ day.date }}</strong></td>
-                                    <td>{{ day.count }}</td>
-                                    <td class="text-success"><strong>₹{{ "%.0f"|format(day.revenue or 0) }}</strong></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <!-- Daily operational trend -->
+    <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm mb-5">
+        <div class="bg-white px-4 py-3 border-bottom">
+            <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-calendar-days text-secondary me-2"></i>Daily Operational Velocity Trend</h6>
         </div>
-    </div>
-
-    <!-- Back Button -->
-    <div class="mt-4">
-        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle text-center">
+                <thead class="bg-light">
+                    <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                        <th class="py-3 ps-4 text-start">Operation Date</th>
+                        <th class="py-3">Logistics Volume</th>
+                        <th class="py-3 pe-4 text-end">Daily Revenue Yield</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day in daily_revenue %}
+                    <tr class="font-sm border-bottom-light">
+                        <td class="ps-4 text-start py-2 fw-900 text-dark">{{ day.date }}</td>
+                        <td class="py-2"><span class="fw-900 fs-6">{{ day.count }}</span> <span class="font-xxxs opacity-50 ms-1">ORDERS</span></td>
+                        <td class="pe-4 text-end py-2 text-success fw-900 fs-6">₹{{ "{:,.0f}".format(day.revenue or 0) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
+<style>
+    /* Full Page Expansion */
+    .compact-dash-wrapper { max-width: 100% !important; margin: 0 auto; }
+    
+    /* Font Scaling */
+    .font-sm { font-size: 0.85rem !important; }
+    .font-xs { font-size: 0.8rem !important; }
+    .font-xxs { font-size: 0.72rem !important; }
+    .font-xxxs { font-size: 0.65rem !important; }
+    
+    /* Typography */
+    .fw-900 { font-weight: 900 !important; }
+    .fw-800 { font-weight: 800 !important; }
+    .ls-n1 { letter-spacing: -0.5px; }
+    .ls-1 { letter-spacing: 0.5px; }
+
+    /* Cards */
+    .luxury-card {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+        border: 1px solid #eef2f6 !important;
+        overflow: hidden;
+    }
+
+    /* KPI Pods */
+    .kpi-icon-lg {
+        width: 48px; height: 48px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+    }
+    
+    .kpi-glass-blue { background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); border-left: 5px solid #2563eb !important; }
+    .kpi-glass-green { background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border-left: 5px solid #16a34a !important; }
+    .kpi-glass-amber { background: linear-gradient(135deg, #fffcf0 0%, #ffffff 100%); border-left: 5px solid #f59e0b !important; }
+    .kpi-glass-cyan { background: linear-gradient(135deg, #f0ffff 0%, #ffffff 100%); border-left: 5px solid #0891b2 !important; }
+
+    /* Colors */
+    .bg-blue-subtle { background: #e0e7ff !important; color: #3730a3 !important; }
+    .bg-green-subtle { background: #dcfce7 !important; color: #166534 !important; }
+    .bg-amber-subtle { background: #fef3c7 !important; color: #92400e !important; }
+    .bg-cyan-subtle { background: #cffafe !important; color: #0891b2 !important; }
+    
+    .text-blue { color: #2563eb !important; }
+    .text-green { color: #16a34a !important; }
+    .text-amber { color: #f59e0b !important; }
+    .text-cyan { color: #0891b2 !important; }
+
+    /* Tables */
+    .border-bottom-light { border-bottom: 1px solid #f1f5f9; }
+    .sticky-top { top: 0; z-index: 10; background: #f8fafc !important; }
+    .table-hover tbody tr:hover { background-color: #f8fafc !important; }
+
+    /* Scrollbars */
+    .table-responsive::-webkit-scrollbar { width: 6px; }
+    .table-responsive::-webkit-scrollbar-track { background: #f1f5f9; }
+    .table-responsive::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+</style>
 {% endblock %}

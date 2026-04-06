@@ -1,162 +1,233 @@
 {% extends "base.html" %}
 
-{% block title %}Corporate Clients - 7 Day View{% endblock %}
+{% block title %}Corporate Client Activity - 7 Day View{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="row mb-3">
-        <div class="col-md-8">
-            <h4 class="mb-1"><i class="fas fa-building"></i> Corporate Clients</h4>
-            <p class="text-muted small mb-0">Orders from the past 7 days (Read-only)</p>
+<div class="compact-dash-wrapper px-4 mt-3">
+    <!-- Balanced Dynamic Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-900 border-start border-5 border-primary ps-3 mb-0" style="color: #0f172a; font-size: 1.35rem; letter-spacing: -0.5px;">
+                <i class="fas fa-building me-2 text-primary"></i> CORPORATE <span class="text-muted fw-light opacity-50">CLIENT ACTIVITY</span>
+            </h1>
+            <p class="text-secondary font-sm mb-0 opacity-75">Real-time oversight of key corporate account orders (Last 7 Days)</p>
         </div>
-        <div class="col-md-4 text-end">
-            <span class="badge bg-info px-3 py-2">
-                Total Orders: <strong>{{ total_orders_7day }}</strong>
-            </span>
-            <span class="badge bg-success px-3 py-2 ms-2">
-                Revenue: <strong>₹{{ "%.0f"|format(total_revenue_7day) }}</strong>
-            </span>
+        <div class="d-flex align-items-center gap-2">
+            <div class="bg-blue-subtle text-blue font-xxs px-3 py-2 rounded-pill fw-900 shadow-sm border border-primary border-opacity-10">
+                <i class="fas fa-cubes me-1"></i> ORDERS: {{ total_orders_7day }}
+            </div>
+            <div class="bg-green-subtle text-success font-xxs px-3 py-2 rounded-pill fw-900 shadow-sm border border-success border-opacity-10">
+                <i class="fas fa-indian-rupee-sign me-1"></i> REVENUE: ₹{{ "{:,.0f}".format(total_revenue_7day) }}
+            </div>
+            <a href="{{ url_for('operations_dashboard') }}" class="btn btn-dark btn-sm rounded-pill font-xs text-uppercase fw-900 px-3 shadow-sm ms-2">
+                <i class="fas fa-house-chimney"></i>
+            </a>
         </div>
     </div>
 
-    <!-- Clients Summary Cards -->
+    <!-- Executive Client Summaries -->
     {% if clients_data %}
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-3">
         {% for client_id, data in clients_data.items() %}
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-light border-bottom">
-                    <h6 class="mb-0">
-                        <i class="fas fa-building"></i> {{ data.client.name }}
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted mb-2">
-                        <small>{{ data.client.company_name or 'No company name' }}</small>
-                    </p>
-                    <div class="row text-center">
-                        <div class="col-6">
-                            <h5 class="text-info">{{ data.total_count }}</h5>
-                            <small class="text-muted">Orders</small>
+        <div class="col-md-4">
+            <div class="luxury-card p-3 h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                            <i class="fas fa-building font-xs"></i>
                         </div>
-                        <div class="col-6">
-                            <h5 class="text-success">₹{{ "%.0f"|format(data.total_amount) }}</h5>
-                            <small class="text-muted">Revenue</small>
+                        <div>
+                            <h6 class="fw-900 text-dark mb-0 font-sm text-truncate" style="max-width: 150px;">{{ data.client.name }}</h6>
+                            <p class="font-xxxs text-muted mb-0 opacity-75">{{ data.client.company_name or 'Independent' }}</p>
                         </div>
                     </div>
-                    <hr class="my-2">
-                    <p class="mb-0">
-                        <small>
-                            <i class="fas fa-phone"></i> {{ data.client.phone }}<br>
-                            <i class="fas fa-envelope"></i> {{ data.client.email }}
-                        </small>
-                    </p>
+                </div>
+                <div class="row g-2 text-center bg-white rounded-3 p-2 border border-light">
+                    <div class="col-6 border-end">
+                        <div class="font-xxxs text-uppercase fw-800 text-muted mb-1 opacity-50">Orders</div>
+                        <div class="fw-900 text-primary font-sm">{{ data.total_count }}</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="font-xxxs text-uppercase fw-800 text-muted mb-1 opacity-50">Yield</div>
+                        <div class="fw-900 text-success font-sm">₹{{ "{:,.0f}".format(data.total_amount) }}</div>
+                    </div>
+                </div>
+                <div class="mt-2 d-flex justify-content-between align-items-center">
+                    <div class="font-xxxs text-muted">
+                        <i class="fas fa-phone-alt font-xxxs me-1"></i>{{ data.client.phone or 'N/A' }}
+                    </div>
+                    <span class="badge bg-blue-subtle text-blue font-xxxs px-2">LIVE</span>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
 
-    <!-- Detailed Orders by Client -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="mb-0"><i class="fas fa-list"></i> All Orders (Last 7 Days)</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Receipt #</th>
-                                    <th>Client</th>
-                                    <th>Receiver Details</th>
-                                    <th>Weight</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Order Date</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for client_id, data in clients_data.items() %}
-                                    {% for order in data.orders %}
-                                    <tr>
-                                        <td>
-                                            <strong class="text-primary">{{ order.receipt_number }}</strong>
-                                        </td>
-                                        <td>
-                                            <small><strong>{{ data.client.name }}</strong></small>
-                                        </td>
-                                        <td>
-                                            <small>
-                                                <strong>{{ order.receiver_name }}</strong><br>
-                                                {{ order.receiver_city }}, {{ order.receiver_state }}<br>
-                                                {{ order.receiver_pincode }}
-                                            </small>
-                                        </td>
-                                        <td>
-                                            {{ order.weight or 'N/A' }} kg
-                                        </td>
-                                        <td class="text-success">
-                                            <strong>₹{{ order.total_amount or 0 }}</strong>
-                                        </td>
-                                        <td>
-                                            {% set status_color = {
-                                                'pending': 'warning',
-                                                'at_destination': 'primary',
-                                                'confirmed': 'info',
-                                                'in_transit': 'info',
-                                                'delivered': 'success',
-                                                'rto': 'danger'
-                                            } %}
-                                            <span class="badge bg-{{ status_color.get(order.status, 'secondary') }}">
-                                                {{ order.status | replace('_', ' ') | title }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <small>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
-                                        </td>
-                                        <td>
-                                            <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-sm btn-outline-primary" title="View">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <!-- Detailed Order Stream -->
+    <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm mb-3">
+        <div class="bg-white px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-stream text-secondary me-2"></i>Corporate Order Protocol Ledger</h6>
+            <span class="badge bg-light text-muted font-xxs">Past 7 Days Tracking</span>
+        </div>
+        <div class="table-responsive" style="max-height: 450px;">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="bg-light sticky-top">
+                    <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                        <th class="ps-4">Receipt ID</th>
+                        <th>Strategic Account</th>
+                        <th>Receiver Logistics</th>
+                        <th>Payload</th>
+                        <th>Cumulative Amount</th>
+                        <th>Workflow Status</th>
+                        <th>Audit Timestamp</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client_id, data in clients_data.items() %}
+                        {% for order in data.orders %}
+                        <tr class="font-sm border-bottom-light">
+                            <td class="ps-4 py-2">
+                                <span class="fw-900 text-primary font-xs">{{ order.receipt_number }}</span>
+                            </td>
+                            <td class="py-2">
+                                <div class="fw-900 text-dark">{{ data.client.name }}</div>
+                            </td>
+                            <td class="py-2">
+                                <div class="fw-bold">{{ order.receiver_name }}</div>
+                                <div class="font-xxxs text-muted">{{ order.receiver_city }}, {{ order.receiver_state }}</div>
+                            </td>
+                            <td class="py-2 font-xs fw-bold">{{ order.weight or '0' }} <small class="text-muted">kg</small></td>
+                            <td class="py-2 fw-900 text-success">₹{{ "{:,.0f}".format(order.total_amount or 0) }}</td>
+                            <td class="py-2">
+                                {% set status_color = {
+                                    'pending': 'warning',
+                                    'at_destination': 'primary',
+                                    'confirmed': 'info',
+                                    'in_transit': 'blue',
+                                    'delivered': 'success',
+                                    'rto': 'danger'
+                                } %}
+                                <span class="badge bg-{{ status_color.get(order.status, 'secondary') }}-subtle text-{{ status_color.get(order.status, 'secondary') }} font-xxxs px-2 rounded-pill border">
+                                    {{ order.status | replace('_', ' ') | upper }}
+                                </span>
+                            </td>
+                            <td class="py-2">
+                                <div class="font-xxs text-dark opacity-75">{{ order.created_at.strftime('%Y-%m-%d') }}</div>
+                                <div class="font-xxxs text-muted">{{ order.created_at.strftime('%H:%M') }}</div>
+                            </td>
+                            <td class="text-end pe-4 py-2">
+                                <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-xs btn-outline-dark px-2" title="View Protocol"><i class="fas fa-eye font-xxs"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-
     {% else %}
-    <div class="card shadow-sm">
-        <div class="card-body py-5 text-center text-muted">
-            <i class="fas fa-inbox fa-3x mb-3 opacity-50"></i>
-            <p>No corporate client orders found in the last 7 days</p>
-        </div>
+    <div class="luxury-card p-5 text-center bg-white border-0 shadow-sm mb-3">
+        <div class="opacity-25 mb-4"><i class="fas fa-building-circle-exclamation fa-4x"></i></div>
+        <h5 class="fw-900 text-muted mb-1">NO RECENT CLIENT ACTIVITY</h5>
+        <p class="text-secondary font-xs mb-0">Corporate order activity will appear here as entries are logged in the past 7 days.</p>
     </div>
     {% endif %}
 
-    <!-- Info Box -->
-    <div class="alert alert-info mt-4">
-        <i class="fas fa-info-circle"></i> <strong>7-Day View:</strong> This page shows corporate client orders from 
-        the last 7 days. This is a read-only view for monitoring and reporting purposes.
-    </div>
-
-    <!-- Back Button -->
-    <div class="mt-4">
-        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        <a href="{{ url_for('operations_client_orders') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-search"></i> View All Client Orders
-        </a>
+    <!-- Operational Intelligence Brief -->
+    <div class="row align-items-center mb-5">
+        <div class="col-md-8">
+            <div class="luxury-card p-4 d-flex align-items-center justify-content-between border-0 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+                <div class="d-flex align-items-center gap-4">
+                    <div class="bg-white bg-opacity-10 p-3 rounded-4">
+                        <i class="fas fa-fingerprint fa-2x text-info"></i>
+                    </div>
+                    <div>
+                        <h5 class="text-white fw-900 mb-1">MONITORING ACTIVE</h5>
+                        <p class="text-white opacity-50 font-xs mb-0">This is a system-wide read-only view. Global audit logs are tracking all modifications.</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('operations_client_orders') }}" class="btn btn-outline-light btn-xs rounded-pill px-4 font-xxs fw-900 text-uppercase border-opacity-25 mt-1">
+                        ALL ORDERS <i class="fas fa-arrow-right ms-2 opacity-50"></i>
+                    </a>
+                    <div class="dot-pulse-blue align-self-center ms-2"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ url_for('operations_dashboard') }}" class="btn btn-light w-100 py-4 luxury-card border-0 shadow-sm d-flex align-items-center justify-content-center gap-3 hover-lift transition-all mt-1">
+                <i class="fas fa-arrow-left text-primary"></i>
+                <div class="text-start">
+                    <div class="font-xxs fw-900 text-uppercase text-muted opacity-50 mb-0">Return Path</div>
+                    <div class="font-sm fw-900 text-dark">OPS DASHBOARD</div>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
+
+<style>
+    /* Full Page Expansion */
+    .compact-dash-wrapper { max-width: 100% !important; margin: 0 auto; }
+    
+    /* Font Scaling */
+    .font-sm { font-size: 0.85rem !important; }
+    .font-xs { font-size: 0.8rem !important; }
+    .font-xxs { font-size: 0.72rem !important; }
+    .font-xxxs { font-size: 0.65rem !important; }
+    
+    /* Typography */
+    .fw-900 { font-weight: 900 !important; }
+    .fw-800 { font-weight: 800 !important; }
+    .ls-1 { letter-spacing: 0.5px; }
+
+    /* Cards */
+    .luxury-card {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+        border: 1px solid #eef2f6 !important;
+        overflow: hidden;
+    }
+
+    /* Colors */
+    .bg-blue-subtle { background: #e0e7ff !important; color: #3730a3 !important; }
+    .bg-green-subtle { background: #dcfce7 !important; color: #166534 !important; }
+    .bg-info-subtle { background: #ecfeff !important; color: #0891b2 !important; }
+    .bg-warning-subtle { background: #fef3c7 !important; color: #92400e !important; }
+    .bg-red-subtle { background: #fee2e2 !important; color: #991b1b !important; }
+    
+    .text-blue { color: #2563eb !important; }
+    .text-success { color: #16a34a !important; }
+    .text-info { color: #0891b2 !important; }
+    .text-warning { color: #d97706 !important; }
+    .text-danger { color: #dc2626 !important; }
+
+    /* Tables */
+    .border-bottom-light { border-bottom: 1px solid #f1f5f9; }
+    .sticky-top { top: 0; z-index: 10; background: #f8fafc !important; }
+    .table-hover tbody tr:hover { background-color: #f8fafc !important; }
+
+    /* Animation Utilities */
+    .hover-lift:hover { transform: translateY(-3px); }
+    .transition-all { transition: all 0.3s ease; }
+
+    /* Dot Pulse Indicator */
+    .dot-pulse-blue {
+        width: 10px; height: 10px; border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
+        animation: pulse-blue 1.5s infinite;
+    }
+    @keyframes pulse-blue {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(14, 165, 233, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+    }
+
+    /* Scrollbars */
+    .table-responsive::-webkit-scrollbar { width: 6px; }
+    .table-responsive::-webkit-scrollbar-track { background: #f1f5f9; }
+    .table-responsive::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+</style>
 {% endblock %}

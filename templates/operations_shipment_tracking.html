@@ -3,110 +3,124 @@
 {% block title %}Shipment Tracking{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <h1><i class="fas fa-truck"></i> Shipment Tracking</h1>
-    <p class="text-muted">Track all orders and their delivery status in real-time</p>
-
-    <!-- Filter Section -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light border-bottom">
-            <h5 class="mb-0">Filter & Search</h5>
+<div class="container-fluid mt-2 compact-page">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h1 class="fs-3 fw-900 text-primary mb-0" style="letter-spacing: -1px;">
+                <i class="fas fa-truck-fast me-2"></i>SHIPMENT <span class="text-dark opacity-75">TRACKING</span>
+            </h1>
+            <p class="text-muted small mb-0">Real-time enterprise logistics monitoring and status oversight</p>
         </div>
-        <div class="card-body">
-            <form method="GET" class="row g-3">
-                <div class="col-md-3">
-                    <label for="receipt" class="form-label">Receipt Number</label>
-                    <input type="text" class="form-control" id="receipt" name="receipt" 
+        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-sm btn-outline-secondary border-0 text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">
+            <i class="fas fa-arrow-left me-1"></i> Dashboard
+        </a>
+    </div>
+
+    <!-- Filter Section (Ultra Compact) -->
+    <div class="luxury-card border-0 mb-2 overflow-hidden">
+        <div class="card-header bg-white py-2 px-3 border-bottom-0">
+            <h6 class="mb-0 fw-bold text-dark small text-uppercase" style="letter-spacing: 1px;">Filter & Search</h6>
+        </div>
+        <div class="card-body py-2 px-3">
+            <form method="GET" class="row g-2 align-items-end">
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-muted mb-1">Receipt Number</label>
+                    <input type="text" class="form-control form-control-sm luxury-input" name="receipt" 
                            value="{{ search_receipt or '' }}" placeholder="Search receipt...">
                 </div>
-                <div class="col-md-3">
-                    <label for="customer" class="form-label">Customer Name</label>
-                    <input type="text" class="form-control" id="customer" name="customer" 
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-muted mb-1">Customer Name</label>
+                    <input type="text" class="form-control form-control-sm luxury-input" name="customer" 
                            value="{{ customer_filter or '' }}" placeholder="Search customer...">
                 </div>
                 <div class="col-md-2">
-                    <label for="status" class="form-label">Status</label>
-                    <select class="form-select" id="status" name="status">
+                    <label class="form-label small fw-bold text-muted mb-1">Status</label>
+                    <select class="form-select form-select-sm luxury-input" name="status">
                         <option value="all">All Statuses</option>
                         {% for st in distinct_statuses %}
                             <option value="{{ st }}" {% if st == status_filter %}selected{% endif %}>
-                                {{ st }}
+                                {{ st.replace('_', ' ').title() }}
                             </option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label for="date_from" class="form-label">From Date</label>
-                    <input type="date" class="form-control" id="date_from" name="date_from" 
+                    <label class="form-label small fw-bold text-muted mb-1">From Date</label>
+                    <input type="date" class="form-control form-control-sm luxury-input" name="date_from" 
                            value="{{ date_from or '' }}">
                 </div>
                 <div class="col-md-2">
-                    <label for="date_to" class="form-label">To Date</label>
-                    <input type="date" class="form-control" id="date_to" name="date_to" 
+                    <label class="form-label small fw-bold text-muted mb-1">To Date</label>
+                    <input type="date" class="form-control form-control-sm luxury-input" name="date_to" 
                            value="{{ date_to or '' }}">
                 </div>
-                <div class="col-md-12 mt-3">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i> Search
-                    </button>
-                    <a href="{{ url_for('operations_shipment_tracking') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-redo"></i> Reset
-                    </a>
+                <div class="col-md-2">
+                    <div class="d-flex gap-1">
+                        <button type="submit" class="btn btn-sm btn-primary flex-grow-1 fw-bold">
+                            <i class="fas fa-search me-1"></i> Search
+                        </button>
+                        <a href="{{ url_for('operations_shipment_tracking') }}" class="btn btn-sm btn-light border flex-grow-1 border-0">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Tracking Table -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light border-bottom">
-            <h5 class="mb-0">Active Shipments ({{ pagination.total }})</h5>
+    <!-- Tracking Table (Command Center Density) -->
+    <div class="luxury-card border-0 mb-3 overflow-hidden">
+        <div class="card-header bg-white py-2 px-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold text-dark small text-uppercase" style="letter-spacing: 1px;">
+                Active Shipments <span class="badge bg-primary-subtle text-primary border ms-2" style="font-size: 0.65rem;">{{ pagination.total }} Records</span>
+            </h6>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Receipt #</th>
-                            <th>Customer</th>
-                            <th>Receiver</th>
-                            <th>Destination</th>
-                            <th>Weight</th>
-                            <th>Status</th>
-                            <th>Last Update</th>
-                            <th>Created</th>
-                            <th>Action</th>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr class="small fw-800 text-muted text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                            <th class="ps-3">Receipt #</th>
+                            <th>Customer Info</th>
+                            <th>Receiver Details</th>
+                            <th>Cargo Metrics</th>
+                            <th class="text-center">Status</th>
+                            <th>Last Activity</th>
+                            <th class="text-center pe-3">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for order in orders %}
-                        <tr>
-                            <td>
-                                <strong>{{ order.receipt_number }}</strong>
+                        <tr class="table-row-hover">
+                            <td class="ps-3">
+                                <strong class="text-primary" style="font-size: 0.85rem;">#{{ order.receipt_number }}</strong>
+                                <div class="text-muted" style="font-size: 0.65rem;">{{ order.created_at.strftime('%d %b %Y') }}</div>
                             </td>
                             <td>
-                                <div class="small">{{ order.customer_name }}</div>
+                                <div class="fw-bold" style="font-size: 0.8rem;">{{ order.customer_name }}</div>
                                 {% if order.customer_phone %}
-                                    <small class="text-muted">{{ order.customer_phone }}</small>
+                                    <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="fas fa-phone me-1 small opacity-50"></i>{{ order.customer_phone }}</small>
                                 {% endif %}
                             </td>
                             <td>
-                                <div class="small">{{ order.receiver_name }}</div>
-                                {% if order.receiver_phone %}
-                                    <small class="text-muted">{{ order.receiver_phone }}</small>
-                                {% endif %}
+                                <div class="fw-bold" style="font-size: 0.8rem;">{{ order.receiver_name }}</div>
+                                <div class="text-muted" style="line-height: 1.2; font-size: 0.7rem;">
+                                    {{ order.receiver_city }}, {{ order.receiver_state }}
+                                </div>
                             </td>
                             <td>
-                                <div class="small">{{ order.receiver_city or order.receiver_address }}</div>
-                                <small class="text-muted">{{ order.receiver_state }} - {{ order.receiver_pincode }}</small>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2 text-center" style="min-width: 40px;">
+                                        <div class="fw-900" style="font-size: 0.85rem;">{{ order.weight }}</div>
+                                        <div class="text-muted" style="font-size: 0.6rem;">KG</div>
+                                    </div>
+                                    <div class="border-start ps-2">
+                                        <div class="fw-bold text-dark" style="font-size: 0.75rem;">{{ order.number_of_boxes or 1 }} Case</div>
+                                        <div class="text-muted" style="font-size: 0.65rem;">{{ order.shipping_mode|title if order.shipping_mode else 'Standard' }}</div>
+                                    </div>
+                                </div>
                             </td>
-                            <td>
-                                <strong>{{ order.weight }} kg</strong>
-                                {% if order.number_of_boxes %}
-                                    <small class="text-muted d-block">({{ order.number_of_boxes }} box)</small>
-                                {% endif %}
-                            </td>
-                            <td>
+                            <td class="text-center">
                                 {% set status_badge = {
                                     'at_destination': 'success',
                                     'in_transit': 'info',
@@ -116,65 +130,23 @@
                                     'failed_delivery': 'danger',
                                     'return_initiated': 'warning'
                                 } %}
-                                <span class="badge bg-{{ status_badge.get(order.status, 'secondary') }}">
+                                <span class="badge bg-{{ status_badge.get(order.status, 'secondary') }}-subtle text-{{ status_badge.get(order.status, 'secondary') }} rounded-pill px-2 py-1" style="font-size: 0.65rem; border: 1px solid currentColor;">
                                     {{ order.status.replace('_', ' ').title() }}
                                 </span>
                             </td>
                             <td>
                                 {% if order.tracking_updates and order.tracking_updates|length > 0 %}
-                                    <div class="small">
-                                        {{ order.tracking_updates[-1].created_at.strftime('%b %d, %H:%M') }}
-                                    </div>
+                                    {% set last_upd = order.tracking_updates[-1] %}
+                                    <div class="fw-bold" style="font-size: 0.75rem;">{{ last_upd.status }}</div>
+                                    <small class="text-muted" style="font-size: 0.65rem;">{{ last_upd.created_at.strftime('%d %b, %H:%M') }}</small>
                                 {% else %}
-                                    <small class="text-muted">No updates</small>
+                                    <span class="text-muted italic small opacity-50">No activity yet</span>
                                 {% endif %}
                             </td>
-                            <td>
-                                <small class="text-muted">
-                                    {{ order.created_at.strftime('%b %d, %Y') }}
-                                </small>
-                            </td>
-                            <td>
-                                <a href="{{ url_for('order_details', id=order.id) }}" 
-                                   class="btn btn-sm btn-outline-primary"
-                                   title="View Details">
-                                    <i class="fas fa-eye"></i>
+                            <td class="text-center pe-3">
+                                <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-sm btn-light border rounded-circle p-2" title="Full Analytics">
+                                    <i class="fas fa-chart-line text-primary" style="font-size: 0.75rem;"></i>
                                 </a>
-                            </td>
-                        </tr>
-                        {% if order.tracking_updates and order.tracking_updates|length > 0 %}
-                        <tr class="table-light">
-                            <td colspan="9">
-                                <div class="ms-3">
-                                    <strong class="d-block mb-2">Latest Updates:</strong>
-                                    <div class="timeline-mini">
-                                        {% for update in order.tracking_updates[-3:]|reverse %}
-                                        <div class="update-item mb-2">
-                                            <i class="fas fa-map-marker-alt text-primary"></i>
-                                            <span class="ms-2">
-                                                <strong>{{ update.status }}</strong>
-                                                {% if update.location %}<span class="text-muted"> - {{ update.location }}</span>{% endif %}
-                                            </span>
-                                            <small class="text-muted d-block ms-4">
-                                                {{ update.created_at.strftime('%b %d, %H:%M %p') }}
-                                                {% if update.updated_by %}
-                                                    by {{ update.updated_by_user.username if update.updated_by_user else 'System' }}
-                                                {% endif %}
-                                            </small>
-                                            {% if update.description %}
-                                                <small class="d-block ms-4 text-muted">{{ update.description }}</small>
-                                            {% endif %}
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endif %}
-                        {% else %}
-                        <tr>
-                            <td colspan="9" class="text-center py-4 text-muted">
-                                No shipments found matching your criteria
                             </td>
                         </tr>
                         {% endfor %}
@@ -184,63 +156,108 @@
         </div>
     </div>
 
-    <!-- Pagination -->
+    <!-- Compact Pagination -->
     {% if pagination.pages > 1 %}
-    <nav aria-label="Page navigation" class="mb-4">
-        <ul class="pagination justify-content-center">
-            {% if pagination.has_prev %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('operations_shipment_tracking', page=pagination.prev_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
-                        Previous
-                    </a>
-                </li>
-            {% endif %}
-
-            {% for page_num in pagination.iter_pages() %}
-                {% if page_num %}
-                    {% if page_num == pagination.page %}
-                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
-                    {% else %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('operations_shipment_tracking', page=page_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
-                                {{ page_num }}
-                            </a>
+    <div class="d-flex justify-content-between align-items-center px-3 py-2 luxury-card mb-4">
+        <div class="small text-muted fw-bold" style="font-size: 0.7rem;">Page {{ pagination.page }} of {{ pagination.pages }}</div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0 gap-1">
+                {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link border-0 rounded-circle" href="{{ url_for('operations_shipment_tracking', page=pagination.prev_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+                {% for page_num in pagination.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                            <a class="page-link border-0 rounded-circle" href="{{ url_for('operations_shipment_tracking', page=page_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">{{ page_num }}</a>
                         </li>
                     {% endif %}
-                {% else %}
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endfor %}
+                {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link border-0 rounded-circle" href="{{ url_for('operations_shipment_tracking', page=pagination.next_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
                 {% endif %}
-            {% endfor %}
-
-            {% if pagination.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('operations_shipment_tracking', page=pagination.next_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
-                        Next
-                    </a>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
-
-    <!-- Navigation -->
-    <div class="mb-4">
-        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
+            </ul>
+        </nav>
     </div>
+    {% endif %}
 </div>
 
 <style>
-    .timeline-mini {
-        border-left: 3px solid #dee2e6;
-        padding-left: 15px;
+    .compact-page { max-width: 1600px; margin: 0 auto; }
+    .fw-800 { font-weight: 800; }
+    .fw-900 { font-weight: 900; }
+    
+    .luxury-card {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important;
     }
-    .update-item {
-        padding: 8px 0;
+    
+    .luxury-input {
+        background: #f8fafc !important;
+        border: 1.5px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        font-size: 0.75rem !important;
+        padding: 0.4rem 0.75rem !important;
+        transition: all 0.2s ease !important;
     }
-    table tbody tr:hover {
-        background-color: #f8f9fa;
+    
+    .luxury-input:focus {
+        background: #ffffff !important;
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+    }
+    
+    .table-row-hover:hover {
+        background-color: #f1f5f9 !important;
+        cursor: pointer;
+    }
+    
+    .compact-page .table th {
+        background-color: #f8fafc !important;
+        color: #64748b !important;
+        font-size: 0.65rem !important;
+        padding: 0.75rem 0.5rem !important;
+    }
+    
+    .compact-page .table td {
+        padding: 0.5rem 0.5rem !important;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .bg-primary-subtle { background-color: #eff6ff !important; }
+    .bg-success-subtle { background-color: #f0fdf4 !important; }
+    .bg-info-subtle { background-color: #f0f9ff !important; }
+    .bg-warning-subtle { background-color: #fffbeb !important; }
+    .bg-danger-subtle { background-color: #fef2f2 !important; }
+    
+    .text-primary { color: #2563eb !important; }
+    .text-success { color: #16a34a !important; }
+    .text-info { color: #0891b2 !important; }
+    .text-warning { color: #d97706 !important; }
+    .text-danger { color: #dc2626 !important; }
+    
+    .pagination .page-link {
+        font-size: 0.75rem;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: #2563eb !important;
+        color: white !important;
     }
 </style>
 {% endblock %}
