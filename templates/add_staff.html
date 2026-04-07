@@ -1,238 +1,195 @@
 {% extends "base.html" %}
-
 {% block title %}Add Staff Member - CRM Delivery{% endblock %}
 
-{% block extra_css %}
-<style>
-    .role-badge {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        border-radius: 2rem;
-        font-size: 0.8rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-    .role-info {
-        background-color: #f8f9fa;
-        border-left: 4px solid #667eea;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-    .form-section {
-        margin-bottom: 2rem;
-    }
-    .form-section-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #667eea;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e9ecef;
-    }
-    .card {
-        border: none;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 0.75rem;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container py-4">
+<div class="mgmt-canvas py-4">
+<div class="container-fluid px-4">
     <!-- Header -->
-    <div class="row mb-4">
-        <div class="col">
-            <h2 class="fw-bold mb-2">
-                <i class="fas fa-user-plus me-2 text-primary"></i>Add Team Member
-            </h2>
-            <p class="text-muted">Create new staff member account with role-based access</p>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-900 mb-0 ls-tight" style="font-size:1.5rem; color:#0f172a;">
+                <i class="fas fa-user-plus text-primary me-2"></i>ADD <span class="text-muted fw-300 opacity-60">MEMBER</span>
+            </h1>
+            <p class="text-muted font-xxs mb-0">Create new staff account with RBAC control.</p>
         </div>
+        <a href="{{ url_for('staff_management') }}" class="mgmt-btn-back py-1 px-3">
+            <i class="fas fa-arrow-left me-1"></i> Back
+        </a>
     </div>
 
-    <div class="row">
-        <div class="col-lg-9">
-            <div class="card">
-                <div class="card-body p-4">
-                    <form method="POST">
-                        <!-- Login Credentials Section -->
-                        <div class="form-section">
-                            <h5 class="form-section-title">
-                                <i class="fas fa-key me-2"></i>Login Credentials
-                            </h5>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Username *</label>
-                                    <input type="text" name="username" class="form-control" placeholder="Unique username" required>
-                                    <small class="text-muted">Used for login</small>
+    <div class="mgmt-card border-0 shadow-lg overflow-hidden" style="background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);">
+        <div class="card-body p-3 p-md-4">
+            <form method="POST">
+                <div class="row g-5">
+                    <!-- Column 1: Credentials & Role -->
+                    <div class="col-lg-7">
+                        <!-- Login Credentials -->
+                        <div class="form-section-mini mb-4">
+                            <h6 class="form-title-mini"><i class="fas fa-key me-2 text-primary"></i>Login Credentials</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="mgmt-label">System Username *</label>
+                                    <input type="text" name="username" class="mgmt-input-sm" placeholder="Unique identifier" required>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Email *</label>
-                                    <input type="email" name="email" class="form-control" placeholder="user@example.com" required>
-                                    <small class="text-muted">Must be unique</small>
+                                <div class="col-md-6">
+                                    <label class="mgmt-label">Corporate Email *</label>
+                                    <input type="email" name="email" class="mgmt-input-sm" placeholder="staff@example.com" required>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Password *</label>
-                                    <input type="password" name="password" class="form-control" placeholder="Min. 8 characters" required>
-                                    <small class="text-muted">Set strong password</small>
+                                <div class="col-md-6">
+                                    <label class="mgmt-label">Access Password *</label>
+                                    <input type="password" name="password" class="mgmt-input-sm" placeholder="Min. 8 chars" required>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Confirm Password*</label>
-                                    <input type="password" name="confirm_password" class="form-control" placeholder="Confirm password" required>
+                                <div class="col-md-6">
+                                    <label class="mgmt-label">Confirm Entry *</label>
+                                    <input type="password" name="confirm_password" class="mgmt-input-sm" placeholder="Repeat entry" required>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Role & Permissions Section -->
-                        <div class="form-section">
-                            <h5 class="form-section-title">
-                                <i class="fas fa-shield-alt me-2"></i>Role & Permissions
-                            </h5>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Role *</label>
-                                <select name="role" class="form-select form-select-lg" id="roleSelect" required onchange="updateRoleInfo()">
-                                    <option value="">Select a role</option>
-                                    <optgroup label="Management">
-                                        <option value="admin">Admin - Full System Access</option>
-                                        <option value="manager">Manager - Operations & Reports</option>
-                                        <option value="operation_manager">Operation Manager - Order Management</option>
-                                    </optgroup>
-                                    <optgroup label="Sales & Marketing">
-                                        <option value="marketing_manager">Marketing Manager - Marketing & Promotions</option>
-                                    </optgroup>
-                                    <optgroup label="Operations">
-                                        
-                                        <option value="branch">Branch - Branch Operations</option>
-                                    </optgroup>
-                                    <optgroup label="Delivery & Logistics">
-                                        <option value="delivery">Delivery Personnel </option>
-                                        
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <div id="roleInfo" class="role-info" style="display: none;">
-                                <!-- Role info will be populated by JavaScript -->
-                            </div>
-                        </div>
-
-                        <!-- Organization Section -->
-                        <div class="form-section">
-                            <h5 class="form-section-title">
-                                <i class="fas fa-building me-2"></i>Organization
-                            </h5>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Branch</label>
-                                    <select name="branch_id" class="form-select">
-                                        <option value="">All Branches (Optional)</option>
+                        <!-- Role & Organization -->
+                        <div class="form-section-mini pt-4 border-top">
+                            <h6 class="form-title-mini"><i class="fas fa-shield-halved me-2 text-primary"></i>Privilege Status</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="mgmt-label">Functional Role *</label>
+                                    <select name="role" class="mgmt-select-sm" id="roleSelect" required onchange="updateRoleInfo()">
+                                        <option value="">Select organizational rank</option>
+                                        <optgroup label="Management Tier">
+                                            <option value="admin">Global Administrator</option>
+                                            <option value="manager">Operations Analyst</option>
+                                            <option value="operation_manager">Fleet Controller</option>
+                                        </optgroup>
+                                        <optgroup label="Operational Tier">
+                                            <option value="marketing_manager">Growth Lead</option>
+                                            <option value="branch">Branch Supervisor</option>
+                                        </optgroup>
+                                        <optgroup label="Execution Tier">
+                                            <option value="delivery">Logistics Specialist</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="mgmt-label">Hub Assignment</label>
+                                    <select name="branch_id" class="mgmt-select-sm">
+                                        <option value="">Executive Level (All Hubs)</option>
                                         {% for branch in branches %}
                                         <option value="{{ branch.id }}">{{ branch.name }}</option>
                                         {% endfor %}
                                     </select>
-                                    <small class="text-muted">Required for Branch role</small>
+                                </div>
+                                <div class="col-12">
+                                    <div id="roleInfo" class="role-desc-highlight" style="display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Profile Details & Info -->
+                    <div class="col-lg-5">
+                        <div class="form-section-mini mb-4">
+                            <h6 class="form-title-mini"><i class="fas fa-id-card me-2 text-primary"></i>Staff Profile Meta</h6>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="mgmt-label">Primary Phone (10-Digit)</label>
+                                    <input type="text" name="phone" class="mgmt-input-sm" placeholder="+91 00000 00000">
+                                </div>
+                                <div class="col-12">
+                                    <label class="mgmt-label">Registered Office / Residential Address</label>
+                                    <textarea name="address" class="mgmt-input-sm" rows="4" placeholder="Full address string..."></textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Contact Information Section -->
-                        <div class="form-section">
-                            <h5 class="form-section-title">
-                                <i class="fas fa-phone me-2"></i>Contact Information
-                            </h5>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Phone</label>
-                                    <input type="text" name="phone" class="form-control" placeholder="10-digit phone number">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Address</label>
-                                <textarea name="address" class="form-control" rows="3" placeholder="Office/Warehouse address"></textarea>
-                            </div>
+                        <div class="side-audit-box mt-2">
+                            <h6 class="audit-title text-success"><i class="fas fa-shield-check me-2"></i>Security Compliance</h6>
+                            <ul class="list-unstyled mb-0 font-xxs fw-700 text-muted">
+                                <li class="mb-2 d-flex"><i class="fas fa-circle-check text-success me-2 mt-1"></i> <span>Credentials must pass global uniqueness collision checks.</span></li>
+                                <li class="mb-2 d-flex"><i class="fas fa-circle-check text-success me-2 mt-1"></i> <span>Passwords require high-entropy (min. 8 characters).</span></li>
+                                <li class="mb-2 d-flex"><i class="fas fa-circle-check text-success me-2 mt-1"></i> <span>'Branch' roles must have a secondary hub assignment.</span></li>
+                            </ul>
                         </div>
-
-                        <!-- Action Buttons -->
-                        <div class="d-flex gap-2 justify-content-between">
-                            <div>
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-user-plus me-2"></i>Create Staff Member
-                                </button>
-                                <a href="{{ url_for('staff_management') }}" class="btn btn-outline-secondary btn-lg ms-2">
-                                    <i class="fas fa-arrow-left me-2"></i>Back
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Role Guide Sidebar -->
-        <div class="col-lg-3">
-            <div class="card mb-3">
-                <div class="card-body p-3">
-                    <h6 class="fw-bold mb-3">
-                        <i class="fas fa-info-circle me-2 text-info"></i>Role Guide
-                    </h6>
-                    <div class="mb-2">
-                        <small class="text-muted"><strong>Admin:</strong> Full system control</small>
-                    </div>
-                    <div class="mb-2">
-                        <small class="text-muted"><strong>Manager:</strong> 15-day reports, offers</small>
-                    </div>
-                    <div class="mb-2">
-                        <small class="text-muted"><strong>Op. Manager:</strong> Order management</small>
-                    </div>
-                    <div class="mb-2">
-                        <small class="text-muted"><strong>Staff:</strong> General operations</small>
-                    </div>
-                    <div class="mb-2">
-                        <small class="text-muted"><strong>Delivery:</strong> Deliveries only</small>
                     </div>
                 </div>
-            </div>
 
-            <div class="card">
-                <div class="card-body p-3">
-                    <h6 class="fw-bold mb-2">
-                        <i class="fas fa-check-circle me-2 text-success"></i>Requirements
-                    </h6>
-                    <ul class="list-unstyled small">
-                        <li class="mb-2">✓ Username must be unique</li>
-                        <li class="mb-2">✓ Email must be unique</li>
-                        <li class="mb-2">✓ Password min. 8 characters</li>
-                        <li class="mb-2">✓ Role selection required</li>
-                        <li class="mb-2">✓ Phone recommended</li>
-                    </ul>
+                <!-- Global Action Footer -->
+                <div class="mt-4 pt-3 border-top d-flex gap-2">
+                    <button type="submit" class="mgmt-btn-submit flex-grow-1 py-2" style="font-size:0.75rem;">
+                        <i class="fas fa-user-check me-2"></i> Register Executive Account
+                    </button>
+                    <a href="{{ url_for('staff_management') }}" class="mgmt-btn-back d-flex align-items-center px-4 py-2" style="border-radius:12px;">
+                        Cancel
+                    </a>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
+</div>
+
+<style>
+    /* ── High-Density Wide Add Staff Styles ── */
+    .form-section-mini { padding-bottom: 0.5rem; }
+    .form-title-mini { 
+        font-size: 0.65rem; font-weight: 900; 
+        text-transform: uppercase; letter-spacing: 1px; color: #2563eb; 
+        margin-bottom: 1rem; opacity: 0.85;
+    }
+    .mgmt-label { 
+        display: block; font-size: 0.62rem; font-weight: 800; 
+        color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; 
+        margin-bottom: 0.35rem; 
+    }
+    .mgmt-input-sm, .mgmt-select-sm {
+        width: 100%; background: #f8fafc; border: 1.5px solid #e2e8f0;
+        border-radius: 10px; padding: 0.45rem 0.85rem; font-size: 0.75rem;
+        font-weight: 700; color: #1e293b; outline: none; transition: all 0.2s;
+    }
+    .mgmt-input-sm:focus, .mgmt-select-sm:focus { border-color: #2563eb; background: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+    
+    .role-desc-highlight {
+        margin-top: 1rem; background: #eff6ff; border-radius: 12px;
+        padding: 0.75rem 1rem; font-size: 0.75rem; font-weight: 700; color: #1d4ed8;
+        border: 1px solid #bfdbfe; line-height: 1.5;
+    }
+
+    .mgmt-btn-submit {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase;
+        letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(37,99,235,0.3); transition: all 0.2s;
+    }
+    .mgmt-btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,0.4); color: white; }
+
+    .mgmt-btn-back {
+        font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+        color: #64748b; text-decoration: none; border-radius: 12px; border: 1.5px solid #e2e8f0; 
+        background: #fff; transition: all 0.2s;
+    }
+    .mgmt-btn-back:hover { color: #1e293b; border-color: #cbd5e1; background: #f8fafc; text-decoration: none; }
+
+    .side-audit-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; }
+    .audit-title { font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 1rem; }
+
+    {% include 'partials/_mgmt_styles.html' %}
+</style>
 
 <script>
-const roleDescriptions = {
-    'admin': 'Full system access - Dashboard, users, settings, billing',
-    'manager': 'Manager Dashboard - 15-day analytics, offers, ratings, dues (same as Operation Manager)',
-    'operation_manager': 'Operation Manager - Order tracking, customer due reports, branch analysis',
-    'marketing_manager': 'Marketing Manager - Marketing campaigns, promotions, customer outreach',
-    'staff': 'General Operations - Booking, customer management, basic reports',
-    'branch': 'Branch Manager - Walk-in bookings, branch reports (limited to assigned branch)',
-    'delivery': 'Delivery Personnel - View assigned deliveries, mark as delivered, reschedule requests',
-    'delivery_pickup': 'Delivery & Pickup - Handles both deliveries and pickup operations'
+const roleDefinitions = {
+    'admin': 'Global Administrator Status: Full system-wide root access including user management, billing architecture, and global network settings.',
+    'manager': 'Operations Analyst Status: Direct access to multi-day analytics, revenue reporting, promotional control, and partner ranking.',
+    'operation_manager': 'Fleet Controller Status: Pipeline oversight including real-time order tracking, collection reporting, and courier coordination.',
+    'marketing_manager': 'Growth Lead Status: Authority over marketing automation, customer outreach campaigns, and promotional offer management.',
+    'branch': 'Hub Supervisor Status: Operational management restricted to the local physical branch hub including walk-in ledger control.',
+    'delivery': 'Logistics Specialist Status: Field deployment access for real-time mobile transit updates and parcel distribution confirmation.'
 };
 
 function updateRoleInfo() {
-    const role = document.getElementById('roleSelect').value;
-    const infoDiv = document.getElementById('roleInfo');
-    
-    if (role && roleDescriptions[role]) {
-        infoDiv.innerHTML = `<strong>${role.toUpperCase()}:</strong> ${roleDescriptions[role]}`;
-        infoDiv.style.display = 'block';
+    const v = document.getElementById('roleSelect').value;
+    const d = document.getElementById('roleInfo');
+    if(v && roleDefinitions[v]) {
+        d.innerHTML = `<i class="fas fa-circle-info me-2"></i> ${roleDefinitions[v]}`;
+        d.style.display = 'block';
     } else {
-        infoDiv.style.display = 'none';
+        d.style.display = 'none';
     }
 }
 </script>

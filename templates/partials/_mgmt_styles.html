@@ -1,0 +1,105 @@
+<style>
+    /* ── Management Canvas ── */
+    .mgmt-canvas {
+        background-color: #f8fafc;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 32px 32px;
+        min-height: 100vh;
+        padding-bottom: 2rem;
+    }
+
+    /* ── Typography & Layout ── */
+    .fw-900 { font-weight: 900 !important; }
+    .ls-tight { letter-spacing: -1.5px; }
+    .ls-1 { letter-spacing: 0.5px; }
+    .font-xs { font-size: 0.8rem !important; }
+    .font-xxs { font-size: 0.72rem !important; }
+
+    /* ── Card Styles ── */
+    .mgmt-card {
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(12px);
+        border-radius: 14px;
+        border: 1px solid rgba(226, 232, 240, 0.7);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        overflow: hidden;
+    }
+    .mgmt-card-hdr {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 1.25rem;
+        background: #fff;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* ── Table Styles ── */
+    .mgmt-th {
+        font-size: 0.62rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: #64748b;
+        border: none !important;
+        padding: 0.5rem 0.85rem !important;
+    }
+    .mgmt-row {
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.1s;
+    }
+    .mgmt-row:hover { background: rgba(37, 99, 235, 0.025); }
+    .mgmt-row td { padding-top: 0.4rem !important; padding-bottom: 0.4rem !important; }
+    .mgmt-row:last-child { border-bottom: none; }
+
+    /* ── Functional Icons & Buttons ── */
+    .mgmt-avatar {
+        width: 34px; height: 34px;
+        border-radius: 10px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.85rem;
+    }
+    .mgmt-icon-btn {
+        width: 28px; height: 28px;
+        border-radius: 8px;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.75rem;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s;
+        text-decoration: none;
+        background: white;
+    }
+    .mgmt-icon-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .edit-btn:hover { color: #d97706; border-color: #fcd34d; background: #fffbeb; }
+    .del-btn:hover { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
+
+    .mgmt-btn {
+        height: 36px; border-radius: 10px; border: none; font-size: 0.75rem;
+        font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+        padding: 0 1.2rem; cursor: pointer; transition: all 0.2s;
+        display: inline-flex; align-items: center; text-decoration: none;
+    }
+    .mgmt-btn-blue { background: #2563eb; color: #fff; }
+    .mgmt-btn-blue:hover { background: #1d4ed8; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4); color: white; }
+
+    /* ── Pills & Badges ── */
+    .role-pill {
+        font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+        padding: 0.2rem 0.6rem; border-radius: 50px; border: 1px solid;
+    }
+    .r-red { color: #dc2626; background: #fef2f2; border-color: #fecaca; }
+    .r-blue { color: #2563eb; background: #eff6ff; border-color: #bfdbfe; }
+    .r-indigo { color: #4f46e5; background: #eef2ff; border-color: #c7d2fe; }
+    .r-amber { color: #d97706; background: #fffbeb; border-color: #fde68a; }
+    .r-green { color: #16a34a; background: #f0fdf4; border-color: #bbf7d0; }
+    .r-purple { color: #9333ea; background: #faf5ff; border-color: #e9d5ff; }
+    .r-slate { color: #475569; background: #f8fafc; border-color: #e2e8f0; }
+
+    .mgmt-status {
+        font-size: 0.68rem; font-weight: 700;
+        padding: 0.2rem 0.5rem; border-radius: 6px;
+    }
+    .s-green { color: #15803d; background: #dcfce7; }
+    .s-red { color: #be123c; background: #ffe4e6; }
+</style>

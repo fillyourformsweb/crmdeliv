@@ -5,117 +5,114 @@
 {% block extra_css %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+    .dashboard-canvas {
+        background-color: #f8fafc;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 32px 32px;
+        min-height: 100vh;
+        padding-bottom: 3rem;
+    }
     .report-card {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid rgba(0,0,0,0.05) !important;
         border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.9) !important;
+        backdrop-filter: blur(10px);
     }
     .report-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08) !important;
     }
-    .nav-tabs-luxury {
-        border-bottom: 2px solid #f1f5f9;
-        gap: 2rem;
-    }
-    .nav-tabs-luxury .nav-link {
-        border: none;
-        padding: 1rem 0;
-        color: #64748b;
-        font-weight: 600;
-        position: relative;
-        transition: all 0.2s ease;
-    }
-    .nav-tabs-luxury .nav-link:hover {
-        color: #1e293b;
-    }
-    .nav-tabs-luxury .nav-link.active {
-        color: #2563eb;
-        background: transparent;
-    }
-    .nav-tabs-luxury .nav-link.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 100%;
-        height: 3px;
-        background: #2563eb;
-        border-radius: 3px 3px 0 0;
-    }
-    .btn-luxury {
-        background: #1e293b !important;
-        color: white !important;
-        border: none !important;
-        transition: all 0.2s ease;
-    }
-    .btn-luxury:hover {
-        background: #0f172a !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
-    }
-    .text-primary { color: #2563eb !important; }
-    .btn-primary { background-color: #2563eb !important; border-color: #2563eb !important; }
+    .nav-tabs-luxury { border-bottom: 2px solid #f1f5f9; gap: 2rem; }
+    .nav-tabs-luxury .nav-link { border: none; padding: 0.75rem 0; color: #64748b; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; position: relative; transition: all 0.2s ease; }
+    .nav-tabs-luxury .nav-link:hover { color: #1e293b; }
+    .nav-tabs-luxury .nav-link.active { color: #2563eb; background: transparent; }
+    .nav-tabs-luxury .nav-link.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: #2563eb; border-radius: 3px 3px 0 0; }
+    
+    .filter-pill { border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; padding: 0.4rem 1rem; transition: all 0.2s ease; }
+    .filter-pill:focus-within { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    .luxury-input { border: none; background: transparent; font-size: 0.8rem; font-weight: 700; color: #1e293b; width: 100%; outline: none; }
+    .filter-label { font-size: 0.65rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+    
+    .btn-executive { height: 38px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 12px; transition: all 0.2s ease; }
+    .btn-pdf { background: #0f172a; color: #fff; border: none; }
+    .btn-pdf:hover { background: #1e293b; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); }
+    .btn-export { background: #2563eb; color: #fff; border: none; }
+    .btn-export:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+    
+    .metrics-container { background: #ffffff; border-radius: 16px; border: 1px solid #eef2f6; overflow: hidden; }
+    .metric-pod { padding: 1.25rem; border-right: 1px solid #f1f5f9; flex: 1; }
+    .metric-pod:last-child { border-right: none; }
+    .fw-black { font-weight: 900 !important; }
+    .ls-tight { letter-spacing: -1px; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="dashboard-canvas">
 <div class="container-fluid px-4 pt-4">
-    <div class="mb-4">
-        <h1 class="fw-900 text-primary mb-1 display-5" style="letter-spacing: -1.5px;">ANALYTICS <span class="text-dark opacity-75">SUITE</span></h1>
-        <p class="text-muted fs-5 mb-3">Enterprise-grade logistics intelligence and financial reporting</p>
-        <div class="d-flex gap-3">
-            <button class="btn btn-luxury px-4 rounded-pill shadow-sm" onclick="generateReport()">
-                <i class="fas fa-file-pdf me-2"></i> Generate Executive PDF
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h1 class="fw-900 text-primary mb-0 display-6 ls-tight">ANALYTICS <span class="text-dark opacity-75">SUITE</span></h1>
+            <p class="text-muted font-sm mb-0">Enterprise-grade logistics intelligence and financial reporting</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-executive btn-pdf px-4" onclick="generateReport()">
+                <i class="fas fa-file-pdf me-2"></i> Executive PDF
             </button>
-            <button class="btn btn-primary px-4 rounded-pill shadow-sm" onclick="exportReport()">
-                <i class="fas fa-cloud-download-alt me-2"></i> Export Dataset
+            <button class="btn btn-executive btn-export px-4" onclick="exportReport()">
+                <i class="fas fa-cloud-download-alt me-2"></i> Export Data
             </button>
         </div>
     </div>
 
     <!-- Filter Suite -->
-    <div class="luxury-card mb-3">
-        <div class="card-body p-3">
-            <div class="row g-3">
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-uppercase text-muted">Timeframe</label>
-                    <select class="form-select luxury-input" id="reportType">
-                        <option value="daily">Daily View</option>
-                        <option value="weekly" selected>Weekly Pulse</option>
-                        <option value="monthly">Monthly Audit</option>
-                        <option value="yearly">Yearly Strategy</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-uppercase text-muted">From</label>
-                    <input type="date" class="form-control luxury-input" id="fromDate">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-uppercase text-muted">To</label>
-                    <input type="date" class="form-control luxury-input" id="toDate">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-uppercase text-muted">Origin State</label>
-                    <select class="form-select luxury-input" id="stateFilter">
-                        <option value="all">Global (All)</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-uppercase text-muted">Client Tier</label>
-                    <select class="form-select luxury-input" id="customerType">
-                        <option value="all">All Tiers</option>
-                        <option value="walking">Individuals</option>
-                        <option value="client">Corporate</option>
-                    </select>
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button class="btn btn-primary w-100 rounded-pill py-2 fw-bold" onclick="applyFilters()">
-                        <i class="fas fa-sync-alt me-2"></i>Refresh
-                    </button>
-                </div>
+    <!-- Integrated Global Filter Hub -->
+    <div class="row g-2 mb-4">
+        <div class="col">
+            <div class="filter-pill">
+                <div class="filter-label">Timeframe</div>
+                <select class="luxury-input" id="reportType">
+                    <option value="daily">Daily View</option>
+                    <option value="weekly" selected>Weekly Pulse</option>
+                    <option value="monthly">Monthly Audit</option>
+                </select>
             </div>
+        </div>
+        <div class="col">
+            <div class="filter-pill text-nowrap">
+                <div class="filter-label">Range From</div>
+                <input type="date" class="luxury-input" id="fromDate">
+            </div>
+        </div>
+        <div class="col">
+            <div class="filter-pill text-nowrap">
+                <div class="filter-label">Range To</div>
+                <input type="date" class="luxury-input" id="toDate">
+            </div>
+        </div>
+        <div class="col">
+            <div class="filter-pill">
+                <div class="filter-label">Origin State</div>
+                <select class="luxury-input" id="stateFilter">
+                    <option value="all">Global (All)</option>
+                </select>
+            </div>
+        </div>
+        <div class="col">
+            <div class="filter-pill">
+                <div class="filter-label">Client Tier</div>
+                <select class="luxury-input" id="customerType">
+                    <option value="all">All Tiers</option>
+                    <option value="walking">Individuals</option>
+                    <option value="client">Corporate</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100 rounded-pill h-100 fw-bold font-xs text-uppercase ls-1 shadow-sm" onclick="applyFilters()">
+                <i class="fas fa-sync-alt me-2"></i> Refresh
+            </button>
         </div>
     </div>
 
@@ -138,29 +135,30 @@
     <div class="tab-content" id="reportContent">
         <!-- Overview Tab -->
         <div class="tab-pane fade show active" id="overview">
-            <div class="row g-4">
-                <div class="col-lg-7">
-                    <div class="luxury-card report-card">
-                        <div class="card-header bg-white border-0 py-2">
-                            <h6 class="mb-0 fw-bold">Revenue Trajectory</h6>
+            <div class="row g-3">
+                <div class="col-lg-8">
+                    <div class="luxury-card report-card border-0 mb-3">
+                        <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fw-900 text-dark ls-1 text-uppercase font-xs"><i class="fas fa-wave-square text-primary me-2"></i>Revenue Trajectory</h6>
+                            <span class="badge bg-light text-muted font-xxs">Daily Tracking</span>
                         </div>
-                        <div class="card-body">
-                            <canvas id="overviewChart" style="max-height: 300px;"></canvas>
+                        <div class="card-body pt-0">
+                            <canvas id="overviewChart" style="max-height: 380px;"></canvas>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-5">
-                    <div class="luxury-card mb-3 border-0">
-                        <div class="card-body p-0" id="keyMetrics">
+                <div class="col-lg-4">
+                    <div class="metrics-container mb-3 shadow-sm border-0">
+                        <div id="keyMetrics" class="d-flex flex-column h-100">
                             <!-- Populated via JS -->
                         </div>
                     </div>
-                    <div class="luxury-card report-card">
-                        <div class="card-header bg-white border-0 py-2">
-                            <h6 class="mb-0 fw-bold text-primary">Regional Dominance</h6>
+                    <div class="luxury-card report-card border-0">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h6 class="mb-0 fw-900 text-dark ls-1 text-uppercase font-xs"><i class="fas fa-map-location-dot text-primary me-2"></i>Regional Dominance</h6>
                         </div>
                         <div class="card-body pt-0">
-                            <canvas id="topStatesChart" style="height: 200px;"></canvas>
+                            <canvas id="topStatesChart" style="height: 250px;"></canvas>
                         </div>
                     </div>
                 </div>
@@ -295,19 +293,21 @@
 
     function updateOverview(data) {
         document.getElementById('keyMetrics').innerHTML = `
-            <div class="row g-3">
-                <div class="col-6">
-                    <div class="p-3 bg-primary text-white rounded-4 shadow-sm h-100">
-                        <h2 class="fw-black mb-0">${data.total_orders}</h2>
-                        <div class="small opacity-75 fw-bold text-uppercase">Shipments</div>
-                    </div>
+            <div class="metric-pod bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="font-xxs fw-900 text-uppercase opacity-75">Global Shipments</div>
+                    <i class="fas fa-cube opacity-50"></i>
                 </div>
-                <div class="col-6">
-                    <div class="p-3 bg-dark text-white rounded-4 shadow-sm h-100">
-                        <h2 class="fw-black mb-0">₹${data.total_revenue.toLocaleString()}</h2>
-                        <div class="small opacity-75 fw-bold text-uppercase">Revenue</div>
-                    </div>
+                <h2 class="fw-black mb-0 ls-tight">${data.total_orders.toLocaleString()}</h2>
+                <div class="font-xxs fw-bold text-uppercase mt-1"><i class="fas fa-arrow-up me-1"></i> Active Cargo</div>
+            </div>
+            <div class="metric-pod bg-dark text-white border-0">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="font-xxs fw-900 text-uppercase opacity-75">Total Revenue Yield</div>
+                    <i class="fas fa-rupee-sign opacity-50"></i>
                 </div>
+                <h2 class="fw-black mb-0 ls-tight">₹${data.total_revenue.toLocaleString()}</h2>
+                <div class="font-xxs fw-bold text-uppercase mt-1 text-success"><i class="fas fa-chart-line me-1"></i> Peak Profitability</div>
             </div>
         `;
 

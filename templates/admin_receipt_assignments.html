@@ -1,115 +1,131 @@
 {% extends "base.html" %}
-
 {% block title %}Tracking Assignments{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col">
-        <h2><i class="fas fa-file-invoice me-2"></i>Staff-Wise Tracking Assignments</h2>
-        <p class="text-muted">Assign tracking number sequences to specific staff members or managers.</p>
+<div class="mgmt-canvas py-4">
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-900 mb-0 ls-tight" style="font-size:1.5rem; color:#0f172a;">
+                <i class="fas fa-file-invoice text-primary me-2"></i>STAFF-WISE <span class="text-muted fw-300 opacity-60">TRACKING ASSIGNMENTS</span>
+            </h1>
+            <p class="text-muted font-xxs mb-0">Assign tracking number sequences to specific staff members or managers.</p>
+        </div>
+        {% if edit_item %}
+        <a href="{{ url_for('admin_receipts') }}" class="mgmt-btn-back py-1 px-3">
+            <i class="fas fa-times me-1"></i> Cancel Edit
+        </a>
+        {% endif %}
     </div>
-</div>
 
-<div class="row g-4">
-    <!-- Add/Edit Assignment -->
-    <div class="col-lg-4">
-        <div class="card luxury-card border-0 shadow-sm h-100">
-            <div class="card-header bg-transparent border-0 px-4 pt-4">
-                <h5 class="fw-bold mb-0 text-dark">{{ 'Edit Assignment' if edit_item else 'Create New Assignment' }}
-                </h5>
-            </div>
-            <div class="card-body p-4">
-                <form method="POST"
-                    action="{{ url_for('edit_receipt_assignment', id=edit_item.id) if edit_item else url_for('admin_receipts') }}">
-                    <div class="mb-3">
-                        <label class="form-label">Branch</label>
-                        <select name="branch_id" class="form-select" required {{ 'disabled' if edit_item else '' }}>
-                            <option value="">Choose...</option>
-                            {% for branch in branches %}
-                            <option value="{{ branch.id }}" {{ 'selected' if edit_item and
-                                edit_item.branch_id==branch.id else '' }}>
-                                {{ branch.name }} ({{ branch.code }})
-                            </option>
-                            {% endfor %}
-                        </select>
-                        {% if edit_item %}
-                        <input type="hidden" name="branch_id" value="{{ edit_item.branch_id }}">
-                        {% endif %}
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tracking Prefix (Optional)</label>
-                        <input type="text" name="prefix" class="form-control" placeholder="e.g. BR1-"
-                            value="{{ edit_item.prefix if edit_item else '' }}">
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Start Number (From)</label>
-                            <input type="text" name="base_number" class="form-control"
-                                value="{{ edit_item.base_number if edit_item else '100000' }}" required>
+    <div class="row g-3">
+        <!-- Add/Edit Assignment -->
+        <div class="col-lg-4">
+            <div class="mgmt-card border-0 shadow-lg overflow-hidden" style="background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);">
+                <div class="card-body p-3 p-md-4">
+                    <h6 class="form-title-mini mb-3">
+                        <i class="fas {{ 'fa-edit' if edit_item else 'fa-plus' }} me-2"></i>
+                        {{ 'Modify Assignment' if edit_item else 'Create New Assignment' }}
+                    </h6>
+                    
+                    <form method="POST" action="{{ url_for('edit_receipt_assignment', id=edit_item.id) if edit_item else url_for('admin_receipts') }}">
+                        <div class="mb-3">
+                            <label class="mgmt-label">Branch Hub *</label>
+                            <select name="branch_id" class="mgmt-select-sm" required {{ 'disabled' if edit_item else '' }}>
+                                <option value="">Choose hub...</option>
+                                {% for branch in branches %}
+                                <option value="{{ branch.id }}" {{ 'selected' if edit_item and edit_item.branch_id==branch.id else '' }}>
+                                    {{ branch.name }} ({{ branch.code }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% if edit_item %}<input type="hidden" name="branch_id" value="{{ edit_item.branch_id }}">{% endif %}
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">End Number (To / Optional)</label>
-                            <input type="text" name="range_end" class="form-control"
-                                value="{{ edit_item.range_end if edit_item else '' }}" placeholder="Optional">
+
+                        <div class="mb-3">
+                            <label class="mgmt-label">Tracking Prefix (Optional)</label>
+                            <input type="text" name="prefix" class="mgmt-input-sm" placeholder="e.g. BR1-" value="{{ edit_item.prefix if edit_item else '' }}">
                         </div>
-                        <div class="form-text mt-1">If End Number is provided, the sequence will be added numerically
-                            (Start + Seq). Otherwise, it will be characters-concatenated with 6-digit padding.</div>
-                    </div>
-                    {% if edit_item %}
-                    <div class="mb-3">
-                        <label class="form-label">Current Sequence</label>
-                        <input type="number" name="current_sequence" class="form-control"
-                            value="{{ edit_item.current_sequence }}" required>
-                        <div class="form-text">Current used count. Change to adjust next number.</div>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" name="is_active" class="form-check-input" id="isActive" {{ 'checked' if
-                            edit_item.is_active else '' }}>
-                        <label class="form-check-label" for="isActive">Active</label>
-                    </div>
-                    {% endif %}
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary flex-grow-1">
-                            <i class="fas fa-save me-1"></i>{{ 'Update' if edit_item else 'Create' }} Assignment
-                        </button>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="mgmt-label">Start (From) *</label>
+                                <input type="text" name="base_number" class="mgmt-input-sm" value="{{ edit_item.base_number if edit_item else '100000' }}" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="mgmt-label">End (To / Opt)</label>
+                                <input type="text" name="range_end" class="mgmt-input-sm" value="{{ edit_item.range_end if edit_item else '' }}" placeholder="Optional">
+                            </div>
+                            <div class="col-12 mt-1">
+                                <p class="font-xxxs text-muted opacity-75 fst-italic mb-0">Numerical sequence if End is set. Otherwise 6-digit padding concat.</p>
+                            </div>
+                        </div>
+
                         {% if edit_item %}
-                        <a href="{{ url_for('admin_receipts') }}" class="btn btn-secondary">Cancel</a>
+                        <div class="mb-3 border-top pt-3">
+                            <label class="mgmt-label">Current Used Sequence</label>
+                            <input type="number" name="current_sequence" class="mgmt-input-sm bg-light" value="{{ edit_item.current_sequence }}" required>
+                            <p class="font-xxxs text-muted mt-1 mb-0">Adjust only for legacy corrections.</p>
+                        </div>
+                        <div class="mb-3 form-check d-flex align-items-center gap-2">
+                            <input type="checkbox" name="is_active" class="form-check-input mt-0" id="isActive" {{ 'checked' if edit_item.is_active else '' }}>
+                            <label class="mgmt-label mb-0" for="isActive">Operational Status (Active)</label>
+                        </div>
                         {% endif %}
-                    </div>
-                </form>
+
+                        <div class="mt-4 pt-2 border-top">
+                            <button type="submit" class="mgmt-btn-submit w-100 py-2" style="font-size:0.75rem;">
+                                <i class="fas fa-save me-2"></i> {{ 'Update' if edit_item else 'Initialize' }} Assignment
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Assignments List -->
-    <div class="col-lg-8">
-        <div class="card luxury-card border-0 shadow-sm">
-            <div class="card-header bg-transparent border-0 px-4 pt-4">
-                <h5 class="fw-bold mb-0 text-dark">Existing Assignments</h5>
-            </div>
-            <div class="card-body p-4">
+        <!-- Assignments List -->
+        <div class="col-lg-8">
+            <div class="mgmt-card border-0 shadow-lg overflow-hidden">
+                <div class="mgmt-card-hdr">
+                    <div>
+                        <h6 class="fw-900 mb-0 text-dark" style="font-size:0.65rem; letter-spacing:1px; text-transform:uppercase;">
+                            <i class="fas fa-list-check text-primary me-2"></i>Existing Assignments
+                        </h6>
+                        <p class="text-muted mb-0 font-xxxs opacity-75">Active tracking pipelines across staff network</p>
+                    </div>
+                </div>
                 <div class="table-responsive">
-                    <table class="table luxury-table mb-0">
-                        <thead>
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background:#f8fafc;">
                             <tr>
-                                <th>User</th>
-                                <th>Branch</th>
-                                <th>Preview / Prefix</th>
-                                <th>Current Seq</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
+                                <th class="ps-4 mgmt-th">Staff Identifier</th>
+                                <th class="mgmt-th">Hub</th>
+                                <th class="mgmt-th">Sequence Key</th>
+                                <th class="mgmt-th text-center">Current</th>
+                                <th class="mgmt-th text-center">Status</th>
+                                <th class="pe-4 mgmt-th text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in assignments %}
-                            <tr>
-                                <td>
-                                    <div class="fw-bold">{{ item.user.username }}</div>
-                                    <div class="text-muted small text-capitalize">{{ item.user.role }}</div>
+                            <tr class="mgmt-row">
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="mgmt-avatar"><i class="fas fa-user-gear"></i></div>
+                                        <div>
+                                            <div class="fw-900 text-dark font-xs">{{ item.user.username }}</div>
+                                            <div class="font-xxxs text-muted text-capitalize">{{ item.user.role }}</div>
+                                        </div>
+                                    </div>
                                 </td>
-                                <td class="small">{{ item.branch.name }}</td>
                                 <td>
-                                    <code class="text-primary">
+                                    <span class="badge bg-light text-dark border rounded-pill px-2 py-1 font-xxs fw-800">
+                                        <i class="fas fa-location-dot me-1 text-primary opacity-50"></i>{{ item.branch.name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <code class="text-primary fw-800 font-xxs">
                                         {% if item.range_end %}
                                             {{ item.prefix or '' }}{{ item.base_number }} - {{ item.range_end }}
                                         {% else %}
@@ -117,31 +133,25 @@
                                         {% endif %}
                                     </code>
                                 </td>
-                                <td class="fw-bold">{{ item.current_sequence }}</td>
-                                <td>
-                                    {% if item.is_active %}
-                                    <span class="badge bg-success-soft text-success rounded-pill">Active</span>
-                                    {% else %}
-                                    <span class="badge bg-danger-soft text-danger rounded-pill">Inactive</span>
-                                    {% endif %}
+                                <td class="text-center fw-900 text-dark font-xs">{{ item.current_sequence }}</td>
+                                <td class="text-center">
+                                    {% if item.is_active %}<span class="mgmt-status s-green">Active</span>
+                                    {% else %}<span class="mgmt-status s-red">Suspended</span>{% endif %}
                                 </td>
-                                <td class="text-end">
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <a href="{{ url_for('edit_receipt_assignment', id=item.id) }}"
-                                            class="btn btn-sm btn-outline-primary rounded-pill">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <a href="{{ url_for('toggle_receipt_assignment', id=item.id) }}"
-                                            class="btn btn-sm {{ 'btn-outline-danger' if item.is_active else 'btn-outline-success' }} rounded-pill">
-                                            {{ 'Deactivate' if item.is_active else 'Activate' }}
+                                <td class="pe-4 text-end">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <a href="{{ url_for('edit_receipt_assignment', id=item.id) }}" class="mgmt-icon-btn edit-btn" title="Edit"><i class="fas fa-pen"></i></a>
+                                        <a href="{{ url_for('toggle_receipt_assignment', id=item.id) }}" class="mgmt-icon-btn {{ 'del-btn' if item.is_active else 'edit-btn' }}" 
+                                           title="{{ 'Deactivate' if item.is_active else 'Activate' }}">
+                                            <i class="fas {{ 'fa-power-off' if item.is_active else 'fa-play' }}"></i>
                                         </a>
                                     </div>
                                 </td>
                             </tr>
                             {% else %}
-                            <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">No tracking assignments found.</td>
-                            </tr>
+                            <tr><td colspan="6" class="text-center py-5 text-muted font-sm fst-italic opacity-50">
+                                <i class="fas fa-receipt fa-2x mb-2 d-block opacity-20"></i>No assignments found.
+                            </td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -150,4 +160,41 @@
         </div>
     </div>
 </div>
+</div>
+
+<style>
+    /* ── Local Density Overrides ── */
+    .form-title-mini { 
+        font-size: 0.65rem; font-weight: 900; 
+        text-transform: uppercase; letter-spacing: 1px; color: #2563eb; 
+        margin-bottom: 1rem; opacity: 0.85;
+    }
+    .mgmt-label { 
+        display: block; font-size: 0.62rem; font-weight: 800; 
+        color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; 
+        margin-bottom: 0.35rem; 
+    }
+    .mgmt-input-sm, .mgmt-select-sm {
+        width: 100%; background: #f8fafc; border: 1.5px solid #e2e8f0;
+        border-radius: 10px; padding: 0.45rem 0.85rem; font-size: 0.75rem;
+        font-weight: 700; color: #1e293b; outline: none; transition: all 0.2s;
+    }
+    .mgmt-input-sm:focus, .mgmt-select-sm:focus { border-color: #2563eb; background: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+    
+    .mgmt-btn-submit {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        border: none; border-radius: 10px; font-weight: 800; text-transform: uppercase;
+        letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(37,99,235,0.2); transition: all 0.2s;
+    }
+    .mgmt-btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,0.3); color: white; }
+
+    .mgmt-btn-back {
+        font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+        color: #64748b; text-decoration: none; border-radius: 8px; border: 1.5px solid #e2e8f0; 
+        background: #fff; transition: all 0.2s;
+    }
+    .mgmt-btn-back:hover { color: #1e293b; border-color: #cbd5e1; background: #f8fafc; text-decoration: none; }
+
+    {% include 'partials/_mgmt_styles.html' %}
+</style>
 {% endblock %}

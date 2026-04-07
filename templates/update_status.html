@@ -1,73 +1,99 @@
 {% extends "base.html" %}
-
-{% block title %}Update Status - {{ order.receipt_number }}{% endblock %}
-
+{% block title %}Tracking Control - #{{ order.receipt_number }}{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="d-flex align-items-center mb-4">
-            <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-light rounded-circle shadow-sm me-3"
-                style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <div>
-                <h6 class="text-uppercase text-muted fw-bold mb-0 small">Update Shipment</h6>
-                <h3 class="fw-black mb-0">Order #{{ order.receipt_number }}</h3>
-            </div>
+<div class="mgmt-canvas d-flex align-items-center justify-content-center py-5">
+<div class="container" style="max-width: 580px;">
+
+    <!-- Back Header -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{{ url_for('order_details', id=order.id) }}" class="mgmt-icon-btn" style="width:38px; height:38px; border-radius:50%; font-size:0.9rem;">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div>
+            <h6 class="text-uppercase text-muted fw-900 mb-0 ls-1 font-xxs opacity-75">Tracking Control Hub</h6>
+            <h1 class="fw-900 mb-0 ls-tight" style="font-size: 1.6rem; color:#0f172a;">Update Shipment #{{ order.receipt_number }}</h1>
         </div>
+    </div>
 
-        <div class="card luxury-card border-0 shadow-lg">
-            <div class="card-body p-5">
-                <form action="{{ url_for('update_order_status', id=order.id) }}" method="POST">
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-uppercase small text-muted">Current Status</label>
-                        <div class="d-flex align-items-center">
-                            <span
-                                class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2">
-                                {{ order.status|replace('_', ' ')|title }}
-                            </span>
+    <!-- Main Entry Card -->
+    <div class="mgmt-card p-0 shadow-lg border-0" style="background: rgba(255,255,255,0.95);">
+        <div class="card-body p-4 p-md-5">
+            <form action="{{ url_for('update_order_status', id=order.id) }}" method="POST">
+                
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6">
+                        <label class="font-xxs fw-900 text-muted text-uppercase mb-2 ls-1 d-block">Current Status</label>
+                        <span class="status-pill s-blue d-inline-block py-2 px-3 fw-800" style="font-size:0.75rem; border-radius:10px;">
+                            <i class="fas fa-satellite-dish me-2"></i>{{ order.status|replace('_', ' ')|title }}
+                        </span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="font-xxs fw-900 text-muted text-uppercase mb-2 ls-1 d-block">Transit Location</label>
+                        <div class="luxury-input-group">
+                            <i class="fas fa-map-pin text-primary opacity-50"></i>
+                            <input type="text" name="location" placeholder="Hub or Facility Name" class="clean-input" required>
                         </div>
                     </div>
+                </div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-uppercase small text-muted">New Status</label>
-                        <div class="select-wrapper position-relative">
-                            <select name="status" class="form-select luxury-input form-select-lg fw-bold" required>
-                                {% for value, label in valid_transitions.items() %}
-                                <option value="{{ value }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i>Select the shipment status.</div>
-                    </div>
+                <div class="mb-4">
+                    <label class="font-xxs fw-900 text-muted text-uppercase mb-2 ls-1 d-block">Pipeline State (New Status)</label>
+                    <select name="status" class="clean-select fw-800" required>
+                        {% for value, label in valid_transitions.items() %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-uppercase small text-muted">Current Location</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0"><i
-                                    class="fas fa-map-marker-alt text-muted"></i></span>
-                            <input type="text" name="location" class="form-control luxury-input border-start-0"
-                                placeholder="e.g. Mumbai Hub, Local Sort Facility" required>
-                        </div>
-                    </div>
+                <div class="mb-5">
+                    <label class="font-xxs fw-900 text-muted text-uppercase mb-2 ls-1 d-block">Update Message to Customer</label>
+                    <textarea name="description" class="clean-textarea" rows="4" 
+                              placeholder="Message shown on customer tracking page — e.g. Out for distribution, processed at sorting…" required></textarea>
+                    <p class="font-xxs text-muted mt-2 opacity-75"><i class="fas fa-info-circle me-1"></i>Visible on public tracking Ledger.</p>
+                </div>
 
-                    <div class="mb-5">
-                        <label class="form-label fw-bold text-uppercase small text-muted">Message to Customer</label>
-                        <textarea name="description" class="form-control luxury-input" rows="4"
-                            placeholder="Write a clear message that will be shown to the customer tracking this order..."
-                            required></textarea>
-                        <div class="form-text mt-1">This message will be visible on the customer tracking page.</div>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg fw-bold py-3 luxury-btn">
-                            <i class="fas fa-paper-plane me-2"></i>Send Update & Notify
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <button type="submit" class="mgmt-btn mgmt-btn-blue w-100 py-3 d-flex justify-content-center h-auto" style="border-radius:15px; font-size:0.85rem;">
+                    <i class="fas fa-clock-rotate-left me-2"></i> Commit Status Update
+                </button>
+            </form>
         </div>
     </div>
 </div>
+</div>
+
+<style>
+    .clean-input, .clean-select, .clean-textarea {
+        width: 100%;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #1e293b;
+        transition: all 0.2s;
+        outline: none;
+    }
+    .clean-input:focus, .clean-select:focus, .clean-textarea:focus {
+        border-color: #2563eb;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+    }
+    .luxury-input-group {
+        display: flex;
+        align-items: center;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0 1rem;
+        transition: border-color 0.2s;
+    }
+    .luxury-input-group:focus-within { border-color: #2563eb; background: #fff; }
+    .luxury-input-group i { margin-right: 0.75rem; }
+    .clean-input { border: none !important; background: transparent !important; padding: 0.75rem 0 !important; }
+    
+    .status-pill.s-blue { background: #eff6ff; color: #2563eb; border: 1.5px solid #bfdbfe; }
+    
+    {% include 'partials/_mgmt_styles.html' %}
+</style>
 {% endblock %}

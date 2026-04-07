@@ -3,11 +3,12 @@
 {% block title %}Operational Analytics{% endblock %}
 
 {% block content %}
-<div class="compact-dash-wrapper px-4 mt-3">
+<div class="dashboard-canvas">
+<div class="compact-dash-wrapper px-4 pt-3">
     <!-- Balanced Dynamic Header -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="fw-900 border-start border-5 border-primary ps-3 mb-0" style="color: #0f172a; font-size: 1.35rem; letter-spacing: -0.5px;">
+            <h1 class="fw-900 border-start border-5 border-primary ps-3 mb-0 ls-tight" style="color: #0f172a; font-size: 1.35rem;">
                 <i class="fas fa-chart-line me-2 text-primary"></i> OPERATIONAL <span class="text-muted fw-light opacity-50">ANALYTICS</span>
             </h1>
             <p class="text-secondary font-sm mb-0 opacity-75">Core performance trends and cross-functional operational metrics</p>
@@ -15,51 +16,51 @@
         <div class="d-flex align-items-center gap-3">
             <form method="GET" class="d-flex gap-1 bg-white border rounded-pill p-1 shadow-sm px-2 align-items-center">
                 <span class="text-muted font-xxs text-uppercase fw-bold me-2">Scope:</span>
-                <a href="?days=7" class="btn btn-xs {% if days_filter == 7 %}btn-primary{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none">7D</a>
-                <a href="?days=30" class="btn btn-xs {% if days_filter == 30 %}btn-primary{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none">30D</a>
-                <a href="?days=90" class="btn btn-xs {% if days_filter == 90 %}btn-primary{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none">90D</a>
+                <a href="?days=7" class="btn btn-xs {% if days_filter == 7 %}btn-primary{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none rounded-pill">7D</a>
+                <a href="?days=30" class="btn btn-xs {% if days_filter == 30 %}btn-primary{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none rounded-pill">30D</a>
+                <a href="?days=90" class="btn btn-xs {% if days_filter == 90 %}btn-primary{% else %}btn-link text-muted{% endif %} px-3 py-1 font-xs text-uppercase fw-900 text-decoration-none rounded-pill">90D</a>
             </form>
-            <a href="{{ url_for('operations_dashboard') }}" class="btn btn-dark btn-sm rounded-pill font-xs text-uppercase fw-900 px-4 shadow-sm">
+            <a href="{{ url_for('operations_dashboard') }}" class="btn btn-dark btn-sm rounded-pill font-xs text-uppercase fw-900 px-4 shadow-sm h-100 d-flex align-items-center">
                 <i class="fas fa-house-chimney me-2"></i> OPS HUB
             </a>
         </div>
     </div>
 
-    <!-- Executive KPI Pods -->
-    <div class="row g-3 mb-3">
-        <div class="col-md-3">
-            <div class="luxury-card kpi-glass-blue border-0 p-3 d-flex align-items-center gap-3">
-                <div class="kpi-icon-lg bg-blue-subtle text-blue"><i class="fas fa-cubes"></i></div>
+    <!-- Executive KPI Pods - High Density Grid -->
+    <div class="row g-2 mb-2">
+        <div class="col-md">
+            <div class="luxury-card kpi-glass-blue border-0 p-3 d-flex align-items-center gap-2">
+                <div class="kpi-icon-sm bg-blue-subtle text-blue"><i class="fas fa-box-archive"></i></div>
                 <div>
-                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Total Orders</h6>
-                    <h3 class="fw-900 mb-0 ls-n1">{{ orders_in_period }} <span class="font-xs fw-light opacity-50">Units</span></h3>
+                    <h6 class="text-muted font-xxs text-uppercase fw-800 mb-0 opacity-75">Payload Units</h6>
+                    <h4 class="fw-900 mb-0 ls-n1">{{ orders_in_period }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="luxury-card kpi-glass-green border-0 p-3 d-flex align-items-center gap-3">
-                <div class="kpi-icon-lg bg-green-subtle text-green"><i class="fas fa-indian-rupee-sign"></i></div>
+        <div class="col-md">
+            <div class="luxury-card kpi-glass-green border-0 p-3 d-flex align-items-center gap-2">
+                <div class="kpi-icon-sm bg-green-subtle text-green"><i class="fas fa-indian-rupee-sign"></i></div>
                 <div>
-                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Total Revenue</h6>
-                    <h3 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(revenue_in_period) }}</h3>
+                    <h6 class="text-muted font-xxs text-uppercase fw-800 mb-0 opacity-75">Gross Yield</h6>
+                    <h4 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(revenue_in_period) }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="luxury-card kpi-glass-cyan border-0 p-3 d-flex align-items-center gap-3">
-                <div class="kpi-icon-lg bg-cyan-subtle text-cyan"><i class="fas fa-tags"></i></div>
+        <div class="col-md">
+            <div class="luxury-card kpi-glass-cyan border-0 p-3 d-flex align-items-center gap-2">
+                <div class="kpi-icon-sm bg-cyan-subtle text-cyan"><i class="fas fa-hand-holding-dollar"></i></div>
                 <div>
-                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Avg Order Value</h6>
-                    <h3 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(avg_order_value) }}</h3>
+                    <h6 class="text-muted font-xxs text-uppercase fw-800 mb-0 opacity-75">Avg/Order</h6>
+                    <h4 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(avg_order_value) }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="luxury-card kpi-glass-amber border-0 p-3 d-flex align-items-center gap-3">
-                <div class="kpi-icon-lg bg-amber-subtle text-amber"><i class="fas fa-users-gear"></i></div>
+        <div class="col-md">
+            <div class="luxury-card kpi-glass-amber border-0 p-3 d-flex align-items-center gap-2">
+                <div class="kpi-icon-sm bg-amber-subtle text-amber"><i class="fas fa-users-gear"></i></div>
                 <div>
-                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Direct Mix</h6>
-                    <h3 class="fw-900 mb-0 ls-n1 text-amber">{{ walkin_in_period }} <span class="font-xs fw-light opacity-50">Walk-ins</span></h3>
+                    <h6 class="text-muted font-xxs text-uppercase fw-800 mb-0 opacity-75">Direct Mix</h6>
+                    <h4 class="fw-900 mb-0 ls-n1 text-amber">{{ walkin_in_period }} <span class="font-xxxs fw-light">Units</span></h4>
                 </div>
             </div>
         </div>
@@ -195,6 +196,15 @@
 </div>
 
 <style>
+    /* Mesh Background Pattern */
+    .dashboard-canvas {
+        background-color: #f8fafc;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size:32px 32px;
+        min-height: 100vh;
+        padding-bottom: 3rem;
+    }
+
     /* Full Page Expansion */
     .compact-dash-wrapper { max-width: 100% !important; margin: 0 auto; }
     
@@ -208,21 +218,25 @@
     .fw-900 { font-weight: 900 !important; }
     .fw-800 { font-weight: 800 !important; }
     .ls-n1 { letter-spacing: -0.5px; }
+    .ls-tight { letter-spacing: -1.2px; }
     .ls-1 { letter-spacing: 0.5px; }
 
     /* Cards */
     .luxury-card {
-        background: #ffffff !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        backdrop-filter: blur(10px);
         border-radius: 16px !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
-        border: 1px solid #eef2f6 !important;
+        border: 1px solid rgba(238, 242, 246, 0.5) !important;
         overflow: hidden;
+        transition: transform 0.2s ease;
     }
+    .luxury-card:hover { transform: translateY(-2px); }
 
     /* KPI Pods */
-    .kpi-icon-lg {
-        width: 48px; height: 48px; border-radius: 14px;
-        display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+    .kpi-icon-sm {
+        width: 38px; height: 38px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center; font-size: 1rem;
     }
     
     .kpi-glass-blue { background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); border-left: 5px solid #2563eb !important; }

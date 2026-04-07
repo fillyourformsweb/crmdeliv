@@ -1,118 +1,149 @@
 {% extends "base.html" %}
-
 {% block title %}Add New Courier - CRM Delivery{% endblock %}
 
 {% block content %}
-<div class="row mb-5 align-items-center">
-    <div class="col-md-8">
-        <h5 class="text-primary fw-bold mb-1">Service Partners</h5>
-        <h1 class="display-5 fw-black text-dark mb-2">Add New Courier</h1>
-        <p class="text-muted fs-5 mb-0">Register a new courier partner in the system.</p>
-    </div>
-    <div class="col-md-4 text-md-end">
-        <a href="{{ url_for('couriers') }}" class="luxury-btn btn btn-light border px-4">
-            <i class="fas fa-arrow-left me-2"></i>Back to Couriers
+<div class="mgmt-canvas py-4">
+<div class="container-fluid px-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-900 mb-0 ls-tight" style="font-size:1.5rem; color:#0f172a;">
+                <i class="fas fa-truck text-primary me-2"></i>ADD <span class="text-muted fw-300 opacity-60">COURIER</span>
+            </h1>
+            <p class="text-muted font-xxs mb-0">Register a new partner in the network.</p>
+        </div>
+        <a href="{{ url_for('couriers') }}" class="mgmt-btn-back py-1 px-3">
+            <i class="fas fa-arrow-left me-1"></i> Back
         </a>
     </div>
-</div>
 
-<div class="row justify-content-center page-reveal">
-    <div class="col-lg-8">
-        <form method="POST">
-            <div class="card luxury-card border-0 shadow-sm overflow-hidden mb-5">
-                <div class="card-header bg-transparent border-0 px-4 pt-4">
-                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-plus-circle me-2 text-primary opacity-50"></i>Courier Details</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row g-4">
-                        <div class="col-12">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Courier Name *</label>
-                            <input type="text" class="form-control luxury-input" name="name"
-                                placeholder="e.g. DTDC, BlueDart, FedEx" required>
-                            <small class="text-muted">Unique identifier for this courier service</small>
+    <!-- Main Entry Panel (Widened) -->
+    <div class="mgmt-card border-0 shadow-lg overflow-hidden" style="background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);">
+        <div class="card-body p-3 p-md-4">
+            <form method="POST">
+                <div class="row g-5">
+                    <!-- Column 1: Primary Identity -->
+                    <div class="col-lg-6">
+                        <div class="form-section-mini mb-4">
+                            <h6 class="form-title-mini"><i class="fas fa-id-card-clip me-2"></i>Partner Identity</h6>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="mgmt-label">Courier Name *</label>
+                                    <input type="text" name="name" class="mgmt-input-sm" placeholder="e.g. DTDC, BlueDart, FedEx" required>
+                                    <p class="font-xxxs text-muted mt-1 opacity-75">Unique identifier for this carrier service</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="mgmt-label">Service Type</label>
+                                    <select name="service_type" class="mgmt-select-sm">
+                                        <option value="Premium">Premium Express</option>
+                                        <option value="Standard" selected>Standard Logistics</option>
+                                        <option value="Budget">Budget Economy</option>
+                                        <option value="Air">Air Freight</option>
+                                        <option value="Ground">Surface/Ground</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="mgmt-label">Initial Status</label>
+                                    <div class="d-flex align-items-center mt-1">
+                                        <span class="status-pill s-green me-2">Operational</span>
+                                        <p class="font-xxxs text-muted mb-0 opacity-70">Active by default</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Service Type</label>
-                            <input type="text" class="form-control luxury-input" name="service_type"
-                                placeholder="e.g. Express, Standard, Premium">
-                            <small class="text-muted">Type of service offered</small>
+                        
+                        <div class="form-section-mini border-top pt-4">
+                            <h6 class="form-title-mini"><i class="fas fa-file-lines me-2"></i>Carrier Protocol</h6>
+                            <label class="mgmt-label">Technical Description & Service Notes</label>
+                            <textarea name="description" class="mgmt-input-sm" rows="5" placeholder="API details, account numbers, or special service protocols..."></textarea>
                         </div>
+                    </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Contact Person</label>
-                            <input type="text" class="form-control luxury-input" name="contact_person"
-                                placeholder="e.g. John Doe">
-                            <small class="text-muted">Primary contact name</small>
+                    <!-- Column 2: Contact & Support -->
+                    <div class="col-lg-6">
+                        <div class="form-section-mini mb-4">
+                            <h6 class="form-title-mini"><i class="fas fa-user-tie me-2"></i>Liaison & Support</h6>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="mgmt-label">Primary Contact Person</label>
+                                    <input type="text" name="contact_person" class="mgmt-input-sm" placeholder="Full name of contact">
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="mgmt-label">Official Support Email</label>
+                                    <input type="email" name="contact_email" class="mgmt-input-sm" placeholder="support@partner.com">
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="mgmt-label">Emergency Hotline / Phone</label>
+                                    <input type="tel" name="contact_phone" class="mgmt-input-sm" placeholder="+91 00000 00000">
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Contact Email</label>
-                            <input type="email" class="form-control luxury-input" name="contact_email"
-                                placeholder="e.g. contact@courier.com">
-                            <small class="text-muted">Email address</small>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Contact Phone</label>
-                            <input type="tel" class="form-control luxury-input" name="contact_phone"
-                                placeholder="e.g. +91 98765 43210">
-                            <small class="text-muted">Phone number</small>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label small fw-bold text-uppercase text-muted">Description</label>
-                            <textarea class="form-control luxury-input" name="description" rows="3"
-                                placeholder="Additional notes or service details"></textarea>
-                            <small class="text-muted">Any additional information about this courier</small>
+                        
+                        <div class="side-info-box mt-2">
+                            <h6 class="side-title text-primary"><i class="fas fa-circle-info me-2"></i>Registration Protocol</h6>
+                            <ul class="list-unstyled mb-0 font-xxs fw-700 text-muted">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Email must be a valid organizational domain.</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Contact numbers are stored for emergency routing.</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Technical protocols are used for automated status webhooks.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-footer bg-light border-0 px-4 py-3 d-flex justify-content-between">
-                    <a href="{{ url_for('couriers') }}" class="btn btn-light border px-4">
-                        <i class="fas fa-times me-2"></i>Cancel
-                    </a>
-                    <button type="submit" class="btn btn-primary px-4">
-                        <i class="fas fa-check me-2"></i>Add Courier
+                <!-- Footer Actions -->
+                <div class="mt-4 pt-3 border-top d-flex gap-2">
+                    <button type="submit" class="mgmt-btn-submit flex-grow-1 py-2" style="font-size:0.75rem;">
+                        <i class="fas fa-plus-circle me-2"></i> Finalize Partner Registration
                     </button>
+                    <a href="{{ url_for('couriers') }}" class="mgmt-btn-back d-flex align-items-center px-4 py-2" style="border-radius:12px;">
+                        Cancel
+                    </a>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
+</div>
 </div>
 
 <style>
-    .luxury-card {
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        border-radius: 12px;
+    /* ── High-Density Wide Courier Styles ── */
+    .form-section-mini { padding-bottom: 0.5rem; }
+    .form-title-mini { 
+        font-size: 0.65rem; font-weight: 900; 
+        text-transform: uppercase; letter-spacing: 1px; color: #2563eb; 
+        margin-bottom: 1rem; opacity: 0.85;
     }
+    .mgmt-label { 
+        display: block; font-size: 0.62rem; font-weight: 800; 
+        color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; 
+        margin-bottom: 0.35rem; 
+    }
+    .mgmt-input-sm, .mgmt-select-sm {
+        width: 100%; background: #f8fafc; border: 1.5px solid #e2e8f0;
+        border-radius: 10px; padding: 0.45rem 0.85rem; font-size: 0.75rem;
+        font-weight: 700; color: #1e293b; outline: none; transition: all 0.2s;
+    }
+    .mgmt-input-sm:focus, .mgmt-select-sm:focus { border-color: #2563eb; background: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
     
-    .luxury-input {
-        border: 1px solid #e0e0e0;
-        border-radius: 6px;
-        padding: 10px 12px;
-        transition: all 0.3s ease;
+    .status-pill.s-green { font-size: 0.65rem; font-weight: 800; background: #dcfce7; color: #15803d; padding: 0.3rem 0.75rem; border-radius: 50px; }
+
+    .mgmt-btn-submit {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase;
+        letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(37,99,235,0.3); transition: all 0.2s;
     }
-    
-    .luxury-input:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    .mgmt-btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,0.4); color: white; }
+
+    .mgmt-btn-back {
+        font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+        color: #64748b; text-decoration: none; border-radius: 12px; border: 1.5px solid #e2e8f0; 
+        background: #fff; transition: all 0.2s;
     }
-    
-    .page-reveal {
-        animation: fadeInUp 0.6s ease-out;
-    }
-    
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+    .mgmt-btn-back:hover { color: #1e293b; border-color: #cbd5e1; background: #f8fafc; text-decoration: none; }
+
+    .side-info-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; }
+    .side-title { font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 0.75rem; }
+
+    {% include 'partials/_mgmt_styles.html' %}
 </style>
 {% endblock %}

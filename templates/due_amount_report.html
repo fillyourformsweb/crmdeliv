@@ -3,90 +3,97 @@
 {% block title %}Due Amount Report - CRM Delivery{% endblock %}
 
 {% block content %}
-<div class="row mb-5 align-items-center">
-    <div class="col-md-8">
-        <h5 class="text-primary fw-bold mb-1">Financial Intelligence</h5>
-        <h1 class="display-5 fw-black text-dark mb-2">Due Amount Report</h1>
-        <p class="text-muted fs-5 mb-0">Monitor and manage outstanding payments across your delivery network.</p>
-    </div>
-    <div class="col-md-4 text-md-end">
-        <div class="btn-group shadow-sm rounded-pill overflow-hidden">
-            <button class="btn btn-primary px-4" onclick="printReport()">
-                <i class="fas fa-print me-2"></i>Print
+<div class="dashboard-canvas">
+<div class="container-fluid px-4 pt-3">
+    <!-- Executive Header -->
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h1 class="fw-900 text-primary mb-0 display-6 ls-tight">FINANCIAL <span class="text-dark opacity-75">DUE REPORT</span></h1>
+            <p class="text-muted font-sm mb-0">Monitor and manage outstanding payments across your delivery network.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-executive btn-pdf px-4" onclick="printReport()">
+                <i class="fas fa-print me-2"></i> Print Portfolio
             </button>
-            <button class="btn btn-success px-4" onclick="exportToExcel()">
-                <i class="fas fa-file-excel me-2"></i>Export
+            <button class="btn btn-executive btn-export px-4" onclick="exportToExcel()">
+                <i class="fas fa-file-excel me-2"></i> Export Ledger
             </button>
         </div>
     </div>
-</div>
 
-<!-- Filter Section -->
-<div class="card luxury-card border-0 shadow-sm mb-5">
-    <div class="card-header bg-transparent border-0 px-4 pt-4">
-        <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-filter me-2 text-primary opacity-50"></i>Filter Analytics
-        </h5>
-    </div>
-    <div class="card-body p-4">
-        <div class="row g-3">
-            <div class="col-md-3">
-                <label class="form-label small fw-bold text-uppercase text-muted">Customer Type</label>
-                <select class="form-select luxury-input" id="filterType" onchange="loadDueAmounts()">
+    <!-- Integrated Global Filter Hub -->
+    <div class="row g-2 mb-4">
+        <div class="col">
+            <div class="filter-pill">
+                <div class="filter-label">Customer Type</div>
+                <select class="luxury-input" id="filterType" onchange="loadDueAmounts()">
                     <option value="all">All Types</option>
                     <option value="walking">Walking Customers</option>
                     <option value="client">Registered Clients</option>
                 </select>
             </div>
-            <div class="col-md-3">
-                <label class="form-label small fw-bold text-uppercase text-muted">Due Status</label>
-                <select class="form-select luxury-input" id="filterStatus" onchange="loadDueAmounts()">
+        </div>
+        <div class="col">
+            <div class="filter-pill">
+                <div class="filter-label">Due Status</div>
+                <select class="luxury-input" id="filterStatus" onchange="loadDueAmounts()">
                     <option value="all">All Status</option>
                     <option value="pending">Pending Only</option>
                     <option value="partial">Partial Only</option>
                     <option value="overdue">Overdue Only</option>
                 </select>
             </div>
-            <div class="col-md-3">
-                <label class="form-label small fw-bold text-uppercase text-muted">From Date</label>
-                <input type="date" class="form-control luxury-input" id="filterFrom" onchange="loadDueAmounts()">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label small fw-bold text-uppercase text-muted">To Date</label>
-                <input type="date" class="form-control luxury-input" id="filterTo" onchange="loadDueAmounts()">
+        </div>
+        <div class="col">
+            <div class="filter-pill text-nowrap">
+                <div class="filter-label">Range From</div>
+                <input type="date" class="luxury-input" id="filterFrom" onchange="loadDueAmounts()">
             </div>
         </div>
+        <div class="col">
+            <div class="filter-pill text-nowrap">
+                <div class="filter-label">Range To</div>
+                <input type="date" class="luxury-input" id="filterTo" onchange="loadDueAmounts()">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-dark w-100 rounded-pill h-100 fw-bold font-xs text-uppercase ls-1 shadow-sm d-flex align-items-center justify-content-center" onclick="loadDueAmounts()">
+                <i class="fas fa-sync-alt me-2 text-primary"></i> Refresh Ledger
+            </button>
+        </div>
     </div>
-</div>
 
 <!-- Summary Cards -->
-<div class="row g-4 mb-5" id="summaryCards">
+<div class="row g-2 mb-2" id="summaryCards">
     <!-- Populated by JS -->
 </div>
 
-<!-- Main Table -->
-<div class="card luxury-card border-0 shadow-sm mb-5">
-    <div class="card-body p-0">
+    <!-- Strategic Due Terminal -->
+    <div class="luxury-card border-0 mb-3 d-flex flex-column">
+        <div class="bg-white px-4 py-2 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-900 text-dark font-xs mb-0 text-uppercase ls-1"><i class="fas fa-file-invoice-dollar text-primary me-2"></i>Receivable Activity Ledger</h6>
+            <span class="badge bg-blue-subtle text-blue font-xxs px-3 rounded-pill">Real-Time Dues</span>
+        </div>
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" id="dueAmountsTable">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted">Date</th>
-                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Customer</th>
-                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Type</th>
-                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Order No.</th>
-                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Calculated</th>
-                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Due Amount</th>
-                        <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Status</th>
-                        <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted text-end">Actions</th>
+            <table class="table table-hover mb-0 align-middle" id="dueAmountsTable">
+                <thead class="bg-light sticky-top">
+                    <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                        <th class="ps-4 py-2">Operation Date</th>
+                        <th class="py-2">Client Context</th>
+                        <th class="py-2">Entity Type</th>
+                        <th class="py-2">Logistics ID</th>
+                        <th class="py-2">Gross Value</th>
+                        <th class="py-2">Due Amount</th>
+                        <th class="py-2">Audit Status</th>
+                        <th class="px-4 py-2 text-end">Action Nexus</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Populated by JS -->
+                    <!-- Populated via JS -->
                 </tbody>
             </table>
         </div>
     </div>
-</div>
 
 <div class="row g-4">
     <div class="col-md-6">
@@ -159,28 +166,40 @@
 
     function updateSummaryCards(s) {
         const html = `
-            <div class="col-md-3">
-                <div class="card luxury-card border-0 bg-primary text-white p-4">
-                    <div class="small fw-bold text-uppercase opacity-75">Total Outstanding</div>
-                    <h2 class="fw-black mb-0 mt-1">₹${s.total_due.toLocaleString()}</h2>
+            <div class="col-md">
+                <div class="kpi-premium-card kpi-blue">
+                    <div class="kpi-prem-ghost"><i class="fas fa-vault"></i></div>
+                    <div class="kpi-prem-badge"><i class="fas fa-vault"></i></div>
+                    <div class="kpi-prem-label">Total Global Dues</div>
+                    <div class="kpi-prem-amount">₹${s.total_due.toLocaleString()}</div>
+                    <div class="kpi-prem-footer"><i class="fas fa-arrow-trend-up me-1"></i>All outstanding receivables</div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card luxury-card border-0 bg-dark text-white p-4">
-                    <div class="small fw-bold text-uppercase opacity-75">Overdue Accounts</div>
-                    <h2 class="fw-black mb-0 mt-1">₹${s.overdue_due.toLocaleString()}</h2>
+            <div class="col-md">
+                <div class="kpi-premium-card kpi-red">
+                    <div class="kpi-prem-ghost"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="kpi-prem-badge"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="kpi-prem-label">Overdue Aging</div>
+                    <div class="kpi-prem-amount">₹${s.overdue_due.toLocaleString()}</div>
+                    <div class="kpi-prem-footer"><i class="fas fa-exclamation-triangle me-1"></i>Requires immediate action</div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card luxury-card border-0 bg-info text-white p-4">
-                    <div class="small fw-bold text-uppercase opacity-75">Client Debt</div>
-                    <h2 class="fw-black mb-0 mt-1">₹${s.client_due.toLocaleString()}</h2>
+            <div class="col-md">
+                <div class="kpi-premium-card kpi-teal">
+                    <div class="kpi-prem-ghost"><i class="fas fa-building-columns"></i></div>
+                    <div class="kpi-prem-badge"><i class="fas fa-building-columns"></i></div>
+                    <div class="kpi-prem-label">Corporate Debt</div>
+                    <div class="kpi-prem-amount">₹${s.client_due.toLocaleString()}</div>
+                    <div class="kpi-prem-footer"><i class="fas fa-briefcase me-1"></i>Registered client balances</div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card luxury-card border-0 bg-light p-4">
-                    <div class="small fw-bold text-uppercase text-muted">Walking Due</div>
-                    <h2 class="fw-black mb-0 mt-1 text-dark">₹${s.walking_due.toLocaleString()}</h2>
+            <div class="col-md">
+                <div class="kpi-premium-card kpi-amber">
+                    <div class="kpi-prem-ghost"><i class="fas fa-user-tag"></i></div>
+                    <div class="kpi-prem-badge"><i class="fas fa-user-tag"></i></div>
+                    <div class="kpi-prem-label">Individual Dues</div>
+                    <div class="kpi-prem-amount">₹${s.walking_due.toLocaleString()}</div>
+                    <div class="kpi-prem-footer"><i class="fas fa-person-walking me-1"></i>Walk-in customer balances</div>
                 </div>
             </div>
         `;
@@ -190,21 +209,26 @@
     function updateDueAmountsTable(items) {
         const tbody = document.querySelector('#dueAmountsTable tbody');
         if (!items.length) {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-muted">No outstanding dues found.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-muted font-sm opacity-50">No outstanding dues found in selected horizon.</td></tr>';
             return;
         }
         tbody.innerHTML = items.map(o => `
-            <tr>
-                <td class="px-4 fw-bold text-muted small">${o.order_date}</td>
-                <td><div class="fw-bold text-dark">${o.customer_name}</div><div class="small text-muted">${o.phone}</div></td>
-                <td><span class="badge bg-light text-dark rounded-pill">${o.customer_type}</span></td>
-                <td><code class="text-primary fw-bold">${o.order_number}</code></td>
-                <td class="fw-bold">₹${o.calculated_amount.toLocaleString()}</td>
-                <td class="text-danger fw-black">₹${o.due_amount.toLocaleString()}</td>
-                <td><span class="badge bg-warning-subtle text-warning rounded-pill px-3">${o.payment_status}</span></td>
-                <td class="px-4 text-end">
-                    <button class="btn btn-sm btn-success rounded-pill px-3" onclick="markAsPaid(${o.id})">Receive Payment</button>
-                    <a href="/order/${o.id}" class="btn btn-sm btn-light rounded-circle ms-1"><i class="fas fa-eye"></i></a>
+            <tr class="font-sm border-bottom-light">
+                <td class="ps-4 py-2 fw-900 text-muted active-date">${o.order_date}</td>
+                <td class="py-2">
+                    <div class="fw-900 text-dark">${o.customer_name}</div>
+                    <div class="font-xxs text-muted opacity-75">${o.phone}</div>
+                </td>
+                <td class="py-2"><span class="badge bg-light text-muted fw-900 font-xxs border px-2">${o.customer_type.toUpperCase()}</span></td>
+                <td class="py-2"><span class="fw-900 text-primary font-xs">#${o.order_number}</span></td>
+                <td class="py-2 fw-bold text-muted">₹${o.calculated_amount.toLocaleString()}</td>
+                <td class="py-2 text-danger fw-900 fs-6 ls-n1">₹${o.due_amount.toLocaleString()}</td>
+                <td class="py-2"><span class="badge bg-warning-subtle text-warning font-xxs px-3 rounded-pill">AWAITING ${o.payment_status.toUpperCase()}</span></td>
+                <td class="px-4 py-2 text-end">
+                    <div class="d-flex gap-1 justify-content-end">
+                        <button class="btn btn-success btn-xs rounded-pill px-3 font-xxs fw-900 text-uppercase" onclick="markAsPaid(${o.id})">Receive Payment</button>
+                        <a href="/order/${o.id}" class="btn btn-light btn-xs rounded-circle border shadow-sm"><i class="fas fa-eye text-primary"></i></a>
+                    </div>
                 </td>
             </tr>
         `).join('');
@@ -245,4 +269,140 @@
 
     document.addEventListener('DOMContentLoaded', () => loadDueAmounts());
 </script>
-{% endblock %}
+
+<style>
+    /* ===== PREMIUM KPI CARDS ===== */
+    .kpi-premium-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        padding: 1.1rem 1.4rem 1rem;
+        color: white;
+        min-height: 110px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        cursor: default;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .kpi-premium-card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Large ghost icon in background */
+    .kpi-prem-ghost {
+        position: absolute;
+        right: -8px;
+        bottom: -14px;
+        font-size: 5.5rem;
+        opacity: 0.13;
+        pointer-events: none;
+        line-height: 1;
+    }
+
+    /* Frosted-glass badge top */
+    .kpi-prem-badge {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        background: rgba(255,255,255,0.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        margin-bottom: 0.45rem;
+        border: 1px solid rgba(255,255,255,0.35);
+        backdrop-filter: blur(4px);
+    }
+
+    .kpi-prem-label {
+        font-size: 0.67rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.1px;
+        opacity: 0.82;
+    }
+
+    .kpi-prem-amount {
+        font-size: 1.65rem;
+        font-weight: 900;
+        letter-spacing: -1px;
+        line-height: 1.15;
+    }
+
+    .kpi-prem-footer {
+        font-size: 0.67rem;
+        font-weight: 600;
+        opacity: 0.72;
+        margin-top: 0.35rem;
+        border-top: 1px solid rgba(255,255,255,0.2);
+        padding-top: 0.35rem;
+    }
+
+    /* === Color Variants === */
+    .kpi-blue  {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 55%, #1d4ed8 100%);
+        box-shadow: 0 10px 28px rgba(37,99,235,0.38);
+    }
+    .kpi-red   {
+        background: linear-gradient(135deg, #f87171 0%, #ef4444 55%, #dc2626 100%);
+        box-shadow: 0 10px 28px rgba(239,68,68,0.38);
+    }
+    .kpi-teal  {
+        background: linear-gradient(135deg, #22d3ee 0%, #0891b2 55%, #0e7490 100%);
+        box-shadow: 0 10px 28px rgba(8,145,178,0.38);
+    }
+    .kpi-amber {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 55%, #d97706 100%);
+        box-shadow: 0 10px 28px rgba(245,158,11,0.38);
+    }
+
+    /* ===== MESH BACKGROUND ===== */
+    .dashboard-canvas {
+        background-color: #f8fafc;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 32px 32px;
+        min-height: 100vh;
+        padding-bottom: 3rem;
+    }
+
+    /* ===== UTILITY TOKENS ===== */
+    .font-sm { font-size: 0.85rem !important; }
+    .font-xs { font-size: 0.8rem !important; }
+    .font-xxs { font-size: 0.72rem !important; }
+    .fw-900 { font-weight: 900 !important; }
+    .fw-800 { font-weight: 800 !important; }
+    .ls-n1 { letter-spacing: -0.5px; }
+    .ls-tight { letter-spacing: -1.2px; }
+    .ls-1 { letter-spacing: 0.5px; }
+
+    /* ===== CARDS ===== */
+    .luxury-card {
+        background: rgba(255,255,255,0.9) !important;
+        backdrop-filter: blur(10px);
+        border-radius: 16px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+        border: 1px solid rgba(238,242,246,0.5) !important;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .luxury-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important; }
+
+    /* ===== FILTERS ===== */
+    .filter-pill { border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0; padding: 0.4rem 1rem; transition: all 0.2s ease; }
+    .filter-pill:focus-within { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .luxury-input { border: none !important; background: transparent !important; font-size: 0.8rem; font-weight: 700; color: #1e293b; width: 100%; outline: none; }
+    .filter-label { font-size: 0.65rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+
+    /* ===== BUTTONS ===== */
+    .btn-executive { height: 38px; display: flex; align-items: center; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 12px; transition: all 0.2s ease; }
+    .btn-pdf { background: #0f172a; color: #fff; border: none; }
+    .btn-export { background: #2563eb; color: #fff; border: none; }
+    .btn-xs { padding: 0.25rem 0.75rem; font-size: 0.7rem; }
+
+    /* ===== TABLE ===== */
+    .border-bottom-light { border-bottom: 1px solid #f1f5f9; }
+    .sticky-top { top: 0; z-index: 10; background: #f8fafc !important; }
+    .bg-blue-subtle { background: #e0e7ff !important; color: #3730a3 !important; }
+</style>
+{% endblock %}

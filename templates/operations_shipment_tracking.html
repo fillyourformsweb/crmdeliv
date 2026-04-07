@@ -1,263 +1,353 @@
 {% extends "base.html" %}
-
 {% block title %}Shipment Tracking{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-2 compact-page">
-    <div class="d-flex justify-content-between align-items-center mb-2">
+<div class="trk-canvas">
+<div class="container-fluid px-4 pt-3 pb-4">
+
+    <!-- ── Header ─────────────────────────────────── -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="fs-3 fw-900 text-primary mb-0" style="letter-spacing: -1px;">
-                <i class="fas fa-truck-fast me-2"></i>SHIPMENT <span class="text-dark opacity-75">TRACKING</span>
+            <h1 class="fw-900 mb-0 ls-tight" style="font-size:1.55rem;color:#0f172a;">
+                <i class="fas fa-truck-fast text-primary me-2"></i>SHIPMENT <span class="text-muted fw-300 opacity-60">TRACKING</span>
             </h1>
-            <p class="text-muted small mb-0">Real-time enterprise logistics monitoring and status oversight</p>
+            <p class="text-muted font-xs mb-0">Real-time enterprise logistics monitoring and status oversight</p>
         </div>
-        <a href="{{ url_for('operations_dashboard') }}" class="btn btn-sm btn-outline-secondary border-0 text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">
-            <i class="fas fa-arrow-left me-1"></i> Dashboard
+        <a href="{{ url_for('operations_dashboard') }}" class="btn-exec btn-dark-act">
+            <i class="fas fa-house-chimney me-1"></i> OPS Hub
         </a>
     </div>
 
-    <!-- Filter Section (Ultra Compact) -->
-    <div class="luxury-card border-0 mb-2 overflow-hidden">
-        <div class="card-header bg-white py-2 px-3 border-bottom-0">
-            <h6 class="mb-0 fw-bold text-dark small text-uppercase" style="letter-spacing: 1px;">Filter & Search</h6>
-        </div>
-        <div class="card-body py-2 px-3">
-            <form method="GET" class="row g-2 align-items-end">
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-muted mb-1">Receipt Number</label>
-                    <input type="text" class="form-control form-control-sm luxury-input" name="receipt" 
-                           value="{{ search_receipt or '' }}" placeholder="Search receipt...">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-muted mb-1">Customer Name</label>
-                    <input type="text" class="form-control form-control-sm luxury-input" name="customer" 
-                           value="{{ customer_filter or '' }}" placeholder="Search customer...">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-muted mb-1">Status</label>
-                    <select class="form-select form-select-sm luxury-input" name="status">
-                        <option value="all">All Statuses</option>
-                        {% for st in distinct_statuses %}
-                            <option value="{{ st }}" {% if st == status_filter %}selected{% endif %}>
-                                {{ st.replace('_', ' ').title() }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-muted mb-1">From Date</label>
-                    <input type="date" class="form-control form-control-sm luxury-input" name="date_from" 
-                           value="{{ date_from or '' }}">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small fw-bold text-muted mb-1">To Date</label>
-                    <input type="date" class="form-control form-control-sm luxury-input" name="date_to" 
-                           value="{{ date_to or '' }}">
-                </div>
-                <div class="col-md-2">
-                    <div class="d-flex gap-1">
-                        <button type="submit" class="btn btn-sm btn-primary flex-grow-1 fw-bold">
-                            <i class="fas fa-search me-1"></i> Search
-                        </button>
-                        <a href="{{ url_for('operations_shipment_tracking') }}" class="btn btn-sm btn-light border flex-grow-1 border-0">
-                            <i class="fas fa-redo"></i>
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
+    <!-- ── Status Tab Pills ───────────────────────── -->
+    <div class="status-tab-row mb-3">
+        <a href="{{ url_for('operations_shipment_tracking', status='all') }}"
+           class="status-tab {% if status_filter == 'all' or not status_filter %}active-tab{% endif %}">
+            <i class="fas fa-layer-group me-1"></i> All
+        </a>
+        <a href="{{ url_for('operations_shipment_tracking', status='in_transit') }}"
+           class="status-tab tab-blue {% if status_filter == 'in_transit' %}active-tab{% endif %}">
+            <i class="fas fa-truck-moving me-1"></i> In Transit
+        </a>
+        <a href="{{ url_for('operations_shipment_tracking', status='pending') }}"
+           class="status-tab tab-amber {% if status_filter == 'pending' %}active-tab{% endif %}">
+            <i class="fas fa-map-marker-alt me-1"></i> At Destination
+        </a>
+        <a href="{{ url_for('operations_shipment_tracking', status='delivered') }}"
+           class="status-tab tab-green {% if status_filter == 'delivered' %}active-tab{% endif %}">
+            <i class="fas fa-circle-check me-1"></i> Delivered
+        </a>
+        <a href="{{ url_for('operations_shipment_tracking', status='return_initiated') }}"
+           class="status-tab tab-red {% if status_filter == 'return_initiated' %}active-tab{% endif %}">
+            <i class="fas fa-rotate-left me-1"></i> RTO / Returns
+        </a>
+        <a href="{{ url_for('operations_shipment_tracking', status='cancelled') }}"
+           class="status-tab tab-slate {% if status_filter == 'cancelled' %}active-tab{% endif %}">
+            <i class="fas fa-ban me-1"></i> Cancelled
+        </a>
     </div>
 
-    <!-- Tracking Table (Command Center Density) -->
-    <div class="luxury-card border-0 mb-3 overflow-hidden">
-        <div class="card-header bg-white py-2 px-3 border-bottom d-flex justify-content-between align-items-center">
-            <h6 class="mb-0 fw-bold text-dark small text-uppercase" style="letter-spacing: 1px;">
-                Active Shipments <span class="badge bg-primary-subtle text-primary border ms-2" style="font-size: 0.65rem;">{{ pagination.total }} Records</span>
-            </h6>
+    <!-- ── Inline Filter Hub ──────────────────────── -->
+    <form method="GET" class="filter-hub-bar mb-3">
+        <div class="filter-pill">
+            <div class="filter-label">Receipt #</div>
+            <input class="luxury-input" type="text" name="receipt"
+                   value="{{ search_receipt or '' }}" placeholder="Search receipt…">
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr class="small fw-800 text-muted text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px;">
-                            <th class="ps-3">Receipt #</th>
-                            <th>Customer Info</th>
-                            <th>Receiver Details</th>
-                            <th>Cargo Metrics</th>
-                            <th class="text-center">Status</th>
-                            <th>Last Activity</th>
-                            <th class="text-center pe-3">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for order in orders %}
-                        <tr class="table-row-hover">
-                            <td class="ps-3">
-                                <strong class="text-primary" style="font-size: 0.85rem;">#{{ order.receipt_number }}</strong>
-                                <div class="text-muted" style="font-size: 0.65rem;">{{ order.created_at.strftime('%d %b %Y') }}</div>
-                            </td>
-                            <td>
-                                <div class="fw-bold" style="font-size: 0.8rem;">{{ order.customer_name }}</div>
-                                {% if order.customer_phone %}
-                                    <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="fas fa-phone me-1 small opacity-50"></i>{{ order.customer_phone }}</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="fw-bold" style="font-size: 0.8rem;">{{ order.receiver_name }}</div>
-                                <div class="text-muted" style="line-height: 1.2; font-size: 0.7rem;">
-                                    {{ order.receiver_city }}, {{ order.receiver_state }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="me-2 text-center" style="min-width: 40px;">
-                                        <div class="fw-900" style="font-size: 0.85rem;">{{ order.weight }}</div>
-                                        <div class="text-muted" style="font-size: 0.6rem;">KG</div>
-                                    </div>
-                                    <div class="border-start ps-2">
-                                        <div class="fw-bold text-dark" style="font-size: 0.75rem;">{{ order.number_of_boxes or 1 }} Case</div>
-                                        <div class="text-muted" style="font-size: 0.65rem;">{{ order.shipping_mode|title if order.shipping_mode else 'Standard' }}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                {% set status_badge = {
-                                    'at_destination': 'success',
-                                    'in_transit': 'info',
-                                    'pending': 'warning',
-                                    'delivered': 'success',
-                                    'cancelled': 'danger',
-                                    'failed_delivery': 'danger',
-                                    'return_initiated': 'warning'
-                                } %}
-                                <span class="badge bg-{{ status_badge.get(order.status, 'secondary') }}-subtle text-{{ status_badge.get(order.status, 'secondary') }} rounded-pill px-2 py-1" style="font-size: 0.65rem; border: 1px solid currentColor;">
-                                    {{ order.status.replace('_', ' ').title() }}
-                                </span>
-                            </td>
-                            <td>
-                                {% if order.tracking_updates and order.tracking_updates|length > 0 %}
-                                    {% set last_upd = order.tracking_updates[-1] %}
-                                    <div class="fw-bold" style="font-size: 0.75rem;">{{ last_upd.status }}</div>
-                                    <small class="text-muted" style="font-size: 0.65rem;">{{ last_upd.created_at.strftime('%d %b, %H:%M') }}</small>
-                                {% else %}
-                                    <span class="text-muted italic small opacity-50">No activity yet</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-center pe-3">
-                                <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-sm btn-light border rounded-circle p-2" title="Full Analytics">
-                                    <i class="fas fa-chart-line text-primary" style="font-size: 0.75rem;"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <div class="filter-pill">
+            <div class="filter-label">Customer</div>
+            <input class="luxury-input" type="text" name="customer"
+                   value="{{ customer_filter or '' }}" placeholder="Search name…">
+        </div>
+        <input type="hidden" name="status" value="{{ status_filter or 'all' }}">
+        <div class="filter-pill">
+            <div class="filter-label">From Date</div>
+            <input class="luxury-input" type="date" name="date_from" value="{{ date_from or '' }}">
+        </div>
+        <div class="filter-pill">
+            <div class="filter-label">To Date</div>
+            <input class="luxury-input" type="date" name="date_to" value="{{ date_to or '' }}">
+        </div>
+        <button type="submit" class="btn-exec btn-blue-act">
+            <i class="fas fa-search me-1"></i> Search
+        </button>
+        <a href="{{ url_for('operations_shipment_tracking') }}" class="btn-exec btn-light-act">
+            <i class="fas fa-rotate-right"></i>
+        </a>
+    </form>
+
+    <!-- ── Tracking Table ─────────────────────────── -->
+    <div class="trk-card">
+        <div class="trk-card-header">
+            <div>
+                <h6 class="fw-900 text-dark font-xs mb-0 text-uppercase ls-1">
+                    <i class="fas fa-radar text-primary me-2"></i>Active Shipment Ledger
+                </h6>
+                <p class="text-muted font-xxs mb-0 opacity-75">Showing {{ orders | length }} of {{ pagination.total }} records</p>
             </div>
+            <span class="badge bg-primary text-white font-xxs px-3 rounded-pill" style="font-size:0.65rem;">
+                {{ pagination.total }} Total Records
+            </span>
         </div>
-    </div>
 
-    <!-- Compact Pagination -->
-    {% if pagination.pages > 1 %}
-    <div class="d-flex justify-content-between align-items-center px-3 py-2 luxury-card mb-4">
-        <div class="small text-muted fw-bold" style="font-size: 0.7rem;">Page {{ pagination.page }} of {{ pagination.pages }}</div>
-        <nav>
-            <ul class="pagination pagination-sm mb-0 gap-1">
-                {% if pagination.has_prev %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="trk-thead">
+                    <tr>
+                        <th class="ps-4">Receipt #</th>
+                        <th>Customer</th>
+                        <th>Receiver</th>
+                        <th>Cargo</th>
+                        <th class="text-center">Status</th>
+                        <th>Last Activity</th>
+                        <th class="pe-4 text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr class="trk-row">
+                        <td class="ps-4 py-2">
+                            <span class="fw-900 text-primary" style="font-size:0.88rem;">#{{ order.receipt_number }}</span>
+                            <div class="font-xxs text-muted mt-0">{{ order.created_at.strftime('%d %b %Y') }}</div>
+                        </td>
+                        <td class="py-2">
+                            <div class="fw-800 text-dark font-xs">{{ order.customer_name }}</div>
+                            {% if order.customer_phone %}
+                            <div class="font-xxs text-muted"><i class="fas fa-phone me-1 opacity-40"></i>{{ order.customer_phone }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="py-2">
+                            <div class="fw-800 text-dark font-xs">{{ order.receiver_name }}</div>
+                            <div class="font-xxs text-muted">{{ order.receiver_city }}, {{ order.receiver_state }}</div>
+                        </td>
+                        <td class="py-2">
+                            <div class="cargo-chip">
+                                <span class="cargo-weight">{{ order.weight }}<small>kg</small></span>
+                                <span class="cargo-divider"></span>
+                                <span class="cargo-meta">
+                                    <span class="fw-800">{{ order.number_of_boxes or 1 }}</span> box<br>
+                                    <span class="font-xxxs text-muted">{{ order.shipping_mode|title if order.shipping_mode else 'Standard' }}</span>
+                                </span>
+                            </div>
+                        </td>
+                        <td class="text-center py-2">
+                            {% set st = order.status %}
+                            {% if st == 'in_transit' %}
+                                <span class="status-pill pill-blue"><i class="fas fa-truck-moving me-1"></i>In Transit</span>
+                            {% elif st == 'pending' %}
+                                <span class="status-pill pill-amber"><i class="fas fa-map-marker-alt me-1"></i>At Destination</span>
+                            {% elif st == 'delivered' or st == 'at_destination' %}
+                                <span class="status-pill pill-green"><i class="fas fa-circle-check me-1"></i>Delivered</span>
+                            {% elif st == 'cancelled' %}
+                                <span class="status-pill pill-slate"><i class="fas fa-ban me-1"></i>Cancelled</span>
+                            {% elif st == 'return_initiated' %}
+                                <span class="status-pill pill-red"><i class="fas fa-rotate-left me-1"></i>RTO</span>
+                            {% elif st == 'failed_delivery' %}
+                                <span class="status-pill pill-red"><i class="fas fa-triangle-exclamation me-1"></i>Failed</span>
+                            {% else %}
+                                <span class="status-pill pill-slate">{{ st.replace('_',' ')|title }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-2">
+                            {% if order.tracking_updates and order.tracking_updates|length > 0 %}
+                                {% set last_upd = order.tracking_updates[-1] %}
+                                <div class="fw-800 text-dark font-xs">{{ last_upd.status }}</div>
+                                <div class="font-xxs text-muted">{{ last_upd.created_at.strftime('%d %b, %H:%M') }}</div>
+                            {% else %}
+                                <span class="font-xxs text-muted opacity-50 fst-italic">No activity yet</span>
+                            {% endif %}
+                        </td>
+                        <td class="pe-4 py-2 text-end">
+                            <a href="{{ url_for('order_details', id=order.id) }}" class="btn-view-trk" title="View Details">
+                                <i class="fas fa-eye me-1"></i> Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted font-sm opacity-50 fst-italic">
+                            <i class="fas fa-satellite-dish fa-2x mb-2 d-block opacity-20 text-primary"></i>
+                            No shipments found matching your filters.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if pagination.pages > 1 %}
+        <div class="trk-pagination">
+            <span class="font-xxs text-muted fw-800">Page {{ pagination.page }} / {{ pagination.pages }}</span>
+            <nav>
+                <ul class="pagination pagination-sm mb-0 gap-1">
+                    {% if pagination.has_prev %}
                     <li class="page-item">
-                        <a class="page-link border-0 rounded-circle" href="{{ url_for('operations_shipment_tracking', page=pagination.prev_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
+                        <a class="page-link trk-pg-btn" href="{{ url_for('operations_shipment_tracking', page=pagination.prev_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
                             <i class="fas fa-chevron-left"></i>
                         </a>
                     </li>
-                {% endif %}
-                {% for page_num in pagination.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
-                    {% if page_num %}
-                        <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
-                            <a class="page-link border-0 rounded-circle" href="{{ url_for('operations_shipment_tracking', page=page_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">{{ page_num }}</a>
-                        </li>
                     {% endif %}
-                {% endfor %}
-                {% if pagination.has_next %}
+                    {% for page_num in pagination.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
+                        {% if page_num %}
+                        <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                            <a class="page-link trk-pg-btn" href="{{ url_for('operations_shipment_tracking', page=page_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">{{ page_num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if pagination.has_next %}
                     <li class="page-item">
-                        <a class="page-link border-0 rounded-circle" href="{{ url_for('operations_shipment_tracking', page=pagination.next_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
+                        <a class="page-link trk-pg-btn" href="{{ url_for('operations_shipment_tracking', page=pagination.next_num, status=status_filter, receipt=search_receipt, customer=customer_filter, date_from=date_from, date_to=date_to) }}">
                             <i class="fas fa-chevron-right"></i>
                         </a>
                     </li>
-                {% endif %}
-            </ul>
-        </nav>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
+
+</div>
 </div>
 
 <style>
-    .compact-page { max-width: 1600px; margin: 0 auto; }
-    .fw-800 { font-weight: 800; }
-    .fw-900 { font-weight: 900; }
-    
-    .luxury-card {
-        background: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important;
-    }
-    
-    .luxury-input {
-        background: #f8fafc !important;
-        border: 1.5px solid #e2e8f0 !important;
-        border-radius: 8px !important;
-        font-size: 0.75rem !important;
-        padding: 0.4rem 0.75rem !important;
-        transition: all 0.2s ease !important;
-    }
-    
-    .luxury-input:focus {
-        background: #ffffff !important;
-        border-color: #2563eb !important;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
-    }
-    
-    .table-row-hover:hover {
-        background-color: #f1f5f9 !important;
-        cursor: pointer;
-    }
-    
-    .compact-page .table th {
-        background-color: #f8fafc !important;
-        color: #64748b !important;
-        font-size: 0.65rem !important;
-        padding: 0.75rem 0.5rem !important;
-    }
-    
-    .compact-page .table td {
-        padding: 0.5rem 0.5rem !important;
-        border-bottom: 1px solid #f1f5f9;
-    }
-    
-    .bg-primary-subtle { background-color: #eff6ff !important; }
-    .bg-success-subtle { background-color: #f0fdf4 !important; }
-    .bg-info-subtle { background-color: #f0f9ff !important; }
-    .bg-warning-subtle { background-color: #fffbeb !important; }
-    .bg-danger-subtle { background-color: #fef2f2 !important; }
-    
-    .text-primary { color: #2563eb !important; }
-    .text-success { color: #16a34a !important; }
-    .text-info { color: #0891b2 !important; }
-    .text-warning { color: #d97706 !important; }
-    .text-danger { color: #dc2626 !important; }
-    
-    .pagination .page-link {
-        font-size: 0.75rem;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #64748b;
-    }
-    
-    .pagination .page-item.active .page-link {
-        background-color: #2563eb !important;
-        color: white !important;
-    }
+/* ── Canvas ─────────────────────────────────────── */
+.trk-canvas {
+    background-color: #f8fafc;
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 32px 32px;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+}
+
+/* ── Tokens ─────────────────────────────────────── */
+.font-xs   { font-size: 0.8rem !important; }
+.font-xxs  { font-size: 0.72rem !important; }
+.font-xxxs { font-size: 0.64rem !important; }
+.fw-900    { font-weight: 900 !important; }
+.fw-800    { font-weight: 800 !important; }
+.ls-tight  { letter-spacing: -1px; }
+.ls-1      { letter-spacing: 0.5px; }
+
+/* ── Exec Buttons ───────────────────────────────── */
+.btn-exec {
+    height: 36px; border-radius: 10px; border: none; font-size: 0.7rem;
+    font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 0 1rem; cursor: pointer; transition: all 0.2s;
+    display: inline-flex; align-items: center; text-decoration: none;
+}
+.btn-dark-act  { background: #0f172a; color: #fff; }
+.btn-dark-act:hover { background: #1e293b; color: #fff; }
+.btn-blue-act  { background: #2563eb; color: #fff; }
+.btn-blue-act:hover { background: #1d4ed8; box-shadow: 0 4px 14px rgba(37,99,235,0.4); }
+.btn-light-act { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.btn-light-act:hover { background: #e2e8f0; color: #1e293b; text-decoration: none; }
+
+/* ── Status Tab Pills ───────────────────────────── */
+.status-tab-row {
+    display: flex; gap: 0.4rem; flex-wrap: wrap;
+}
+.status-tab {
+    display: inline-flex; align-items: center;
+    padding: 0.3rem 0.9rem; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.5px; text-decoration: none; border: 1.5px solid transparent;
+    background: rgba(255,255,255,0.85); color: #64748b; border-color: #e2e8f0;
+    transition: all 0.2s ease; backdrop-filter: blur(4px);
+}
+.status-tab:hover    { background: #fff; color: #1e293b; border-color: #cbd5e1; transform: translateY(-1px); }
+.status-tab.active-tab { background: #0f172a; color: #fff; border-color: #0f172a; box-shadow: 0 4px 12px rgba(15,23,42,0.25); }
+.tab-blue.active-tab   { background: #2563eb; border-color: #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.35); }
+.tab-amber.active-tab  { background: #f59e0b; border-color: #f59e0b; box-shadow: 0 4px 12px rgba(245,158,11,0.35); }
+.tab-green.active-tab  { background: #10b981; border-color: #10b981; box-shadow: 0 4px 12px rgba(16,185,129,0.35); }
+.tab-red.active-tab    { background: #ef4444; border-color: #ef4444; box-shadow: 0 4px 12px rgba(239,68,68,0.35); }
+.tab-slate.active-tab  { background: #64748b; border-color: #64748b; box-shadow: 0 4px 12px rgba(100,116,139,0.35); }
+
+/* ── Filter Hub Bar ─────────────────────────────── */
+.filter-hub-bar {
+    display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
+    background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
+    border: 1px solid rgba(226,232,240,0.8); border-radius: 14px;
+    padding: 0.5rem 0.75rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+.filter-pill {
+    display: flex; flex-direction: column; min-width: 130px; flex: 1;
+    border-right: 1px solid #f1f5f9; padding-right: 0.75rem; padding-left: 0.25rem;
+}
+.filter-pill:last-of-type { border-right: none; }
+.filter-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 1px; }
+.luxury-input { border: none !important; background: transparent !important; font-size: 0.78rem; font-weight: 700; color: #1e293b; width: 100%; outline: none; padding: 0 !important; }
+
+/* ── Tracking Card ──────────────────────────────── */
+.trk-card {
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+    border-radius: 18px; border: 1px solid rgba(226,232,240,0.7);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06); overflow: hidden;
+}
+.trk-card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.75rem 1.5rem; background: #fff; border-bottom: 1px solid #f1f5f9;
+}
+
+/* ── Table ──────────────────────────────────────── */
+.trk-thead tr { background: #f8fafc; }
+.trk-thead th {
+    font-size: 0.63rem; font-weight: 900; text-transform: uppercase;
+    letter-spacing: 0.8px; color: #64748b; border: none !important;
+    padding: 0.6rem 0.75rem;
+}
+.trk-row { border-bottom: 1px solid #f1f5f9; transition: background 0.15s; }
+.trk-row:hover { background: rgba(37,99,235,0.025); }
+.trk-row:last-child { border-bottom: none; }
+.trk-row td { vertical-align: middle; }
+
+/* ── Cargo Chip ─────────────────────────────────── */
+.cargo-chip {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: 0.25rem 0.6rem;
+}
+.cargo-weight { font-size: 0.88rem; font-weight: 900; color: #0f172a; line-height: 1; }
+.cargo-weight small { font-size: 0.58rem; font-weight: 600; color: #94a3b8; margin-left: 1px; }
+.cargo-divider { width: 1px; height: 20px; background: #e2e8f0; }
+.cargo-meta { font-size: 0.72rem; line-height: 1.3; }
+
+/* ── Status Pills ───────────────────────────────── */
+.status-pill {
+    display: inline-flex; align-items: center; padding: 0.25rem 0.7rem;
+    border-radius: 50px; font-size: 0.67rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.4px; border: 1.5px solid;
+    white-space: nowrap;
+}
+.pill-blue   { color: #1d4ed8; background: #eff6ff; border-color: #bfdbfe; }
+.pill-amber  { color: #92400e; background: #fffbeb; border-color: #fde68a; }
+.pill-green  { color: #065f46; background: #ecfdf5; border-color: #a7f3d0; }
+.pill-red    { color: #991b1b; background: #fef2f2; border-color: #fecaca; }
+.pill-slate  { color: #334155; background: #f1f5f9; border-color: #cbd5e1; }
+
+/* ── View Button ────────────────────────────────── */
+.btn-view-trk {
+    display: inline-flex; align-items: center;
+    background: linear-gradient(135deg,#2563eb,#1d4ed8); color: #fff;
+    border: none; border-radius: 8px; padding: 0.28rem 0.8rem;
+    font-size: 0.68rem; font-weight: 800; text-decoration: none;
+    text-transform: uppercase; letter-spacing: 0.3px;
+    transition: all 0.2s; box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+}
+.btn-view-trk:hover { color: #fff; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,0.4); }
+
+/* ── Pagination ─────────────────────────────────── */
+.trk-pagination {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.6rem 1.5rem; border-top: 1px solid #f1f5f9; background: #fafafa;
+}
+.trk-pg-btn {
+    width: 30px !important; height: 30px !important; border-radius: 8px !important;
+    display: flex !important; align-items: center !important; justify-content: center !important;
+    font-size: 0.72rem !important; border: 1px solid #e2e8f0 !important;
+    color: #64748b !important; background: #fff !important; padding: 0 !important;
+}
+.page-item.active .trk-pg-btn { background: #2563eb !important; color: #fff !important; border-color: #2563eb !important; }
 </style>
 {% endblock %}

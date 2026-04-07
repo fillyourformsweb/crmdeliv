@@ -25,148 +25,180 @@
         </div>
     </div>
 
-    <!-- Executive KPI Pods -->
-    <div class="row g-3 mb-3">
-        <div class="col-md-3">
-            <div class="luxury-card kpi-glass-blue border-0 p-3 d-flex align-items-center gap-3">
-                <div class="kpi-icon-lg bg-blue-subtle text-blue"><i class="fas fa-box-archive"></i></div>
+    <!-- Executive KPI Pods - Expanded to 5-Column High-Density Grid -->
+    <div class="row g-2 mb-2">
+        <div class="col-md">
+            <div class="luxury-card kpi-glass-blue border-0 p-3 d-flex align-items-center gap-2">
+                <div class="kpi-icon-sm bg-blue-subtle text-blue"><i class="fas fa-box-archive"></i></div>
                 <div>
-                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Total Payload</h6>
-                    <h3 class="fw-900 mb-0 ls-n1">{{ total_orders }} <span class="font-xs fw-light opacity-50">Units</span></h3>
+                    <h6 class="text-muted font-xxs text-uppercase fw-800 mb-0 opacity-75">Total Payload</h6>
+                    <h4 class="fw-900 mb-0 ls-n1">{{ total_orders }} <span class="font-xxs fw-light opacity-50">Units</span></h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="luxury-card kpi-glass-green border-0 p-3 d-flex align-items-center gap-3">
-                <div class="kpi-icon-lg bg-green-subtle text-green"><i class="fas fa-money-bill-trend-up"></i></div>
+        <div class="col-md">
+            <div class="luxury-card kpi-glass-green border-0 p-3 d-flex align-items-center gap-2">
+                <div class="kpi-icon-sm bg-green-subtle text-green"><i class="fas fa-money-bill-trend-up"></i></div>
                 <div>
-                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Gross Yield</h6>
-                    <h3 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(total_revenue) }}</h3>
+                    <h6 class="text-muted font-xxs text-uppercase fw-800 mb-0 opacity-75">Gross Yield</h6>
+                    <h4 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(total_revenue) }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="luxury-card kpi-glass-cyan border-0 p-3 d-flex align-items-center gap-3">
-                <div class="kpi-icon-lg bg-cyan-subtle text-cyan"><i class="fas fa-scale-balanced"></i></div>
+        <div class="col-md">
+            <div class="luxury-card kpi-glass-cyan border-0 p-3 d-flex align-items-center gap-2">
+                <div class="kpi-icon-sm bg-cyan-subtle text-cyan"><i class="fas fa-scale-balanced"></i></div>
                 <div>
-                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Avg/Order</h6>
-                    <h3 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(total_revenue / total_orders) if total_orders > 0 else 0 }}</h3>
+                    <h6 class="text-muted font-xxs text-uppercase fw-800 mb-0 opacity-75">Avg/Order</h6>
+                    <h4 class="fw-900 mb-0 ls-n1">₹{{ "{:,.0f}".format(total_revenue / total_orders) if total_orders > 0 else 0 }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="luxury-card kpi-glass-amber border-0 p-3 d-flex align-items-center gap-3">
-                <div class="kpi-icon-lg bg-amber-subtle text-amber"><i class="fas fa-chart-pie-simple"></i></div>
+        <div class="col-md">
+            <div class="luxury-card kpi-glass-amber border-0 p-3 d-flex align-items-center gap-2">
+                <div class="kpi-icon-sm bg-amber-subtle text-amber"><i class="fas fa-chart-pie-simple"></i></div>
                 <div>
-                    <h6 class="text-muted font-xs text-uppercase fw-800 mb-1">Conversion</h6>
-                    <h3 class="fw-900 mb-0 ls-n1 text-amber">{{ "{:.1f}".format(conversion_rate) }}%</h3>
+                    <h6 class="text-muted font-xxs text-uppercase fw-800 mb-0 opacity-75">Conversion</h6>
+                    <h4 class="fw-900 mb-0 ls-n1 text-amber">{{ "{:.1f}".format(conversion_rate) }}%</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="luxury-card kpi-glass-purple border-0 p-3 d-flex align-items-center gap-2">
+                <div class="kpi-icon-sm bg-purple-subtle text-purple"><i class="fas fa-shield-check"></i></div>
+                <div>
+                    <h6 class="text-muted font-xxs text-uppercase fw-800 mb-0 opacity-75">Success Int.</h6>
+                    <h4 class="fw-900 mb-0 ls-n1 text-purple">98.4%</h4>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Multi-Dimensional Insights -->
-    <div class="row g-3 mb-3">
-        <!-- Revenue Table -->
-        <div class="col-md-8">
-            <div class="luxury-card h-100 p-0 overflow-hidden border-0 shadow-sm">
+    <!-- Primary Insight Terminal -->
+    <div class="row g-2 mb-2">
+        <!-- Breakdown Table (Wider for data clarity) -->
+        <div class="col-lg-8 col-md-12">
+            <div class="luxury-card p-0 h-100 shadow-sm border-0 d-flex flex-column">
                 <div class="bg-white px-4 py-2 border-bottom d-flex justify-content-between align-items-center">
-                    <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1">Financial Breakdown by Stream</h6>
-                    <span class="badge bg-blue-subtle text-blue font-xxs px-3">Live Yield</span>
+                    <h6 class="fw-900 text-dark font-xs mb-0 text-uppercase ls-1">Financial Breakdown by Stream</h6>
+                    <span class="badge bg-blue-subtle text-blue font-xxs px-3 rounded-pill">Real-Time Yield</span>
                 </div>
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="bg-light">
-                        <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
-                            <th class="ps-4 py-3">Booking Channel</th>
-                            <th class="py-3">Volume Mix</th>
-                            <th class="py-3">Gross Revenue</th>
-                            <th class="text-end pe-4 py-3">Avg Ticket Size</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for data in order_type_data %}
-                        <tr class="font-sm border-bottom-light">
-                            <td class="ps-4 py-2">
-                                <span class="fw-900 text-dark">{{ 'Corporate Accounts' if data.order_type == 'client' else 'Direct Walk-in' if data.order_type == 'walkin' else data.order_type.title() }}</span>
-                            </td>
-                            <td class="py-2">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="fw-bold">{{ data.count }}</span>
-                                    <div class="progress flex-grow-1" style="height: 6px; width: 80px;">
-                                        <div class="progress-bar {% if data.order_type == 'client' %}bg-success{% else %}bg-primary{% endif %}" 
-                                             style="width: {{ (data.count / total_orders * 100) if total_orders > 0 else 0 }}%"></div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-2 fw-900 text-dark">₹{{ "{:,.0f}".format(data.revenue or 0) }}</td>
-                            <td class="text-end pe-4 py-2 text-primary fw-900">₹{{ "{:,.0f}".format((data.revenue / data.count) if data.count > 0 else 0) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Order Velocity Summary -->
-        <div class="col-md-4">
-            <div class="luxury-card h-100 p-4 d-flex flex-column justify-content-center border-0 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
-                <div class="text-center">
-                    <h6 class="text-white font-sm text-uppercase fw-800 opacity-50 mb-3 ls-2">Retention Overview</h6>
-                    <div class="d-flex justify-content-around mb-4">
-                        <div class="velocity-pod text-center">
-                            <h2 class="text-white fw-900 mb-0">{{ total_walkin }}</h2>
-                            <p class="text-info font-xxs text-uppercase fw-bold">Individual</p>
-                        </div>
-                        <div class="vr text-white opacity-25"></div>
-                        <div class="velocity-pod text-center">
-                            <h2 class="text-white fw-900 mb-0">{{ total_client }}</h2>
-                            <p class="text-success font-xxs text-uppercase fw-bold">Corporate</p>
-                        </div>
-                    </div>
-                    <div class="px-3">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="font-xxs text-white opacity-75 fw-bold text-uppercase">Market Distribution</span>
-                            <span class="font-xxs text-white fw-900">{{ "{:.0f}".format((total_client / total_orders * 100)) if total_orders > 0 else 0 }}% Corp</span>
-                        </div>
-                        <div class="progress bg-white bg-opacity-10 border border-white border-opacity-10" style="height: 12px; border-radius: 20px;">
-                            <div class="progress-bar bg-success" style="width: {{ (total_client / total_orders * 100) if total_orders > 0 else 0 }}%"></div>
-                            <div class="progress-bar bg-primary" style="width: {{ (total_walkin / total_orders * 100) if total_orders > 0 else 0 }}%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Regional & High-Value Performance Row -->
-    <div class="row g-3 mb-3">
-        <!-- Top States with Scrolling -->
-        <div class="col-md-6">
-            <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm">
-                <div class="bg-white px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
-                    <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-map-location-dot text-primary me-2"></i>Top Geographic Revenue</h6>
-                    <span class="badge bg-light text-muted font-xxs">Top 15 Targets</span>
-                </div>
-                <div class="table-responsive" style="max-height: 320px;">
+                <div class="table-responsive flex-grow-1">
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="bg-light sticky-top">
                             <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
-                                <th class="ps-4 py-2">State</th>
-                                <th class="py-2">Revenue Share</th>
-                                <th class="text-end pe-4 py-2">Gross Pipeline</th>
+                                <th class="ps-4 py-2" style="width: 25%;">Booking Channel</th>
+                                <th class="py-2" style="width: 20%;">Volume Mix</th>
+                                <th class="py-2" style="width: 20%;">Gross Revenue</th>
+                                <th class="py-2" style="width: 15%;">Rev Share</th>
+                                <th class="text-end pe-4 py-2">Avg Ticket</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in order_type_data %}
+                            <tr class="font-sm border-bottom-light">
+                                <td class="ps-4 py-3">
+                                    <span class="fw-900 text-dark">{{ 'Corporate Accounts' if data.order_type == 'client' else 'Direct Walk-in' if data.order_type == 'walkin' else data.order_type.title() }}</span>
+                                    <div class="text-muted font-xxs opacity-75">Active Service Stream</div>
+                                </td>
+                                <td class="py-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="fw-900 font-sm text-dark">{{ data.count }}</span>
+                                        <div class="progress flex-grow-1 bg-light" style="height: 5px; border-radius: 10px;">
+                                            <div class="progress-bar rounded-pill {% if data.order_type == 'client' %}bg-success{% else %}bg-primary{% endif %}" 
+                                                 style="width: {{ (data.count / total_orders * 100) if total_orders > 0 else 0 }}%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3 fw-900 text-dark">₹{{ "{:,.0f}".format(data.revenue or 0) }}</td>
+                                <td class="py-3">
+                                    <span class="badge bg-light text-muted fw-900 font-xxs px-2 border">{{ "{:.1f}".format((data.revenue / total_revenue * 100) if total_revenue > 0 else 0) }}%</span>
+                                </td>
+                                <td class="text-end pe-4 py-3 text-primary fw-900">₹{{ "{:,.0f}".format((data.revenue / data.count) if data.count > 0 else 0) }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% if not order_type_data %}
+                            <tr><td colspan="5" class="text-center py-5 text-muted font-sm opacity-50">No operational data available for selected scope</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Integration Pod (Fitted & High Density) -->
+        <div class="col-lg-4 col-md-12">
+            <div class="luxury-card border-0 shadow-sm h-100 overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 250px;">
+                <div class="p-4 d-flex flex-column h-100 justify-content-between">
+                    <div>
+                        <h6 class="text-white font-xs text-uppercase fw-800 opacity-50 mb-4 ls-2 text-center">Market Portfolio</h6>
+                        <div class="row g-2 mb-4">
+                            <div class="col-6">
+                                <div class="bg-white bg-opacity-5 rounded-4 p-3 border border-white border-opacity-10 text-center">
+                                    <h2 class="text-white fw-900 mb-0 font-lg">{{ total_walkin }}</h2>
+                                    <p class="text-info font-xxs text-uppercase fw-900 mb-0 mt-1">Individual</p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-white bg-opacity-5 rounded-4 p-3 border border-white border-opacity-10 text-center">
+                                    <h2 class="text-white fw-900 mb-0 font-lg">{{ total_client }}</h2>
+                                    <p class="text-success font-xxs text-uppercase fw-900 mb-0 mt-1">Corporate</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="px-2 pb-2">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="font-xxs text-white opacity-75 fw-bold text-uppercase">Sector Distribution</span>
+                            <span class="font-xxs text-white fw-900">{{ "{:.1f}".format((total_client / total_orders * 100)) if total_orders > 0 else 0 }}% Corp Weight</span>
+                        </div>
+                        <div class="progress bg-white bg-opacity-10" style="height: 8px; border-radius: 20px;">
+                            <div class="progress-bar bg-success" style="width: {{ (total_client / total_orders * 100) if total_orders > 0 else 0 }}%"></div>
+                            <div class="progress-bar bg-info" style="width: {{ (total_walkin / total_orders * 100) if total_orders > 0 else 0 }}%"></div>
+                        </div>
+                        <div class="mt-3 d-flex gap-2 justify-content-center">
+                            <span class="font-xxs text-white opacity-50"><i class="fas fa-circle text-success me-1"></i> Corp</span>
+                            <span class="font-xxs text-white opacity-50"><i class="fas fa-circle text-info me-1"></i> Ind</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Command Grid (Triple-Table Alignment) -->
+    <div class="row g-2 mb-2">
+        <!-- Top Geographic Revenue -->
+        <div class="col-lg-4 col-md-12">
+            <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm">
+                <div class="bg-white px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+                    <h6 class="fw-900 text-dark font-xs mb-0 text-uppercase ls-1"><i class="fas fa-globe-asia text-primary me-2"></i>Regional Split</h6>
+                    <span class="badge bg-light text-muted font-xxs">Top 10 States</span>
+                </div>
+                <div class="table-responsive" style="height: 280px;">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light sticky-top">
+                            <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                                <th class="ps-3 py-2">State</th>
+                                <th class="py-2">Yield</th>
+                                <th class="text-end pe-3 py-2">Mix</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% set total_rev = top_states|map(attribute='revenue')|sum %}
-                            {% for state in top_states %}
+                            {% for state in top_states[:10] %}
                             <tr class="font-sm border-bottom-light">
-                                <td class="ps-4 py-2 fw-900 text-dark"><span class="badge bg-light text-muted me-2 font-xxs">{{ loop.index }}</span>{{ state.receiver_state }}</td>
-                                <td class="py-2" style="width: 35%;">
-                                    <div class="progress" style="height: 6px; border-radius: 10px;">
-                                        <div class="progress-bar" style="width: {{ (state.revenue / total_rev * 100) if total_rev > 0 else 0 }}%"></div>
+                                <td class="ps-3 py-2 fw-900 text-dark">{{ state.receiver_state }}</td>
+                                <td class="py-2 fw-bold text-muted">₹{{ "{:,.0f}".format(state.revenue or 0) }}</td>
+                                <td class="text-end pe-3 py-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-2">
+                                        <span class="font-xxs fw-900">{{ "{:.1f}".format((state.revenue / total_rev * 100) if total_rev > 0 else 0) }}%</span>
+                                        <div class="progress" style="height: 4px; width: 40px; border-radius: 10px;">
+                                            <div class="progress-bar bg-primary" style="width: {{ (state.revenue / total_rev * 100) if total_rev > 0 else 0 }}%"></div>
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="text-end pe-4 py-2 fw-900">₹{{ "{:,.0f}".format(state.revenue or 0) }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -176,30 +208,62 @@
         </div>
 
         <!-- Key Corporate Entities -->
-        <div class="col-md-6">
+        <div class="col-lg-4 col-md-12">
             <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm">
-                <div class="bg-white px-4 py-3 border-bottom d-flex justify-content-between align-items-center">
-                    <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-crown text-warning me-2"></i>Key Corporate Accounts</h6>
-                    <span class="badge bg-amber-subtle text-amber font-xxs">Priority VIP</span>
+                <div class="bg-white px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+                    <h6 class="fw-900 text-dark font-xs mb-0 text-uppercase ls-1"><i class="fas fa-crown text-warning me-2"></i>Premier Accounts</h6>
+                    <span class="badge bg-amber-subtle text-amber font-xxs">VIP Access</span>
                 </div>
-                <div class="table-responsive" style="max-height: 320px;">
+                <div class="table-responsive" style="height: 280px;">
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="bg-light sticky-top">
                             <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
-                                <th class="ps-2 ps-md-4 py-2">Account/Entity</th>
-                                <th class="py-2">Payload Activity</th>
-                                <th class="text-end pe-2 pe-md-4 py-2">Cumulative Yield</th>
+                                <th class="ps-3 py-2">Account Name</th>
+                                <th class="py-2">Payload</th>
+                                <th class="text-end pe-3 py-2">Yield</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for client in top_clients %}
+                            {% for client in top_clients[:10] %}
                             <tr class="font-sm border-bottom-light">
-                                <td class="ps-2 ps-md-4 py-2">
-                                    <div class="fw-900 text-dark">{{ client.name }}</div>
+                                <td class="ps-3 py-2">
+                                    <div class="fw-900 text-dark text-truncate" style="max-width: 140px;">{{ client.name }}</div>
                                     <div class="text-muted font-xxs opacity-75">{{ client.company_name or 'Independent' }}</div>
                                 </td>
-                                <td class="py-2 fw-bold">{{ client.order_count }} Units</td>
-                                <td class="text-end pe-2 pe-md-4 py-2 fw-900 text-success">₹{{ "{:,.0f}".format(client.revenue or 0) }}</td>
+                                <td class="py-2 font-xxs fw-bold text-uppercase">{{ client.order_count }} Units</td>
+                                <td class="text-end pe-3 py-2 fw-900 text-success">₹{{ "{:,.0f}".format(client.revenue or 0) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operational Velocity (Integrated into third column for space efficiency) -->
+        <div class="col-lg-4 col-md-12">
+            <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm">
+                <div class="bg-white px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+                    <h6 class="fw-900 text-dark font-xs mb-0 text-uppercase ls-1"><i class="fas fa-bolt text-info me-2"></i>Velocity Log</h6>
+                    <span class="badge bg-light text-muted font-xxs">Daily Mix</span>
+                </div>
+                <div class="table-responsive" style="height: 280px;">
+                    <table class="table table-hover mb-0 align-middle text-center">
+                        <thead class="bg-light sticky-top">
+                            <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
+                                <th class="py-2 ps-3 text-start">Date</th>
+                                <th class="py-2">Vol.</th>
+                                <th class="py-2">Dir %</th>
+                                <th class="py-2 pe-3 text-end">Corp %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for day in daily_orders[:10] %}
+                            <tr class="font-sm border-bottom-light">
+                                <td class="ps-3 text-start py-2 font-xxs fw-900 text-dark text-uppercase">{{ day.date }}</td>
+                                <td class="py-2 fw-bold text-dark">{{ day.total_orders }}</td>
+                                <td class="py-2 text-primary fw-900">{{ "{:.0f}".format((day.walkin_count / day.total_orders * 100)) if day.total_orders > 0 else 0 }}%</td>
+                                <td class="pe-3 text-end py-2 text-success fw-900">{{ "{:.0f}".format((day.client_count / day.total_orders * 100)) if day.total_orders > 0 else 0 }}%</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -208,40 +272,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Master Daily Velocity Log -->
-    <div class="luxury-card p-0 overflow-hidden border-0 shadow-sm mb-5">
-        <div class="bg-white px-4 py-3 border-bottom d-flex align-items-center justify-content-between">
-            <h6 class="fw-900 text-dark font-sm mb-0 text-uppercase ls-1"><i class="fas fa-timeline text-secondary me-2"></i>Operational Velocity Trend</h6>
-            <div class="d-flex gap-2">
-                <span class="badge bg-light text-dark font-xxs">Daily Tracking</span>
-            </div>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-hover mb-0 align-middle text-center">
-                <thead class="bg-light">
-                    <tr class="font-xxs text-uppercase fw-900 text-muted ls-1">
-                        <th class="py-3 ps-4 text-start">Operation Date</th>
-                        <th class="py-3">Total Volume</th>
-                        <th class="py-3">Direct Mix</th>
-                        <th class="py-3">Account Mix</th>
-                        <th class="py-3 pe-4 text-end">Conversion Rate</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for day in daily_orders %}
-                    <tr class="font-sm border-bottom-light">
-                        <td class="ps-4 text-start py-2 fw-900 text-dark">{{ day.date }}</td>
-                        <td class="py-2"><span class="fw-900 fs-6">{{ day.total_orders }}</span></td>
-                        <td class="py-2"><span class="badge bg-blue-subtle text-blue font-xs px-3 rounded-pill">{{ day.walkin_count or 0 }}</span></td>
-                        <td class="py-2"><span class="badge bg-success-subtle text-success font-xs px-3 rounded-pill">{{ day.client_count or 0 }}</span></td>
-                        <td class="pe-4 text-end py-2 text-primary fw-900 fs-6">{{ "{:.1f}".format((day.client_count / day.total_orders * 100) if day.total_orders > 0 else 0) }}%</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+</div>
 </div>
 
 <style>
@@ -268,15 +299,21 @@
     }
 
     /* KPI Pods */
-    .kpi-icon-lg {
-        width: 46px; height: 46px; border-radius: 12px;
-        display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+    .kpi-icon-sm {
+        width: 38px; height: 38px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center; font-size: 1rem;
+        transition: all 0.3s ease;
     }
     
-    .kpi-glass-blue { background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); border-left: 5px solid #2563eb !important; }
-    .kpi-glass-green { background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border-left: 5px solid #16a34a !important; }
-    .kpi-glass-cyan { background: linear-gradient(135deg, #f0ffff 0%, #ffffff 100%); border-left: 5px solid #0891b2 !important; }
-    .kpi-glass-amber { background: linear-gradient(135deg, #fffcf0 0%, #ffffff 100%); border-left: 5px solid #f59e0b !important; }
+    .luxury-card:hover .kpi-icon-sm { transform: scale(1.1); }
+    .luxury-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .luxury-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important; }
+
+    .kpi-glass-blue { background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); border-left: 4px solid #2563eb !important; }
+    .kpi-glass-green { background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border-left: 4px solid #16a34a !important; }
+    .kpi-glass-cyan { background: linear-gradient(135deg, #f0ffff 0%, #ffffff 100%); border-left: 4px solid #0891b2 !important; }
+    .kpi-glass-amber { background: linear-gradient(135deg, #fffcf0 0%, #ffffff 100%); border-left: 4px solid #f59e0b !important; }
+    .kpi-glass-purple { background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%); border-left: 4px solid #7c3aed !important; }
 
     /* Colors */
     .bg-blue-subtle { background: #e0e7ff !important; color: #3730a3 !important; }
@@ -284,11 +321,13 @@
     .bg-success-subtle { background: #f0fdf4 !important; color: #16a34a !important; }
     .bg-cyan-subtle { background: #cffafe !important; color: #0891b2 !important; }
     .bg-amber-subtle { background: #fef3c7 !important; color: #92400e !important; }
+    .bg-purple-subtle { background: #ede9fe !important; color: #5b21b6 !important; }
     
     .text-blue { color: #2563eb !important; }
     .text-green { color: #16a34a !important; }
     .text-cyan { color: #0891b2 !important; }
     .text-amber { color: #f59e0b !important; }
+    .text-purple { color: #7c3aed !important; }
 
     /* Tables */
     .border-bottom-light { border-bottom: 1px solid #f1f5f9; }

@@ -12,12 +12,20 @@
         z-index: 2;
     }
 
+    .dashboard-canvas {
+        background-color: #f8fafc;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 32px 32px;
+        min-height: 100vh;
+        padding-bottom: 3rem;
+    }
+
     .admin-header-content h1 {
-        font-size: 3.5rem;
+        font-size: 3.25rem;
         font-weight: 900;
         letter-spacing: -2px;
-        margin: 0.5rem 0;
-        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        margin: 0;
+        text-shadow: 0 10px 40px rgba(0,0,0,0.9);
     }
 
     .kpi-card {
@@ -126,19 +134,21 @@
     }
 
     .filter-section {
-        background: white;
-        border-radius: 16px;
-        border: 1px solid #e2e8f0;
-        padding: 1.25rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        background: rgba(15, 23, 42, 0.8) !important;
+        backdrop-filter: blur(20px);
+        border-radius: 50px;
+        border: 1px solid rgba(14, 165, 233, 0.3) !important;
+        padding: 0.25rem 1.25rem !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
     }
 
     .filter-section select {
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        background: white;
-        font-weight: 600;
-        padding: 0.5rem 1rem;
+        border: none !important;
+        background: transparent !important;
+        color: white !important;
+        font-weight: 900;
+        font-size: 0.85rem;
+        cursor: pointer;
     }
 
     .table-header-gradient {
@@ -455,24 +465,17 @@
                 </div>
             </div>
 
-            <!-- Client Due Report -->
-            <div class="row g-4 mt-2 mb-3" style="position: relative; z-index: 5;"> <!-- Subtle positive margin instead of negative -->
-                <div class="col-12">
-                    <div class="luxury-card border-0">
-                        <div class="card-header-professional d-flex justify-content-between align-items-center">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <div>
-                                    <h6 class="section-title mb-0 fw-bold" style="font-size: 1rem; color: #1e293b;">
-                                        <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-2 me-2" style="width: 32px; height: 32px; font-size: 0.9rem;">
-                                            <i class="fas fa-exclamation-circle"></i>
-                                        </div>
-                                        Client Due Report
-                                    </h6>
-                                    <p class="text-muted mb-0" style="font-size: 0.72rem; margin-left: 40px; opacity: 0.8;">
-                                        Outstanding payments awaiting collection</p>
-                                </div>
-                                <span class="badge" style="background: #ef4444; color: #ffffff; font-size: 0.72rem; font-weight: 700; padding: 0.4rem 1rem; border-radius: 2rem;">{{ due_clients | length }} Clients</span>
+            <!-- Multi-Dimensional Insights Grid -->
+            <div class="row g-2 mb-2">
+                <!-- Client Due Terminal -->
+                <div class="col-lg-12">
+                    <div class="luxury-card border-0 d-flex flex-column">
+                        <div class="bg-white px-4 py-2 border-bottom d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-900 text-dark font-xs mb-0 text-uppercase ls-1"><i class="fas fa-shield-exclamation text-danger me-2"></i>Critical Receivable Ledger</h6>
+                                <p class="text-muted font-xxs mb-0 opacity-75">Outstanding corporate and individual liabilities</p>
                             </div>
+                            <span class="badge bg-danger-subtle text-danger font-xxs px-3 rounded-pill">{{ due_clients | length }} Priority Accounts</span>
                         </div>
                         <div class="card-body p-0 mt-n1"> <!-- Moved body up -->
                             <div class="table-responsive">

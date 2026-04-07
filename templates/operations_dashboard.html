@@ -2,145 +2,108 @@
 
 {% block extra_css %}
 <style>
-    /* High-Vibrancy Modern Dashboard Overrides */
+    /* ===== MESH BACKGROUND ===== */
     .compact-dash {
-        background: #fdfdfd !important;
-        padding-top: 1rem;
+        background-color: #f8fafc !important;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px) !important;
+        background-size: 32px 32px !important;
+        padding-top: 1.25rem;
         padding-bottom: 2rem;
         margin-top: 0 !important;
+        min-height: 100vh;
     }
-    
+
     .compact-dash .display-5 {
         font-size: 1.6rem !important;
-        font-weight: 800 !important;
+        font-weight: 900 !important;
         color: #0f172a !important;
         margin-bottom: 2px !important;
-        letter-spacing: -1px !important;
+        letter-spacing: -1.5px !important;
     }
-    
-    .compact-dash .display-5 span {
-        color: #3b82f6 !important;
-    }
-    
     .compact-dash .fs-5 {
         font-size: 0.8rem !important;
         color: #94a3b8 !important;
-        margin-bottom: 1rem !important;
+        margin-bottom: 0.75rem !important;
     }
-    
-    /* Premium Modern Cards */
-    .compact-dash .luxury-card {
-        background: #ffffff !important;
-        border: 1px solid #f1f5f9 !important;
-        border-radius: 0.85rem !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    }
-    
-    .compact-dash .luxury-card:hover {
-        transform: translateY(-3px) !important;
-        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.08) !important;
-        border-color: #e2e8f0 !important;
-    }
-    
-    /* Attractive Quick Nav Boxes */
-    .compact-dash .quick-nav-card {
-        border-bottom-width: 5px !important;
+
+    /* ===== PREMIUM KPI GRADIENT CARDS ===== */
+    .kpi-grad-card {
         position: relative;
         overflow: hidden;
-        z-index: 1;
+        border-radius: 18px;
+        padding: 1.1rem 1.4rem 1rem;
+        color: white;
+        min-height: 110px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .kpi-grad-card:hover { transform: translateY(-5px); }
+    .kpi-grad-ghost {
+        position: absolute; right: -8px; bottom: -14px;
+        font-size: 5.5rem; opacity: 0.13; pointer-events: none; line-height: 1;
+    }
+    .kpi-grad-badge {
+        width: 38px; height: 38px; border-radius: 11px;
+        background: rgba(255,255,255,0.22);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; margin-bottom: 0.45rem;
+        border: 1px solid rgba(255,255,255,0.35);
+    }
+    .kpi-grad-label { font-size: 0.67rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.1px; opacity: 0.82; }
+    .kpi-grad-value { font-size: 1.65rem; font-weight: 900; letter-spacing: -1px; line-height: 1.15; }
+    .kpi-grad-sub { font-size: 0.67rem; font-weight: 600; opacity: 0.72; margin-top: 0.35rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 0.35rem; }
+
+    .kpi-indigo { background: linear-gradient(135deg, #818cf8 0%, #6366f1 55%, #4f46e5 100%); box-shadow: 0 10px 28px rgba(99,102,241,0.38); }
+    .kpi-sky    { background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 55%, #0284c7 100%); box-shadow: 0 10px 28px rgba(14,165,233,0.38); }
+    .kpi-emerald{ background: linear-gradient(135deg, #34d399 0%, #10b981 55%, #059669 100%); box-shadow: 0 10px 28px rgba(16,185,129,0.38); }
+    .kpi-violet { background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 55%, #7c3aed 100%); box-shadow: 0 10px 28px rgba(139,92,246,0.38); }
+
+    /* ===== CARDS ===== */
+    .compact-dash .luxury-card {
+        background: rgba(255,255,255,0.92) !important;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(238,242,246,0.6) !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .compact-dash .luxury-card:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.09) !important;
+    }
+
+    /* Quick Nav */
+    .compact-dash .quick-nav-card {
+        border-bottom-width: 4px !important;
+        position: relative; overflow: hidden; z-index: 1;
         padding: 0.85rem !important;
     }
-    
-    .compact-dash .quick-nav-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: currentColor;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        z-index: -1;
-    }
-    
-    .compact-dash .quick-nav-card:hover::before {
-        opacity: 0.03;
-    }
-    
     .compact-dash .quick-nav-icon-pod {
-        width: 42px !important;
-        height: 42px !important;
+        width: 40px !important; height: 40px !important;
         border-radius: 12px !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 0.75rem !important;
-        font-size: 1.15rem !important;
-        background: #f8fafc !important;
-        color: inherit !important;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-        transition: all 0.3s ease;
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: 0.6rem !important; font-size: 1.1rem !important;
+        background: #f1f5f9 !important; transition: all 0.3s ease;
     }
-    
     .compact-dash .quick-nav-card:hover .quick-nav-icon-pod {
+        background: currentColor !important; color: #fff !important;
         transform: scale(1.1) translateY(-2px);
-        background: currentColor !important;
-        color: #ffffff !important;
-        box-shadow: 0 8px 16px -4px currentColor;
     }
-    
     .compact-dash .quick-nav-card small {
-        font-size: 0.75rem !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.5px !important;
-        color: #1e293b !important;
+        font-size: 0.72rem !important; font-weight: 800 !important;
+        letter-spacing: 0.5px !important; color: #1e293b !important;
     }
-    
-    /* Standardized Icon Pods for KPI */
-    .compact-dash .icon-pod {
-        width: 34px !important;
-        height: 34px !important;
-        border-radius: 9px !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 0.65rem;
-        background: #f1f5f9 !important;
-        color: #64748b !important;
-    }
-    
-    .compact-dash .luxury-card:hover .icon-pod {
-        background: #3b82f6 !important;
-        color: #ffffff !important;
-    }
-    
-    .compact-dash .luxury-card h2 {
-        font-size: 1.4rem !important;
-        font-weight: 800 !important;
-        color: #0f172a !important;
-    }
-    
-    /* Dense High-End Table */
+
+    /* Table */
     .compact-dash .table th {
-        background: #f8fafc !important;
-        padding: 0.65rem 0.85rem !important;
-        font-size: 0.65rem !important;
-        font-weight: 800 !important;
-        text-transform: uppercase !important;
-        border: none !important;
-        color: #64748b !important;
+        background: #f8fafc !important; padding: 0.6rem 0.85rem !important;
+        font-size: 0.65rem !important; font-weight: 800 !important;
+        text-transform: uppercase !important; border: none !important; color: #64748b !important;
     }
-    
-    .compact-dash .table td {
-        padding: 0.65rem 0.85rem !important;
-        font-size: 0.85rem !important;
-    }
-    
-    .compact-dash .badge {
-        font-weight: 700 !important;
-        padding: 0.3rem 0.6rem !important;
-        border-radius: 6px !important;
-        font-size: 0.7rem !important;
-    }
+    .compact-dash .table td { padding: 0.6rem 0.85rem !important; font-size: 0.82rem !important; }
+    .compact-dash .badge { font-weight: 700 !important; padding: 0.3rem 0.6rem !important; border-radius: 6px !important; font-size: 0.68rem !important; }
 </style>
 {% endblock %}
 
@@ -153,141 +116,85 @@
         <p class="text-muted fs-5 mb-0">Enterprise logistics overview and multi-center operational heartbeat</p>
     </div>
 
-    <!-- KPI Cards Row 1 -->
-    <div class="row g-4 mb-5">
+    <!-- KPI Cards Row -->
+    <div class="row g-2 mb-3">
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div class="icon-pod">
-                            <i class="fas fa-boxes"></i>
-                        </div>
-                        <div class="text-end">
-                            <h6 class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">Shipments</h6>
-                            <h2 class="fw-900 mb-0" style="color: #1e293b;">{{ total_orders }}</h2>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center mt-2">
-                        <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1 me-2" style="font-size: 0.75rem;">
-                            <i class="fas fa-arrow-up me-1"></i>12%
-                        </span>
-                        <small class="text-muted opacity-75">vs last month</small>
-                    </div>
-                </div>
+            <div class="kpi-grad-card kpi-indigo">
+                <div class="kpi-grad-ghost"><i class="fas fa-boxes"></i></div>
+                <div class="kpi-grad-badge"><i class="fas fa-boxes"></i></div>
+                <div class="kpi-grad-label">Total Shipments</div>
+                <div class="kpi-grad-value">{{ total_orders }}</div>
+                <div class="kpi-grad-sub"><i class="fas fa-arrow-trend-up me-1"></i>All-time dispatch count</div>
             </div>
         </div>
-
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div class="icon-pod">
-                            <i class="fas fa-truck-fast"></i>
-                        </div>
-                        <div class="text-end">
-                            <h6 class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">In Transit</h6>
-                            <h2 class="fw-900 mb-0" style="color: #1e293b;">{{ in_transit_orders }}</h2>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-baseline mt-2">
-                        <div class="text-info fw-bold" style="font-size: 0.8rem;">
-                            {{ pending_orders }} <span class="opacity-75">Confirmation</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="kpi-grad-card kpi-sky">
+                <div class="kpi-grad-ghost"><i class="fas fa-truck-fast"></i></div>
+                <div class="kpi-grad-badge"><i class="fas fa-truck-fast"></i></div>
+                <div class="kpi-grad-label">In Transit</div>
+                <div class="kpi-grad-value">{{ in_transit_orders }}</div>
+                <div class="kpi-grad-sub"><i class="fas fa-spinner me-1"></i>{{ pending_orders }} awaiting confirmation</div>
             </div>
         </div>
-
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div class="icon-pod">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="text-end">
-                            <h6 class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">Delivered</h6>
-                            <h2 class="fw-900 mb-0" style="color: #1e293b;">{{ delivered_orders }}</h2>
-                        </div>
-                    </div>
-                    <div class="text-success small fw-bold mt-2 d-flex align-items-center">
-                        <i class="fas fa-shield-check me-2"></i> Operational Success
-                    </div>
-                </div>
+            <div class="kpi-grad-card kpi-emerald">
+                <div class="kpi-grad-ghost"><i class="fas fa-check-circle"></i></div>
+                <div class="kpi-grad-badge"><i class="fas fa-check-circle"></i></div>
+                <div class="kpi-grad-label">Delivered</div>
+                <div class="kpi-grad-value">{{ delivered_orders }}</div>
+                <div class="kpi-grad-sub"><i class="fas fa-shield-check me-1"></i>Operational success</div>
             </div>
         </div>
-
         <div class="col-md-3">
-            <div class="luxury-card border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div class="icon-pod">
-                            <i class="fas fa-wallet"></i>
-                        </div>
-                        <div class="text-end">
-                            <h6 class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">Revenue Today</h6>
-                            <h2 class="fw-900 mb-0" style="color: #1e293b;">₹{{ "%.0f"|format(today_revenue) }}</h2>
-                        </div>
-                    </div>
-                    <div class="text-muted small opacity-75 mt-2">
-                        Total Yield: <span class="fw-bold">₹{{ "%.0f"|format(total_revenue) }}</span>
-                    </div>
-                </div>
+            <div class="kpi-grad-card kpi-violet">
+                <div class="kpi-grad-ghost"><i class="fas fa-wallet"></i></div>
+                <div class="kpi-grad-badge"><i class="fas fa-wallet"></i></div>
+                <div class="kpi-grad-label">Revenue Today</div>
+                <div class="kpi-grad-value">₹{{ "%.0f"|format(today_revenue) }}</div>
+                <div class="kpi-grad-sub"><i class="fas fa-sack-dollar me-1"></i>Total: ₹{{ "%.0f"|format(total_revenue) }}</div>
             </div>
         </div>
     </div>
 
     <!-- Quick Navigation -->
-    <div class="mb-4">
-            <h5 class="fw-bold mb-3 d-flex align-items-center" style="color: #0f172a; font-size: 0.95rem;">
-                Quick Navigation
-            </h5>
-        <div class="row g-3">
+    <div class="mb-3">
+        <h6 class="fw-900 text-muted text-uppercase mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">
+            <i class="fas fa-grip-dots me-2 text-primary opacity-50"></i>Quick Navigation
+        </h6>
+        <div class="row g-2">
             <div class="col-md-2">
-                <a href="{{ url_for('operations_booking_history') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #10b981 !important; color: #10b981;">
-                    <div class="quick-nav-icon-pod">
-                        <i class="fas fa-history"></i>
-                    </div>
+                <a href="{{ url_for('operations_booking_history') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none h-100" style="border-bottom: 4px solid #10b981 !important; color: #10b981;">
+                    <div class="quick-nav-icon-pod"><i class="fas fa-history"></i></div>
                     <small>History</small>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_branch_bookings') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #3b82f6 !important; color: #3b82f6;">
-                    <div class="quick-nav-icon-pod">
-                        <i class="fas fa-sitemap"></i>
-                    </div>
+                <a href="{{ url_for('operations_branch_bookings') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none h-100" style="border-bottom: 4px solid #3b82f6 !important; color: #3b82f6;">
+                    <div class="quick-nav-icon-pod"><i class="fas fa-sitemap"></i></div>
                     <small>Branches</small>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_walk_in_orders') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #f59e0b !important; color: #f59e0b;">
-                    <div class="quick-nav-icon-pod">
-                        <i class="fas fa-walking"></i>
-                    </div>
+                <a href="{{ url_for('operations_walk_in_orders') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none h-100" style="border-bottom: 4px solid #f59e0b !important; color: #f59e0b;">
+                    <div class="quick-nav-icon-pod"><i class="fas fa-walking"></i></div>
                     <small>Walk-in</small>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_client_orders') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #6366f1 !important; color: #6366f1;">
-                    <div class="quick-nav-icon-pod">
-                        <i class="fas fa-users"></i>
-                    </div>
+                <a href="{{ url_for('operations_client_orders') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none h-100" style="border-bottom: 4px solid #6366f1 !important; color: #6366f1;">
+                    <div class="quick-nav-icon-pod"><i class="fas fa-users"></i></div>
                     <small>Clients</small>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('operations_crm_overview') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #64748b !important; color: #64748b;">
-                    <div class="quick-nav-icon-pod">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
+                <a href="{{ url_for('operations_crm_overview') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none h-100" style="border-bottom: 4px solid #64748b !important; color: #64748b;">
+                    <div class="quick-nav-icon-pod"><i class="fas fa-chart-line"></i></div>
                     <small>Overview</small>
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="{{ url_for('staff_dashboard') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none transition-hover h-100" style="border-bottom: 5px solid #0f172a !important; color: #0f172a;">
-                    <div class="quick-nav-icon-pod">
-                        <i class="fas fa-file-analytics"></i>
-                    </div>
+                <a href="{{ url_for('staff_dashboard') }}" class="quick-nav-card luxury-card border-0 d-flex flex-column align-items-center text-center text-decoration-none h-100" style="border-bottom: 4px solid #0f172a !important; color: #0f172a;">
+                    <div class="quick-nav-icon-pod"><i class="fas fa-file-analytics"></i></div>
                     <small>Reports</small>
                 </a>
             </div>
@@ -295,7 +202,7 @@
     </div>
 
     <!-- Order Type Distribution -->
-    <div class="row g-4 mb-4">
+    <div class="row g-2 mb-3">
         <div class="col-md-6">
             <div class="luxury-card border-0 h-100">
                 <div class="card-body p-4">

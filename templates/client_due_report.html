@@ -3,89 +3,124 @@
 {% block title %}Client Due Report - CRM Delivery{% endblock %}
 
 {% block content %}
-<div class="page-content-wrapper w-100">
-    <div class="row mb-5 align-items-center">
-        <div class="col-md-8">
-            <h5 class="text-primary fw-bold mb-1">Financial Intelligence</h5>
-            <h1 class="display-5 fw-black text-dark mb-2">Client Due Report</h1>
-            <p class="text-muted fs-5 mb-0">Monitor and manage outstanding payments from corporate clients.</p>
-        </div>
-        <div class="col-md-4 text-md-end">
-            <div class="btn-group shadow-sm rounded-pill overflow-hidden">
-                <button class="btn btn-primary px-4" onclick="window.print()">
-                    <i class="fas fa-print me-2"></i>Print
-                </button>
-                <button class="btn btn-success px-4" onclick="exportToExcel()">
-                    <i class="fas fa-file-excel me-2"></i>Export
-                </button>
-            </div>
-        </div>
-    </div>
+<div class="cdr-canvas">
+<div class="container-fluid px-4 pt-3 pb-5">
 
-    <!-- Filter Section -->
-    <div class="card luxury-card border-0 shadow-sm mb-5">
-        <div class="card-header bg-transparent border-0 px-4 pt-4">
-            <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-filter me-2 text-primary opacity-50"></i>Filter
-                Analytics</h5>
+    <!-- ── Executive Header ───────────────────────────── -->
+    <div class="d-flex justify-content-between align-items-end mb-3">
+        <div>
+            <span class="badge bg-blue-tag text-white fw-800 font-xxs text-uppercase ls-1 px-3 py-1 rounded-pill mb-2">
+                <i class="fas fa-building-columns me-1"></i> Financial Intelligence
+            </span>
+            <h1 class="fw-900 mb-0 ls-tight" style="font-size:1.9rem; color:#0f172a;">
+                CLIENT <span class="text-primary">DUE REPORT</span>
+            </h1>
+            <p class="text-muted font-sm mb-0">Monitor and manage outstanding payments from corporate clients.</p>
         </div>
-        <div class="card-body p-4">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label small fw-bold text-uppercase text-muted">From Date</label>
-                    <input type="date" class="form-control luxury-input" id="filterFrom" onchange="loadClientDues()">
+        <div class="d-flex gap-2 align-items-center">
+            <!-- Inline Filter Hub -->
+            <div class="filter-hub d-flex gap-2 align-items-center">
+                <div class="filter-pill">
+                    <div class="filter-label">From Date</div>
+                    <input type="date" class="luxury-input" id="filterFrom" onchange="loadClientDues()">
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label small fw-bold text-uppercase text-muted">To Date</label>
-                    <input type="date" class="form-control luxury-input" id="filterTo" onchange="loadClientDues()">
+                <div class="filter-pill">
+                    <div class="filter-label">To Date</div>
+                    <input type="date" class="luxury-input" id="filterTo" onchange="loadClientDues()">
                 </div>
+                <button class="btn-exec btn-refresh" onclick="loadClientDues()">
+                    <i class="fas fa-sync-alt me-1"></i> Refresh
+                </button>
+            </div>
+            <div class="d-flex gap-2 ms-2">
+                <button class="btn-exec btn-dark-act" onclick="window.print()">
+                    <i class="fas fa-print me-1"></i> Print
+                </button>
+                <button class="btn-exec btn-blue-act" onclick="exportToExcel()">
+                    <i class="fas fa-file-excel me-1"></i> Export
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Summary Cards -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-6">
-            <div class="card luxury-card border-0 bg-primary text-white p-4">
-                <div class="small fw-bold text-uppercase opacity-75">Total Outstanding</div>
-                <h2 class="fw-black mb-0 mt-1" id="totalDue">₹0</h2>
+    <!-- ── KPI Summary Cards ──────────────────────────── -->
+    <div class="row g-2 mb-3">
+        <div class="col-md-3">
+            <div class="kpi-grad-card kpi-red">
+                <div class="kpi-grad-ghost"><i class="fas fa-vault"></i></div>
+                <div class="kpi-grad-badge"><i class="fas fa-vault"></i></div>
+                <div class="kpi-grad-label">Total Outstanding</div>
+                <div class="kpi-grad-value" id="totalDue">₹0</div>
+                <div class="kpi-grad-sub"><i class="fas fa-exclamation-triangle me-1"></i>Awaiting collection</div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card luxury-card border-0 bg-dark text-white p-4">
-                <div class="small fw-bold text-uppercase opacity-75">Clients with Dues</div>
-                <h2 class="fw-black mb-0 mt-1" id="totalClients">0</h2>
+        <div class="col-md-3">
+            <div class="kpi-grad-card kpi-indigo">
+                <div class="kpi-grad-ghost"><i class="fas fa-users"></i></div>
+                <div class="kpi-grad-badge"><i class="fas fa-users"></i></div>
+                <div class="kpi-grad-label">Clients with Dues</div>
+                <div class="kpi-grad-value" id="totalClients">0</div>
+                <div class="kpi-grad-sub"><i class="fas fa-building me-1"></i>Active corporate accounts</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-grad-card kpi-emerald">
+                <div class="kpi-grad-ghost"><i class="fas fa-circle-check"></i></div>
+                <div class="kpi-grad-badge"><i class="fas fa-circle-check"></i></div>
+                <div class="kpi-grad-label">Total Received</div>
+                <div class="kpi-grad-value" id="totalReceived">₹0</div>
+                <div class="kpi-grad-sub"><i class="fas fa-receipt me-1"></i>Collected to date</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-grad-card kpi-amber">
+                <div class="kpi-grad-ghost"><i class="fas fa-file-invoice"></i></div>
+                <div class="kpi-grad-badge"><i class="fas fa-file-invoice"></i></div>
+                <div class="kpi-grad-label">Total Orders</div>
+                <div class="kpi-grad-value" id="totalOrders">0</div>
+                <div class="kpi-grad-sub"><i class="fas fa-box-archive me-1"></i>Across all clients</div>
             </div>
         </div>
     </div>
 
-    <!-- Main Table -->
-    <div class="card luxury-card border-0 shadow-sm mb-5">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" id="clientDueTable">
-                    <thead class="bg-light">
-                        <tr>
-                            <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted">Client</th>
-                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Company</th>
-                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Total Orders</th>
-                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Total Amount</th>
-                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Received</th>
-                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Due Amount</th>
-                            <th class="py-3 border-0 small fw-bold text-uppercase text-muted">Last Order</th>
-                            <th class="px-4 py-3 border-0 small fw-bold text-uppercase text-muted text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="8" class="text-center py-5">
-                                <div class="spinner-border text-primary"></div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <!-- ── Client Ledger Table ────────────────────────── -->
+    <div class="ledger-card">
+        <div class="ledger-header">
+            <div>
+                <h6 class="fw-900 text-dark font-xs mb-0 text-uppercase ls-1">
+                    <i class="fas fa-file-invoice-dollar text-primary me-2"></i>Corporate Receivables Ledger
+                </h6>
+                <p class="text-muted font-xxs mb-0 opacity-75">Sorted by outstanding due — highest first</p>
             </div>
+            <span class="badge bg-danger-subtle text-danger font-xxs px-3 rounded-pill" id="clientCountBadge">Loading…</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="clientDueTable">
+                <thead>
+                    <tr class="ledger-thead">
+                        <th class="ps-4">Client</th>
+                        <th>Company</th>
+                        <th>Orders</th>
+                        <th>Gross Value</th>
+                        <th>Received</th>
+                        <th>Due Amount</th>
+                        <th>Last Order</th>
+                        <th class="pe-4 text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <div class="spinner-border text-primary" style="width:1.5rem;height:1.5rem;"></div>
+                            <div class="text-muted font-xs mt-2">Loading ledger…</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
+
+</div>
 </div>
 {% endblock %}
 
@@ -94,57 +129,66 @@
     function loadClientDues() {
         const filters = {
             start_date: document.getElementById('filterFrom').value,
-            end_date: document.getElementById('filterTo').value
+            end_date:   document.getElementById('filterTo').value
         };
-
         const tbody = document.querySelector('#clientDueTable tbody');
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5"><div class="spinner-border text-primary" style="width:1.5rem;height:1.5rem;"></div><div class="text-muted font-xs mt-2">Refreshing data…</div></td></tr>';
 
         fetch('/api/client-due-summary?' + new URLSearchParams(filters))
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    updateSummary(data.summary);
+                    updateSummary(data.summary, data.clients);
                     updateClientTable(data.clients);
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-danger">Error loading data: ' + data.error + '</td></tr>';
+                    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-danger font-sm"><i class="fas fa-triangle-exclamation me-2"></i>${data.error}</td></tr>`;
                 }
             })
-            .catch(error => {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-danger">Error: ' + error + '</td></tr>';
+            .catch(err => {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-danger font-sm"><i class="fas fa-triangle-exclamation me-2"></i>${err}</td></tr>`;
             });
     }
 
-    function updateSummary(summary) {
-        document.getElementById('totalDue').textContent = '₹' + summary.total_due.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        document.getElementById('totalClients').textContent = summary.total_clients;
+    function updateSummary(summary, clients) {
+        const fmt = n => '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('totalDue').textContent       = fmt(summary.total_due);
+        document.getElementById('totalClients').textContent   = summary.total_clients;
+        document.getElementById('totalReceived').textContent  = fmt(clients.reduce((s,c)=>s+c.received_amount,0));
+        document.getElementById('totalOrders').textContent    = clients.reduce((s,c)=>s+c.total_orders,0);
+        document.getElementById('clientCountBadge').textContent = summary.total_clients + ' Clients';
     }
 
     function updateClientTable(clients) {
         const tbody = document.querySelector('#clientDueTable tbody');
         if (!clients.length) {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-muted">No clients with outstanding dues found.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-5 text-muted font-sm opacity-50"><i class="fas fa-circle-check text-success me-2"></i>No outstanding dues — all clients are settled.</td></tr>';
             return;
         }
+        const fmt  = n => '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+        const risk = due => due > 50000 ? 'badge-risk-high' : due > 10000 ? 'badge-risk-med' : 'badge-risk-low';
 
         tbody.innerHTML = clients.map(c => `
-            <tr>
-                <td class="px-4">
-                    <div class="fw-bold text-dark">${c.name}</div>
-                    <div class="small text-muted"><i class="fas fa-phone me-1"></i>${c.phone}</div>
+            <tr class="ledger-row">
+                <td class="ps-4 py-3">
+                    <div class="fw-900 text-dark">${c.name}</div>
+                    <div class="font-xxs text-muted"><i class="fas fa-phone me-1 opacity-50"></i>${c.phone}</div>
                 </td>
-                <td>
-                    <div class="fw-semibold">${c.company_name || 'Personal'}</div>
-                    ${c.email ? '<div class="small text-muted">' + c.email + '</div>' : ''}
+                <td class="py-3">
+                    <div class="fw-700 text-dark">${c.company_name || '<span class="text-muted">Personal</span>'}</div>
+                    ${c.email ? `<div class="font-xxs text-muted">${c.email}</div>` : ''}
                 </td>
-                <td><span class="badge bg-light text-dark rounded-pill">${c.total_orders} orders</span></td>
-                <td class="fw-bold">₹${c.total_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                <td class="text-success fw-bold">₹${c.received_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                <td class="text-danger fw-black">₹${c.due_amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                <td class="small text-muted">${c.last_order_date || 'N/A'}</td>
-                <td class="px-4 text-end">
-                    <a href="/client/${c.id}/orders-due" class="btn btn-sm btn-primary rounded-pill px-3">
-                        <i class="fas fa-eye me-1"></i>View Orders
+                <td class="py-3">
+                    <span class="ledger-badge">${c.total_orders} <span class="opacity-60 font-xxxs">orders</span></span>
+                </td>
+                <td class="py-3 fw-800 text-dark">${fmt(c.total_amount)}</td>
+                <td class="py-3 fw-800 text-success">${fmt(c.received_amount)}</td>
+                <td class="py-3">
+                    <span class="due-amount ${risk(c.due_amount)}">${fmt(c.due_amount)}</span>
+                </td>
+                <td class="py-3 font-xs text-muted fw-700">${c.last_order_date || '—'}</td>
+                <td class="pe-4 py-3 text-end">
+                    <a href="/client/${c.id}/orders-due" class="btn-view-orders">
+                        <i class="fas fa-eye me-1"></i> View Orders
                     </a>
                 </td>
             </tr>
@@ -155,7 +199,139 @@
         alert('Export functionality coming soon!');
     }
 
-    // Load data on page load
     document.addEventListener('DOMContentLoaded', () => loadClientDues());
 </script>
+
+<style>
+    /* ── Canvas ────────────────────────────────────── */
+    .cdr-canvas {
+        background-color: #f8fafc;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 32px 32px;
+        min-height: 100vh;
+    }
+
+    /* ── Typography Tokens ─────────────────────────── */
+    .font-sm  { font-size: 0.85rem !important; }
+    .font-xs  { font-size: 0.8rem !important; }
+    .font-xxs { font-size: 0.72rem !important; }
+    .font-xxxs{ font-size: 0.62rem !important; }
+    .fw-900   { font-weight: 900 !important; }
+    .fw-800   { font-weight: 800 !important; }
+    .fw-700   { font-weight: 700 !important; }
+    .ls-n1    { letter-spacing: -0.5px; }
+    .ls-tight { letter-spacing: -1.5px; }
+    .ls-1     { letter-spacing: 0.5px; }
+    .bg-blue-tag { background: #2563eb; }
+
+    /* ── Filter Hub ────────────────────────────────── */
+    .filter-hub { }
+    .filter-pill {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.35rem 0.85rem;
+        min-width: 140px;
+        transition: border-color 0.2s;
+    }
+    .filter-pill:focus-within { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .filter-label { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 1px; }
+    .luxury-input { border: none !important; background: transparent !important; font-size: 0.78rem; font-weight: 700; color: #1e293b; width: 100%; outline: none; }
+
+    /* ── Exec Action Buttons ───────────────────────── */
+    .btn-exec {
+        height: 38px; border-radius: 12px; border: none; font-size: 0.72rem;
+        font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+        padding: 0 1.1rem; cursor: pointer; transition: all 0.2s;
+        display: flex; align-items: center;
+    }
+    .btn-refresh { background: #f1f5f9; color: #1e293b; }
+    .btn-refresh:hover { background: #e2e8f0; }
+    .btn-dark-act { background: #0f172a; color: #fff; }
+    .btn-dark-act:hover { background: #1e293b; }
+    .btn-blue-act { background: #2563eb; color: #fff; }
+    .btn-blue-act:hover { background: #1d4ed8; box-shadow: 0 4px 14px rgba(37,99,235,0.4); }
+
+    /* ── Gradient KPI Cards ────────────────────────── */
+    .kpi-grad-card {
+        position: relative; overflow: hidden; border-radius: 18px;
+        padding: 1.1rem 1.4rem 1rem; color: white; min-height: 112px;
+        display: flex; flex-direction: column; justify-content: space-between;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .kpi-grad-card:hover { transform: translateY(-5px); }
+    .kpi-grad-ghost {
+        position: absolute; right: -8px; bottom: -14px;
+        font-size: 5.5rem; opacity: 0.13; pointer-events: none; line-height: 1;
+    }
+    .kpi-grad-badge {
+        width: 38px; height: 38px; border-radius: 11px;
+        background: rgba(255,255,255,0.22); display: flex; align-items: center;
+        justify-content: center; font-size: 1rem; margin-bottom: 0.45rem;
+        border: 1px solid rgba(255,255,255,0.35);
+    }
+    .kpi-grad-label { font-size: 0.67rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.1px; opacity: 0.82; }
+    .kpi-grad-value { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; line-height: 1.15; }
+    .kpi-grad-sub   { font-size: 0.67rem; font-weight: 600; opacity: 0.72; margin-top: 0.35rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 0.35rem; }
+
+    .kpi-red     { background: linear-gradient(135deg,#f87171,#ef4444,#dc2626); box-shadow: 0 10px 28px rgba(239,68,68,0.38); }
+    .kpi-indigo  { background: linear-gradient(135deg,#818cf8,#6366f1,#4f46e5); box-shadow: 0 10px 28px rgba(99,102,241,0.38); }
+    .kpi-emerald { background: linear-gradient(135deg,#34d399,#10b981,#059669); box-shadow: 0 10px 28px rgba(16,185,129,0.38); }
+    .kpi-amber   { background: linear-gradient(135deg,#fbbf24,#f59e0b,#d97706); box-shadow: 0 10px 28px rgba(245,158,11,0.38); }
+
+    /* ── Ledger Card ───────────────────────────────── */
+    .ledger-card {
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(12px);
+        border-radius: 18px;
+        border: 1px solid rgba(226,232,240,0.7);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        overflow: hidden;
+    }
+    .ledger-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0.85rem 1.5rem;
+        background: #fff;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* ── Ledger Table ──────────────────────────────── */
+    .ledger-thead tr { background: #f8fafc; }
+    .ledger-thead th {
+        font-size: 0.65rem; font-weight: 900; text-transform: uppercase;
+        letter-spacing: 0.8px; color: #64748b; border: none !important;
+        padding: 0.65rem 0.85rem;
+    }
+    .ledger-row { border-bottom: 1px solid #f1f5f9; transition: background 0.15s; }
+    .ledger-row:hover { background: rgba(37,99,235,0.03); }
+    .ledger-row:last-child { border-bottom: none; }
+
+    /* Due Amount Risk Badges */
+    .due-amount { font-weight: 900; padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.9rem; }
+    .badge-risk-high { color: #be123c; background: rgba(254,205,211,0.6); }
+    .badge-risk-med  { color: #b45309; background: rgba(254,243,199,0.6); }
+    .badge-risk-low  { color: #15803d; background: rgba(220,252,231,0.6); }
+
+    .ledger-badge {
+        background: #f1f5f9; border: 1px solid #e2e8f0;
+        border-radius: 8px; padding: 0.2rem 0.6rem;
+        font-size: 0.78rem; font-weight: 800; color: #475569;
+    }
+
+    /* View Orders Button */
+    .btn-view-orders {
+        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg,#2563eb,#1d4ed8);
+        color: #fff; border: none; border-radius: 10px;
+        padding: 0.35rem 0.9rem; font-size: 0.72rem;
+        font-weight: 800; text-decoration: none; text-transform: uppercase;
+        letter-spacing: 0.3px; transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+    }
+    .btn-view-orders:hover {
+        background: linear-gradient(135deg,#1d4ed8,#1e40af);
+        color: #fff; transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(37,99,235,0.4);
+    }
+</style>
 {% endblock %}
